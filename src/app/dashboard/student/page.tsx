@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +11,33 @@ import AvatarSelector, { AVATAR_OPTIONS } from "@/components/avatar-selector";
 import { Zap, Trophy, Folder, Calendar, ArrowRight, PlusCircle, Users, BookOpen, Keyboard, Sparkles, CheckCircle, Pencil } from "lucide-react";
 
 export default function StudentDashboard() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const [userAvatar, setUserAvatar] = useState(AVATAR_OPTIONS[0].src);
+
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/auth/login");
+        }
+    }, [status, router]);
+
+    // Use session avatar if available, otherwise use selected avatar
+    const displayAvatar = session?.user?.image || userAvatar;
+    const userName = session?.user?.name?.split(" ")[0] || "User";
+
+    // Show loading state while checking auth
+    if (status === "loading") {
+        return (
+            <div className="min-h-screen pt-24 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full border-4 border-cyan-500 border-t-transparent animate-spin" />
+            </div>
+        );
+    }
+
+    if (!session) {
+        return null;
+    }
 
     const stats = [
         { icon: Zap, label: "Total XP", value: "2,450", color: "yellow" },
@@ -45,7 +73,7 @@ export default function StudentDashboard() {
                             <div className="relative group">
                                 <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-cyan-500 shadow-lg shadow-cyan-500/30 bg-gradient-to-br from-cyan-600/20 to-violet-600/20 p-1">
                                     <img
-                                        src={userAvatar}
+                                        src={displayAvatar}
                                         alt="Your avatar"
                                         className="w-full h-full object-cover rounded-xl"
                                     />
@@ -64,7 +92,7 @@ export default function StudentDashboard() {
                                 <div className="inline-flex items-center gap-2 rounded-full bg-yellow-500/20 px-3 py-1 text-xs font-medium text-yellow-400 mb-2">
                                     <Sparkles className="w-3 h-3" /> Rising Star
                                 </div>
-                                <h1 className="text-2xl md:text-3xl font-black text-white">Welcome back, John!</h1>
+                                <h1 className="text-2xl md:text-3xl font-black text-white">Welcome back, {userName}!</h1>
                                 <p className="text-gray-400">Keep up the great work. You&apos;re on fire! 🔥</p>
                             </div>
                         </div>
@@ -73,9 +101,7 @@ export default function StudentDashboard() {
                                 currentAvatar={userAvatar}
                                 onSelectAvatar={setUserAvatar}
                             />
-                            <Button className="glow-button text-black font-semibold rounded-full px-6">
-                                View Profile <ArrowRight className="w-4 h-4 ml-2" />
-                            </Button>
+
                         </div>
                     </div>
                 </div>
