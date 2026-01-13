@@ -16,17 +16,58 @@ export default function SignupPage() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [signupState, setSignupState] = useState<"idle" | "success" | "error">("idle");
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSignup = (e: React.FormEvent) => {
+    // Form state
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError(null);
+
+        if (!agreedToTerms) {
+            setError("Please agree to the Terms of Service and Privacy Policy");
+            return;
+        }
+
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters");
+            return;
+        }
+
         setLoading(true);
-        setTimeout(() => {
-            setSignupState("success");
-            setTimeout(() => {
-                setLoading(false);
-                router.push("/dashboard/student");
-            }, 1000);
-        }, 800);
+
+        try {
+            // Use NextAuth credentials sign in (for demo, this creates a session)
+            const result = await signIn("credentials", {
+                email: email,
+                password: password,
+                redirect: false,
+            });
+
+            if (result?.error) {
+                setSignupState("error");
+                setError("Failed to create account. Please try again.");
+                setTimeout(() => setSignupState("idle"), 2000);
+            } else {
+                setSignupState("success");
+                // Redirect after success animation
+                setTimeout(() => {
+                    router.push("/dashboard/student");
+                }, 1000);
+            }
+        } catch (err) {
+            console.error("Signup error:", err);
+            setSignupState("error");
+            setError("An unexpected error occurred");
+            setTimeout(() => setSignupState("idle"), 2000);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleGoogleSignup = async () => {
@@ -52,6 +93,7 @@ export default function SignupPage() {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="min-h-screen flex pt-16">
@@ -181,19 +223,38 @@ export default function SignupPage() {
 
                     {/* Form */}
                     <form onSubmit={handleSignup} className="space-y-4">
+                        {/* Error Display */}
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
+                                {error}
+                            </div>
+                        )}
+
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label className="text-gray-300 text-sm">First Name</Label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                                    <Input placeholder="John" className="pl-10 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all" required />
+                                    <Input
+                                        placeholder="John"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        className="pl-10 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+                                        required
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-gray-300 text-sm">Last Name</Label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                                    <Input placeholder="Doe" className="pl-10 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all" required />
+                                    <Input
+                                        placeholder="Doe"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        className="pl-10 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+                                        required
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -201,7 +262,14 @@ export default function SignupPage() {
                             <Label className="text-gray-300 text-sm">Email</Label>
                             <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <Input type="email" placeholder="john@example.com" className="pl-12 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all" required />
+                                <Input
+                                    type="email"
+                                    placeholder="john@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="pl-12 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+                                    required
+                                />
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -211,6 +279,8 @@ export default function SignupPage() {
                                 <Input
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Create a strong password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="pl-12 pr-12 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all"
                                     required
                                 />
@@ -225,7 +295,12 @@ export default function SignupPage() {
                         </div>
 
                         <div className="flex items-start space-x-3 pt-2">
-                            <Checkbox id="terms" className="border-white/20 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500 mt-0.5" />
+                            <Checkbox
+                                id="terms"
+                                checked={agreedToTerms}
+                                onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                                className="border-white/20 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500 mt-0.5"
+                            />
                             <label htmlFor="terms" className="text-sm text-gray-400 leading-tight">
                                 I agree to the <Link href="#" className="text-yellow-400 hover:underline">Terms of Service</Link> and <Link href="#" className="text-yellow-400 hover:underline">Privacy Policy</Link>
                             </label>
@@ -236,6 +311,7 @@ export default function SignupPage() {
                             className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-semibold rounded-xl py-6 shadow-lg shadow-yellow-500/25 transition-all hover:shadow-yellow-500/40 btn-magnetic"
                             disabled={loading}
                         >
+
                             {loading ? "Creating Account..." : "Create Account"} <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     </form>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,24 +13,55 @@ import { User, Shield, ArrowRight, Mail, Lock, Eye, EyeOff, Sparkles, Zap, Troph
 
 export default function LoginPage() {
     const router = useRouter();
+    const { data: session, status } = useSession();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [loginState, setLoginState] = useState<"idle" | "success" | "error">("idle");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const handleLogin = (role: "student" | "admin") => {
+    // Redirect to dashboard if already logged in
+    useEffect(() => {
+        if (status === "authenticated" && session?.user) {
+            const dashboardPath = session.user.role === "admin"
+                ? "/dashboard/admin"
+                : "/dashboard/student";
+            router.push(dashboardPath);
+        }
+    }, [status, session, router]);
+
+    const handleLogin = async (role: "student" | "admin") => {
         setLoading(true);
-        // Simulate login - success
-        setTimeout(() => {
-            setLoginState("success");
-            setTimeout(() => {
+        setLoginState("idle");
+
+        try {
+            const result = await signIn("credentials", {
+                email,
+                password,
+                role,
+                redirect: false,
+            });
+
+            if (result?.ok) {
+                setLoginState("success");
+                setTimeout(() => {
+                    if (role === "admin") {
+                        router.push("/dashboard/admin");
+                    } else {
+                        router.push("/dashboard/student");
+                    }
+                }, 500);
+            } else {
+                setLoginState("error");
+                setTimeout(() => setLoginState("idle"), 2000);
                 setLoading(false);
-                if (role === "admin") {
-                    router.push("/dashboard/admin");
-                } else {
-                    router.push("/dashboard/student");
-                }
-            }, 1000);
-        }, 800);
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            setLoginState("error");
+            setTimeout(() => setLoginState("idle"), 2000);
+            setLoading(false);
+        }
     };
 
     const handleLoginError = () => {
@@ -195,6 +226,8 @@ export default function LoginPage() {
                                         <Input
                                             type="email"
                                             placeholder="student@example.com"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                             className="pl-12 py-6 rounded-xl bg-white/5 border-white/10 text-white focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all input-focus-glow"
                                             required
                                         />
@@ -210,6 +243,8 @@ export default function LoginPage() {
                                         <Input
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
                                             className="pl-12 pr-12 py-6 rounded-xl bg-white/5 border-white/10 text-white focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all input-focus-glow"
                                             required
                                         />
@@ -241,6 +276,8 @@ export default function LoginPage() {
                                         <Input
                                             type="email"
                                             placeholder="admin@velonx.com"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                             className="pl-12 py-6 rounded-xl bg-white/5 border-white/10 text-white focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
                                             required
                                         />
@@ -256,6 +293,8 @@ export default function LoginPage() {
                                         <Input
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
                                             className="pl-12 pr-12 py-6 rounded-xl bg-white/5 border-white/10 text-white focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
                                             required
                                         />

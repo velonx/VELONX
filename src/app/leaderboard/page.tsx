@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LEADERBOARD } from "@/lib/mock-data";
-import { Trophy, Medal, Zap, TrendingUp, Sparkles, Crown, Flame, Target, Users, Diamond, Clock, ChevronRight, Bell } from "lucide-react";
+import { Trophy, Medal, Zap, TrendingUp, Sparkles, Crown, Flame, Target, Users, Diamond, Clock, ChevronRight, Bell, User } from "lucide-react";
 
 // Avatar options for users to choose from
 const AVATAR_OPTIONS = [
@@ -27,6 +28,7 @@ const EXTENDED_LEADERBOARD = LEADERBOARD.map((user, index) => ({
 }));
 
 export default function LeaderboardPage() {
+    const { data: session } = useSession();
     const [timeLeft, setTimeLeft] = useState({
         days: 10,
         hours: 23,
@@ -69,32 +71,10 @@ export default function LeaderboardPage() {
     }, []);
 
     return (
-        <div className="min-h-screen pt-16 relative overflow-hidden">
-            {/* Cosmic Background */}
-            <div className="fixed inset-0 bg-gradient-to-b from-[#0a1628] via-[#0d1f3c] to-[#0a0a0f] -z-10" />
-
-            {/* Particle Effect Background */}
-            <div className="fixed inset-0 -z-10">
-                {[...Array(50)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute w-1 h-1 bg-white/20 rounded-full animate-twinkle"
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            animationDelay: `${Math.random() * 3}s`,
-                            animationDuration: `${2 + Math.random() * 2}s`,
-                        }}
-                    />
-                ))}
-            </div>
-
-            {/* Glowing Orbs */}
-            <div className="absolute top-20 right-[20%] w-[500px] h-[500px] rounded-full bg-violet-600/10 blur-[100px]" />
-            <div className="absolute bottom-20 left-[10%] w-[400px] h-[400px] rounded-full bg-cyan-600/10 blur-[100px]" />
-
+        <div className="min-h-screen pt-16 bg-white">
             {/* Hero Section with Tabs */}
-            <section className="relative py-8">
+            <section className="relative py-8 bg-gradient-to-b from-gray-50 to-white">
+
                 <div className="container mx-auto px-4">
                     {/* Period Toggle */}
                     <div className="flex justify-center mb-12">
@@ -102,8 +82,8 @@ export default function LeaderboardPage() {
                             <button
                                 onClick={() => setActiveTab("daily")}
                                 className={`px-8 py-2.5 rounded-full font-medium transition-all ${activeTab === "daily"
-                                        ? "bg-gradient-to-r from-cyan-500 to-cyan-600 text-black"
-                                        : "text-gray-400 hover:text-white"
+                                    ? "bg-gradient-to-r from-cyan-500 to-cyan-600 text-black"
+                                    : "text-gray-400 hover:text-white"
                                     }`}
                             >
                                 Daily
@@ -111,8 +91,8 @@ export default function LeaderboardPage() {
                             <button
                                 onClick={() => setActiveTab("monthly")}
                                 className={`px-8 py-2.5 rounded-full font-medium transition-all ${activeTab === "monthly"
-                                        ? "bg-gradient-to-r from-cyan-500 to-cyan-600 text-black"
-                                        : "text-gray-400 hover:text-white"
+                                    ? "bg-gradient-to-r from-cyan-500 to-cyan-600 text-black"
+                                    : "text-gray-400 hover:text-white"
                                     }`}
                             >
                                 Monthly
@@ -226,19 +206,54 @@ export default function LeaderboardPage() {
 
                     {/* User Stats Banner */}
                     <div className="max-w-2xl mx-auto mb-12">
-                        <div className="glass rounded-2xl px-6 py-4 border border-white/10 flex items-center justify-center gap-2 text-center">
-                            <span className="text-gray-400">You earned</span>
-                            <Diamond className="w-5 h-5 text-cyan-400" />
-                            <span className="text-cyan-400 font-bold">5</span>
-                            <span className="text-gray-400">today and we ranked - out of</span>
-                            <span className="text-white font-bold">23141 users</span>
-                        </div>
+                        {session?.user ? (
+                            <div className="glass rounded-2xl px-6 py-4 border border-cyan-500/30 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-cyan-500/50">
+                                        {session.user.image ? (
+                                            <img
+                                                src={session.user.image}
+                                                alt={session.user.name || "User"}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center text-white font-bold">
+                                                {session.user.name?.charAt(0) || "U"}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <p className="text-white font-medium">{session.user.name}</p>
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <span className="text-gray-400">Rank</span>
+                                            <span className="text-cyan-400 font-bold">#42</span>
+                                            <span className="text-gray-500">•</span>
+                                            <Diamond className="w-4 h-4 text-cyan-400" />
+                                            <span className="text-cyan-400 font-bold">2,450</span>
+                                            <span className="text-gray-400">points</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-sm text-gray-400">Earned today</div>
+                                    <div className="flex items-center gap-1">
+                                        <Diamond className="w-5 h-5 text-cyan-400" />
+                                        <span className="text-xl font-bold gradient-text-cyan">+50</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="glass rounded-2xl px-6 py-4 border border-white/10 flex items-center justify-center gap-2 text-center">
+                                <User className="w-5 h-5 text-gray-500" />
+                                <span className="text-gray-400">Login to see your ranking and earn points!</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
 
             {/* Ranking List */}
-            <section className="py-8">
+            <section className="py-8 animate-on-scroll">
                 <div className="container mx-auto px-4 max-w-4xl">
                     {/* Table Header */}
                     <div className="grid grid-cols-12 gap-4 px-6 py-3 text-gray-500 text-sm font-medium border-b border-white/5">
@@ -283,7 +298,7 @@ export default function LeaderboardPage() {
             </section>
 
             {/* How to Earn Section */}
-            <section className="py-16">
+            <section className="py-16 animate-on-scroll">
                 <div className="container mx-auto px-4">
                     <h2 className="text-2xl font-bold text-white text-center mb-8">How to Earn XP</h2>
                     <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto">

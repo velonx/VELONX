@@ -12,54 +12,48 @@ export default function MentorsPage() {
     const tags = ["All", "Frontend", "Backend", "AI/ML", "Mobile", "DevOps", "Design"];
 
     return (
-        <div className="min-h-screen pt-24">
+        <div className="min-h-screen pt-24 bg-white">
             {/* Hero Section */}
-            <section className="relative py-16 mesh-gradient-bg noise-overlay overflow-hidden">
-                <div className="absolute top-10 left-[10%] w-[300px] h-[300px] orb orb-yellow opacity-40" />
-                <div className="absolute bottom-10 right-[15%] w-[250px] h-[250px] orb orb-violet opacity-30" />
-
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="text-center max-w-2xl mx-auto">
-                        <div className="inline-flex items-center gap-2 rounded-full glow-badge px-4 py-2 text-sm font-medium text-cyan-300 mb-6">
-                            <Sparkles className="w-4 h-4" />
-                            Expert Network
-                        </div>
-                        <h1 className="text-4xl md:text-5xl font-black mb-4">
-                            <span className="text-white inline-block text-vanish-line-1">Connect with</span> <span className="gradient-text-yellow inline-block text-vanish-line-2">Industry Mentors</span>
+            <section className="relative py-16 bg-gradient-to-b from-gray-50 to-white">
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <div className="max-w-3xl mx-auto">
+                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-gray-900">
+                            Connect with <span className="text-[#E9C46A]">Industry Mentors</span>
                         </h1>
-                        <p className="text-gray-400 text-lg mb-8">
+                        <p className="text-gray-600 text-xl mb-8 max-w-2xl mx-auto">
                             Get guidance from experienced professionals who&apos;ve been in your shoes.
                         </p>
-                        <div className="relative max-w-md mx-auto">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                            <Input placeholder="Search mentors by name or expertise..." className="pl-12 py-6 rounded-full bg-white/5 border-white/10 text-white placeholder:text-gray-500" />
+                        <div className="relative max-w-xl mx-auto">
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Input placeholder="Search mentors by name or expertise..." className="pl-14 py-7 rounded-full bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 text-lg" />
                         </div>
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
             {/* Filters */}
-            <section className="py-8 bg-[#080810]">
+            <section className="py-8 bg-white">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-wrap justify-center gap-3">
                         {tags.map((tag, index) => (
-                            <Button key={tag} variant="outline" className={`rounded-full border-white/20 ${index === 0 ? 'bg-cyan-500 text-black border-cyan-500' : 'text-gray-400 hover:bg-white/5'}`}>
+                            <Button key={tag} variant="outline" className={`rounded-full border-gray-300 ${index === 0 ? 'bg-[#219EBC] text-white border-[#219EBC]' : 'text-gray-700 hover:bg-gray-50'}`}>
                                 {tag}
                             </Button>
                         ))}
-                        <Button variant="outline" className="rounded-full border-white/20 text-gray-400 hover:bg-white/5">
+                        <Button variant="outline" className="rounded-full border-gray-300 text-gray-700 hover:bg-gray-50">
                             <Filter className="w-4 h-4 mr-2" /> More Filters
                         </Button>
                     </div>
                 </div>
+
             </section>
 
             <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
             {/* Mentors Grid */}
-            <section className="py-16 bg-[#0a0a0f]">
+            <section className="py-16 animate-on-scroll">
                 <div className="container mx-auto px-4">
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {MENTORS.map((mentor, index) => (

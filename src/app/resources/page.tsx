@@ -29,36 +29,34 @@ export default function ResourcesPage() {
     ];
 
     return (
-        <div className="min-h-screen pt-24">
+        <div className="min-h-screen pt-24 bg-white">
             {/* Hero Section */}
-            <section className="relative py-16 mesh-gradient-bg noise-overlay overflow-hidden">
-                <div className="absolute top-10 right-[20%] w-[300px] h-[300px] orb orb-cyan opacity-40" />
-                <div className="absolute bottom-10 left-[10%] w-[250px] h-[250px] orb orb-yellow opacity-30" />
-
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="max-w-2xl">
-                        <div className="inline-flex items-center gap-2 rounded-full glow-badge px-4 py-2 text-sm font-medium text-cyan-300 mb-6">
+            <section className="relative py-16 bg-gradient-to-b from-gray-50 to-white">
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6 mx-auto">
                             <Sparkles className="w-4 h-4" />
                             Learning Hub
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black mb-4">
-                            <span className="text-white inline-block text-vanish-line-1">Master New</span> <span className="gradient-text-cyan inline-block text-vanish-line-2">Skills</span> <span className="text-white inline-block text-vanish-line-3">Every Day</span>
+                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-gray-900">
+                            Master New <span className="text-[#219EBC]">Skills</span> Every Day
                         </h1>
-                        <p className="text-gray-400 text-lg mb-6">
+                        <p className="text-gray-600 text-xl mb-8 max-w-2xl mx-auto">
                             Curated roadmaps, tutorials, notes, and tools to accelerate your learning journey.
                         </p>
-                        <div className="relative max-w-md">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                            <Input placeholder="Search tutorials, roadmaps, notes..." className="pl-12 py-6 rounded-full bg-white/5 border-white/10 text-white placeholder:text-gray-500" />
+                        <div className="relative max-w-xl mx-auto">
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Input placeholder="Search tutorials, roadmaps, notes..." className="pl-14 py-7 rounded-full bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 text-lg" />
                         </div>
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
             {/* KeyRacer Section */}
-            <section className="py-16 bg-[#080810]">
+            <section className="py-16 animate-on-scroll bg-gray-50">
+
                 <div className="container mx-auto px-4">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div>
@@ -137,7 +135,7 @@ export default function ResourcesPage() {
             <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
             {/* Categories */}
-            <section className="py-16 bg-[#0a0a0f]">
+            <section className="py-16 animate-on-scroll">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-black text-white mb-3">Browse by Category</h2>
@@ -165,7 +163,7 @@ export default function ResourcesPage() {
             <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
             {/* Roadmaps */}
-            <section className="py-16 bg-[#080810]">
+            <section className="py-16 animate-on-scroll">
                 <div className="container mx-auto px-4">
                     <div className="flex justify-between items-center mb-10">
                         <div>

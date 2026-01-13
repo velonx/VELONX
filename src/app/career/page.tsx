@@ -11,75 +11,42 @@ import { Upload, FileText, Video, Calendar, CheckCircle, Clock, Sparkles, Briefc
 
 export default function CareerPage() {
     return (
-        <div className="min-h-screen pt-24">
+        <div className="min-h-screen pt-24 bg-white">
             {/* Hero Section */}
-            <section className="relative py-16 mesh-gradient-bg noise-overlay overflow-hidden">
-                <div className="absolute top-10 right-[10%] w-[300px] h-[300px] orb orb-cyan opacity-40" />
-                <div className="absolute bottom-10 left-[15%] w-[250px] h-[250px] orb orb-violet opacity-30" />
-
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div>
-                            <div className="inline-flex items-center gap-2 rounded-full glow-badge px-4 py-2 text-sm font-medium text-cyan-300 mb-6">
-                                <Sparkles className="w-4 h-4" />
-                                Career Services
-                            </div>
-                            <h1 className="text-4xl md:text-5xl font-black mb-4">
-                                <span className="text-white inline-block text-vanish-line-1">Launch Your</span> <span className="gradient-text-cyan inline-block text-vanish-line-2">Tech Career</span>
-                            </h1>
-                            <p className="text-gray-400 text-lg mb-6">
-                                Get resume reviews, mock interviews, and personalized career guidance from industry professionals.
-                            </p>
-                            <div className="flex gap-4">
-                                <Button className="glow-button text-black font-semibold rounded-full px-6">
-                                    <Upload className="w-4 h-4 mr-2" /> Upload Resume
-                                </Button>
-                                <Button variant="outline" className="outline-glow text-white rounded-full px-6">
-                                    <Video className="w-4 h-4 mr-2" /> Book Mock Interview
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="hidden lg:grid grid-cols-2 gap-4">
-                            <div className="glass rounded-2xl p-5 border border-white/10 animate-slide-in-left stagger-1 hover-lift">
-                                <Briefcase className="w-8 h-8 text-cyan-400 mb-3" />
-                                <div className="text-2xl font-bold text-white">150+</div>
-                                <div className="text-gray-500 text-sm">Placements</div>
-                            </div>
-                            <div className="glass rounded-2xl p-5 border border-white/10 mt-6 animate-slide-in-right stagger-2 hover-lift">
-                                <GraduationCap className="w-8 h-8 text-violet-400 mb-3" />
-                                <div className="text-2xl font-bold text-white">50+</div>
-                                <div className="text-gray-500 text-sm">Partner Companies</div>
-                            </div>
-                            <div className="glass rounded-2xl p-5 border border-white/10 animate-slide-in-left stagger-3 hover-lift">
-                                <FileText className="w-8 h-8 text-yellow-400 mb-3" />
-                                <div className="text-2xl font-bold text-white">300+</div>
-                                <div className="text-gray-500 text-sm">Resumes Reviewed</div>
-                            </div>
-                            <div className="glass rounded-2xl p-5 border border-white/10 mt-6 animate-slide-in-right stagger-4 hover-lift">
-                                <Video className="w-8 h-8 text-green-400 mb-3" />
-                                <div className="text-2xl font-bold text-white">200+</div>
-                                <div className="text-gray-500 text-sm">Mock Interviews</div>
-                            </div>
+            <section className="relative py-16 bg-gradient-to-b from-gray-50 to-white">
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <div className="max-w-3xl mx-auto">
+                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-gray-900">
+                            Launch Your <span className="text-[#219EBC]">Tech Career</span>
+                        </h1>
+                        <p className="text-gray-600 text-xl mb-8 max-w-2xl mx-auto">
+                            Get resume reviews, mock interviews, and personalized career guidance from industry professionals.
+                        </p>
+                        <div className="flex justify-center gap-4">
+                            <Button className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold rounded-full px-8 py-6 text-lg shadow-lg shadow-[#219EBC]/25">
+                                <Upload className="w-5 h-5 mr-2" /> Upload Resume
+                            </Button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
             {/* Services Tabs */}
-            <section className="py-16 bg-[#080810]">
+            <section className="py-16 animate-on-scroll bg-gray-50">
+
                 <div className="container mx-auto px-4">
                     <Tabs defaultValue="resume" className="w-full">
                         <div className="flex justify-center mb-10">
-                            <TabsList className="glass border border-white/10 p-1.5">
-                                <TabsTrigger value="resume" className="px-6 py-3 rounded-lg data-[state=active]:bg-cyan-500 data-[state=active]:text-black font-medium gap-2">
+                            <TabsList className="bg-[#023047]/50 backdrop-blur-sm border border-[#219EBC]/20 p-1.5">
+                                <TabsTrigger value="resume" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-[#023047] font-medium gap-2">
                                     <FileText className="w-4 h-4" /> Resume Review
                                 </TabsTrigger>
-                                <TabsTrigger value="mock" className="px-6 py-3 rounded-lg data-[state=active]:bg-cyan-500 data-[state=active]:text-black font-medium gap-2">
+                                <TabsTrigger value="mock" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-[#023047] font-medium gap-2">
                                     <Video className="w-4 h-4" /> Mock Interview
                                 </TabsTrigger>
-                                <TabsTrigger value="status" className="px-6 py-3 rounded-lg data-[state=active]:bg-cyan-500 data-[state=active]:text-black font-medium gap-2">
+                                <TabsTrigger value="status" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-[#023047] font-medium gap-2">
                                     <Clock className="w-4 h-4" /> My Applications
                                 </TabsTrigger>
                             </TabsList>

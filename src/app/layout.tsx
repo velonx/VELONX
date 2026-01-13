@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Providers from "@/components/providers";
+import { ScrollAnimationProvider } from "@/components/scroll-animation-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           <main className="flex-1">
-            {children}
+            <ScrollAnimationProvider>
+              {children}
+            </ScrollAnimationProvider>
           </main>
           <Footer />
         </Providers>
@@ -42,4 +45,3 @@ export default function RootLayout({
     </html>
   );
 }
-

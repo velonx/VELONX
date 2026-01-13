@@ -30,7 +30,7 @@ export default function StudentDashboard() {
     if (status === "loading") {
         return (
             <div className="min-h-screen pt-24 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full border-4 border-cyan-500 border-t-transparent animate-spin" />
+                <div className="w-16 h-16 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
             </div>
         );
     }
@@ -40,9 +40,9 @@ export default function StudentDashboard() {
     }
 
     const stats = [
-        { icon: Zap, label: "Total XP", value: "2,450", color: "yellow" },
+        { icon: Zap, label: "Total XP", value: "2,450", color: "orange" },
         { icon: Trophy, label: "Rank", value: "#42", color: "violet" },
-        { icon: Folder, label: "Projects", value: "3", color: "cyan" },
+        { icon: Folder, label: "Projects", value: "3", color: "blue" },
         { icon: Calendar, label: "Events", value: "7", color: "green" },
     ];
 
@@ -60,67 +60,56 @@ export default function StudentDashboard() {
     ];
 
     return (
-        <div className="min-h-screen pt-24">
+        <div className="min-h-screen pt-24 bg-white">
             {/* Hero Section */}
-            <section className="relative py-12 mesh-gradient-bg noise-overlay overflow-hidden">
-                <div className="absolute top-10 right-[10%] w-[300px] h-[300px] orb orb-yellow opacity-40" />
-                <div className="absolute bottom-0 left-[5%] w-[200px] h-[200px] orb orb-violet opacity-30" />
-
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                        <div className="flex items-center gap-4">
-                            {/* NFT-style Avatar with Edit Button */}
-                            <div className="relative group">
-                                <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-cyan-500 shadow-lg shadow-cyan-500/30 bg-gradient-to-br from-cyan-600/20 to-violet-600/20 p-1">
-                                    <img
-                                        src={displayAvatar}
-                                        alt="Your avatar"
-                                        className="w-full h-full object-cover rounded-xl"
-                                    />
-                                </div>
-                                <AvatarSelector
-                                    currentAvatar={userAvatar}
-                                    onSelectAvatar={setUserAvatar}
-                                    trigger={
-                                        <button className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-black shadow-lg hover:scale-110 transition-transform">
-                                            <Pencil className="w-4 h-4" />
-                                        </button>
-                                    }
+            <section className="relative py-12 bg-gradient-to-b from-gray-50 to-white">
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <div className="max-w-3xl mx-auto space-y-6">
+                        {/* NFT-style Avatar with Edit Button */}
+                        <div className="relative inline-block group">
+                            <div className="w-32 h-32 rounded-3xl overflow-hidden border-4 border-[#219EBC] shadow-xl shadow-[#219EBC]/30 bg-gradient-to-br from-[#219EBC]/20 to-gray-100 p-1 mx-auto">
+                                <img
+                                    src={displayAvatar}
+                                    alt="Your avatar"
+                                    className="w-full h-full object-cover rounded-2xl"
                                 />
                             </div>
-                            <div>
-                                <div className="inline-flex items-center gap-2 rounded-full bg-yellow-500/20 px-3 py-1 text-xs font-medium text-yellow-400 mb-2">
-                                    <Sparkles className="w-3 h-3" /> Rising Star
-                                </div>
-                                <h1 className="text-2xl md:text-3xl font-black text-white">Welcome back, {userName}!</h1>
-                                <p className="text-gray-400">Keep up the great work. You&apos;re on fire! 🔥</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-3">
                             <AvatarSelector
                                 currentAvatar={userAvatar}
                                 onSelectAvatar={setUserAvatar}
+                                trigger={
+                                    <button className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-[#219EBC] to-[#1a7a94] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform">
+                                        <Pencil className="w-5 h-5" />
+                                    </button>
+                                }
                             />
+                        </div>
 
+                        <div>
+                            <div className="inline-flex items-center gap-2 rounded-full bg-[#E9C46A]/20 px-4 py-1.5 text-sm font-medium text-[#8B7A52] mb-4 mx-auto">
+                                <Sparkles className="w-3 h-3" /> Rising Star
+                            </div>
+                            <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-3">Welcome to Velonx, {userName}!</h1>
+                            <p className="text-gray-500 text-lg">Keep up the great work. You&apos;re on fire! 🔥</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
             {/* Stats Grid */}
-            <section className="py-8 bg-[#080810]">
+            <section className="py-8 animate-on-scroll bg-gray-50">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {stats.map((stat, i) => (
-                            <Card key={i} className="glass border border-white/10 hover:border-cyan-500/30 transition-all">
+                            <Card key={i} className="bg-white border border-gray-200 hover:border-[#219EBC] hover:shadow-lg transition-all">
                                 <CardContent className="p-5 flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.color === 'yellow' ? 'bg-yellow-500/20' : stat.color === 'violet' ? 'bg-violet-500/20' : stat.color === 'cyan' ? 'bg-cyan-500/20' : 'bg-green-500/20'}`}>
-                                        <stat.icon className={`w-6 h-6 ${stat.color === 'yellow' ? 'text-yellow-400' : stat.color === 'violet' ? 'text-violet-400' : stat.color === 'cyan' ? 'text-cyan-400' : 'text-green-400'}`} />
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.color === 'orange' ? 'bg-orange-100' : stat.color === 'violet' ? 'bg-violet-100' : stat.color === 'blue' ? 'bg-blue-100' : 'bg-green-100'}`}>
+                                        <stat.icon className={`w-6 h-6 ${stat.color === 'orange' ? 'text-orange-500' : stat.color === 'violet' ? 'text-violet-500' : stat.color === 'blue' ? 'text-[#219EBC]' : 'text-green-500'}`} />
                                     </div>
                                     <div>
-                                        <div className={`text-2xl font-bold ${stat.color === 'yellow' ? 'gradient-text-yellow' : stat.color === 'violet' ? 'gradient-text-violet' : 'gradient-text-cyan'}`}>{stat.value}</div>
+                                        <div className={`text-2xl font-bold ${stat.color === 'orange' ? 'text-orange-500' : stat.color === 'violet' ? 'text-violet-500' : stat.color === 'blue' ? 'text-[#219EBC]' : 'text-green-500'}`}>{stat.value}</div>
                                         <div className="text-gray-500 text-sm">{stat.label}</div>
                                     </div>
                                 </CardContent>
@@ -133,7 +122,7 @@ export default function StudentDashboard() {
             <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
             {/* Main Content */}
-            <section className="py-10 bg-[#0a0a0f]">
+            <section className="py-10 animate-on-scroll">
                 <div className="container mx-auto px-4">
                     <div className="grid lg:grid-cols-3 gap-6">
                         {/* Left Column */}
@@ -142,13 +131,13 @@ export default function StudentDashboard() {
                             <Card className="glass border border-white/10">
                                 <CardHeader>
                                     <CardTitle className="text-white flex items-center gap-2">
-                                        <Zap className="w-5 h-5 text-yellow-400" /> Quick Actions
+                                        <Zap className="w-5 h-5 text-orange-400" /> Quick Actions
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                         {quickActions.map((action, i) => (
-                                            <Button key={i} variant="outline" className="h-auto py-4 flex-col gap-2 border-white/10 text-gray-300 hover:bg-cyan-500/10 hover:border-cyan-500/30 hover:text-cyan-400 transition-all">
+                                            <Button key={i} variant="outline" className="h-auto py-4 flex-col gap-2 border-white/10 text-gray-300 hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 transition-all">
                                                 <action.icon className="w-6 h-6" />
                                                 <span className="text-sm">{action.label}</span>
                                             </Button>
@@ -161,7 +150,7 @@ export default function StudentDashboard() {
                             <Card className="glass border border-white/10">
                                 <CardHeader>
                                     <CardTitle className="text-white flex items-center gap-2">
-                                        <Folder className="w-5 h-5 text-cyan-400" /> Your Projects
+                                        <Folder className="w-5 h-5 text-blue-400" /> Your Projects
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
@@ -169,7 +158,7 @@ export default function StudentDashboard() {
                                         { name: "AI Study Buddy", role: "Frontend Lead", progress: 65 },
                                         { name: "E-commerce Platform", role: "Full Stack", progress: 40 },
                                     ].map((project, i) => (
-                                        <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-cyan-500/30 transition-all">
+                                        <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-blue-500/30 transition-all">
                                             <div className="flex justify-between items-center mb-3">
                                                 <div>
                                                     <div className="text-white font-medium">{project.name}</div>
@@ -179,7 +168,7 @@ export default function StudentDashboard() {
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-gradient-to-r from-cyan-500 to-violet-500 rounded-full" style={{ width: `${project.progress}%` }} />
+                                                    <div className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full" style={{ width: `${project.progress}%` }} />
                                                 </div>
                                                 <span className="text-gray-400 text-sm">{project.progress}%</span>
                                             </div>
@@ -231,7 +220,7 @@ export default function StudentDashboard() {
                                             <span className="text-gray-400">3,000 XP</span>
                                         </div>
                                         <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                                            <div className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full" style={{ width: '82%' }} />
+                                            <div className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full" style={{ width: '82%' }} />
                                         </div>
                                         <p className="text-gray-500 text-sm text-center">550 XP to Level 6</p>
                                     </div>
@@ -242,7 +231,7 @@ export default function StudentDashboard() {
                             <Card className="glass border border-white/10">
                                 <CardHeader>
                                     <CardTitle className="text-white flex items-center gap-2">
-                                        <Trophy className="w-5 h-5 text-yellow-400" /> Recent Achievements
+                                        <Trophy className="w-5 h-5 text-orange-400" /> Recent Achievements
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
