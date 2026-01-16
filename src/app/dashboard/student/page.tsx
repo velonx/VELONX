@@ -3,288 +3,303 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import AvatarSelector, { AVATAR_OPTIONS } from "@/components/avatar-selector";
-import { Zap, Trophy, Folder, Calendar, ArrowRight, PlusCircle, Users, BookOpen, Keyboard, Sparkles, CheckCircle, Pencil } from "lucide-react";
+import {
+    LayoutDashboard,
+    BarChart3,
+    CheckSquare,
+    Timer,
+    Settings,
+    Plus,
+    Search,
+    Bell,
+    MoreHorizontal,
+    CheckCircle2,
+    Clock,
+    CreditCard,
+    Zap
+} from "lucide-react";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 export default function StudentDashboard() {
     const { data: session, status } = useSession();
     const router = useRouter();
-    const [userAvatar, setUserAvatar] = useState(AVATAR_OPTIONS[0].src);
+    const [activeTab, setActiveTab] = useState("Dashboard");
 
-    // Redirect to login if not authenticated
     useEffect(() => {
         if (status === "unauthenticated") {
             router.push("/auth/login");
         }
     }, [status, router]);
 
-    // Use session avatar if available, otherwise use selected avatar
-    const displayAvatar = session?.user?.image || userAvatar;
-    const userName = session?.user?.name?.split(" ")[0] || "User";
-
-    // Show loading state while checking auth
     if (status === "loading") {
         return (
-            <div className="min-h-screen pt-24 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="w-16 h-16 rounded-full border-4 border-[#219EBC] border-t-transparent animate-spin" />
             </div>
         );
     }
 
-    if (!session) {
-        return null;
-    }
+    if (!session) return null;
 
-    const stats = [
-        { icon: Zap, label: "Total XP", value: "2,450", color: "orange" },
-        { icon: Trophy, label: "Rank", value: "#42", color: "violet" },
-        { icon: Folder, label: "Projects", value: "3", color: "blue" },
-        { icon: Calendar, label: "Events", value: "7", color: "green" },
+    const navItems = [
+        { icon: LayoutDashboard, label: "Dashboard" },
+        { icon: BarChart3, label: "Analytics" },
+        { icon: CheckSquare, label: "Task List" },
+        { icon: Timer, label: "Tracking" },
+        { icon: Settings, label: "Setting" },
     ];
 
-    const quickActions = [
-        { icon: PlusCircle, label: "Submit Idea", href: "/projects" },
-        { icon: Calendar, label: "Join Event", href: "/events" },
-        { icon: Users, label: "Find Mentor", href: "/mentors" },
-        { icon: Keyboard, label: "Practice", href: "/resources" },
+    const projects = [
+        {
+            title: "Web Development",
+            tasks: 10,
+            progress: 96,
+            color: "bg-[#5E239D]",
+            textColor: "text-white",
+            users: ["/avatars/1.png", "/avatars/2.png", "/avatars/3.png"]
+        },
+        {
+            title: "Mobile App Design",
+            tasks: 12,
+            progress: 46,
+            color: "bg-[#7FD8D8]",
+            textColor: "text-[#00443D]",
+            users: ["/avatars/4.png", "/avatars/5.png"]
+        },
+        {
+            title: "Facebook Brand UI Kit",
+            tasks: 22,
+            progress: 73,
+            color: "bg-[#FF7F5C]",
+            textColor: "text-white",
+            users: ["/avatars/6.png", "/avatars/7.png", "/avatars/8.png"]
+        },
     ];
 
-    const achievements = [
-        { emoji: "🚀", title: "First Project", date: "Dec 2024" },
-        { emoji: "⭐", title: "Attended 5 Events", date: "Dec 2024" },
-        { emoji: "🔥", title: "7-Day Streak", date: "This Week" },
+    const tasks = [
+        { title: "Mobile App", sub: "Prepare Figma file", completed: false, color: "bg-orange-400" },
+        { title: "UX wireframes", sub: "Design UX wireframes", completed: false, color: "bg-purple-500" },
+        { title: "Mobile App", sub: "Research", completed: true, color: "bg-teal-400" },
+    ];
+
+    const timeline = [
+        {
+            date: "Oct 20, 2021", items: [
+                { time: "10:00", title: "Dribbble shot", sub: "Facebook Brand", color: "border-teal-400" },
+                { time: "13:20", title: "Design", sub: "Task Managment", color: "border-orange-400" },
+            ]
+        },
+        {
+            date: "Oct 21, 2021", items: [
+                { time: "10:00", title: "UX Research", sub: "Sleep App", color: "border-purple-500" },
+                { time: "13:20", title: "Design", sub: "Task Managment", color: "border-orange-400" },
+                { time: "10:00", title: "Dribbble shot", sub: "Meet Up", color: "border-teal-400" },
+            ]
+        },
+        {
+            date: "Oct 22, 2021", items: [
+                { time: "10:00", title: "Dribbble shot", sub: "Meet Up", color: "border-teal-400" },
+                { time: "11:00", title: "Design", sub: "Mobile App", color: "border-orange-400" },
+            ]
+        },
     ];
 
     return (
-        <div className="min-h-screen pt-24 bg-white">
-            {/* Hero Section */}
-            <section className="relative py-12 bg-gradient-to-b from-gray-50 to-white">
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <div className="max-w-3xl mx-auto space-y-6">
-                        {/* NFT-style Avatar with Edit Button */}
-                        <div className="relative inline-block group">
-                            <div className="w-32 h-32 rounded-3xl overflow-hidden border-4 border-[#219EBC] shadow-xl shadow-[#219EBC]/30 bg-gradient-to-br from-[#219EBC]/20 to-gray-100 p-1 mx-auto">
-                                <img
-                                    src={displayAvatar}
-                                    alt="Your avatar"
-                                    className="w-full h-full object-cover rounded-2xl"
-                                />
-                            </div>
-                            <AvatarSelector
-                                currentAvatar={userAvatar}
-                                onSelectAvatar={setUserAvatar}
-                                trigger={
-                                    <button className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-[#219EBC] to-[#1a7a94] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform">
-                                        <Pencil className="w-5 h-5" />
-                                    </button>
-                                }
-                            />
-                        </div>
+        <div className="flex min-h-screen bg-[#FDFCFB] pt-20">
+            {/* Left Sidebar */}
+            <aside className="w-80 bg-white border-r border-gray-100 flex flex-col p-8 fixed left-0 top-20 bottom-0 z-20">
+                <div className="flex items-center gap-3 mb-12">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#219EBC] to-[#023047] rounded-xl flex items-center justify-center text-white font-bold">V</div>
+                    <span className="text-xl font-black text-[#023047]">Velonx</span>
+                </div>
 
-                        <div>
-                            <div className="inline-flex items-center gap-2 rounded-full bg-[#E9C46A]/20 px-4 py-1.5 text-sm font-medium text-[#8B7A52] mb-4 mx-auto">
-                                <Sparkles className="w-3 h-3" /> Rising Star
-                            </div>
-                            <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-3">Welcome to Velonx, {userName}!</h1>
-                            <p className="text-gray-500 text-lg">Keep up the great work. You&apos;re on fire! 🔥</p>
+                <div className="mb-12">
+                    <div className="relative inline-block mb-4">
+                        <div className="w-20 h-20 rounded-full border-2 border-[#219EBC] p-1">
+                            <img src={session.user?.image || "/avatars/default.png"} alt="User" className="w-full h-full rounded-full object-cover" />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
+                            <Clock className="w-3 h-3 text-[#219EBC]" />
                         </div>
                     </div>
+                    <h2 className="text-xl font-black text-[#023047] mb-1">{session.user?.name}</h2>
+                    <p className="text-gray-400 text-sm font-medium">{session.user?.email}</p>
                 </div>
-            </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+                <nav className="flex-1 space-y-2">
+                    {navItems.map((item) => (
+                        <button
+                            key={item.label}
+                            onClick={() => setActiveTab(item.label)}
+                            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold ${activeTab === item.label
+                                ? "bg-[#219EBC]/10 text-[#219EBC]"
+                                : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
+                                }`}
+                        >
+                            <item.icon className="w-5 h-5" />
+                            {item.label}
+                        </button>
+                    ))}
+                </nav>
 
-            {/* Stats Grid */}
-            <section className="py-8 animate-on-scroll bg-gray-50">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {stats.map((stat, i) => (
-                            <Card key={i} className="bg-white border border-gray-200 hover:border-[#219EBC] hover:shadow-lg transition-all">
-                                <CardContent className="p-5 flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.color === 'orange' ? 'bg-orange-100' : stat.color === 'violet' ? 'bg-violet-100' : stat.color === 'blue' ? 'bg-blue-100' : 'bg-green-100'}`}>
-                                        <stat.icon className={`w-6 h-6 ${stat.color === 'orange' ? 'text-orange-500' : stat.color === 'violet' ? 'text-violet-500' : stat.color === 'blue' ? 'text-[#219EBC]' : 'text-green-500'}`} />
-                                    </div>
-                                    <div>
-                                        <div className={`text-2xl font-bold ${stat.color === 'orange' ? 'text-orange-500' : stat.color === 'violet' ? 'text-violet-500' : stat.color === 'blue' ? 'text-[#219EBC]' : 'text-green-500'}`}>{stat.value}</div>
-                                        <div className="text-gray-500 text-sm">{stat.label}</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
+                <div className="mt-auto relative">
+                    <img src="/dashboard-pattern.png" className="absolute bottom-0 left-0 w-full opacity-10" />
                 </div>
-            </section>
-
-            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            </aside>
 
             {/* Main Content */}
-            <section className="py-10 animate-on-scroll">
-                <div className="container mx-auto px-4">
-                    <div className="grid lg:grid-cols-3 gap-6">
-                        {/* Left Column */}
-                        <div className="lg:col-span-2 space-y-6">
-                            {/* Quick Actions */}
-                            <Card className="glass border border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <Zap className="w-5 h-5 text-orange-400" /> Quick Actions
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                        {quickActions.map((action, i) => (
-                                            <Button key={i} variant="outline" className="h-auto py-4 flex-col gap-2 border-white/10 text-gray-300 hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 transition-all">
-                                                <action.icon className="w-6 h-6" />
-                                                <span className="text-sm">{action.label}</span>
-                                            </Button>
+            <main className="flex-1 ml-80 mr-96 p-12">
+                {/* Header */}
+                <header className="flex items-center justify-between mb-12">
+                    <div>
+                        <h1 className="text-3xl font-black text-[#023047] mb-2">Hello, {session.user?.name?.split(" ")[0]}</h1>
+                        <p className="text-gray-400 font-medium tracking-tight">Today is {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#219EBC] transition-colors" />
+                            <input
+                                type="text"
+                                placeholder="Search here..."
+                                className="h-14 bg-white border border-gray-100 rounded-2xl pl-12 pr-6 w-64 shadow-sm focus:ring-2 focus:ring-[#219EBC] outline-none transition-all"
+                            />
+                        </div>
+                        <Button className="h-14 px-8 bg-[#023047] hover:bg-black text-white font-black rounded-2xl shadow-xl shadow-[#023047]/20 flex items-center gap-2">
+                            Add New Project <Plus className="w-5 h-5" />
+                        </Button>
+                    </div>
+                </header>
+
+                {/* Project Cards */}
+                <div className="grid grid-cols-3 gap-6 mb-12">
+                    {projects.map((project, i) => (
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.1 }}
+                        >
+                            <Card className={`${project.color} ${project.textColor} border-0 rounded-[40px] p-8 h-full shadow-2xl shadow-black/5 hover:scale-[1.02] transition-transform`}>
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="flex -space-x-3">
+                                        {[1, 2, 3].map((_, idx) => (
+                                            <div key={idx} className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-[10px] font-bold">
+                                                +{idx + 7}
+                                            </div>
                                         ))}
                                     </div>
-                                </CardContent>
+                                    <button className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                                        <MoreHorizontal className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <h3 className="text-2xl font-black mb-6 leading-tight max-w-[150px]">{project.title}</h3>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between text-sm font-bold opacity-80">
+                                        <span>{project.tasks} tasks</span>
+                                        <span>{project.progress}%</span>
+                                    </div>
+                                    <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                                        <div className="h-full bg-white rounded-full" style={{ width: `${project.progress}%` }} />
+                                    </div>
+                                </div>
                             </Card>
+                        </motion.div>
+                    ))}
+                </div>
 
-                            {/* Active Projects */}
-                            <Card className="glass border border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <Folder className="w-5 h-5 text-blue-400" /> Your Projects
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    {[
-                                        { name: "AI Study Buddy", role: "Frontend Lead", progress: 65 },
-                                        { name: "E-commerce Platform", role: "Full Stack", progress: 40 },
-                                    ].map((project, i) => (
-                                        <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-blue-500/30 transition-all">
-                                            <div className="flex justify-between items-center mb-3">
-                                                <div>
-                                                    <div className="text-white font-medium">{project.name}</div>
-                                                    <div className="text-gray-500 text-sm">{project.role}</div>
-                                                </div>
-                                                <Badge className="bg-green-500/20 text-green-400 border-0">Active</Badge>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full" style={{ width: `${project.progress}%` }} />
-                                                </div>
-                                                <span className="text-gray-400 text-sm">{project.progress}%</span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </CardContent>
-                            </Card>
+                <div className="grid grid-cols-12 gap-10">
+                    {/* Tasks Section */}
+                    <div className="col-span-7">
+                        <h3 className="text-2xl font-black text-[#023047] mb-8">Tasks for today</h3>
+                        <div className="space-y-4">
+                            {tasks.map((task, i) => (
+                                <div key={i} className="flex items-center gap-6 bg-white p-6 rounded-[32px] shadow-sm border border-gray-50 hover:shadow-md transition-all group">
+                                    <div className={`w-1.5 h-12 rounded-full ${task.color}`} />
+                                    <div className="flex-1">
+                                        <h4 className="font-black text-[#023047]">{task.title}</h4>
+                                        <p className="text-gray-400 text-sm font-medium">{task.sub}</p>
+                                    </div>
+                                    <button className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center ${task.completed ? "bg-[#219EBC] border-[#219EBC] text-white" : "border-gray-200 group-hover:border-[#219EBC]"
+                                        }`}>
+                                        {task.completed && <CheckCircle2 className="w-5 h-5" />}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
 
-                            {/* Upcoming Events */}
-                            <Card className="glass border border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <Calendar className="w-5 h-5 text-violet-400" /> Upcoming Events
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    {[
-                                        { name: "React Workshop", date: "Jan 10, 2025", type: "Online" },
-                                        { name: "Hackathon 2025", date: "Jan 20, 2025", type: "Offline" },
-                                    ].map((event, i) => (
-                                        <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 transition-all">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-lg bg-violet-500/20 flex items-center justify-center">
-                                                    {event.type === 'Online' ? '💻' : '🏢'}
-                                                </div>
-                                                <div>
-                                                    <div className="text-white font-medium">{event.name}</div>
-                                                    <div className="text-gray-500 text-sm">{event.date}</div>
-                                                </div>
-                                            </div>
-                                            <Badge variant="outline" className="border-white/20 text-gray-400">{event.type}</Badge>
-                                        </div>
-                                    ))}
-                                </CardContent>
-                            </Card>
+                    {/* Stats Section */}
+                    <div className="col-span-5">
+                        <h3 className="text-2xl font-black text-[#023047] mb-8">Statistics</h3>
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                            <div className="bg-white p-6 rounded-[32px] border border-gray-50 shadow-sm text-center">
+                                <p className="text-2xl font-black text-[#023047] mb-1">28 h</p>
+                                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Tracked time</p>
+                            </div>
+                            <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm text-center">
+                                <p className="text-2xl font-black text-[#023047] mb-1">18</p>
+                                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Finished tasks</p>
+                            </div>
+                            <div className="col-span-2 bg-gray-50 border-2 border-dashed border-gray-200 p-6 rounded-[32px] flex flex-col items-center justify-center text-gray-400 hover:border-[#219EBC] hover:text-[#219EBC] transition-all cursor-pointer">
+                                <Plus className="w-6 h-6 mb-2" />
+                                <span className="font-bold text-sm">New widget</span>
+                            </div>
                         </div>
 
-                        {/* Right Column */}
-                        <div className="space-y-6">
-                            {/* Level Progress */}
-                            <Card className="glass border border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="text-white">Level 5</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-400">2,450 XP</span>
-                                            <span className="text-gray-400">3,000 XP</span>
-                                        </div>
-                                        <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                                            <div className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full" style={{ width: '82%' }} />
-                                        </div>
-                                        <p className="text-gray-500 text-sm text-center">550 XP to Level 6</p>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Achievements */}
-                            <Card className="glass border border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <Trophy className="w-5 h-5 text-orange-400" /> Recent Achievements
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    {achievements.map((ach, i) => (
-                                        <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                                            <span className="text-2xl">{ach.emoji}</span>
-                                            <div>
-                                                <div className="text-white font-medium">{ach.title}</div>
-                                                <div className="text-gray-500 text-sm">{ach.date}</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </CardContent>
-                            </Card>
-
-                            {/* Portfolio Status */}
-                            <Card className="glass border border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <BookOpen className="w-5 h-5 text-green-400" /> Portfolio Status
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    {[
-                                        { item: "Profile Photo", done: true },
-                                        { item: "Bio & Skills", done: true },
-                                        { item: "3+ Projects", done: false },
-                                        { item: "GitHub Connected", done: true },
-                                    ].map((item, i) => (
-                                        <div key={i} className="flex items-center justify-between">
-                                            <span className={item.done ? 'text-gray-300' : 'text-gray-500'}>{item.item}</span>
-                                            {item.done ? (
-                                                <CheckCircle className="w-5 h-5 text-green-400" />
-                                            ) : (
-                                                <div className="w-5 h-5 rounded-full border-2 border-gray-600" />
-                                            )}
-                                        </div>
-                                    ))}
-                                    <div className="pt-3 mt-3 border-t border-white/10">
-                                        <div className="flex justify-between text-sm mb-2">
-                                            <span className="text-gray-400">Completion</span>
-                                            <span className="text-green-400">75%</span>
-                                        </div>
-                                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                                            <div className="h-full bg-green-500 rounded-full" style={{ width: '75%' }} />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                        {/* Pro Plan Card */}
+                        <div className="bg-[#023047] text-white p-8 rounded-[40px] relative overflow-hidden group">
+                            <div className="relative z-10">
+                                <p className="text-2xl font-black mb-2">$9.99 <span className="text-sm font-normal text-white/50">p/m</span></p>
+                                <h4 className="text-xl font-bold mb-2">Pro Plan</h4>
+                                <p className="text-white/60 text-sm mb-6 max-w-[150px]">More productivity with premium!</p>
+                                <button className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-all flex items-center justify-center">
+                                    <Plus className="w-5 h-5" />
+                                </button>
+                            </div>
+                            <div className="absolute top-0 right-0 w-48 h-full bg-gradient-to-l from-[#219EBC]/20 to-transparent flex items-center justify-center group-hover:scale-110 transition-transform duration-700">
+                                <Zap className="w-24 h-24 text-white/10 rotate-12" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </main>
+
+            {/* Right Sidebar - Calendar */}
+            <aside className="w-96 bg-[#FDF4ED] p-10 border-l border-gray-100 fixed right-0 top-20 bottom-0 z-20 overflow-y-auto">
+                <div className="flex items-center justify-between mb-12">
+                    <h2 className="text-2xl font-black text-[#023047]">Calendar</h2>
+                    <button className="w-10 h-10 rounded-xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-500 relative">
+                        <Bell className="w-5 h-5" />
+                        <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+                    </button>
+                </div>
+
+                <div className="space-y-12">
+                    {timeline.map((section, idx) => (
+                        <div key={idx}>
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="text-sm font-bold text-gray-900">{section.date}</h3>
+                                <button className="text-gray-300 hover:text-gray-500"><MoreHorizontal className="w-4 h-4" /></button>
+                            </div>
+                            <div className="space-y-8">
+                                {section.items.map((item, i) => (
+                                    <div key={i} className="flex gap-6 relative">
+                                        <div className="text-sm font-black text-[#023047] w-12">{item.time}</div>
+                                        <div className={`flex-1 border-l-4 ${item.color} pl-6 group cursor-pointer`}>
+                                            <h4 className="text-sm font-black text-[#023047] mb-1 group-hover:text-[#219EBC] transition-colors">{item.title}</h4>
+                                            <p className="text-gray-400 text-xs font-bold">{item.sub}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </aside>
         </div>
     );
 }

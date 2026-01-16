@@ -71,257 +71,244 @@ export default function LeaderboardPage() {
     }, []);
 
     return (
-        <div className="min-h-screen pt-16 bg-white">
-            {/* Hero Section with Tabs */}
-            <section className="relative py-8 bg-gradient-to-b from-gray-50 to-white">
+        <div className="min-h-screen pt-24 bg-white">
+            {/* Hero Section */}
+            <section className="relative py-12 bg-gradient-to-b from-gray-50 to-white">
+                <div className="container mx-auto px-4 text-center">
+                    <div className="max-w-3xl mx-auto mb-12">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6">
+                            <Trophy className="w-4 h-4" />
+                            Community Champions
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-gray-900 leading-tight">
+                            The <span className="text-[#219EBC]">Leaderboard</span>
+                        </h1>
+                        <p className="text-gray-500 text-xl max-w-2xl mx-auto">
+                            Climb to the top by contributing to projects, attending events, and helping fellow students!
+                        </p>
+                    </div>
 
-                <div className="container mx-auto px-4">
                     {/* Period Toggle */}
-                    <div className="flex justify-center mb-12">
-                        <div className="inline-flex bg-white/5 rounded-full p-1 border border-white/10">
-                            <button
-                                onClick={() => setActiveTab("daily")}
-                                className={`px-8 py-2.5 rounded-full font-medium transition-all ${activeTab === "daily"
-                                    ? "bg-gradient-to-r from-cyan-500 to-cyan-600 text-black"
-                                    : "text-gray-400 hover:text-white"
-                                    }`}
-                            >
-                                Daily
-                            </button>
-                            <button
-                                onClick={() => setActiveTab("monthly")}
-                                className={`px-8 py-2.5 rounded-full font-medium transition-all ${activeTab === "monthly"
-                                    ? "bg-gradient-to-r from-cyan-500 to-cyan-600 text-black"
-                                    : "text-gray-400 hover:text-white"
-                                    }`}
-                            >
-                                Monthly
-                            </button>
+                    <div className="flex justify-center mb-16">
+                        <div className="inline-flex bg-gray-100 rounded-2xl p-1.5 border border-gray-200">
+                            {[
+                                { id: "daily", label: "Daily" },
+                                { id: "monthly", label: "Monthly" }
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id as any)}
+                                    className={`px-10 py-3 rounded-xl font-bold transition-all ${activeTab === tab.id
+                                        ? "bg-white text-[#219EBC] shadow-lg shadow-black/5"
+                                        : "text-gray-400 hover:text-gray-600"
+                                        }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
                     {/* Top 3 Podium */}
-                    <div className="flex justify-center items-end gap-4 md:gap-8 mb-8">
+                    <div className="flex justify-center items-end gap-3 md:gap-12 mb-16 relative">
                         {/* 2nd Place */}
-                        <div className="text-center animate-fade-in-up stagger-2">
-                            <div className="relative mb-4">
-                                <div className="w-24 h-24 md:w-28 md:h-28 mx-auto rounded-2xl overflow-hidden border-4 border-gray-400/50 shadow-xl shadow-gray-500/20 bg-gradient-to-br from-gray-700/50 to-gray-900/50 p-2">
+                        <div className="text-center group animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
+                            <div className="relative mb-6">
+                                <div className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-[24px] overflow-hidden border-4 border-gray-200/50 shadow-2xl bg-white p-2 group-hover:scale-105 transition-transform">
                                     <img
                                         src={top3[1]?.avatarSrc}
                                         alt={top3[1]?.name}
-                                        className="w-full h-full object-cover rounded-xl"
+                                        className="w-full h-full object-cover rounded-[18px]"
                                     />
                                 </div>
+                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gray-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">2</div>
                             </div>
-                            <h3 className="text-white font-bold text-lg mb-1">{top3[1]?.name}</h3>
-                            <div className="flex items-center justify-center gap-1 mb-2">
-                                <Trophy className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-400 text-sm">Earn {top3[1]?.earnPoints.toLocaleString()} points</span>
+                            <h3 className="text-gray-900 font-bold text-lg mb-1">{top3[1]?.name}</h3>
+                            <div className="flex items-center justify-center gap-1.5 mb-2 text-[#219EBC] font-semibold text-sm">
+                                <Diamond className="w-4 h-4" />
+                                {top3[1]?.xp.toLocaleString()} XP
                             </div>
-                            <div className="flex items-center justify-center gap-2">
-                                <Diamond className="w-5 h-5 text-cyan-400" />
-                                <span className="text-2xl font-bold text-white">{top3[1]?.prize.toLocaleString()}</span>
-                            </div>
-                            <span className="text-gray-500 text-sm">Prize</span>
 
-                            {/* Podium */}
-                            <div className="w-32 md:w-40 h-32 mt-4 bg-gradient-to-t from-gray-700/30 via-gray-600/20 to-gray-500/10 rounded-t-3xl flex items-center justify-center backdrop-blur-sm border border-white/5 mx-auto">
-                                <span className="text-5xl font-black text-gray-400/50">2</span>
+                            {/* Podium Block */}
+                            <div className="w-32 md:w-44 h-32 mt-6 bg-gradient-to-t from-gray-100 to-white rounded-t-[32px] border-x border-t border-gray-200 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center pt-8">
+                                <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Silver</span>
+                                <div className="text-2xl font-black text-gray-300">2nd</div>
                             </div>
                         </div>
 
                         {/* 1st Place */}
-                        <div className="text-center -mt-8 animate-fade-in-up stagger-1">
-                            <div className="relative mb-4">
-                                {/* Crown */}
-                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-10">
-                                    <Crown className="w-10 h-10 text-yellow-400 drop-shadow-lg animate-crown-bounce" />
+                        <div className="text-center group -mt-12 relative z-10 animate-in fade-in slide-in-from-bottom-12 duration-700">
+                            <div className="relative mb-6">
+                                <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+                                    <Crown className="w-12 h-12 text-[#FFB703] drop-shadow-lg animate-bounce" />
                                 </div>
-                                <div className="w-28 h-28 md:w-36 md:h-36 mx-auto rounded-2xl overflow-hidden border-4 border-yellow-400/70 shadow-2xl shadow-yellow-500/30 bg-gradient-to-br from-yellow-600/20 to-orange-600/20 p-2">
+                                <div className="w-32 h-32 md:w-44 md:h-44 mx-auto rounded-[32px] overflow-hidden border-[6px] border-[#FFB703]/30 shadow-2xl shadow-[#FFB703]/20 bg-white p-2 group-hover:scale-110 transition-transform">
                                     <img
                                         src={top3[0]?.avatarSrc}
                                         alt={top3[0]?.name}
-                                        className="w-full h-full object-cover rounded-xl"
+                                        className="w-full h-full object-cover rounded-[24px]"
                                     />
                                 </div>
+                                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-[#FFB703] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">1</div>
                             </div>
-                            <h3 className="text-white font-bold text-xl mb-1">{top3[0]?.name}</h3>
-                            <div className="flex items-center justify-center gap-1 mb-2 bg-yellow-500/20 rounded-full px-4 py-1 mx-auto w-fit">
-                                <Trophy className="w-4 h-4 text-yellow-400" />
-                                <span className="text-yellow-400 text-sm font-medium">Earn {top3[0]?.earnPoints.toLocaleString()} points</span>
+                            <h3 className="text-gray-900 font-black text-2xl mb-1">{top3[0]?.name}</h3>
+                            <div className="flex items-center justify-center gap-1.5 mb-2 bg-[#FF10F0]/10 rounded-full px-4 py-1.5 mx-auto w-fit text-[#FF10F0] font-bold text-sm shadow-sm">
+                                <Diamond className="w-4 h-4 animate-pulse" />
+                                {top3[0]?.xp.toLocaleString()} XP
                             </div>
-                            <div className="flex items-center justify-center gap-2">
-                                <Diamond className="w-6 h-6 text-cyan-400" />
-                                <span className="text-3xl font-bold gradient-text-cyan">{top3[0]?.prize.toLocaleString()}</span>
-                            </div>
-                            <span className="text-gray-500 text-sm">Prize</span>
 
-                            {/* Podium */}
-                            <div className="w-36 md:w-48 h-44 mt-4 bg-gradient-to-t from-yellow-600/20 via-yellow-500/10 to-yellow-400/5 rounded-t-3xl flex items-center justify-center backdrop-blur-sm border border-yellow-500/20 mx-auto">
-                                <span className="text-6xl font-black gradient-text-yellow">1</span>
+                            {/* Podium Block */}
+                            <div className="w-36 md:w-56 h-48 mt-6 bg-gradient-to-t from-[#FFB703]/10 to-white rounded-t-[40px] border-x border-t border-[#FFB703]/20 shadow-[inset_0_2px_10px_rgba(255,183,3,0.05)] flex flex-col items-center pt-10">
+                                <span className="text-sm font-bold text-[#FFB703] uppercase tracking-widest">Gold</span>
+                                <div className="text-4xl font-black text-[#FFB703]/50">1st</div>
                             </div>
                         </div>
 
                         {/* 3rd Place */}
-                        <div className="text-center animate-fade-in-up stagger-3">
-                            <div className="relative mb-4">
-                                <div className="w-24 h-24 md:w-28 md:h-28 mx-auto rounded-2xl overflow-hidden border-4 border-amber-600/50 shadow-xl shadow-amber-500/20 bg-gradient-to-br from-amber-700/30 to-amber-900/30 p-2">
+                        <div className="text-center group animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+                            <div className="relative mb-6">
+                                <div className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-[24px] overflow-hidden border-4 border-[#F4A261]/30 shadow-2xl bg-white p-2 group-hover:scale-105 transition-transform">
                                     <img
                                         src={top3[2]?.avatarSrc}
                                         alt={top3[2]?.name}
-                                        className="w-full h-full object-cover rounded-xl"
+                                        className="w-full h-full object-cover rounded-[18px]"
                                     />
                                 </div>
+                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#F4A261] text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">3</div>
                             </div>
-                            <h3 className="text-white font-bold text-lg mb-1">{top3[2]?.name}</h3>
-                            <div className="flex items-center justify-center gap-1 mb-2">
-                                <Trophy className="w-4 h-4 text-amber-500" />
-                                <span className="text-gray-400 text-sm">Earn {top3[2]?.earnPoints.toLocaleString()} points</span>
+                            <h3 className="text-gray-900 font-bold text-lg mb-1">{top3[2]?.name}</h3>
+                            <div className="flex items-center justify-center gap-1.5 mb-2 text-[#2A9D8F] font-semibold text-sm">
+                                <Diamond className="w-4 h-4" />
+                                {top3[2]?.xp.toLocaleString()} XP
                             </div>
-                            <div className="flex items-center justify-center gap-2">
-                                <Diamond className="w-5 h-5 text-cyan-400" />
-                                <span className="text-2xl font-bold text-white">{top3[2]?.prize.toLocaleString()}</span>
-                            </div>
-                            <span className="text-gray-500 text-sm">Prize</span>
 
-                            {/* Podium */}
-                            <div className="w-32 md:w-40 h-24 mt-4 bg-gradient-to-t from-amber-700/20 via-amber-600/10 to-amber-500/5 rounded-t-3xl flex items-center justify-center backdrop-blur-sm border border-amber-500/10 mx-auto">
-                                <span className="text-5xl font-black text-amber-500/50">3</span>
+                            {/* Podium Block */}
+                            <div className="w-32 md:w-44 h-24 mt-6 bg-gradient-to-t from-[#F4A261]/10 to-white rounded-t-[32px] border-x border-t border-[#F4A261]/20 shadow-[inset_0_2px_10px_rgba(244,162,97,0.02)] flex flex-col items-center pt-6">
+                                <span className="text-sm font-bold text-[#F4A261] uppercase tracking-widest">Bronze</span>
+                                <div className="text-2xl font-black text-[#F4A261]/50">3rd</div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Countdown Timer */}
-                    <div className="flex justify-center mb-8">
-                        <div className="text-center">
-                            <div className="flex items-center justify-center gap-2 text-gray-400 mb-2">
-                                <Clock className="w-5 h-5" />
-                                <span className="text-sm">Ends in</span>
-                            </div>
-                            <div className="text-xl md:text-2xl font-bold text-white font-mono">
-                                {timeLeft.days}d {String(timeLeft.hours).padStart(2, '0')}h {String(timeLeft.minutes).padStart(2, '0')}m {String(timeLeft.seconds).padStart(2, '0')}s
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* User Stats Banner */}
-                    <div className="max-w-2xl mx-auto mb-12">
-                        {session?.user ? (
-                            <div className="glass rounded-2xl px-6 py-4 border border-cyan-500/30 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-cyan-500/50">
-                                        {session.user.image ? (
-                                            <img
-                                                src={session.user.image}
-                                                alt={session.user.name || "User"}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center text-white font-bold">
-                                                {session.user.name?.charAt(0) || "U"}
-                                            </div>
-                                        )}
+                    {/* Timer Banner */}
+                    <div className="max-w-md mx-auto mb-20">
+                        <div className="bg-[#023047] rounded-3xl p-6 text-white shadow-xl flex items-center justify-between overflow-hidden relative group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
+                            <div className="flex items-center gap-4 relative z-10">
+                                <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">
+                                    <Clock className="w-6 h-6 text-[#219EBC]" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Season Ends In</p>
+                                    <div className="font-mono text-xl font-black">
+                                        {timeLeft.days}d {String(timeLeft.hours).padStart(2, '0')}h {String(timeLeft.minutes).padStart(2, '0')}m
                                     </div>
-                                    <div>
-                                        <p className="text-white font-medium">{session.user.name}</p>
-                                        <div className="flex items-center gap-2 text-sm">
-                                            <span className="text-gray-400">Rank</span>
-                                            <span className="text-cyan-400 font-bold">#42</span>
-                                            <span className="text-gray-500">•</span>
-                                            <Diamond className="w-4 h-4 text-cyan-400" />
-                                            <span className="text-cyan-400 font-bold">2,450</span>
-                                            <span className="text-gray-400">points</span>
+                                </div>
+                            </div>
+                            <Button className="bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-xl relative z-10">
+                                View Prizes
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* User Stats Section */}
+            <section className="py-12 bg-gray-50/50 relative">
+                <div className="container mx-auto px-4 max-w-5xl">
+                    <div className="grid md:grid-cols-12 gap-8 items-center">
+                        <div className="md:col-span-8">
+                            <h2 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
+                                <Medal className="w-6 h-6 text-[#219EBC]" />
+                                Rankings Table
+                            </h2>
+                            <div className="bg-white rounded-[32px] border border-gray-200 shadow-sm overflow-hidden">
+                                {/* Table Header */}
+                                <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-gray-100 text-gray-400 text-xs font-bold uppercase tracking-widest bg-gray-50/50">
+                                    <div className="col-span-1">#</div>
+                                    <div className="col-span-5">Champion</div>
+                                    <div className="col-span-3 text-center">Activity</div>
+                                    <div className="col-span-3 text-right">XP Points</div>
+                                </div>
+
+                                {/* Table Body */}
+                                <div className="divide-y divide-gray-100">
+                                    {EXTENDED_LEADERBOARD.map((user, index) => (
+                                        <div
+                                            key={user.rank}
+                                            className={`grid grid-cols-12 gap-4 px-8 py-5 items-center hover:bg-gray-50/50 transition-all cursor-pointer group ${session?.user?.name === user.name ? 'bg-[#219EBC]/5' : ''}`}
+                                        >
+                                            <div className="col-span-1 font-bold text-gray-400 group-hover:text-[#219EBC]">{user.rank}</div>
+                                            <div className="col-span-5 flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-gray-100 group-hover:border-[#219EBC]/30 transition-colors">
+                                                    <img src={user.avatarSrc} alt={user.name} className="w-full h-full object-cover" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-gray-900 group-hover:text-[#219EBC] transition-colors">{user.name}</p>
+                                                    <Badge variant="outline" className="text-[10px] uppercase font-bold text-gray-400 py-0 px-2 rounded-md">Lvl {user.level}</Badge>
+                                                </div>
+                                            </div>
+                                            <div className="col-span-3 text-center">
+                                                <p className="text-sm font-bold text-gray-700">{user.projects} Projects</p>
+                                                <p className="text-[11px] text-gray-400">Successfully Built</p>
+                                            </div>
+                                            <div className="col-span-3 text-right">
+                                                <div className="flex items-center justify-end gap-1.5 font-black text-gray-900 text-lg">
+                                                    <Diamond className="w-4 h-4 text-[#219EBC]" />
+                                                    {user.xp.toLocaleString()}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="md:col-span-4 space-y-6">
+                            <Card className="rounded-[32px] border-0 shadow-2xl shadow-[#219EBC]/10 overflow-hidden bg-[#023047] text-white">
+                                <CardHeader className="text-center pb-2">
+                                    <div className="w-16 h-16 bg-[#219EBC] rounded-3xl flex items-center justify-center mx-auto mb-4 animate-pulse shadow-lg shadow-[#219EBC]/40">
+                                        <Flame className="w-8 h-8 text-white" />
+                                    </div>
+                                    <CardTitle className="text-2xl font-black">Join the Bloom!</CardTitle>
+                                    <p className="text-gray-400 text-sm">Become part of the elite 1%</p>
+                                </CardHeader>
+                                <CardContent className="space-y-6 py-6 text-center">
+                                    <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 text-left border border-white/10">
+                                        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">🔥</div>
+                                        <div>
+                                            <p className="text-sm font-bold">Daily Hot Streaks</p>
+                                            <p className="text-xs text-gray-400">Earn up to 2.5x more XP</p>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-sm text-gray-400">Earned today</div>
-                                    <div className="flex items-center gap-1">
-                                        <Diamond className="w-5 h-5 text-cyan-400" />
-                                        <span className="text-xl font-bold gradient-text-cyan">+50</span>
+                                    <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 text-left border border-white/10">
+                                        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">🤝</div>
+                                        <div>
+                                            <p className="text-sm font-bold">Refer & Earn</p>
+                                            <p className="text-xs text-gray-400">+500 XP per student</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="glass rounded-2xl px-6 py-4 border border-white/10 flex items-center justify-center gap-2 text-center">
-                                <User className="w-5 h-5 text-gray-500" />
-                                <span className="text-gray-400">Login to see your ranking and earn points!</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </section>
-
-            {/* Ranking List */}
-            <section className="py-8 animate-on-scroll">
-                <div className="container mx-auto px-4 max-w-4xl">
-                    {/* Table Header */}
-                    <div className="grid grid-cols-12 gap-4 px-6 py-3 text-gray-500 text-sm font-medium border-b border-white/5">
-                        <div className="col-span-1">Rank</div>
-                        <div className="col-span-4">User name</div>
-                        <div className="col-span-2 text-center">Followers</div>
-                        <div className="col-span-3 text-center">Point</div>
-                        <div className="col-span-2 text-right">Reward</div>
-                    </div>
-
-                    {/* Ranking Rows */}
-                    <div className="divide-y divide-white/5">
-                        {rest.map((user, index) => (
-                            <div
-                                key={user.rank}
-                                className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-white/5 transition-colors animate-row-slide stagger-${index + 1}`}
-                            >
-                                <div className="col-span-1 text-gray-400 font-medium">{user.rank}</div>
-                                <div className="col-span-4 flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl overflow-hidden border border-white/10 bg-white/5">
-                                        <img
-                                            src={user.avatarSrc}
-                                            alt={user.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <div>
-                                        <div className="text-white font-medium">{user.name}</div>
-                                        <div className="text-gray-500 text-sm">@{user.name.toLowerCase()}</div>
-                                    </div>
-                                </div>
-                                <div className="col-span-2 text-center text-gray-300">{user.followers.toLocaleString()}</div>
-                                <div className="col-span-3 text-center text-white font-medium">{(user.xp * 1000).toLocaleString()}</div>
-                                <div className="col-span-2 text-right flex items-center justify-end gap-1">
-                                    <Diamond className="w-4 h-4 text-cyan-400" />
-                                    <span className="text-cyan-400 font-medium">{user.prize.toLocaleString()}</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* How to Earn Section */}
-            <section className="py-16 animate-on-scroll">
-                <div className="container mx-auto px-4">
-                    <h2 className="text-2xl font-bold text-white text-center mb-8">How to Earn XP</h2>
-                    <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-                        {[
-                            { icon: Target, title: "Complete Projects", xp: "+100 XP", color: "cyan" },
-                            { icon: Zap, title: "Attend Events", xp: "+50 XP", color: "orange" },
-                            { icon: TrendingUp, title: "Help Others", xp: "+50 XP", color: "green" },
-                            { icon: Flame, title: "Daily Streaks", xp: "+25 XP", color: "yellow" },
-                        ].map((item, i) => (
-                            <Card key={i} className={`glass border border-white/10 text-center group hover:border-cyan-500/30 transition-all hover-lift animate-fade-in-up stagger-${i + 1}`}>
-                                <CardHeader>
-                                    <div className={`w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center ${item.color === 'cyan' ? 'bg-cyan-500/20' : item.color === 'orange' ? 'bg-orange-500/20' : item.color === 'green' ? 'bg-green-500/20' : 'bg-yellow-500/20'}`}>
-                                        <item.icon className={`w-7 h-7 ${item.color === 'cyan' ? 'text-cyan-400' : item.color === 'orange' ? 'text-orange-400' : item.color === 'green' ? 'text-green-400' : 'text-yellow-400'}`} />
-                                    </div>
-                                    <CardTitle className="text-white text-lg">{item.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <Badge className={`${item.color === 'cyan' ? 'bg-cyan-500/20 text-cyan-400' : item.color === 'orange' ? 'bg-orange-500/20 text-orange-400' : item.color === 'green' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'} border-0 text-lg font-bold`}>
-                                        {item.xp}
-                                    </Badge>
+                                    <Button className="w-full h-14 bg-white text-[#023047] font-black rounded-2xl hover:bg-gray-100 transition-all text-lg mt-4">
+                                        Boost My Score
+                                    </Button>
                                 </CardContent>
                             </Card>
-                        ))}
+
+                            <div className="bg-white rounded-[32px] p-8 border border-gray-200">
+                                <h4 className="text-gray-900 font-black text-xl mb-6">Recent Activity</h4>
+                                <div className="space-y-6">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="flex gap-4">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-[#219EBC] mt-2" />
+                                            <div>
+                                                <p className="text-sm font-bold text-gray-900">Alice completed "AI Bot"</p>
+                                                <p className="text-xs text-gray-500">2 minutes ago • +150 XP</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

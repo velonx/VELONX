@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Plus, BarChart3, Menu, X } from "lucide-react";
+import { LayoutGrid, Calendar, Clock, RotateCcw, Plus, BarChart3, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 interface EventsSidebarProps {
     onViewChange: (view: "events" | "calendar" | "analytics") => void;
     currentView: "events" | "calendar" | "analytics";
+    onStatusChange: (status: "upcoming" | "past") => void;
+    currentStatus: "upcoming" | "past";
     onAddEvent?: () => void;
     isAdmin?: boolean;
 }
@@ -15,12 +17,24 @@ interface EventsSidebarProps {
 export default function EventsSidebar({
     onViewChange,
     currentView,
+    onStatusChange,
+    currentStatus,
     onAddEvent,
     isAdmin = false,
 }: EventsSidebarProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     const menuItems = [
+        {
+            id: "events",
+            label: "Card View",
+            icon: LayoutGrid,
+            action: () => {
+                onViewChange("events");
+                setIsOpen(false);
+            },
+            active: currentView === "events",
+        },
         {
             id: "calendar",
             label: "Calendar View",
@@ -31,104 +45,101 @@ export default function EventsSidebar({
             },
             active: currentView === "calendar",
         },
+    ];
+
+    const statusItems = [
         {
-            id: "events",
-            label: "Event Cards",
-            icon: Menu,
+            id: "upcoming",
+            label: "Upcoming Events",
+            icon: Clock,
             action: () => {
-                onViewChange("events");
+                onStatusChange("upcoming");
                 setIsOpen(false);
             },
-            active: currentView === "events",
+            active: currentStatus === "upcoming",
+        },
+        {
+            id: "past",
+            label: "Past Events",
+            icon: RotateCcw,
+            action: () => {
+                onStatusChange("past");
+                setIsOpen(false);
+            },
+            active: currentStatus === "past",
         },
     ];
 
-    const adminItems = isAdmin
-        ? [
-            {
-                id: "add-event",
-                label: "Add Event",
-                icon: Plus,
-                action: () => {
-                    onAddEvent?.();
-                    setIsOpen(false);
-                },
-                active: false,
-                highlight: true,
-            },
-            {
-                id: "analytics",
-                label: "Analytics",
-                icon: BarChart3,
-                action: () => {
-                    onViewChange("analytics");
-                    setIsOpen(false);
-                },
-                active: currentView === "analytics",
-            },
-        ]
-        : [];
-
-    const allItems = [...menuItems, ...adminItems];
-
     const SidebarContent = () => (
-        <div className="space-y-6">
+        <div className="space-y-8">
             {/* Header */}
             <div>
-                <h3 className="text-white font-bold text-lg mb-2">Events Navigation</h3>
-                <p className="text-gray-400 text-sm">Manage your events and schedule</p>
+                <div className="flex items-center gap-2 mb-2">
+                    <LayoutGrid className="w-5 h-5 text-cyan-400" />
+                    <h3 className="text-white font-bold text-lg">Events Navigation</h3>
+                </div>
+                <p className="text-gray-400 text-xs leading-relaxed">Filter events by type and choose your preferred view options.</p>
             </div>
 
-            {/* Menu Items */}
-            <div className="space-y-2">
-                <h4 className="text-gray-500 text-xs uppercase tracking-wider mb-3">Views</h4>
-                {menuItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                        <button
-                            key={item.id}
-                            onClick={item.action}
-                            className={`
-                w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all
-                ${item.active
-                                    ? "glass-strong border border-cyan-500/30 bg-cyan-500/10 text-cyan-400"
-                                    : "glass border border-white/10 text-gray-300 hover:bg-white/5 hover:border-cyan-500/20"
-                                }
-              `}
-                        >
-                            <Icon className="w-5 h-5" />
-                            <span className="font-medium">{item.label}</span>
-                            {item.active && (
-                                <div className="ml-auto w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                            )}
-                        </button>
-                    );
-                })}
+            {/* View Selection */}
+            <div className="space-y-3">
+                {menuItems.map((item) => (
+                    <button
+                        key={item.id}
+                        onClick={item.action}
+                        className={`
+                            w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all border
+                            ${item.active
+                                ? "bg-[#1e293b] border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10"
+                                : "bg-transparent border-white/5 text-gray-400 hover:bg-white/5 hover:border-white/10"
+                            }
+                        `}
+                    >
+                        <item.icon className="w-4 h-4" />
+                        <span className="text-sm font-medium">{item.label}</span>
+                        {item.active && (
+                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            {/* Status Section */}
+            <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-1 px-1">
+                    <BarChart3 className="w-4 h-4 text-gray-500" />
+                    <h4 className="text-gray-100 text-xs font-bold uppercase tracking-wider">Status</h4>
+                </div>
+                {statusItems.map((item) => (
+                    <button
+                        key={item.id}
+                        onClick={item.action}
+                        className={`
+                            w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all border
+                            ${item.active
+                                ? "bg-[#1e293b] border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10"
+                                : "bg-transparent border-white/5 text-gray-400 hover:bg-white/5 hover:border-white/10"
+                            }
+                        `}
+                    >
+                        <item.icon className="w-4 h-4" />
+                        <span className="text-sm font-medium">{item.label}</span>
+                        {item.active && (
+                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                        )}
+                    </button>
+                ))}
             </div>
 
             {/* Admin Section */}
-            {isAdmin && adminItems.length > 0 && (
-                <div className="space-y-2">
-                    <h4 className="text-gray-500 text-xs uppercase tracking-wider mb-3">Admin</h4>
-                    {adminItems.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                            <button
-                                key={item.id}
-                                onClick={item.action}
-                                className={`
-                  w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all
-                  ${item.highlight
-                                        ? "glow-button text-black font-semibold hover:shadow-2xl"
-                                        : "glass border border-white/10 text-gray-300 hover:bg-white/5"
-                                    }
-                `}
-                            >
-                                <Icon className="w-5 h-5" />
-                                <span className="font-medium">{item.label}</span>
-                            </button>
-                        );
-                    })}
+            {isAdmin && (
+                <div className="pt-6 border-t border-white/10">
+                    <button
+                        onClick={onAddEvent}
+                        className="w-full h-12 coral-gradient text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-lg shadow-orange-500/20"
+                    >
+                        <Plus className="w-5 h-5" /> Add Event
+                    </button>
                 </div>
             )}
         </div>
@@ -138,7 +149,7 @@ export default function EventsSidebar({
         <>
             {/* Desktop Sidebar */}
             <div className="hidden lg:block sticky top-24 self-start">
-                <div className="glass-strong rounded-2xl p-6 border border-white/10 w-64">
+                <div className="bg-[#0f172a] rounded-[24px] p-6 border border-white/10 w-72 shadow-2xl">
                     <SidebarContent />
                 </div>
             </div>
@@ -149,16 +160,16 @@ export default function EventsSidebar({
                     <SheetTrigger asChild>
                         <Button
                             size="icon"
-                            className="w-14 h-14 rounded-full glow-button text-black shadow-2xl"
+                            className="w-14 h-14 rounded-full coral-gradient text-white shadow-2xl hover:scale-110 active:scale-95 transition-all"
                         >
                             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="bg-[#0a0a0f] border-white/10 p-6">
+                    <SheetContent side="left" className="bg-[#0f172a] border-white/10 p-6">
                         <SheetHeader>
-                            <SheetTitle className="text-white text-left">Events Navigation</SheetTitle>
+                            <SheetTitle className="text-white text-left font-bold">Events Navigation</SheetTitle>
                         </SheetHeader>
-                        <div className="mt-6">
+                        <div className="mt-8">
                             <SidebarContent />
                         </div>
                     </SheetContent>

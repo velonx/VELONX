@@ -108,10 +108,7 @@ export default function LoginPage() {
 
                 {/* Main Content */}
                 <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
-                    {/* Logo */}
-                    <Link href="/" className="absolute top-8 left-8">
-                        <img src="/logo.png" alt="Velonx" className="h-10 w-auto" />
-                    </Link>
+                    {/* Logo removed - already in header */}
 
                     {/* Interactive Robot Mascot */}
                     <div className="relative mb-8">
@@ -183,9 +180,7 @@ export default function LoginPage() {
                 <div className="w-full max-w-md relative z-10">
                     {/* Mobile Logo */}
                     <div className="lg:hidden text-center mb-8">
-                        <Link href="/">
-                            <img src="/logo.png" alt="Velonx" className="h-12 w-auto mx-auto mb-4" />
-                        </Link>
+                        {/* Mobile Logo removed - already in header */}
                         {/* Mobile Robot */}
                         <div className="flex justify-center mb-6">
                             <InteractiveRobot

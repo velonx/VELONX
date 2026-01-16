@@ -1,305 +1,174 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Lightbulb, Eye, Zap, ArrowRight, Users, Award, Calendar } from "lucide-react";
-import Link from "next/link";
-
-// Animation variants
-const fadeInUp = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] as const } }
-};
-
-
-const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.1 }
-    }
-};
-
-// Team data
-const teamMembers = [
-    { name: "Sarah Chen", role: "CEO & Founder", image: "/team-placeholder.png" },
-    { name: "Marcus Johnson", role: "Creative Director", image: "/team-placeholder.png" },
-    { name: "Emily Rodriguez", role: "Lead Developer", image: "/team-placeholder.png" },
-    { name: "David Kim", role: "UX Strategist", image: "/team-placeholder.png" },
-    { name: "Priya Patel", role: "Design Lead", image: "/team-placeholder.png" },
-    { name: "Alex Turner", role: "Tech Architect", image: "/team-placeholder.png" },
-];
-
-// Values data
-const values = [
-    {
-        icon: Lightbulb,
-        title: "Innovation",
-        description: "We push boundaries and explore new possibilities, never settling for the conventional approach."
-    },
-    {
-        icon: Eye,
-        title: "Transparency",
-        description: "Open communication and honest collaboration form the foundation of every project we undertake."
-    },
-    {
-        icon: Zap,
-        title: "Speed",
-        description: "We move fast without compromising quality, delivering exceptional results on time, every time."
-    },
-];
-
-// Stats data
-const stats = [
-    { number: "10+", label: "Years Experience", icon: Calendar },
-    { number: "200+", label: "Projects Delivered", icon: Award },
-    { number: "50+", label: "Industry Awards", icon: Award },
-    { number: "30+", label: "Team Members", icon: Users },
-];
+import { Rocket, Target, Users, Shield, Zap, Sparkles } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function AboutPage() {
-    return (
-        <div className="min-h-screen" style={{ fontFamily: "'Inter', sans-serif" }}>
-            {/* Hero Section */}
-            <section className="pt-32 pb-20 px-6 lg:px-12 bg-[#F6F6F6]">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                        {/* Left Content */}
-                        <motion.div
-                            initial="hidden"
-                            animate="visible"
-                            variants={staggerContainer}
-                        >
-                            <motion.p
-                                variants={fadeInUp}
-                                className="text-[#219EBC] text-sm font-medium tracking-widest uppercase mb-6"
-                            >
-                                About Us
-                            </motion.p>
-                            <motion.h1
-                                variants={fadeInUp}
-                                className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#080806] leading-[1.1] mb-8"
-                            >
-                                Crafting digital experiences that matter.
-                            </motion.h1>
-                            <motion.p
-                                variants={fadeInUp}
-                                className="text-[#5C625E] text-lg font-medium leading-relaxed max-w-lg"
-                            >
-                                We are a team of designers, developers, and strategists passionate about creating
-                                meaningful digital products that connect brands with their audiences.
-                            </motion.p>
-                        </motion.div>
+    const stats = [
+        { label: "Active Members", value: "5000+", icon: Users },
+        { label: "Projects Built", value: "1200+", icon: Rocket },
+        { label: "Partner Companies", value: "45+", icon: Target },
+        { label: "Success Rate", value: "98%", icon: Zap },
+    ];
 
-                        {/* Right - Hero Image/Shape */}
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
-                            className="relative"
-                        >
-                            <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br from-[#219EBC] via-[#A5C7CD] to-[#8B7A52] relative">
-                                {/* Abstract geometric shapes */}
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-48 h-48 rounded-full bg-white/20 absolute top-8 right-8" />
-                                    <div className="w-32 h-32 rounded-xl bg-[#080806]/10 absolute bottom-12 left-12 rotate-12" />
-                                    <div className="w-24 h-24 rounded-full bg-[#8B7A52]/40 absolute top-1/2 left-1/3" />
-                                </div>
-                            </div>
-                        </motion.div>
+    return (
+        <div className="min-h-screen pt-24 bg-white">
+            {/* Hero Section */}
+            <section className="py-20 bg-gradient-to-b from-gray-50 to-white overflow-hidden relative">
+                <div className="absolute top-20 left-10 w-64 h-64 bg-[#219EBC]/5 rounded-full blur-3xl" />
+                <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#FFB703]/5 rounded-full blur-3xl" />
+
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-8"
+                    >
+                        <Sparkles className="w-4 h-4" />
+                        Our Story
+                    </motion.div>
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-5xl md:text-7xl font-black text-gray-900 mb-8 leading-tight"
+                    >
+                        Empowering the <br />
+                        <span className="text-[#219EBC]">Next Generation</span>
+                    </motion.h1>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-gray-500 text-xl max-w-3xl mx-auto leading-relaxed"
+                    >
+                        Velonx is more than a platform; it's a movement. we're building a community where students can learn, build, and grow together in the ever-evolving world of technology.
+                    </motion.p>
+                </div>
+            </section>
+
+            {/* Stats Section */}
+            <section className="py-12 -mt-10 relative z-20">
+                <div className="container mx-auto px-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {stats.map((stat, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                <Card className="border-0 shadow-xl shadow-black/5 rounded-[32px] bg-white text-center p-8 hover:scale-[1.02] transition-transform">
+                                    <div className="w-12 h-12 bg-[#219EBC]/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#219EBC]">
+                                        <stat.icon className="w-6 h-6" />
+                                    </div>
+                                    <div className="text-3xl font-black text-gray-900 mb-1">{stat.value}</div>
+                                    <div className="text-gray-400 text-sm font-bold uppercase tracking-wider">{stat.label}</div>
+                                </Card>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* Stats Strip */}
-            <section className="py-16 px-6 lg:px-12 bg-white border-y border-[#E8E8E8]">
-                <div className="max-w-7xl mx-auto">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        variants={staggerContainer}
-                        className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12"
-                    >
-                        {stats.map((stat, index) => (
-                            <motion.div
-                                key={index}
-                                variants={fadeInUp}
-                                className="text-center"
-                            >
-                                <div className="text-4xl md:text-5xl font-semibold text-[#8B7A52] mb-2">
-                                    {stat.number}
-                                </div>
-                                <div className="text-[#5C625E] text-sm font-medium uppercase tracking-wider">
-                                    {stat.label}
-                                </div>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Our Mission Section */}
-            <section className="py-24 px-6 lg:px-12 bg-[#F6F6F6]">
-                <div className="max-w-7xl mx-auto">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        variants={staggerContainer}
-                        className="grid lg:grid-cols-12 gap-12 lg:gap-20"
-                    >
-                        {/* Left Label */}
-                        <motion.div variants={fadeInUp} className="lg:col-span-3">
-                            <p className="text-[#219EBC] text-sm font-medium tracking-widest uppercase sticky top-32">
-                                Our Mission
-                            </p>
-                        </motion.div>
-
-                        {/* Right Content */}
-                        <motion.div variants={fadeInUp} className="lg:col-span-9">
-                            <p className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#080806] leading-snug mb-8">
-                                We bridge the gap between design and technology, creating seamless digital
-                                experiences that drive business growth.
-                            </p>
-                            <p className="text-[#5C625E] text-lg font-medium leading-relaxed max-w-2xl">
-                                Our approach combines strategic thinking with creative execution. We believe
-                                that great design is not just about aesthetics—it&apos;s about solving real problems
-                                for real people. Every pixel, every interaction, every line of code serves a purpose.
-                            </p>
-                        </motion.div>
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Team Grid Section */}
-            <section className="py-24 px-6 lg:px-12 bg-white">
-                <div className="max-w-7xl mx-auto">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        variants={staggerContainer}
-                    >
-                        <motion.div variants={fadeInUp} className="mb-16">
-                            <p className="text-[#219EBC] text-sm font-medium tracking-widest uppercase mb-4">
-                                The Team
-                            </p>
-                            <h2 className="text-3xl md:text-4xl font-semibold text-[#080806]">
-                                Meet the people behind the magic
-                            </h2>
-                        </motion.div>
-
-                        <motion.div
-                            variants={staggerContainer}
-                            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-                        >
-                            {teamMembers.map((member, index) => (
-                                <motion.div
-                                    key={index}
-                                    variants={fadeInUp}
-                                    whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                                    className="group cursor-pointer"
-                                >
-                                    <div className="aspect-square rounded-xl overflow-hidden bg-[#F0F0F0] mb-5">
-                                        <img
-                                            src={member.image}
-                                            alt={member.name}
-                                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                        />
+            {/* Mission Section */}
+            <section className="py-24">
+                <div className="container mx-auto px-4">
+                    <div className="grid md:grid-cols-2 gap-16 items-center">
+                        <div className="relative">
+                            <div className="aspect-square bg-gray-100 rounded-[64px] overflow-hidden shadow-2xl">
+                                <img
+                                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80"
+                                    alt="Team collaboration"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[#FFB703]/20 rounded-[48px] -z-10" />
+                        </div>
+                        <div>
+                            <h2 className="text-4xl font-black text-gray-900 mb-8">Our Mission & <span className="text-[#219EBC]">Vision</span></h2>
+                            <div className="space-y-12">
+                                <div className="flex gap-6">
+                                    <div className="w-16 h-16 bg-[#219EBC] rounded-3xl shrink-0 flex items-center justify-center text-white shadow-lg shadow-[#219EBC]/30">
+                                        <Target className="w-8 h-8" />
                                     </div>
-                                    <h3 className="text-lg font-semibold text-[#080806] mb-1">
-                                        {member.name}
-                                    </h3>
-                                    <p className="text-[#5C625E] text-sm font-medium">
-                                        {member.role}
-                                    </p>
-                                </motion.div>
-                            ))}
-                        </motion.div>
-                    </motion.div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">Accessibility in Education</h3>
+                                        <p className="text-gray-500 leading-relaxed">
+                                            We believe high-quality tech education should be accessible to everyone, regardless of their background or location.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-6">
+                                    <div className="w-16 h-16 bg-[#FFB703] rounded-3xl shrink-0 flex items-center justify-center text-white shadow-lg shadow-[#FFB703]/30">
+                                        <Rocket className="w-8 h-8" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">Incorporate Innovation</h3>
+                                        <p className="text-gray-500 leading-relaxed">
+                                            Our platform encourages hands-on learning through real-world projects, fostering a culture of innovation and creativity.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-6">
+                                    <div className="w-16 h-16 bg-[#023047] rounded-3xl shrink-0 flex items-center justify-center text-white shadow-lg shadow-[#023047]/30">
+                                        <Users className="w-8 h-8" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">Community First</h3>
+                                        <p className="text-gray-500 leading-relaxed">
+                                            Velonx is built on the foundation of community. We support each other, learn together, and grow as a collective.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* Values Section - Dark */}
-            <section className="py-24 px-6 lg:px-12 bg-[#080806]">
-                <div className="max-w-7xl mx-auto">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        variants={staggerContainer}
-                    >
-                        <motion.div variants={fadeInUp} className="mb-16 text-center max-w-2xl mx-auto">
-                            <p className="text-[#219EBC] text-sm font-medium tracking-widest uppercase mb-4">
-                                Our Values
-                            </p>
-                            <h2 className="text-3xl md:text-4xl font-semibold text-white">
-                                The principles that guide everything we do
-                            </h2>
-                        </motion.div>
-
-                        <motion.div
-                            variants={staggerContainer}
-                            className="grid md:grid-cols-3 gap-8"
-                        >
-                            {values.map((value, index) => (
-                                <motion.div
-                                    key={index}
-                                    variants={fadeInUp}
-                                    className="p-8 rounded-xl border border-white/10 bg-white/5"
-                                >
-                                    <value.icon className="w-10 h-10 text-[#219EBC] mb-6" strokeWidth={1.5} />
-                                    <h3 className="text-xl font-semibold text-white mb-4">
-                                        {value.title}
-                                    </h3>
-                                    <p className="text-white/60 font-medium leading-relaxed">
-                                        {value.description}
-                                    </p>
-                                </motion.div>
-                            ))}
-                        </motion.div>
-                    </motion.div>
+            {/* Core Values */}
+            <section className="py-24 bg-gray-50">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-4xl font-black text-gray-900 mb-16">The Core Values that <span className="text-[#219EBC]">Drive Us</span></h2>
+                    <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        {[
+                            { title: "Integrity", desc: "Honesty and transparency in everything we do.", color: "#219EBC" },
+                            { title: "Inclusion", desc: "A welcoming space for all tech enthusiasts.", color: "#FFB703" },
+                            { title: "Impact", desc: "Making a real difference in students' careers.", color: "#023047" },
+                        ].map((value, i) => (
+                            <div key={i} className="bg-white p-12 rounded-[48px] shadow-xl shadow-black/5 hover-lift transition-all border border-gray-100">
+                                <div className="w-4 h-20 rounded-full mx-auto mb-8" style={{ backgroundColor: value.color }} />
+                                <h3 className="text-2xl font-black text-gray-900 mb-4">{value.title}</h3>
+                                <p className="text-gray-500 leading-relaxed">{value.desc}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* CTA Footer */}
-            <section className="py-24 px-6 lg:px-12 bg-[#F6F6F6]">
-                <div className="max-w-4xl mx-auto text-center">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        variants={staggerContainer}
-                    >
-                        <motion.h2
-                            variants={fadeInUp}
-                            className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#080806] mb-8"
-                        >
-                            Ready to build the future?
-                        </motion.h2>
-                        <motion.p
-                            variants={fadeInUp}
-                            className="text-[#5C625E] text-lg font-medium mb-12 max-w-xl mx-auto"
-                        >
-                            Let&apos;s collaborate and create something extraordinary together.
-                            Your next big idea deserves the best execution.
-                        </motion.p>
-                        <motion.div
-                            variants={fadeInUp}
-                            className="flex flex-col sm:flex-row gap-4 justify-center"
-                        >
-                            <Link href="/contact">
-                                <button className="px-8 py-4 bg-[#080806] text-white font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-2">
-                                    Start a Project <ArrowRight className="w-4 h-4" />
-                                </button>
-                            </Link>
-                            <Link href="/projects">
-                                <button className="px-8 py-4 border-2 border-[#080806] text-[#080806] font-semibold rounded-lg hover:bg-[#080806] hover:text-white transition-colors">
-                                    View Our Work
-                                </button>
-                            </Link>
-                        </motion.div>
-                    </motion.div>
+            {/* CTA Section */}
+            <section className="py-24">
+                <div className="container mx-auto px-4 max-w-5xl">
+                    <div className="bg-[#023047] rounded-[64px] p-12 md:p-20 text-center text-white relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-[#219EBC]/10 rounded-full -mr-48 -mt-48 group-hover:scale-110 transition-transform duration-1000" />
+                        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#FFB703]/5 rounded-full -ml-48 -mb-48 group-hover:scale-110 transition-transform duration-1000" />
+
+                        <h2 className="text-4xl md:text-5xl font-black mb-8 relative z-10">Ready to start your journey?</h2>
+                        <p className="text-gray-400 text-xl mb-12 max-w-2xl mx-auto relative z-10 leading-relaxed">
+                            Join thousands of students who are already building the future on Velonx.
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-6 relative z-10">
+                            <button className="h-16 px-10 bg-white text-[#023047] font-black rounded-[24px] hover:bg-gray-100 transition-all text-lg shadow-2xl shadow-white/10">
+                                Join the Community
+                            </button>
+                            <button className="h-16 px-10 bg-white/5 border border-white/20 text-white font-black rounded-[24px] hover:bg-white/10 transition-all text-lg">
+                                Contact Our Team
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>

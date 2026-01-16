@@ -1,60 +1,68 @@
 import Link from "next/link";
+import { Twitter, Linkedin, Github } from "lucide-react";
 
 export function Footer() {
     return (
-        <footer className="relative border-t border-gray-200 py-16 bg-white">
+        <footer className="relative border-t border-gray-100 py-20 bg-white">
             <div className="container mx-auto px-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                <div className="grid grid-cols-2 md:grid-cols-12 gap-12 mb-16">
                     {/* Brand */}
-                    <div className="col-span-2 md:col-span-1">
-                        <img src="/logo.png" alt="Velonx" className="h-12 w-auto mb-4" />
-                        <p className="text-gray-500 text-sm leading-relaxed">
-                            Bridging the Gap, Building Futures. A student-driven innovation community.
+                    <div className="col-span-2 md:col-span-4">
+                        <div className="flex items-center gap-2 mb-6">
+                            <img src="/logo.png" alt="Velonx" className="h-8 w-auto" />
+                            <span className="text-[#023047] font-outfit font-bold text-xl tracking-tight">Velonx</span>
+                        </div>
+                        <p className="text-gray-500 text-sm leading-relaxed max-w-sm mb-8">
+                            Empowering the next generation of tech leaders through community, collaboration, and innovation.
                         </p>
+                        <div className="flex items-center gap-4 text-gray-400">
+                            <a href="#" className="hover:text-[#219EBC] transition-colors"><Twitter className="w-5 h-5" /></a>
+                            <a href="#" className="hover:text-[#219EBC] transition-colors"><Linkedin className="w-5 h-5" /></a>
+                            <a href="#" className="hover:text-[#219EBC] transition-colors"><Github className="w-5 h-5" /></a>
+                        </div>
                     </div>
 
-                    {/* Quick Links */}
-                    <div>
-                        <h4 className="font-semibold mb-4 text-gray-900">Explore</h4>
-                        <ul className="space-y-3 text-sm text-gray-500">
-                            <li><Link href="/projects" className="hover:text-[#219EBC] transition-colors">Projects</Link></li>
+                    {/* Platform */}
+                    <div className="col-span-1 md:col-span-2 md:ml-auto">
+                        <h4 className="font-bold mb-6 text-[#023047]">Platform</h4>
+                        <ul className="space-y-4 text-sm text-gray-500 font-medium">
                             <li><Link href="/events" className="hover:text-[#219EBC] transition-colors">Events</Link></li>
+                            <li><Link href="/projects" className="hover:text-[#219EBC] transition-colors">Projects</Link></li>
                             <li><Link href="/resources" className="hover:text-[#219EBC] transition-colors">Resources</Link></li>
+                            <li><Link href="/mentors" className="hover:text-[#219EBC] transition-colors">Mentorship</Link></li>
+                            <li><Link href="/career" className="hover:text-[#219EBC] transition-colors">Job Board</Link></li>
                             <li><Link href="/leaderboard" className="hover:text-[#219EBC] transition-colors">Leaderboard</Link></li>
                         </ul>
                     </div>
 
-                    {/* Community */}
-                    <div>
-                        <h4 className="font-semibold mb-4 text-gray-900">Community</h4>
-                        <ul className="space-y-3 text-sm text-gray-500">
-                            <li><Link href="/mentors" className="hover:text-[#219EBC] transition-colors">Find Mentors</Link></li>
-                            <li><Link href="/career" className="hover:text-[#219EBC] transition-colors">Career Center</Link></li>
+                    {/* Company */}
+                    <div className="col-span-1 md:col-span-2 md:ml-auto">
+                        <h4 className="font-bold mb-6 text-[#023047]">Company</h4>
+                        <ul className="space-y-4 text-sm text-gray-500 font-medium">
                             <li><Link href="/about" className="hover:text-[#219EBC] transition-colors">About Us</Link></li>
-                            <li><Link href="/auth/signup" className="hover:text-[#219EBC] transition-colors">Join Us</Link></li>
+                            <li><Link href="/career" className="hover:text-[#219EBC] transition-colors">Careers</Link></li>
+                            <li><Link href="/blog" className="hover:text-[#219EBC] transition-colors">Blog</Link></li>
+                            <li><Link href="/contact" className="hover:text-[#219EBC] transition-colors">Contact</Link></li>
                         </ul>
                     </div>
 
-                    {/* Connect */}
-                    <div>
-                        <h4 className="font-semibold mb-4 text-gray-900">Connect</h4>
-                        <ul className="space-y-3 text-sm text-gray-500">
-                            <li><a href="#" className="hover:text-[#219EBC] transition-colors">Discord</a></li>
-                            <li><a href="#" className="hover:text-[#219EBC] transition-colors">Twitter</a></li>
-                            <li><a href="#" className="hover:text-[#219EBC] transition-colors">LinkedIn</a></li>
-                            <li><a href="#" className="hover:text-[#219EBC] transition-colors">GitHub</a></li>
+                    {/* Resources */}
+                    <div className="col-span-1 md:col-span-2 md:ml-auto">
+                        <h4 className="font-bold mb-6 text-[#023047]">Resources</h4>
+                        <ul className="space-y-4 text-sm text-gray-500 font-medium">
+                            <li><Link href="/docs" className="hover:text-[#219EBC] transition-colors">Documentation</Link></li>
+                            <li><Link href="/help" className="hover:text-[#219EBC] transition-colors">Help Center</Link></li>
+                            <li><Link href="/guidelines" className="hover:text-[#219EBC] transition-colors">Community Guidelines</Link></li>
+                            <li><Link href="/privacy" className="hover:text-[#219EBC] transition-colors">Privacy Policy</Link></li>
+                            <li><Link href="/terms" className="hover:text-[#219EBC] transition-colors">Terms of Service</Link></li>
                         </ul>
                     </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-sm text-gray-500">
-                        &copy; {new Date().getFullYear()} Velonx Community. All rights reserved.
+                <div className="border-t border-gray-100 pt-8 text-center">
+                    <p className="text-xs text-gray-400 font-medium">
+                        &copy; {new Date().getFullYear()} Velonx Inc. All rights reserved.
                     </p>
-                    <div className="flex items-center gap-6 text-sm text-gray-500">
-                        <Link href="#" className="hover:text-[#219EBC] transition-colors">Privacy Policy</Link>
-                        <Link href="#" className="hover:text-[#219EBC] transition-colors">Terms of Service</Link>
-                    </div>
                 </div>
             </div>
         </footer>

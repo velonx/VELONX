@@ -3,18 +3,46 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Users, Lightbulb, BarChart3, CheckCircle, XCircle, Clock, Sparkles, TrendingUp, Calendar, Eye } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+    Users,
+    Lightbulb,
+    BarChart3,
+    CheckCircle,
+    XCircle,
+    Clock,
+    Sparkles,
+    TrendingUp,
+    Calendar,
+    Eye,
+    Download,
+    Search,
+    MoreHorizontal,
+    Mail,
+    ShieldCheck,
+    FileText,
+    Image,
+    Layout,
+    PenTool,
+    Send,
+    Bell,
+    ArrowLeft,
+    CheckCircle2,
+    Settings
+} from "lucide-react";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 export default function AdminDashboard() {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const [activeTab, setActiveTab] = useState("Management");
 
-    // All hooks must be called before any conditional returns
     const [requests, setRequests] = useState([
         { id: 1, name: "Alice Johnson", email: "alice@college.edu", date: "2024-12-28", status: "pending" },
         { id: 2, name: "Bob Smith", email: "bob@uni.edu", date: "2024-12-27", status: "pending" },
@@ -26,7 +54,6 @@ export default function AdminDashboard() {
         { id: 2, title: "Campus Marketplace", author: "Jane Smith", date: "2024-12-27", status: "pending" },
     ]);
 
-    // Redirect to login if not authenticated or not admin
     useEffect(() => {
         if (status === "unauthenticated") {
             router.push("/auth/login");
@@ -35,231 +62,284 @@ export default function AdminDashboard() {
         }
     }, [status, session, router]);
 
-    const handleRequestAction = (id: number, action: 'approve' | 'reject') => {
+    const handleRequestAction = (id: number, name: string, action: 'approve' | 'reject') => {
         setRequests(requests.map(r => r.id === id ? { ...r, status: action === 'approve' ? 'approved' : 'rejected' } : r));
+        toast.success(`User "${name}" ${action === 'approve' ? 'approved' : 'rejected'} successfully.`);
     };
 
-    const handleIdeaAction = (id: number, action: 'approve' | 'reject') => {
+    const handleIdeaAction = (id: number, title: string, action: 'approve' | 'reject') => {
         setIdeas(ideas.map(i => i.id === id ? { ...i, status: action === 'approve' ? 'approved' : 'rejected' } : i));
+        toast.success(`Project idea "${title}" ${action === 'approve' ? 'approved' : 'rejected'} successfully.`);
     };
 
-    // Show loading state while checking auth
     if (status === "loading") {
         return (
-            <div className="min-h-screen pt-24 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+            <div className="min-h-screen pt-24 flex items-center justify-center bg-white">
+                <div className="w-16 h-16 rounded-full border-4 border-[#219EBC] border-t-transparent animate-spin" />
             </div>
         );
     }
 
-    if (!session || session.user?.role !== "admin") {
-        return null;
-    }
+    if (!session || session.user?.role !== "admin") return null;
+
+    const navItems = [
+        { icon: Layout, label: "Management" },
+        { icon: PenTool, label: "Blog Authoring" },
+        { icon: BarChart3, label: "Analytics" },
+        { icon: Settings, label: "Platform Info" },
+    ];
+
+    const platformStats = [
+        { label: "Active Members", value: "1,247", change: "+12%", color: "border-[#7FD8D8]" },
+        { label: "Project Ideas", value: "15", change: "+3", color: "border-[#FF7F5C]" },
+        { label: "Blog Posts", value: "32", change: "+5", color: "border-[#5E239D]" },
+    ];
 
     return (
-        <div className="min-h-screen pt-24 bg-white">
-            {/* Hero Section */}
-            <section className="relative py-10 bg-gradient-to-b from-gray-50 to-white">
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 px-3 py-1 text-xs font-medium text-[#219EBC] mb-4 mx-auto">
-                            <Sparkles className="w-3 h-3" /> Admin Panel
+        <div className="flex min-h-screen bg-[#FDFCFB] pt-20">
+            {/* Left Sidebar */}
+            <aside className="w-80 bg-[#023047] flex flex-col p-8 fixed left-0 top-20 bottom-0 z-20 text-white">
+                <div className="flex items-center gap-3 mb-12">
+                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white font-bold border border-white/20">A</div>
+                    <span className="text-xl font-black tracking-tight">Admin Console</span>
+                </div>
+
+                <div className="mb-12">
+                    <div className="relative inline-block mb-4">
+                        <div className="w-20 h-20 rounded-full border-2 border-[#219EBC] p-1">
+                            <img src={session.user?.image || "/avatars/admin.png"} alt="Admin" className="w-full h-full rounded-full object-cover" />
                         </div>
-                        <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-4">Welcome to Velonx, Admin!</h1>
-                        <p className="text-gray-600 text-lg mb-8">Manage community requests and monitor activity</p>
-                        <div className="flex justify-center gap-4">
-                            <Button variant="outline" className="border-2 border-[#219EBC] text-[#219EBC] hover:bg-[#219EBC]/10 rounded-full px-6 py-5">
-                                <Calendar className="w-4 h-4 mr-2" /> Export Report
-                            </Button>
-                            <Button className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold rounded-full px-6 py-5">
-                                <Eye className="w-4 h-4 mr-2" /> View Site
-                            </Button>
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#219EBC] rounded-full flex items-center justify-center shadow-md">
+                            <ShieldCheck className="w-3 h-3 text-white" />
+                        </div>
+                    </div>
+                    <h2 className="text-xl font-black mb-1">{session.user?.name}</h2>
+                    <p className="text-white/50 text-sm font-medium">{session.user?.email}</p>
+                </div>
+
+                <nav className="flex-1 space-y-2">
+                    {navItems.map((item) => (
+                        <button
+                            key={item.label}
+                            onClick={() => setActiveTab(item.label)}
+                            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold ${activeTab === item.label
+                                ? "bg-white/10 text-[#219EBC]"
+                                : "text-white/50 hover:bg-white/5 hover:text-white"
+                                }`}
+                        >
+                            <item.icon className="w-5 h-5" />
+                            {item.label}
+                        </button>
+                    ))}
+                </nav>
+
+                <div className="mt-auto">
+                    <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
+                        <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-3">System Healthy</p>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            <span className="text-sm font-bold">Latency: 24ms</span>
                         </div>
                     </div>
                 </div>
-            </section>
+            </aside>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-
-            {/* Stats */}
-            <section className="py-8 animate-on-scroll bg-gray-50">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {[
-                            { icon: Users, label: "Total Members", value: "1,247", change: "+12%", color: "blue" },
-                            { icon: Lightbulb, label: "Active Projects", value: "15", change: "+3", color: "orange" },
-                            { icon: Calendar, label: "Events This Month", value: "8", change: "+2", color: "violet" },
-                            { icon: TrendingUp, label: "Engagement", value: "89%", change: "+5%", color: "green" },
-                        ].map((stat, i) => (
-                            <Card key={i} className="bg-white border border-gray-200 hover:border-[#219EBC] hover:shadow-lg transition-all">
-                                <CardContent className="p-5">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.color === 'blue' ? 'bg-blue-100' : stat.color === 'orange' ? 'bg-orange-100' : stat.color === 'violet' ? 'bg-violet-100' : 'bg-green-100'}`}>
-                                            <stat.icon className={`w-5 h-5 ${stat.color === 'blue' ? 'text-[#219EBC]' : stat.color === 'orange' ? 'text-orange-500' : stat.color === 'violet' ? 'text-violet-500' : 'text-green-500'}`} />
-                                        </div>
-                                        <Badge className="bg-green-100 text-green-700 border-0 text-xs">{stat.change}</Badge>
-
-                                    </div>
-                                    <div className="text-2xl font-bold text-white">{stat.value}</div>
-                                    <div className="text-gray-500 text-sm">{stat.label}</div>
-                                </CardContent>
-                            </Card>
-                        ))}
+            {/* Main Content */}
+            <main className="flex-1 ml-80 mr-96 p-12">
+                <header className="flex items-center justify-between mb-12">
+                    <div>
+                        <h1 className="text-3xl font-black text-[#023047] mb-2">Command Center</h1>
+                        <p className="text-gray-400 font-medium tracking-tight">Managing the Velonx Ecosystem</p>
                     </div>
-                </div>
-            </section>
+                    <div className="flex items-center gap-4">
+                        <Button onClick={() => router.push("/")} className="h-14 px-8 bg-white border border-gray-100 text-[#023047] font-black rounded-2xl shadow-sm hover:bg-gray-50 flex items-center gap-2">
+                            View Site <Eye className="w-5 h-5" />
+                        </Button>
+                    </div>
+                </header>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-            {/* Tabs */}
-            <section className="py-10 animate-on-scroll">
-                <div className="container mx-auto px-4">
-                    <Tabs defaultValue="members" className="w-full">
-                        <TabsList className="glass-strong border border-white/10 p-1.5 mb-8">
-                            <TabsTrigger value="members" className="px-6 py-3 rounded-lg data-[state=active]:bg-blue-500 data-[state=active]:text-black font-medium gap-2 transition-all">
-                                <Users className="w-4 h-4" /> Member Requests
-                                <Badge className="ml-2 bg-white/20">{requests.filter(r => r.status === 'pending').length}</Badge>
-                            </TabsTrigger>
-                            <TabsTrigger value="ideas" className="px-6 py-3 rounded-lg data-[state=active]:bg-blue-500 data-[state=active]:text-black font-medium gap-2 transition-all">
-                                <Lightbulb className="w-4 h-4" /> Project Ideas
-                                <Badge className="ml-2 bg-white/20">{ideas.filter(i => i.status === 'pending').length}</Badge>
-                            </TabsTrigger>
-                            <TabsTrigger value="analytics" className="px-6 py-3 rounded-lg data-[state=active]:bg-blue-500 data-[state=active]:text-black font-medium gap-2 transition-all">
-                                <BarChart3 className="w-4 h-4" /> Analytics
-                            </TabsTrigger>
+                <Tabs defaultValue="management" className="w-full">
+                    <div className="flex justify-between items-center mb-8">
+                        <TabsList className="bg-white p-1 rounded-2xl border border-gray-100 shadow-sm">
+                            <TabsTrigger value="management" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Review Center</TabsTrigger>
+                            <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Post Blog</TabsTrigger>
                         </TabsList>
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#219EBC] transition-colors" />
+                            <input
+                                type="text"
+                                placeholder="Search requests..."
+                                className="h-12 bg-white border border-gray-100 rounded-xl pl-12 pr-6 w-48 shadow-sm focus:ring-2 focus:ring-[#219EBC] outline-none transition-all"
+                            />
+                        </div>
+                    </div>
 
-                        <TabsContent value="members">
-                            <Card className="glass border border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="text-white">Pending Membership Requests</CardTitle>
-                                    <CardDescription className="text-gray-400">Review and approve new member applications</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-4">
-                                        {requests.map((req) => (
-                                            <div key={req.id} className={`flex items-center justify-between p-4 rounded-xl border ${req.status === 'pending' ? 'bg-white/[0.02] border-white/10' : req.status === 'approved' ? 'bg-green-500/10 border-green-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
-                                                <div className="flex items-center gap-4">
-                                                    <Avatar className="w-12 h-12 border border-white/10">
-                                                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold">
-                                                            {req.name.split(' ').map(n => n[0]).join('')}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <div>
-                                                        <div className="text-white font-medium">{req.name}</div>
-                                                        <div className="text-gray-500 text-sm">{req.email}</div>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-gray-500 text-sm hidden md:block">{req.date}</span>
-                                                    {req.status === 'pending' ? (
-                                                        <>
-                                                            <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white rounded-full" onClick={() => handleRequestAction(req.id, 'approve')}>
-                                                                <CheckCircle className="w-4 h-4 mr-1" /> Approve
-                                                            </Button>
-                                                            <Button size="sm" variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-full" onClick={() => handleRequestAction(req.id, 'reject')}>
-                                                                <XCircle className="w-4 h-4 mr-1" /> Reject
-                                                            </Button>
-                                                        </>
-                                                    ) : (
-                                                        <Badge className={req.status === 'approved' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}>
-                                                            {req.status === 'approved' ? 'Approved' : 'Rejected'}
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-
-                        <TabsContent value="ideas">
-                            <Card className="glass border border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="text-white">Project Idea Submissions</CardTitle>
-                                    <CardDescription className="text-gray-400">Review and approve community project ideas</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-4">
-                                        {ideas.map((idea) => (
-                                            <div key={idea.id} className={`p-5 rounded-xl border ${idea.status === 'pending' ? 'bg-white/[0.02] border-white/10' : idea.status === 'approved' ? 'bg-green-500/10 border-green-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
-                                                <div className="flex items-start justify-between">
-                                                    <div>
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <Lightbulb className="w-5 h-5 text-orange-400" />
-                                                            <h3 className="text-white font-bold text-lg">{idea.title}</h3>
+                    <TabsContent value="management" className="space-y-12">
+                        {/* Member Requests */}
+                        <section>
+                            <h3 className="text-xl font-black text-[#023047] mb-6 flex items-center gap-2">
+                                <Users className="w-5 h-5 text-[#219EBC]" /> Pending Approvals
+                            </h3>
+                            <div className="bg-white rounded-[40px] border border-gray-50 shadow-xl shadow-black/[0.02] overflow-hidden">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead>
+                                            <tr className="bg-gray-50/50 border-b border-gray-50">
+                                                <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Member</th>
+                                                <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest text-center">Status</th>
+                                                <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50">
+                                            {requests.map((r) => (
+                                                <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
+                                                    <td className="px-8 py-6">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center font-black text-[#219EBC]">{r.name[0]}</div>
+                                                            <div>
+                                                                <p className="font-bold text-[#023047]">{r.name}</p>
+                                                                <p className="text-xs text-gray-400">{r.email}</p>
+                                                            </div>
                                                         </div>
-                                                        <p className="text-gray-500 text-sm">Submitted by {idea.author} • {idea.date}</p>
-                                                    </div>
-                                                    {idea.status === 'pending' ? (
-                                                        <div className="flex gap-2">
-                                                            <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white rounded-full" onClick={() => handleIdeaAction(idea.id, 'approve')}>
-                                                                <CheckCircle className="w-4 h-4 mr-1" /> Approve
-                                                            </Button>
-                                                            <Button size="sm" variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-full" onClick={() => handleIdeaAction(idea.id, 'reject')}>
-                                                                <XCircle className="w-4 h-4 mr-1" /> Reject
-                                                            </Button>
-                                                        </div>
-                                                    ) : (
-                                                        <Badge className={idea.status === 'approved' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}>
-                                                            {idea.status === 'approved' ? 'Approved' : 'Rejected'}
+                                                    </td>
+                                                    <td className="px-8 py-6 text-center">
+                                                        <Badge className={`${r.status === 'approved' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'} border-0 font-bold px-3 py-1 text-[10px]`}>
+                                                            {r.status.toUpperCase()}
                                                         </Badge>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-
-                        <TabsContent value="analytics">
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <Card className="glass border border-white/10">
-                                    <CardHeader>
-                                        <CardTitle className="text-white">Weekly Activity</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="h-48 flex items-end justify-between gap-2">
-                                            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
-                                                <div key={day} className="flex-1 flex flex-col items-center gap-2">
-                                                    <div className="w-full bg-gradient-to-t from-blue-500 to-violet-500 rounded-t" style={{ height: `${[60, 80, 45, 90, 70, 40, 55][i]}%` }} />
-                                                    <span className="text-gray-500 text-xs">{day}</span>
-                                                </div>
+                                                    </td>
+                                                    <td className="px-8 py-6 text-right">
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            <button onClick={() => handleRequestAction(r.id, r.name, 'approve')} className="w-10 h-10 rounded-xl bg-green-50 hover:bg-green-100 text-green-600 flex items-center justify-center transition-all"><CheckCircle2 className="w-5 h-5" /></button>
+                                                            <button onClick={() => handleRequestAction(r.id, r.name, 'reject')} className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-all"><XCircle className="w-5 h-5" /></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             ))}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-
-                                <Card className="glass border border-white/10">
-                                    <CardHeader>
-                                        <CardTitle className="text-white">Engagement Metrics</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        {[
-                                            { label: "Event Attendance", value: 92, color: "blue" },
-                                            { label: "Project Completion", value: 78, color: "violet" },
-                                            { label: "Resource Usage", value: 85, color: "orange" },
-                                            { label: "Mentorship Sessions", value: 65, color: "green" },
-                                        ].map((metric, i) => (
-                                            <div key={i}>
-                                                <div className="flex justify-between text-sm mb-1">
-                                                    <span className="text-gray-400">{metric.label}</span>
-                                                    <span className="text-white font-medium">{metric.value}%</span>
-                                                </div>
-                                                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                                                    <div className={`h-full rounded-full ${metric.color === 'blue' ? 'bg-blue-500' : metric.color === 'violet' ? 'bg-violet-500' : metric.color === 'orange' ? 'bg-orange-500' : 'bg-green-500'}`} style={{ width: `${metric.value}%` }} />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </CardContent>
-                                </Card>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </TabsContent>
-                    </Tabs>
+                        </section>
+
+                        {/* Project Ideas */}
+                        <section>
+                            <h3 className="text-xl font-black text-[#023047] mb-6 flex items-center gap-2">
+                                <Lightbulb className="w-5 h-5 text-orange-500" /> Community Submissions
+                            </h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                {ideas.map((idea) => (
+                                    <Card key={idea.id} className="bg-white border-0 rounded-[32px] p-8 shadow-sm hover:shadow-md transition-all border border-gray-50">
+                                        <div className="flex justify-between items-start mb-6">
+                                            <Badge className="bg-[#219EBC]/10 text-[#219EBC] border-0">NEW IDEA</Badge>
+                                            <span className="text-xs font-bold text-gray-400">{idea.date}</span>
+                                        </div>
+                                        <h4 className="text-xl font-black text-[#023047] mb-2">{idea.title}</h4>
+                                        <p className="text-gray-400 text-sm mb-8">Authored by <span className="text-[#023047] font-bold">{idea.author}</span></p>
+                                        <div className="flex gap-3">
+                                            <Button className="flex-1 bg-[#023047] text-white rounded-xl font-bold h-12" onClick={() => handleIdeaAction(idea.id, idea.title, 'approve')}>Approve</Button>
+                                            <Button variant="outline" className="flex-1 rounded-xl font-bold h-12 border-gray-100 text-gray-400" onClick={() => handleIdeaAction(idea.id, idea.title, 'reject')}>Reject</Button>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        </section>
+                    </TabsContent>
+
+                    <TabsContent value="blog">
+                        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                            <CardHeader className="p-12 border-b border-gray-50">
+                                <h3 className="text-3xl font-black text-[#023047] mb-2">Publish New Article</h3>
+                                <p className="text-gray-400">Content reaches over 5,000 community members.</p>
+                            </CardHeader>
+                            <CardContent className="p-12">
+                                <form className="space-y-8" onSubmit={(e) => {
+                                    e.preventDefault();
+                                    toast.success("Blog published successfully! 🚀");
+                                }}>
+                                    <div className="grid grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Title</label>
+                                            <Input placeholder="Enter title..." className="h-14 bg-gray-50 border-0 rounded-2xl" />
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Category</label>
+                                            <select className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none">
+                                                <option>Technology</option>
+                                                <option>Development</option>
+                                                <option>Community</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Cover Image URL</label>
+                                        <Input placeholder="https://unsplash.com/..." className="h-14 bg-gray-50 border-0 rounded-2xl" />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Article Content</label>
+                                        <textarea className="w-full bg-gray-50 border-0 rounded-[32px] p-8 min-h-[300px] outline-none focus:ring-2 focus:ring-[#219EBC] transition-all" placeholder="Write something inspiring..."></textarea>
+                                    </div>
+                                    <Button type="submit" className="w-full h-16 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-[24px] text-lg shadow-xl shadow-[#219EBC]/20">
+                                        Publish Live <Send className="w-5 h-5 ml-2" />
+                                    </Button>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+            </main>
+
+            {/* Right Sidebar */}
+            <aside className="w-96 bg-[#FDF4ED] p-10 border-l border-gray-100 fixed right-0 top-20 bottom-0 z-20 overflow-y-auto">
+                <div className="flex items-center justify-between mb-12">
+                    <h2 className="text-2xl font-black text-[#023047]">Performance</h2>
+                    <button className="w-10 h-10 rounded-xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-500">
+                        <MoreHorizontal className="w-5 h-5" />
+                    </button>
                 </div>
-            </section>
+
+                <div className="space-y-8">
+                    {platformStats.map((stat, i) => (
+                        <div key={i} className={`bg-white p-8 rounded-[40px] border-l-8 ${stat.color} shadow-sm border-y border-r border-gray-50`}>
+                            <div className="flex justify-between items-start mb-2">
+                                <h4 className="text-gray-400 text-xs font-bold uppercase tracking-widest">{stat.label}</h4>
+                                <Badge className="bg-green-50 text-green-600 border-0 font-bold">{stat.change}</Badge>
+                            </div>
+                            <p className="text-4xl font-black text-[#023047]">{stat.value}</p>
+                        </div>
+                    ))}
+
+                    <div className="bg-[#5E239D] p-10 rounded-[48px] text-white relative overflow-hidden group">
+                        <div className="relative z-10">
+                            <h3 className="text-2xl font-black mb-4">Quick Actions</h3>
+                            <div className="space-y-3">
+                                <button className="w-full flex items-center justify-between p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all font-bold text-sm">
+                                    <span>Manage Events</span>
+                                    <Calendar className="w-4 h-4" />
+                                </button>
+                                <button className="w-full flex items-center justify-between p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all font-bold text-sm">
+                                    <span>User Database</span>
+                                    <Users className="w-4 h-4" />
+                                </button>
+                                <button className="w-full flex items-center justify-between p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all font-bold text-sm">
+                                    <span>System Logs</span>
+                                    <ShieldCheck className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#023047] p-10 rounded-[48px] text-white relative overflow-hidden group">
+                        <div className="relative z-10">
+                            <h3 className="text-2xl font-black mb-4">Export Reports</h3>
+                            <p className="text-white/70 text-sm mb-8 leading-relaxed">Generate complete platform analytics for the current month.</p>
+                            <Button className="w-full bg-white text-[#023047] hover:bg-gray-50 font-black rounded-2xl py-6 shadow-xl" onClick={() => toast.success("Preparing export...")}>
+                                Download CSV <Download className="w-5 h-5 ml-2" />
+                            </Button>
+                        </div>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
+                    </div>
+                </div>
+            </aside>
         </div>
     );
 }

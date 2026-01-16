@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,11 +9,54 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PROJECTS } from "@/lib/mock-data";
-import { Github, Users, PlusCircle, CheckCircle, Clock, ArrowRight, ExternalLink, Sparkles, Code } from "lucide-react";
+import { Github, Users, PlusCircle, CheckCircle, Clock, ArrowRight, ExternalLink, Sparkles, Code, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function ProjectsPage() {
     const runningProjects = PROJECTS.filter(p => p.status === "Running");
     const completedProjects = PROJECTS.filter(p => p.status === "Completed");
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [joiningProject, setJoiningProject] = useState<number | null>(null);
+    const [formData, setFormData] = useState({
+        title: "",
+        description: "",
+        techStack: "",
+        name: "",
+        email: ""
+    });
+
+    const handleJoinProject = async (projectId: number, projectTitle: string) => {
+        setJoiningProject(projectId);
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        toast.success(`Request sent to join "${projectTitle}"! You'll receive an email soon.`);
+        setJoiningProject(null);
+    };
+
+    const handleSubmitIdea = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formData.title || !formData.description || !formData.name || !formData.email) {
+            toast.error("Please fill in all required fields");
+            return;
+        }
+        setIsSubmitting(true);
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        toast.success("🎉 Project idea submitted! Our team will review it within 48 hours.");
+        setFormData({ title: "", description: "", techStack: "", name: "", email: "" });
+        setIsSubmitting(false);
+    };
+
+    const handleViewCode = (projectTitle: string) => {
+        toast.success(`Opening ${projectTitle} repository...`);
+        // In real app, this would open GitHub link
+    };
+
+    const handleViewDemo = (projectTitle: string) => {
+        toast.success(`Opening ${projectTitle} demo...`);
+        // In real app, this would open demo link
+    };
 
     return (
         <div className="min-h-screen pt-24 bg-white">
@@ -27,7 +71,10 @@ export default function ProjectsPage() {
                             Join active projects, collaborate with peers, and create solutions that make a difference.
                         </p>
                         <div className="flex justify-center gap-4">
-                            <Button className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold rounded-full px-8 py-6 text-lg shadow-lg shadow-[#219EBC]/25">
+                            <Button
+                                className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold rounded-full px-8 py-6 text-lg shadow-lg shadow-[#219EBC]/25"
+                                onClick={() => document.getElementById('submit-tab')?.click()}
+                            >
                                 <PlusCircle className="w-5 h-5 mr-2" /> Submit Idea
                             </Button>
                         </div>
@@ -49,7 +96,7 @@ export default function ProjectsPage() {
                                 <TabsTrigger value="completed" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-white font-medium gap-2">
                                     <CheckCircle className="w-4 h-4" /> Hall of Fame
                                 </TabsTrigger>
-                                <TabsTrigger value="submit" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#E9C46A] data-[state=active]:text-gray-900 font-medium gap-2">
+                                <TabsTrigger id="submit-tab" value="submit" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#E9C46A] data-[state=active]:text-gray-900 font-medium gap-2">
                                     <PlusCircle className="w-4 h-4" /> Submit Idea
                                 </TabsTrigger>
                             </TabsList>
@@ -90,8 +137,16 @@ export default function ProjectsPage() {
                                             </div>
                                         </CardContent>
                                         <CardFooter>
-                                            <Button className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold rounded-full">
-                                                Request to Join <ArrowRight className="w-4 h-4 ml-2" />
+                                            <Button
+                                                className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold rounded-full"
+                                                onClick={() => handleJoinProject(project.id, project.title)}
+                                                disabled={joiningProject === project.id}
+                                            >
+                                                {joiningProject === project.id ? (
+                                                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending Request...</>
+                                                ) : (
+                                                    <>Request to Join <ArrowRight className="w-4 h-4 ml-2" /></>
+                                                )}
                                             </Button>
                                         </CardFooter>
                                     </Card>
@@ -121,10 +176,18 @@ export default function ProjectsPage() {
                                             </div>
                                         </CardContent>
                                         <CardFooter className="gap-2">
-                                            <Button variant="outline" className="flex-1 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50">
+                                            <Button
+                                                variant="outline"
+                                                className="flex-1 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                                                onClick={() => handleViewCode(project.title)}
+                                            >
                                                 <Github className="w-4 h-4 mr-2" /> Code
                                             </Button>
-                                            <Button variant="outline" className="flex-1 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50">
+                                            <Button
+                                                variant="outline"
+                                                className="flex-1 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                                                onClick={() => handleViewDemo(project.title)}
+                                            >
                                                 <ExternalLink className="w-4 h-4 mr-2" /> Demo
                                             </Button>
                                         </CardFooter>
@@ -143,35 +206,70 @@ export default function ProjectsPage() {
                                         <CardTitle className="text-gray-900 text-2xl">Submit Your Project Idea</CardTitle>
                                         <CardDescription className="text-gray-600">Share your innovation with the community</CardDescription>
                                     </CardHeader>
-                                    <CardContent className="space-y-5">
-                                        <div className="space-y-2">
-                                            <Label className="text-gray-700">Project Title *</Label>
-                                            <Input placeholder="e.g. AI-Powered Study Buddy" className="bg-gray-50 border-gray-200 text-gray-900" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-gray-700">Description *</Label>
-                                            <Textarea placeholder="What does your project do?" className="bg-gray-50 border-gray-200 text-gray-900" rows={4} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-gray-700">Tech Stack</Label>
-                                            <Input placeholder="e.g. React, Python, TensorFlow" className="bg-gray-50 border-gray-200 text-gray-900" />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
+                                    <form onSubmit={handleSubmitIdea}>
+                                        <CardContent className="space-y-5">
                                             <div className="space-y-2">
-                                                <Label className="text-gray-700">Your Name *</Label>
-                                                <Input className="bg-gray-50 border-gray-200 text-gray-900" />
+                                                <Label className="text-gray-700">Project Title *</Label>
+                                                <Input
+                                                    placeholder="e.g. AI-Powered Study Buddy"
+                                                    className="bg-gray-50 border-gray-200 text-gray-900"
+                                                    value={formData.title}
+                                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                                />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="text-gray-700">Email *</Label>
-                                                <Input type="email" className="bg-gray-50 border-gray-200 text-gray-900" />
+                                                <Label className="text-gray-700">Description *</Label>
+                                                <Textarea
+                                                    placeholder="What does your project do?"
+                                                    className="bg-gray-50 border-gray-200 text-gray-900"
+                                                    rows={4}
+                                                    value={formData.description}
+                                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                                />
                                             </div>
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <Button className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold rounded-full py-5">
-                                            Submit Idea for Review
-                                        </Button>
-                                    </CardFooter>
+                                            <div className="space-y-2">
+                                                <Label className="text-gray-700">Tech Stack</Label>
+                                                <Input
+                                                    placeholder="e.g. React, Python, TensorFlow"
+                                                    className="bg-gray-50 border-gray-200 text-gray-900"
+                                                    value={formData.techStack}
+                                                    onChange={(e) => setFormData({ ...formData, techStack: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label className="text-gray-700">Your Name *</Label>
+                                                    <Input
+                                                        className="bg-gray-50 border-gray-200 text-gray-900"
+                                                        value={formData.name}
+                                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-gray-700">Email *</Label>
+                                                    <Input
+                                                        type="email"
+                                                        className="bg-gray-50 border-gray-200 text-gray-900"
+                                                        value={formData.email}
+                                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                        <CardFooter>
+                                            <Button
+                                                type="submit"
+                                                className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold rounded-full py-5"
+                                                disabled={isSubmitting}
+                                            >
+                                                {isSubmitting ? (
+                                                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                                                ) : (
+                                                    "Submit Idea for Review"
+                                                )}
+                                            </Button>
+                                        </CardFooter>
+                                    </form>
                                 </Card>
                             </div>
                         </TabsContent>

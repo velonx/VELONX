@@ -1,32 +1,64 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, Key, Folder, Code, Brain, Shield, Smartphone, Server, BookOpen, Sparkles, Zap, RotateCcw, Play, Trophy } from "lucide-react";
+import { Search, Key, Folder, Code, Brain, Shield, Smartphone, Server, BookOpen, Sparkles, Zap, RotateCcw, Play, Trophy, Download, ExternalLink, ChevronRight, ArrowRight } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function ResourcesPage() {
     const [typingText, setTypingText] = useState("");
     const targetText = 'const velonx = "Building Futures";';
     const [wpm, setWpm] = useState(0);
+    const [isTyping, setIsTyping] = useState(false);
 
     const categories = [
-        { id: 1, name: "Web Development", items: 24, icon: Code, color: "from-cyan-500 to-blue-500" },
-        { id: 2, name: "Data Structures", items: 36, icon: Folder, color: "from-green-500 to-emerald-500" },
-        { id: 3, name: "Machine Learning", items: 18, icon: Brain, color: "from-violet-500 to-purple-500" },
-        { id: 4, name: "Cybersecurity", items: 12, icon: Shield, color: "from-red-500 to-orange-500" },
-        { id: 5, name: "Mobile Development", items: 15, icon: Smartphone, color: "from-yellow-500 to-orange-500" },
-        { id: 6, name: "DevOps & Cloud", items: 20, icon: Server, color: "from-cyan-500 to-teal-500" },
+        { id: 1, name: "Web Development", items: 24, icon: Code, color: "bg-blue-100 text-blue-600" },
+        { id: 2, name: "Data Structures", items: 36, icon: Folder, color: "bg-green-100 text-green-600" },
+        { id: 3, name: "Machine Learning", items: 18, icon: Brain, color: "bg-purple-100 text-purple-600" },
+        { id: 4, name: "Cybersecurity", items: 12, icon: Shield, color: "bg-red-100 text-red-600" },
+        { id: 5, name: "Mobile Development", items: 15, icon: Smartphone, color: "bg-orange-100 text-orange-600" },
+        { id: 6, name: "DevOps & Cloud", items: 20, icon: Server, color: "bg-cyan-100 text-cyan-600" },
     ];
 
     const roadmaps = [
-        { title: "Frontend Developer", duration: "3-6 months", level: "Beginner", color: "cyan" },
-        { title: "Backend Developer", duration: "4-8 months", level: "Intermediate", color: "violet" },
-        { title: "Full Stack Developer", duration: "6-12 months", level: "Advanced", color: "yellow" },
-        { title: "AI/ML Engineer", duration: "8-12 months", level: "Advanced", color: "violet" },
+        { title: "Frontend Developer", duration: "3-6 months", level: "Beginner", color: "#219EBC" },
+        { title: "Backend Developer", duration: "4-8 months", level: "Intermediate", color: "#6A96A0" },
+        { title: "Full Stack Developer", duration: "6-12 months", level: "Advanced", color: "#E9C46A" },
+        { title: "AI/ML Engineer", duration: "8-12 months", level: "Advanced", color: "#F4A261" },
     ];
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        toast.success("Searching for the best resources...");
+    };
+
+    const handleCategoryClick = (categoryName: string) => {
+        window.open("https://keyracer.in", "_blank");
+    };
+
+    const handleRoadmapClick = (title: string) => {
+        toast.success(`Starting your ${title} journey!`);
+    };
+
+    const handleDownload = (resourceName: string) => {
+        toast.success(`Downloading ${resourceName}...`);
+    };
+
+    const handleTypingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setTypingText(val);
+        if (!isTyping && val.length > 0) setIsTyping(true);
+
+        if (val === targetText) {
+            toast.success("Correct! Your typing speed is improving.");
+            setTypingText("");
+            setIsTyping(false);
+            setWpm(prev => Math.min(prev + 5, 120));
+        }
+    };
 
     return (
         <div className="min-h-screen pt-24 bg-white">
@@ -44,150 +76,112 @@ export default function ResourcesPage() {
                         <p className="text-gray-600 text-xl mb-8 max-w-2xl mx-auto">
                             Curated roadmaps, tutorials, notes, and tools to accelerate your learning journey.
                         </p>
-                        <div className="relative max-w-xl mx-auto">
+                        <form onSubmit={handleSearch} className="relative max-w-xl mx-auto">
                             <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                            <Input placeholder="Search tutorials, roadmaps, notes..." className="pl-14 py-7 rounded-full bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 text-lg" />
-                        </div>
+                            <Input placeholder="Search tutorials, roadmaps, notes..." className="pl-14 py-7 rounded-full bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 text-lg shadow-sm focus:ring-2 focus:ring-[#219EBC]/20" />
+                        </form>
                     </div>
                 </div>
             </section>
 
             <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
-            {/* KeyRacer Section */}
-            <section className="py-16 animate-on-scroll bg-gray-50">
 
+
+            {/* Categories */}
+            <section className="py-20 animate-on-scroll bg-white">
                 <div className="container mx-auto px-4">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div>
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
-                                    <Key className="w-7 h-7 text-black" />
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-black text-gray-900 mb-4">Browse by Category</h2>
+                        <div className="w-20 h-1 bg-[#219EBC] mx-auto rounded-full" />
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat.id}
+                                onClick={() => handleCategoryClick(cat.name)}
+                                className="group bg-gray-50 hover:bg-white p-6 rounded-2xl border border-gray-100 hover:border-[#219EBC] hover:shadow-xl transition-all text-center"
+                            >
+                                <div className={`w-14 h-14 rounded-2xl ${cat.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
+                                    <cat.icon className="w-7 h-7" />
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-white">KeyRacer</h2>
-                                    <p className="text-gray-500">Typing Speed Trainer</p>
-                                </div>
-                            </div>
-                            <p className="text-gray-400 mb-6">
-                                Boost your coding speed and efficiency. Practice typing common code patterns, algorithms, and syntax.
-                            </p>
-                            <div className="grid grid-cols-3 gap-4 mb-6">
-                                <div className="glass rounded-xl p-4 text-center border border-white/10">
-                                    <div className="text-2xl font-bold gradient-text-yellow">85</div>
-                                    <div className="text-gray-500 text-sm">Avg WPM</div>
-                                </div>
-                                <div className="glass rounded-xl p-4 text-center border border-white/10">
-                                    <div className="text-2xl font-bold gradient-text-cyan">98%</div>
-                                    <div className="text-gray-500 text-sm">Accuracy</div>
-                                </div>
-                                <div className="glass rounded-xl p-4 text-center border border-white/10">
-                                    <div className="text-2xl font-bold gradient-text-violet">#42</div>
-                                    <div className="text-gray-500 text-sm">Your Rank</div>
-                                </div>
-                            </div>
-                            <Button className="glow-button-yellow text-black font-semibold rounded-full px-6">
-                                <Trophy className="w-4 h-4 mr-2" /> View Leaderboard
-                            </Button>
-                        </div>
-
-                        {/* Typing Practice */}
-                        <div className="glass rounded-3xl p-6 border border-white/10">
-                            <div className="flex justify-between items-center mb-6">
-                                <Badge className="bg-green-500/20 text-green-400 border-0">JavaScript</Badge>
-                                <div className="flex items-center gap-2 text-gray-400">
-                                    <Zap className="w-4 h-4 text-yellow-400" />
-                                    <span className="font-mono">{wpm} WPM</span>
-                                </div>
-                            </div>
-
-                            <div className="bg-black/30 rounded-2xl p-5 mb-5 font-mono">
-                                <p className="text-gray-500 text-sm mb-2">Type this:</p>
-                                <div className="text-lg typing-cursor">
-                                    {targetText.split('').map((char, i) => (
-                                        <span key={i} className={i < typingText.length ? typingText[i] === char ? 'text-green-400' : 'text-red-400 bg-red-400/20' : 'text-gray-500'}>
-                                            {char}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <Input
-                                value={typingText}
-                                onChange={(e) => { setTypingText(e.target.value); setWpm(Math.floor(Math.random() * 30) + 60); }}
-                                placeholder="Start typing here..."
-                                className="bg-white/5 border-white/10 text-white font-mono py-5 rounded-xl mb-4"
-                            />
-
-                            <div className="flex gap-3">
-                                <Button className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-black rounded-full" onClick={() => setTypingText("")}>
-                                    <RotateCcw className="w-4 h-4 mr-2" /> Reset
-                                </Button>
-                                <Button className="flex-1 bg-green-500 hover:bg-green-600 text-black rounded-full">
-                                    <Play className="w-4 h-4 mr-2" /> Next
-                                </Button>
-                            </div>
-                        </div>
+                                <h3 className="font-bold text-gray-900 mb-1 group-hover:text-[#219EBC] transition-colors">{cat.name}</h3>
+                                <p className="text-gray-500 text-sm">{cat.items} resources</p>
+                            </button>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-            {/* Categories */}
-            <section className="py-16 animate-on-scroll">
+            {/* Roadmaps */}
+            <section className="py-20 animate-on-scroll bg-gray-50">
                 <div className="container mx-auto px-4">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-black text-white mb-3">Browse by Category</h2>
-                        <p className="text-gray-400">Explore our curated collection of learning resources.</p>
+                    <div className="flex justify-between items-end mb-12">
+                        <div>
+                            <h2 className="text-3xl font-black text-gray-900 mb-2">Step-by-Step Roadmaps</h2>
+                            <p className="text-gray-500">Follow these path to master your favorite stack</p>
+                        </div>
+                        <Button variant="outline" className="rounded-full border-gray-300 text-gray-700 hidden md:flex">
+                            View All Paths <ChevronRight className="w-4 h-4 ml-2" />
+                        </Button>
                     </div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {categories.map((cat) => (
-                            <Card key={cat.id} className={`glass border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer group hover-lift animate-fade-in-up stagger-${cat.id}`}>
-                                <CardHeader className="flex flex-row items-center gap-4">
-                                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                                        <cat.icon className="w-7 h-7 text-white" />
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {roadmaps.map((map) => (
+                            <Card key={map.title} className="bg-white border border-gray-200 hover:border-[#219EBC] transition-all group cursor-pointer overflow-hidden shadow-sm hover:shadow-lg">
+                                <CardHeader>
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="p-3 rounded-xl bg-gray-50 text-gray-900">
+                                            <BookOpen className="w-6 h-6" style={{ color: map.color }} />
+                                        </div>
+                                        <Badge className="bg-gray-100 text-gray-600 border-0">{map.level}</Badge>
                                     </div>
-                                    <div>
-                                        <CardTitle className="text-white text-lg group-hover:text-cyan-400 transition-colors">{cat.name}</CardTitle>
-                                        <CardDescription className="text-gray-500">{cat.items} resources</CardDescription>
-                                    </div>
+                                    <CardTitle className="text-gray-900 group-hover:text-[#219EBC] transition-colors">{map.title}</CardTitle>
+                                    <CardDescription>{map.duration} duration</CardDescription>
                                 </CardHeader>
+                                <CardFooter>
+                                    <Button
+                                        onClick={() => handleRoadmapClick(map.title)}
+                                        className="w-full bg-gray-50 hover:bg-[#219EBC] text-[#219EBC] hover:text-white border-0 font-bold rounded-full group/btn"
+                                    >
+                                        Start Path <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         ))}
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-            {/* Roadmaps */}
-            <section className="py-16 animate-on-scroll">
+            {/* Resources Grid */}
+            <section className="py-20 animate-on-scroll bg-white">
                 <div className="container mx-auto px-4">
-                    <div className="flex justify-between items-center mb-10">
-                        <div>
-                            <h2 className="text-3xl font-black text-white mb-2">Learning Roadmaps</h2>
-                            <p className="text-gray-400">Structured paths to master different tech stacks</p>
-                        </div>
-                        <Button variant="outline" className="rounded-full border-white/20 text-gray-300 hover:bg-white/5">View All</Button>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-                        {roadmaps.map((roadmap, index) => (
-                            <Card key={index} className={`glass border border-white/10 hover:border-cyan-500/30 transition-all overflow-hidden group hover-lift tilt-hover animate-fade-in-up stagger-${index + 1}`}>
-                                <div className={`h-24 bg-gradient-to-br ${roadmap.color === 'cyan' ? 'from-cyan-500/20 to-blue-500/20' : roadmap.color === 'violet' ? 'from-violet-500/20 to-purple-500/20' : 'from-yellow-500/20 to-orange-500/20'} flex items-center justify-center`}>
-                                    <BookOpen className="w-10 h-10 text-white/50 group-hover:scale-110 transition-transform" />
+                    <h2 className="text-2xl font-black text-gray-900 mb-8">Popular Downloads</h2>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {[
+                            { title: "React Cheat Sheet", type: "PDF", size: "2.4 MB" },
+                            { title: "Node.js Best Practices", type: "Guide", size: "1.8 MB" },
+                            { title: "System Design Primer", type: "E-Book", size: "5.2 MB" },
+                        ].map((res, i) => (
+                            <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-[#219EBC] shadow-sm">
+                                        <Download className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900">{res.title}</h4>
+                                        <p className="text-gray-500 text-sm">{res.type} • {res.size}</p>
+                                    </div>
                                 </div>
-                                <CardHeader>
-                                    <Badge variant="outline" className="w-fit border-white/20 text-gray-400 mb-2">{roadmap.level}</Badge>
-                                    <CardTitle className="text-white text-lg">{roadmap.title}</CardTitle>
-                                    <CardDescription className="text-gray-500">{roadmap.duration}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <Button className="w-full rounded-full" variant="outline">Start Learning</Button>
-                                </CardContent>
-                            </Card>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-gray-400 hover:text-[#219EBC]"
+                                    onClick={() => handleDownload(res.title)}
+                                >
+                                    <Download className="w-5 h-5" />
+                                </Button>
+                            </div>
                         ))}
                     </div>
                 </div>
