@@ -1,11 +1,12 @@
-"use client";
-
 import { motion } from "framer-motion";
 import { FileText, CheckCircle, AlertCircle, Scale, PenTool } from "lucide-react";
 
+// Enable ISR with revalidation every 30 days (2592000 seconds)
+export const revalidate = 2592000;
+
 export default function TermsPage() {
     return (
-        <div className="min-h-screen pt-24 bg-white">
+        <div className="min-h-screen pt-24 bg-background">
             {/* Header Section */}
             <section className="py-20 bg-gradient-to-b from-gray-50 to-white text-center">
                 <div className="container mx-auto px-4">
@@ -19,7 +20,7 @@ export default function TermsPage() {
                     <motion.h1
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-4xl md:text-5xl font-black text-gray-900 mb-6"
+                        className="text-4xl md:text-5xl font-black text-foreground mb-6"
                     >
                         Terms of <span className="text-[#FFB703]">Service</span>
                     </motion.h1>
@@ -27,7 +28,7 @@ export default function TermsPage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-gray-500 text-lg max-w-2xl mx-auto"
+                        className="text-muted-foreground text-lg max-w-2xl mx-auto"
                     >
                         Please read these terms carefully before using our platform. By accessing Velonx, you agree to be bound by these conditions.
                     </motion.p>
@@ -66,26 +67,26 @@ export default function TermsPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="group flex flex-col md:flex-row gap-8 bg-white p-8 md:p-12 rounded-[48px] border border-gray-100 hover:border-[#FFB703]/30 transition-all shadow-xl shadow-black/5"
+                                className="group flex flex-col md:flex-row gap-8 bg-background p-8 md:p-12 rounded-[48px] border border-border hover:border-[#FFB703]/30 transition-all shadow-xl shadow-black/5"
                             >
                                 <div className="w-16 h-16 bg-gray-50 rounded-[24px] flex items-center justify-center text-[#FFB703] group-hover:scale-110 transition-transform shrink-0">
                                     <term.icon className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black text-gray-900 mb-4">{term.title}</h2>
-                                    <p className="text-gray-500 text-lg leading-relaxed">{term.content}</p>
+                                    <h2 className="text-2xl font-black text-foreground mb-4">{term.title}</h2>
+                                    <p className="text-muted-foreground text-lg leading-relaxed">{term.content}</p>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
 
                     {/* Disclaimer */}
-                    <div className="mt-20 p-10 bg-gray-50 rounded-[40px] border border-dashed border-gray-200">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <AlertCircle className="w-5 h-5 text-gray-400" />
+                    <div className="mt-20 p-10 bg-gray-50 rounded-[40px] border border-dashed border-border">
+                        <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                            <AlertCircle className="w-5 h-5 text-muted-foreground" />
                             Disclaimer
                         </h3>
-                        <p className="text-gray-500 leading-relaxed italic">
+                        <p className="text-muted-foreground leading-relaxed italic">
                             The materials on Velonx's website are provided on an 'as is' basis. Velonx makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
                         </p>
                     </div>

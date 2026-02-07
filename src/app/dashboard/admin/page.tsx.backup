@@ -1,0 +1,2342 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+    Users,
+    Lightbulb,
+    BarChart3,
+    XCircle,
+    Calendar,
+    Eye,
+    Download,
+    Search,
+    MoreHorizontal,
+    ShieldCheck,
+    Layout,
+    PenTool,
+    Send,
+    CheckCircle2,
+    Settings,
+    Edit,
+    Trash2,
+    Mail,
+    Phone,
+    Plus,
+    Briefcase,
+    BookOpen
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { useUserRequests, usePlatformStats } from "@/lib/api/hooks";
+import { adminApi } from "@/lib/api/client";
+import { DailyCheckIn } from "@/components/daily-check-in";
+import ProjectSubmissions from "@/components/admin/ProjectSubmissions";
+import CareerManagement from "@/components/admin/CareerManagement";
+import PerformanceMetrics from "@/components/admin/PerformanceMetrics";
+
+export default function AdminDashboard() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const [activeTab, setActiveTab] = useState("management");
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const [blogImagePreview, setBlogImagePreview] = useState<string | null>(null);
+    const [blogs, setBlogs] = useState<any[]>([]);
+    const [loadingBlogs, setLoadingBlogs] = useState(false);
+    const [editingBlog, setEditingBlog] = useState<any | null>(null);
+    const formRef = useRef<HTMLDivElement>(null);
+    const [events, setEvents] = useState<any[]>([]);
+    const [loadingEvents, setLoadingEvents] = useState(false);
+    const [selectedEventForAttendees, setSelectedEventForAttendees] = useState<any | null>(null);
+    const [eventAttendees, setEventAttendees] = useState<any[]>([]);
+    
+    // Mentor management state
+    const [mentors, setMentors] = useState<any[]>([]);
+    const [loadingMentors, setLoadingMentors] = useState(false);
+    const [editingMentor, setEditingMentor] = useState<any | null>(null);
+    const [mentorImagePreview, setMentorImagePreview] = useState<string | null>(null);
+    const [uploadingMentorImage, setUploadingMentorImage] = useState(false);
+    const [mentorApplications, setMentorApplications] = useState<any[]>([]);
+    const [loadingApplications, setLoadingApplications] = useState(false);
+    const mentorFormRef = useRef<HTMLDivElement>(null);
+
+    // Resource management state
+    const [resources, setResources] = useState<any[]>([]);
+    const [loadingResources, setLoadingResources] = useState(false);
+    const [editingResource, setEditingResource] = useState<any | null>(null);
+    const [resourceImagePreview, setResourceImagePreview] = useState<string | null>(null);
+    const [uploadingResourceImage, setUploadingResourceImage] = useState(false);
+    const [deletingResourceId, setDeletingResourceId] = useState<string | null>(null);
+    const resourceFormRef = useRef<HTMLDivElement>(null);
+    const resourceFormElementRef = useRef<HTMLFormElement>(null);
+
+    // Fetch real data from API
+    const { data: userRequests, loading: requestsLoading, refetch: refetchRequests } = useUserRequests({ 
+        status: 'PENDING',
+        pageSize: 10 
+    });
+    const { data: platformStats, loading: statsLoading } = usePlatformStats();
+
+    // Fetch blogs when blog tab is active
+    useEffect(() => {
+        if (activeTab === "blog") {
+            fetchBlogs();
+        } else if (activeTab === "events") {
+            fetchEvents();
+        } else if (activeTab === "mentors") {
+            fetchMentors();
+            fetchMentorApplications();
+        } else if (activeTab === "resources") {
+            fetchResources();
+        }
+    }, [activeTab]);
+
+    const fetchEvents = async () => {
+        setLoadingEvents(true);
+        try {
+            const response = await fetch('/api/events?pageSize=50');
+            const data = await response.json();
+            if (data.success) {
+                setEvents(data.data);
+            }
+        } catch (error) {
+            toast.error("Failed to load events");
+        } finally {
+            setLoadingEvents(false);
+        }
+    };
+
+    // Mentor management functions
+    const fetchMentors = async () => {
+        setLoadingMentors(true);
+        try {
+            const response = await fetch('/api/mentors?pageSize=100');
+            const data = await response.json();
+            if (data.success) {
+                setMentors(data.data);
+            }
+        } catch (error) {
+            toast.error("Failed to load mentors");
+        } finally {
+            setLoadingMentors(false);
+        }
+    };
+
+    const fetchMentorApplications = async () => {
+        setLoadingApplications(true);
+        try {
+            const response = await fetch('/api/admin/requests?type=MENTOR_APPLICATION&status=PENDING&pageSize=50');
+            const data = await response.json();
+            if (data.success) {
+                setMentorApplications(data.data);
+            }
+        } catch (error) {
+            toast.error("Failed to load mentor applications");
+        } finally {
+            setLoadingApplications(false);
+        }
+    };
+
+    const fetchResources = async () => {
+        setLoadingResources(true);
+        try {
+            const response = await fetch('/api/resources?pageSize=100');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                setResources(data.data);
+            } else {
+                throw new Error(data.error?.message || 'Failed to load resources');
+            }
+        } catch (error) {
+            console.error('Error fetching resources:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to load resources';
+            toast.error(errorMessage);
+            // Maintain stable UI state - keep existing resources if any
+        } finally {
+            setLoadingResources(false);
+        }
+    };
+
+    const handleDeleteMentor = async (id: string, name: string) => {
+        if (!confirm(`Are you sure you want to delete mentor "${name}"?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/mentors/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                toast.success("Mentor deleted successfully!");
+                fetchMentors();
+            } else {
+                const error = await response.json();
+                toast.error(error.error?.message || "Failed to delete mentor");
+            }
+        } catch (error) {
+            toast.error("Failed to delete mentor");
+        }
+    };
+
+    const handleDeleteResource = async (id: string, title: string) => {
+        if (!confirm(`Are you sure you want to delete "${title}"?`)) {
+            return;
+        }
+
+        setDeletingResourceId(id);
+        try {
+            const response = await fetch(`/api/resources/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.success) {
+                toast.success("Resource deleted successfully!");
+                fetchResources();
+            } else {
+                throw new Error(data.error?.message || 'Failed to delete resource');
+            }
+        } catch (error) {
+            console.error('Error deleting resource:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to delete resource';
+            toast.error(errorMessage);
+            // Maintain stable UI state - resource remains in list on error
+        } finally {
+            setDeletingResourceId(null);
+        }
+    };
+
+    const handleEditResource = (resource: any) => {
+        setEditingResource(resource);
+        setResourceImagePreview(resource.imageUrl);
+        setTimeout(() => {
+            resourceFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    };
+
+    const handleCancelResourceEdit = () => {
+        setEditingResource(null);
+        setResourceImagePreview(null);
+        // Reset form fields
+        if (resourceFormElementRef.current) {
+            resourceFormElementRef.current.reset();
+        }
+    };
+
+    const handleEditMentor = (mentor: any) => {
+        setEditingMentor(mentor);
+        setMentorImagePreview(mentor.imageUrl);
+        setTimeout(() => {
+            mentorFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    };
+
+    const handleCancelMentorEdit = () => {
+        setEditingMentor(null);
+        setMentorImagePreview(null);
+    };
+
+    const handleNewMentor = () => {
+        setEditingMentor(null);
+        setMentorImagePreview(null);
+        setTimeout(() => {
+            mentorFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    };
+
+    const handleNewResource = () => {
+        setEditingResource(null);
+        setResourceImagePreview(null);
+        if (resourceFormElementRef.current) {
+            resourceFormElementRef.current.reset();
+        }
+        setTimeout(() => {
+            resourceFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    };
+
+    const handleApproveMentorApplication = async (requestId: string, userId: string, userName: string) => {
+        try {
+            // Approve the request
+            await adminApi.approveRequest(requestId);
+            toast.success(`Mentor application for "${userName}" approved!`);
+            fetchMentorApplications();
+        } catch (error) {
+            toast.error("Failed to approve application");
+        }
+    };
+
+    const handleRejectMentorApplication = async (requestId: string, userName: string) => {
+        try {
+            await adminApi.rejectRequest(requestId, 'Application rejected by admin');
+            toast.success(`Mentor application for "${userName}" rejected.`);
+            fetchMentorApplications();
+        } catch (error) {
+            toast.error("Failed to reject application");
+        }
+    };
+
+    const fetchEventAttendees = async (eventId: string) => {
+        try {
+            const response = await fetch(`/api/events/${eventId}/attendees`);
+            const data = await response.json();
+            if (data.success) {
+                setEventAttendees(data.data.attendees);
+            }
+        } catch (error) {
+            toast.error("Failed to load attendees");
+        }
+    };
+
+    const handleViewAttendees = async (event: any) => {
+        setSelectedEventForAttendees(event);
+        await fetchEventAttendees(event.id);
+    };
+
+    const fetchBlogs = async () => {
+        setLoadingBlogs(true);
+        try {
+            const response = await fetch('/api/blog?pageSize=50');
+            const data = await response.json();
+            if (data.success) {
+                setBlogs(data.data);
+            }
+        } catch (error) {
+            toast.error("Failed to load blogs");
+        } finally {
+            setLoadingBlogs(false);
+        }
+    };
+
+    const handleDeleteBlog = async (id: string, title: string) => {
+        if (!confirm(`Are you sure you want to delete "${title}"?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/blog/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                toast.success("Blog deleted successfully!");
+                fetchBlogs();
+            } else {
+                const error = await response.json();
+                toast.error(error.error?.message || "Failed to delete blog");
+            }
+        } catch (error) {
+            toast.error("Failed to delete blog");
+        }
+    };
+
+    const handleEditBlog = (blog: any) => {
+        setEditingBlog(blog);
+        setBlogImagePreview(blog.imageUrl);
+        // Scroll to form
+        setTimeout(() => {
+            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingBlog(null);
+        setBlogImagePreview(null);
+    };
+
+    const handleNewPost = () => {
+        setEditingBlog(null);
+        setBlogImagePreview(null);
+        // Scroll to form
+        setTimeout(() => {
+            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    };
+
+    useEffect(() => {
+        // Only redirect if we're sure about the authentication status
+        if (status === "loading") return; // Wait for session to load
+        
+        if (status === "unauthenticated") {
+            router.push("/auth/login");
+        } else if (status === "authenticated" && session?.user?.role !== "ADMIN") {
+            router.push("/dashboard/student");
+        }
+    }, [status, session, router]);
+
+    // Show loading state while checking authentication
+    if (status === "loading") {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Don't render dashboard if not authenticated or not admin
+    if (status === "unauthenticated" || session?.user?.role !== "ADMIN") {
+        return null;
+    }
+
+    const handleRequestAction = async (id: string, name: string, action: 'approve' | 'reject') => {
+        try {
+            if (action === 'approve') {
+                await adminApi.approveRequest(id);
+            } else {
+                await adminApi.rejectRequest(id, 'Rejected by admin');
+            }
+            toast.success(`User "${name}" ${action === 'approve' ? 'approved' : 'rejected'} successfully.`);
+            refetchRequests();
+        } catch (error) {
+            toast.error(`Failed to ${action} user request`);
+        }
+    };
+
+    // Loading state is already handled above, so we can proceed with rendering
+    // if we reach here, user is authenticated and is an admin
+
+    const navItems = [
+        { icon: Layout, label: "Management", value: "management" },
+        { icon: Users, label: "Mentors", value: "mentors" },
+        { icon: Calendar, label: "Events", value: "events" },
+        { icon: PenTool, label: "Blog Authoring", value: "blog" },
+        { icon: BarChart3, label: "Analytics", value: "analytics" },
+        { icon: Activity, label: "Performance", value: "performance" },
+        { icon: Settings, label: "Platform Info", value: "platform" },
+    ];
+
+    const platformStatsData = [
+        { label: "Active Members", value: platformStats?.totalUsers?.toString() ?? "0", change: "+12%", color: "border-[#7FD8D8]" },
+        { label: "Total Events", value: platformStats?.totalEvents?.toString() ?? "0", change: "+3", color: "border-[#FF7F5C]" },
+        { label: "Total Projects", value: platformStats?.totalProjects?.toString() ?? "0", change: "+5", color: "border-[#5E239D]" },
+    ];
+
+    return (
+        <div className="flex min-h-screen bg-[#FDFCFB] pt-20">
+            {/* Left Sidebar */}
+            <aside className="w-80 bg-[#023047] flex flex-col p-8 fixed left-0 top-20 bottom-0 z-20 text-white">
+                <div className="flex items-center gap-3 mb-12">
+                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white font-bold border border-white/20">A</div>
+                    <span className="text-xl font-black tracking-tight">Admin Console</span>
+                </div>
+
+                <div className="mb-12">
+                    <div className="relative inline-block mb-4">
+                        <div className="w-20 h-20 rounded-full border-2 border-[#219EBC] p-1">
+                            <img src={session.user?.image || "/avatars/admin.png"} alt="Admin" className="w-full h-full rounded-full object-cover" />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#219EBC] rounded-full flex items-center justify-center shadow-md">
+                            <ShieldCheck className="w-3 h-3 text-white" />
+                        </div>
+                    </div>
+                    <h2 className="text-xl font-black mb-1">{session.user?.name}</h2>
+                    <p className="text-white/50 text-sm font-medium">{session.user?.email}</p>
+                </div>
+
+                <nav className="flex-1 space-y-2">
+                    {navItems.map((item) => (
+                        <button
+                            key={item.label}
+                            onClick={() => setActiveTab(item.value)}
+                            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold ${activeTab === item.value
+                                ? "bg-white/10 text-[#219EBC]"
+                                : "text-white/50 hover:bg-white/5 hover:text-white"
+                                }`}
+                        >
+                            <item.icon className="w-5 h-5" />
+                            {item.label}
+                        </button>
+                    ))}
+                </nav>
+
+                <div className="mt-auto">
+                    <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
+                        <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-3">System Healthy</p>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            <span className="text-sm font-bold">Latency: 24ms</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 ml-80 p-12">
+                <header className="flex items-center justify-between mb-12">
+                    <div>
+                        <h1 className="text-3xl font-black text-[#023047] mb-2">Command Center</h1>
+                        <p className="text-gray-400 font-medium tracking-tight">Managing the Velonx Ecosystem</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Button onClick={() => router.push("/")} className="h-14 px-8 bg-white border border-gray-100 text-[#023047] font-black rounded-2xl shadow-sm hover:bg-gray-50 flex items-center gap-2">
+                            View Site <Eye className="w-5 h-5" />
+                        </Button>
+                    </div>
+                </header>
+
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <div className="flex justify-between items-center mb-8">
+                        <TabsList className="bg-white p-1 rounded-2xl border border-gray-100 shadow-sm">
+                            <TabsTrigger value="management" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Review Center</TabsTrigger>
+                            <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Post Blog</TabsTrigger>
+                            <TabsTrigger value="career" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Career</TabsTrigger>
+                            <TabsTrigger value="resources" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Resources</TabsTrigger>
+                        </TabsList>
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#219EBC] transition-colors" />
+                            <input
+                                type="text"
+                                placeholder="Search requests..."
+                                className="h-12 bg-white border border-gray-100 rounded-xl pl-12 pr-6 w-48 shadow-sm focus:ring-2 focus:ring-[#219EBC] outline-none transition-all"
+                            />
+                        </div>
+                    </div>
+
+                    <TabsContent value="management" className="space-y-12">
+                        {/* Member Requests */}
+                        <section>
+                            <h3 className="text-xl font-black text-[#023047] mb-6 flex items-center gap-2">
+                                <Users className="w-5 h-5 text-[#219EBC]" /> Pending Approvals
+                            </h3>
+                            <div className="bg-white rounded-[40px] border border-gray-50 shadow-xl shadow-black/[0.02] overflow-hidden">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead>
+                                            <tr className="bg-gray-50/50 border-b border-gray-50">
+                                                <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Member</th>
+                                                <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest text-center">Status</th>
+                                                <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50">
+                                            {userRequests && userRequests.length > 0 ? (
+                                                userRequests.map((r) => (
+                                                    <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
+                                                        <td className="px-8 py-6">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center font-black text-[#219EBC]">
+                                                                    {r.user?.name?.[0] || 'U'}
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-bold text-[#023047]">{r.user?.name || 'Unknown'}</p>
+                                                                    <p className="text-xs text-gray-400">{r.user?.email}</p>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-8 py-6 text-center">
+                                                            <Badge className="bg-orange-50 text-orange-600 border-0 font-bold px-3 py-1 text-[10px]">
+                                                                {r.status}
+                                                            </Badge>
+                                                        </td>
+                                                        <td className="px-8 py-6 text-right">
+                                                            <div className="flex items-center justify-end gap-2">
+                                                                <button 
+                                                                    onClick={() => handleRequestAction(r.id, r.user?.name || 'User', 'approve')} 
+                                                                    className="w-10 h-10 rounded-xl bg-green-50 hover:bg-green-100 text-green-600 flex items-center justify-center transition-all"
+                                                                >
+                                                                    <CheckCircle2 className="w-5 h-5" />
+                                                                </button>
+                                                                <button 
+                                                                    onClick={() => handleRequestAction(r.id, r.user?.name || 'User', 'reject')} 
+                                                                    className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-all"
+                                                                >
+                                                                    <XCircle className="w-5 h-5" />
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={3} className="px-8 py-12 text-center text-gray-400">
+                                                        No pending requests
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Project Ideas - Removed as not in current API */}
+                        <section>
+                            <h3 className="text-xl font-black text-[#023047] mb-6 flex items-center gap-2">
+                                <Lightbulb className="w-5 h-5 text-orange-500" /> Platform Statistics
+                            </h3>
+                            <div className="grid grid-cols-3 gap-6">
+                                <Card className="bg-white border-0 rounded-[32px] p-8 shadow-sm border border-gray-50">
+                                    <div className="text-center">
+                                        <p className="text-4xl font-black text-[#023047] mb-2">{platformStats?.totalUsers || 0}</p>
+                                        <p className="text-gray-400 text-sm font-bold">Total Users</p>
+                                    </div>
+                                </Card>
+                                <Card className="bg-white border-0 rounded-[32px] p-8 shadow-sm border border-gray-50">
+                                    <div className="text-center">
+                                        <p className="text-4xl font-black text-[#023047] mb-2">{platformStats?.totalProjects || 0}</p>
+                                        <p className="text-gray-400 text-sm font-bold">Total Projects</p>
+                                    </div>
+                                </Card>
+                                <Card className="bg-white border-0 rounded-[32px] p-8 shadow-sm border border-gray-50">
+                                    <div className="text-center">
+                                        <p className="text-4xl font-black text-[#023047] mb-2">{platformStats?.pendingRequests || 0}</p>
+                                        <p className="text-gray-400 text-sm font-bold">Pending Requests</p>
+                                    </div>
+                                </Card>
+                            </div>
+                        </section>
+
+                        {/* Project Submissions */}
+                        <ProjectSubmissions />
+                    </TabsContent>
+
+                    <TabsContent value="mentors" className="space-y-12">
+                        {/* Mentor Applications Section */}
+                        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                            <CardHeader className="p-12 border-b border-gray-50">
+                                <h3 className="text-3xl font-black text-[#023047] mb-2">Mentor Applications</h3>
+                                <p className="text-gray-400">Review and approve mentor applications</p>
+                            </CardHeader>
+                            <CardContent className="p-12">
+                                {loadingApplications ? (
+                                    <div className="text-center py-12">
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                                        <p className="text-gray-600">Loading applications...</p>
+                                    </div>
+                                ) : mentorApplications.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                        <p className="text-gray-400 text-lg font-bold">No pending applications</p>
+                                        <p className="text-gray-400 text-sm mt-2">Mentor applications will appear here</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {mentorApplications.map((application) => (
+                                            <div 
+                                                key={application.id} 
+                                                className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-all"
+                                            >
+                                                <div className="flex items-start gap-6">
+                                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#219EBC] to-[#023047] flex items-center justify-center text-white font-black text-2xl shadow-lg">
+                                                        {application.user?.name?.[0] || 'U'}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-start justify-between mb-2">
+                                                            <div>
+                                                                <h4 className="text-lg font-bold text-[#023047] mb-1">{application.user?.name || 'Unknown'}</h4>
+                                                                <p className="text-sm text-gray-500 flex items-center gap-2">
+                                                                    <Mail className="w-4 h-4" />
+                                                                    {application.user?.email}
+                                                                </p>
+                                                            </div>
+                                                            <Badge className="bg-orange-50 text-orange-600 border-0 font-bold">
+                                                                {application.status}
+                                                            </Badge>
+                                                        </div>
+                                                        {application.reason && (
+                                                            <p className="text-sm text-gray-600 mt-3 p-4 bg-white rounded-xl">
+                                                                {application.reason}
+                                                            </p>
+                                                        )}
+                                                        <div className="flex items-center gap-4 mt-4">
+                                                            <span className="text-xs text-gray-400">
+                                                                Applied: {new Date(application.createdAt).toLocaleDateString()}
+                                                            </span>
+                                                            <div className="ml-auto flex gap-2">
+                                                                <button
+                                                                    onClick={() => handleApproveMentorApplication(application.id, application.userId, application.user?.name || 'User')}
+                                                                    className="px-6 h-10 rounded-xl bg-green-50 hover:bg-green-100 text-green-600 flex items-center gap-2 transition-all font-bold"
+                                                                >
+                                                                    <CheckCircle2 className="w-4 h-4" />
+                                                                    Approve
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleRejectMentorApplication(application.id, application.user?.name || 'User')}
+                                                                    className="px-6 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center gap-2 transition-all font-bold"
+                                                                >
+                                                                    <XCircle className="w-4 h-4" />
+                                                                    Reject
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Manage Mentors Section */}
+                        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                            <CardHeader className="p-12 border-b border-gray-50">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-3xl font-black text-[#023047] mb-2">Manage Mentors</h3>
+                                        <p className="text-gray-400">View, edit, and delete mentors</p>
+                                    </div>
+                                    <Button 
+                                        onClick={handleNewMentor}
+                                        className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                                    >
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        Add Mentor
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-12">
+                                {loadingMentors ? (
+                                    <div className="text-center py-12">
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                                        <p className="text-gray-600">Loading mentors...</p>
+                                    </div>
+                                ) : mentors.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                        <p className="text-gray-400 text-lg font-bold">No mentors yet</p>
+                                        <p className="text-gray-400 text-sm mt-2">Add your first mentor to get started</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-6">
+                                        {mentors.map((mentor) => (
+                                            <div 
+                                                key={mentor.id} 
+                                                className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-all"
+                                            >
+                                                <div className="flex items-start gap-4">
+                                                    {mentor.imageUrl ? (
+                                                        <img 
+                                                            src={mentor.imageUrl} 
+                                                            alt={mentor.name}
+                                                            className="w-16 h-16 rounded-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#219EBC] to-[#023047] flex items-center justify-center text-white font-black text-xl shadow-lg">
+                                                            {mentor.name.split(' ').map((n: string) => n[0]).join('')}
+                                                        </div>
+                                                    )}
+                                                    <div className="flex-1">
+                                                        <div className="flex items-start justify-between mb-2">
+                                                            <div>
+                                                                <h4 className="text-lg font-bold text-[#023047] mb-1">{mentor.name}</h4>
+                                                                <p className="text-sm text-gray-500">{mentor.company}</p>
+                                                            </div>
+                                                            <Badge className={`${mentor.available ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600'} border-0 font-bold text-xs`}>
+                                                                {mentor.available ? 'Available' : 'Unavailable'}
+                                                            </Badge>
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-1 mb-3">
+                                                            {mentor.expertise.slice(0, 3).map((skill: string, idx: number) => (
+                                                                <span key={idx} className="text-xs bg-white px-2 py-1 rounded-lg text-gray-600">
+                                                                    {skill}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                        <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                                                            <span>⭐ {mentor.rating.toFixed(1)}</span>
+                                                            <span>• {mentor.totalSessions} sessions</span>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => handleEditMentor(mentor)}
+                                                                className="flex-1 h-9 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center gap-2 transition-all font-bold text-sm"
+                                                            >
+                                                                <Edit className="w-4 h-4" />
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteMentor(mentor.id, mentor.name)}
+                                                                className="flex-1 h-9 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center gap-2 transition-all font-bold text-sm"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Add/Edit Mentor Form */}
+                        <div ref={mentorFormRef}>
+                            <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                                <CardHeader className="p-12 border-b border-gray-50">
+                                    <h3 className="text-3xl font-black text-[#023047] mb-2">
+                                        {editingMentor ? 'Edit Mentor' : 'Add New Mentor'}
+                                    </h3>
+                                    <p className="text-gray-400">
+                                        {editingMentor ? 'Update mentor information' : 'Add a new mentor to the platform'}
+                                    </p>
+                                </CardHeader>
+                                <CardContent className="p-12">
+                                    <form className="space-y-8" onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        const form = e.currentTarget;
+                                        const formData = new FormData(form);
+                                        
+                                        try {
+                                            const expertise = (formData.get('expertise') as string)
+                                                .split(',')
+                                                .map(tag => tag.trim())
+                                                .filter(tag => tag.length > 0);
+
+                                            const mentorData = {
+                                                name: formData.get('name') as string,
+                                                email: formData.get('email') as string,
+                                                company: formData.get('company') as string,
+                                                bio: formData.get('bio') as string,
+                                                expertise: expertise,
+                                                imageUrl: formData.get('imageUrl') as string || null,
+                                                linkedinUrl: formData.get('linkedinUrl') as string || null,
+                                                available: formData.get('available') === 'true',
+                                            };
+
+                                            const url = editingMentor ? `/api/mentors/${editingMentor.id}` : '/api/mentors';
+                                            const method = editingMentor ? 'PATCH' : 'POST';
+
+                                            const response = await fetch(url, {
+                                                method,
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify(mentorData),
+                                            });
+
+                                            const data = await response.json();
+
+                                            if (response.ok && data.success) {
+                                                toast.success(editingMentor ? "Mentor updated successfully! 🎉" : "Mentor added successfully! 🎉");
+                                                if (form && typeof form.reset === 'function') {
+                                                    form.reset();
+                                                }
+                                                setMentorImagePreview(null);
+                                                setEditingMentor(null);
+                                                fetchMentors();
+                                            } else {
+                                                toast.error(data.error?.message || `Failed to ${editingMentor ? 'update' : 'add'} mentor`);
+                                            }
+                                        } catch (error) {
+                                            console.error('Mentor save error:', error);
+                                            toast.error(`Failed to ${editingMentor ? 'update' : 'add'} mentor`);
+                                        }
+                                    }}>
+                                        {editingMentor && (
+                                            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Edit className="w-5 h-5 text-blue-600" />
+                                                    <span className="text-blue-600 font-bold">Editing: {editingMentor.name}</span>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleCancelMentorEdit}
+                                                    className="text-blue-600 hover:text-blue-800 font-bold text-sm"
+                                                >
+                                                    Cancel Edit
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        <div className="grid grid-cols-2 gap-8">
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name *</label>
+                                                <Input 
+                                                    name="name" 
+                                                    required 
+                                                    placeholder="e.g., John Doe" 
+                                                    className="h-14 bg-gray-50 border-0 rounded-2xl"
+                                                    defaultValue={editingMentor?.name || ''}
+                                                />
+                                            </div>
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Email *</label>
+                                                <Input 
+                                                    name="email" 
+                                                    type="email"
+                                                    required 
+                                                    placeholder="e.g., john@company.com" 
+                                                    className="h-14 bg-gray-50 border-0 rounded-2xl"
+                                                    defaultValue={editingMentor?.email || ''}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-8">
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Company *</label>
+                                                <Input 
+                                                    name="company" 
+                                                    required 
+                                                    placeholder="e.g., Google" 
+                                                    className="h-14 bg-gray-50 border-0 rounded-2xl"
+                                                    defaultValue={editingMentor?.company || ''}
+                                                />
+                                            </div>
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">LinkedIn URL</label>
+                                                <Input 
+                                                    name="linkedinUrl" 
+                                                    placeholder="e.g., https://linkedin.com/in/johndoe" 
+                                                    className="h-14 bg-gray-50 border-0 rounded-2xl"
+                                                    defaultValue={editingMentor?.linkedinUrl || ''}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Expertise *</label>
+                                            <Input 
+                                                name="expertise" 
+                                                required 
+                                                placeholder="e.g., React, Node.js, System Design" 
+                                                className="h-14 bg-gray-50 border-0 rounded-2xl"
+                                                defaultValue={editingMentor?.expertise?.join(', ') || ''}
+                                            />
+                                            <p className="text-xs text-gray-400 ml-1">Separate skills with commas</p>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Availability Status</label>
+                                            <select 
+                                                name="available" 
+                                                required 
+                                                className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
+                                                defaultValue={editingMentor?.available !== undefined ? editingMentor.available.toString() : 'true'}
+                                            >
+                                                <option value="true">Available</option>
+                                                <option value="false">Unavailable</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Profile Photo</label>
+                                            <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
+                                                {mentorImagePreview && (
+                                                    <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200 mx-auto">
+                                                        <img 
+                                                            src={mentorImagePreview} 
+                                                            alt="Mentor preview" 
+                                                            className="w-full h-full object-cover"
+                                                            onError={() => {
+                                                                setMentorImagePreview(null);
+                                                                toast.error("Invalid image URL");
+                                                            }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setMentorImagePreview(null)}
+                                                            className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all"
+                                                        >
+                                                            <XCircle className="w-5 h-5" />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                
+                                                <div className="space-y-2">
+                                                    <Input 
+                                                        name="imageUrl" 
+                                                        placeholder="Paste image URL here..." 
+                                                        className="h-12 bg-white border border-gray-200 rounded-xl"
+                                                        defaultValue={editingMentor?.imageUrl || ''}
+                                                        onChange={(e) => {
+                                                            const url = e.target.value;
+                                                            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                                                                setMentorImagePreview(url);
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+
+                                                <div className="relative">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        id="mentorImageUpload"
+                                                        disabled={uploadingMentorImage}
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                setUploadingMentorImage(true);
+                                                                try {
+                                                                    const reader = new FileReader();
+                                                                    reader.onloadend = async () => {
+                                                                        try {
+                                                                            const base64Image = reader.result as string;
+                                                                            
+                                                                            const response = await fetch('/api/upload', {
+                                                                                method: 'POST',
+                                                                                headers: { 'Content-Type': 'application/json' },
+                                                                                body: JSON.stringify({ 
+                                                                                    image: base64Image,
+                                                                                    folder: 'velonx/mentors'
+                                                                                }),
+                                                                            });
+
+                                                                            const data = await response.json();
+                                                                            
+                                                                            if (data.success) {
+                                                                                setMentorImagePreview(data.data.url);
+                                                                                const imageUrlInput = document.querySelector('input[name="imageUrl"]') as HTMLInputElement;
+                                                                                if (imageUrlInput) {
+                                                                                    imageUrlInput.value = data.data.url;
+                                                                                }
+                                                                                toast.success("Image uploaded successfully!");
+                                                                            } else {
+                                                                                toast.error(data.error?.message || "Failed to upload image");
+                                                                            }
+                                                                        } catch (error) {
+                                                                            toast.error("Failed to upload image");
+                                                                        } finally {
+                                                                            setUploadingMentorImage(false);
+                                                                        }
+                                                                    };
+                                                                    reader.readAsDataURL(file);
+                                                                } catch (error) {
+                                                                    toast.error("Failed to process image");
+                                                                    setUploadingMentorImage(false);
+                                                                }
+                                                            }
+                                                        }}
+                                                    />
+                                                    <label
+                                                        htmlFor="mentorImageUpload"
+                                                        className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingMentorImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    >
+                                                        {uploadingMentorImage ? (
+                                                            <>
+                                                                <div className="w-4 h-4 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                                                                Uploading...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Download className="w-4 h-4" />
+                                                                Or upload from computer
+                                                            </>
+                                                        )}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Bio *</label>
+                                            <textarea 
+                                                name="bio"
+                                                required
+                                                className="w-full bg-gray-50 border-0 rounded-[32px] p-8 min-h-[150px] outline-none focus:ring-2 focus:ring-[#219EBC] transition-all" 
+                                                placeholder="Tell us about this mentor's experience and expertise..."
+                                                defaultValue={editingMentor?.bio || ''}
+                                            ></textarea>
+                                        </div>
+
+                                        <Button type="submit" className="w-full h-16 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-[24px] text-lg shadow-xl shadow-[#219EBC]/20">
+                                            {editingMentor ? 'Update Mentor' : 'Add Mentor'} <Users className="w-5 h-5 ml-2" />
+                                        </Button>
+                                    </form>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="events" className="space-y-12">
+                        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                            <CardHeader className="p-12 border-b border-gray-50">
+                                <h3 className="text-3xl font-black text-[#023047] mb-2">Create New Event</h3>
+                                <p className="text-gray-400">Schedule hackathons, workshops, and webinars for the community</p>
+                            </CardHeader>
+                            <CardContent className="p-12">
+                                <form className="space-y-8" onSubmit={async (e) => {
+                                    e.preventDefault();
+                                    const form = e.currentTarget; // Store form reference
+                                    const formData = new FormData(form);
+                                    
+                                    try {
+                                        const eventData = {
+                                            title: formData.get('title') as string,
+                                            description: formData.get('description') as string,
+                                            type: formData.get('type') as 'HACKATHON' | 'WORKSHOP' | 'WEBINAR',
+                                            date: new Date(formData.get('date') as string).toISOString(),
+                                            endDate: formData.get('endDate') ? new Date(formData.get('endDate') as string).toISOString() : null,
+                                            location: formData.get('location') as string || null,
+                                            imageUrl: formData.get('imageUrl') as string || null,
+                                            maxSeats: parseInt(formData.get('maxSeats') as string),
+                                            status: 'UPCOMING' as const,
+                                        };
+
+                                        const response = await fetch('/api/events', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify(eventData),
+                                        });
+
+                                        if (response.ok) {
+                                            toast.success("Event created successfully! 🎉");
+                                            // Safely reset form if it still exists
+                                            if (form && typeof form.reset === 'function') {
+                                                form.reset();
+                                            }
+                                            setImagePreview(null);
+                                        } else {
+                                            const error = await response.json();
+                                            toast.error(error.error?.message || "Failed to create event");
+                                        }
+                                    } catch (error) {
+                                        toast.error("Failed to create event");
+                                    }
+                                }}>
+                                    <div className="grid grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Event Title</label>
+                                            <Input name="title" required placeholder="e.g., AI Hackathon 2024" className="h-14 bg-gray-50 border-0 rounded-2xl" />
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Event Type</label>
+                                            <select name="type" required className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none">
+                                                <option value="HACKATHON">Hackathon</option>
+                                                <option value="WORKSHOP">Workshop</option>
+                                                <option value="WEBINAR">Webinar</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Start Date & Time</label>
+                                            <Input name="date" type="datetime-local" required className="h-14 bg-gray-50 border-0 rounded-2xl" />
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">End Date & Time (Optional)</label>
+                                            <Input name="endDate" type="datetime-local" className="h-14 bg-gray-50 border-0 rounded-2xl" />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Location</label>
+                                            <Input name="location" placeholder="e.g., Virtual / Building A, Room 101" className="h-14 bg-gray-50 border-0 rounded-2xl" />
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Max Seats</label>
+                                            <Input name="maxSeats" type="number" required defaultValue="100" min="1" className="h-14 bg-gray-50 border-0 rounded-2xl" />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Event Image</label>
+                                        <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
+                                            {/* Image Preview */}
+                                            {imagePreview && (
+                                                <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
+                                                    <img 
+                                                        src={imagePreview} 
+                                                        alt="Event preview" 
+                                                        className="w-full h-full object-cover"
+                                                        onError={() => {
+                                                            setImagePreview(null);
+                                                            toast.error("Invalid image URL");
+                                                        }}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setImagePreview(null)}
+                                                        className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all"
+                                                    >
+                                                        <XCircle className="w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                            
+                                            {/* URL Input */}
+                                            <div className="space-y-2">
+                                                <Input 
+                                                    name="imageUrl" 
+                                                    placeholder="Paste image URL here..." 
+                                                    className="h-12 bg-white border border-gray-200 rounded-xl"
+                                                    onChange={(e) => {
+                                                        const url = e.target.value;
+                                                        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                                                            setImagePreview(url);
+                                                        }
+                                                    }}
+                                                />
+                                                <p className="text-xs text-gray-400 ml-1">
+                                                    Get free images from: 
+                                                    <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Unsplash</a>,
+                                                    <a href="https://pexels.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Pexels</a>, or
+                                                    <a href="https://pixabay.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Pixabay</a>
+                                                </p>
+                                            </div>
+
+                                            {/* File Upload Option */}
+                                            <div className="relative">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    id="imageUpload"
+                                                    disabled={uploadingImage}
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            setUploadingImage(true);
+                                                            try {
+                                                                // Convert file to base64
+                                                                const reader = new FileReader();
+                                                                reader.onloadend = async () => {
+                                                                    try {
+                                                                        const base64Image = reader.result as string;
+                                                                        
+                                                                        // Upload to Cloudinary via API
+                                                                        const response = await fetch('/api/upload', {
+                                                                            method: 'POST',
+                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                            body: JSON.stringify({ 
+                                                                                image: base64Image,
+                                                                                folder: 'velonx/events'
+                                                                            }),
+                                                                        });
+
+                                                                        const data = await response.json();
+                                                                        
+                                                                        if (data.success) {
+                                                                            setImagePreview(data.data.url);
+                                                                            // Update the hidden input with the Cloudinary URL
+                                                                            const imageUrlInput = document.querySelector('input[name="imageUrl"]') as HTMLInputElement;
+                                                                            if (imageUrlInput) {
+                                                                                imageUrlInput.value = data.data.url;
+                                                                            }
+                                                                            toast.success("Image uploaded successfully!");
+                                                                        } else {
+                                                                            toast.error(data.error?.message || "Failed to upload image");
+                                                                        }
+                                                                    } catch (error) {
+                                                                        toast.error("Failed to upload image");
+                                                                    } finally {
+                                                                        setUploadingImage(false);
+                                                                    }
+                                                                };
+                                                                reader.readAsDataURL(file);
+                                                            } catch (error) {
+                                                                toast.error("Failed to process image");
+                                                                setUploadingImage(false);
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                                <label
+                                                    htmlFor="imageUpload"
+                                                    className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                >
+                                                    {uploadingImage ? (
+                                                        <>
+                                                            <div className="w-4 h-4 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                                                            Uploading...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Download className="w-4 h-4" />
+                                                            Or upload from computer
+                                                        </>
+                                                    )}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Event Description</label>
+                                        <textarea 
+                                            name="description" 
+                                            required
+                                            className="w-full bg-gray-50 border-0 rounded-[32px] p-8 min-h-[200px] outline-none focus:ring-2 focus:ring-[#219EBC] transition-all" 
+                                            placeholder="Describe the event, what participants will learn, requirements, etc..."
+                                        ></textarea>
+                                    </div>
+
+                                    <Button type="submit" className="w-full h-16 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-[24px] text-lg shadow-xl shadow-[#219EBC]/20">
+                                        Create Event <Calendar className="w-5 h-5 ml-2" />
+                                    </Button>
+                                </form>
+                            </CardContent>
+                        </Card>
+
+                        {/* Event Registrations */}
+                        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                            <CardHeader className="p-12 border-b border-gray-50">
+                                <h3 className="text-3xl font-black text-[#023047] mb-2">Event Registrations</h3>
+                                <p className="text-gray-400">View and manage event attendees</p>
+                            </CardHeader>
+                            <CardContent className="p-12">
+                                {loadingEvents ? (
+                                    <div className="text-center py-12">
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                                        <p className="text-gray-600">Loading events...</p>
+                                    </div>
+                                ) : events.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                        <p className="text-gray-400 text-lg font-bold">No events yet</p>
+                                        <p className="text-gray-400 text-sm mt-2">Create your first event to get started</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {events.map((event) => {
+                                            const attendeeCount = event._count?.attendees || 0;
+                                            const attendeePercentage = (attendeeCount / event.maxSeats) * 100;
+
+                                            return (
+                                                <div 
+                                                    key={event.id} 
+                                                    className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-all"
+                                                >
+                                                    <div className="flex items-start gap-6">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-start justify-between mb-2">
+                                                                <div>
+                                                                    <h4 className="text-lg font-bold text-[#023047] mb-1">{event.title}</h4>
+                                                                    <p className="text-sm text-gray-500">
+                                                                        {new Date(event.date).toLocaleDateString('en-US', { 
+                                                                            year: 'numeric', 
+                                                                            month: 'long', 
+                                                                            day: 'numeric',
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit'
+                                                                        })}
+                                                                    </p>
+                                                                </div>
+                                                                <Badge className={`${event.status === 'UPCOMING' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600'} border-0 font-bold`}>
+                                                                    {event.status}
+                                                                </Badge>
+                                                            </div>
+                                                            <div className="flex items-center gap-4 mt-4">
+                                                                <div className="flex-1">
+                                                                    <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                                                                        <span>Registrations</span>
+                                                                        <span className="text-[#023047]">{attendeeCount}/{event.maxSeats}</span>
+                                                                    </div>
+                                                                    <div className="h-2 bg-white rounded-full overflow-hidden">
+                                                                        <div
+                                                                            className="h-full bg-[#219EBC] rounded-full"
+                                                                            style={{ width: `${attendeePercentage}%` }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <Button
+                                                                    onClick={() => handleViewAttendees(event)}
+                                                                    className="h-10 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                                                                >
+                                                                    <Users className="w-4 h-4 mr-2" />
+                                                                    View Attendees
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="blog">
+                        <div className="space-y-8">
+                            {/* Blog Management List */}
+                            <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                                <CardHeader className="p-12 border-b border-gray-50">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="text-3xl font-black text-[#023047] mb-2">Manage Blog Posts</h3>
+                                            <p className="text-gray-400">View, edit, and delete existing blog posts</p>
+                                        </div>
+                                        <Button 
+                                            onClick={handleNewPost}
+                                            className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                                        >
+                                            <PenTool className="w-4 h-4 mr-2" />
+                                            New Post
+                                        </Button>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-12">
+                                    {loadingBlogs ? (
+                                        <div className="text-center py-12">
+                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                                            <p className="text-gray-600">Loading blogs...</p>
+                                        </div>
+                                    ) : blogs.length === 0 ? (
+                                        <div className="text-center py-12">
+                                            <PenTool className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                            <p className="text-gray-400 text-lg font-bold">No blog posts yet</p>
+                                            <p className="text-gray-400 text-sm mt-2">Create your first blog post to get started</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {blogs.map((blog) => (
+                                                <div 
+                                                    key={blog.id} 
+                                                    className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-all"
+                                                >
+                                                    <div className="flex items-start gap-6">
+                                                        {blog.imageUrl && (
+                                                            <img 
+                                                                src={blog.imageUrl} 
+                                                                alt={blog.title}
+                                                                className="w-24 h-24 rounded-xl object-cover"
+                                                            />
+                                                        )}
+                                                        <div className="flex-1">
+                                                            <div className="flex items-start justify-between mb-2">
+                                                                <div>
+                                                                    <h4 className="text-lg font-bold text-[#023047] mb-1">{blog.title}</h4>
+                                                                    <p className="text-sm text-gray-500">
+                                                                        {blog.excerpt || blog.content?.substring(0, 100) + '...'}
+                                                                    </p>
+                                                                </div>
+                                                                <Badge className={`${blog.status === 'PUBLISHED' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'} border-0 font-bold`}>
+                                                                    {blog.status}
+                                                                </Badge>
+                                                            </div>
+                                                            <div className="flex items-center gap-4 mt-4">
+                                                                <span className="text-xs text-gray-400">
+                                                                    {new Date(blog.createdAt).toLocaleDateString()}
+                                                                </span>
+                                                                {blog.tags && blog.tags.length > 0 && (
+                                                                    <div className="flex gap-2">
+                                                                        {blog.tags.slice(0, 3).map((tag: string, idx: number) => (
+                                                                            <span key={idx} className="text-xs bg-white px-2 py-1 rounded-lg text-gray-600">
+                                                                                {tag}
+                                                                            </span>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                                <div className="ml-auto flex gap-2">
+                                                                    <button
+                                                                        onClick={() => handleEditBlog(blog)}
+                                                                        className="w-10 h-10 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition-all"
+                                                                    >
+                                                                        <Edit className="w-4 h-4" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDeleteBlog(blog.id, blog.title)}
+                                                                        className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-all"
+                                                                    >
+                                                                        <Trash2 className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            {/* Create/Edit Blog Form */}
+                            <div ref={formRef}>
+                                <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                                    <CardHeader className="p-12 border-b border-gray-50">
+                                        <h3 className="text-3xl font-black text-[#023047] mb-2">
+                                            {editingBlog ? 'Edit Article' : 'Publish New Article'}
+                                        </h3>
+                                        <p className="text-gray-400">
+                                            {editingBlog ? 'Update your blog post' : 'Content reaches over 5,000 community members.'}
+                                        </p>
+                                </CardHeader>
+                                <CardContent className="p-12">
+                                    <form className="space-y-8" onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        const form = e.currentTarget;
+                                        const formData = new FormData(form);
+                                        
+                                        try {
+                                            const tags = (formData.get('tags') as string)
+                                                .split(',')
+                                                .map(tag => tag.trim())
+                                                .filter(tag => tag.length > 0);
+
+                                            const content = formData.get('content') as string;
+                                            const excerpt = content.substring(0, 150) + (content.length > 150 ? '...' : '');
+
+                                            const blogData = {
+                                                title: formData.get('title') as string,
+                                                content: content,
+                                                excerpt: excerpt,
+                                                imageUrl: formData.get('imageUrl') as string || null,
+                                                tags: tags,
+                                                status: formData.get('status') as 'DRAFT' | 'PUBLISHED',
+                                            };
+
+                                            const url = editingBlog ? `/api/blog/${editingBlog.id}` : '/api/blog';
+                                            const method = editingBlog ? 'PATCH' : 'POST';
+
+                                            const response = await fetch(url, {
+                                                method,
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify(blogData),
+                                            });
+
+                                            const data = await response.json();
+
+                                            if (response.ok && data.success) {
+                                                toast.success(editingBlog ? "Blog updated successfully! 🚀" : "Blog published successfully! 🚀");
+                                                if (form && typeof form.reset === 'function') {
+                                                    form.reset();
+                                                }
+                                                setBlogImagePreview(null);
+                                                setEditingBlog(null);
+                                                fetchBlogs();
+                                            } else {
+                                                toast.error(data.error?.message || `Failed to ${editingBlog ? 'update' : 'publish'} blog`);
+                                            }
+                                        } catch (error) {
+                                            console.error('Blog publish error:', error);
+                                            toast.error(`Failed to ${editingBlog ? 'update' : 'publish'} blog`);
+                                        }
+                                    }}>
+                                        {editingBlog && (
+                                            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Edit className="w-5 h-5 text-blue-600" />
+                                                    <span className="text-blue-600 font-bold">Editing: {editingBlog.title}</span>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleCancelEdit}
+                                                    className="text-blue-600 hover:text-blue-800 font-bold text-sm"
+                                                >
+                                                    Cancel Edit
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        <div className="grid grid-cols-2 gap-8">
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Title</label>
+                                                <Input 
+                                                    name="title" 
+                                                    required 
+                                                    placeholder="Enter title..." 
+                                                    className="h-14 bg-gray-50 border-0 rounded-2xl"
+                                                    defaultValue={editingBlog?.title || ''}
+                                                />
+                                            </div>
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Tags</label>
+                                                <Input 
+                                                    name="tags" 
+                                                    placeholder="e.g., Technology, AI, Development" 
+                                                    className="h-14 bg-gray-50 border-0 rounded-2xl"
+                                                    defaultValue={editingBlog?.tags?.join(', ') || ''}
+                                                />
+                                                <p className="text-xs text-gray-400 ml-1">Separate tags with commas</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Status</label>
+                                            <select 
+                                                name="status" 
+                                                required 
+                                                className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
+                                                defaultValue={editingBlog?.status || 'PUBLISHED'}
+                                            >
+                                                <option value="DRAFT">Draft</option>
+                                                <option value="PUBLISHED">Published</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Cover Image</label>
+                                            <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
+                                                {blogImagePreview && (
+                                                    <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
+                                                        <img 
+                                                            src={blogImagePreview} 
+                                                            alt="Blog cover preview" 
+                                                            className="w-full h-full object-cover"
+                                                            onError={() => {
+                                                                setBlogImagePreview(null);
+                                                                toast.error("Invalid image URL");
+                                                            }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setBlogImagePreview(null)}
+                                                            className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all"
+                                                        >
+                                                            <XCircle className="w-5 h-5" />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                
+                                                <div className="space-y-2">
+                                                    <Input 
+                                                        name="imageUrl" 
+                                                        placeholder="Paste image URL here..." 
+                                                        className="h-12 bg-white border border-gray-200 rounded-xl"
+                                                        defaultValue={editingBlog?.imageUrl || ''}
+                                                        onChange={(e) => {
+                                                            const url = e.target.value;
+                                                            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                                                                setBlogImagePreview(url);
+                                                            }
+                                                        }}
+                                                    />
+                                                    <p className="text-xs text-gray-400 ml-1">
+                                                        Get free images from: 
+                                                        <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Unsplash</a>,
+                                                        <a href="https://pexels.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Pexels</a>, or
+                                                        <a href="https://pixabay.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Pixabay</a>
+                                                    </p>
+                                                </div>
+
+                                                <div className="relative">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        id="blogImageUpload"
+                                                        disabled={uploadingImage}
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                setUploadingImage(true);
+                                                                try {
+                                                                    const reader = new FileReader();
+                                                                    reader.onloadend = async () => {
+                                                                        try {
+                                                                            const base64Image = reader.result as string;
+                                                                            
+                                                                            const response = await fetch('/api/upload', {
+                                                                                method: 'POST',
+                                                                                headers: { 'Content-Type': 'application/json' },
+                                                                                body: JSON.stringify({ 
+                                                                                    image: base64Image,
+                                                                                    folder: 'velonx/blog'
+                                                                                }),
+                                                                            });
+
+                                                                            const data = await response.json();
+                                                                            
+                                                                            if (data.success) {
+                                                                                setBlogImagePreview(data.data.url);
+                                                                                const imageUrlInput = document.querySelector('input[name="imageUrl"]') as HTMLInputElement;
+                                                                                if (imageUrlInput) {
+                                                                                    imageUrlInput.value = data.data.url;
+                                                                                }
+                                                                                toast.success("Image uploaded successfully!");
+                                                                            } else {
+                                                                                toast.error(data.error?.message || "Failed to upload image");
+                                                                            }
+                                                                        } catch (error) {
+                                                                            toast.error("Failed to upload image");
+                                                                        } finally {
+                                                                            setUploadingImage(false);
+                                                                        }
+                                                                    };
+                                                                    reader.readAsDataURL(file);
+                                                                } catch (error) {
+                                                                    toast.error("Failed to process image");
+                                                                    setUploadingImage(false);
+                                                                }
+                                                            }
+                                                        }}
+                                                    />
+                                                    <label
+                                                        htmlFor="blogImageUpload"
+                                                        className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    >
+                                                        {uploadingImage ? (
+                                                            <>
+                                                                <div className="w-4 h-4 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                                                                Uploading...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Download className="w-4 h-4" />
+                                                                Or upload from computer
+                                                            </>
+                                                        )}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Article Content</label>
+                                            <textarea 
+                                                name="content"
+                                                required
+                                                className="w-full bg-gray-50 border-0 rounded-[32px] p-8 min-h-[300px] outline-none focus:ring-2 focus:ring-[#219EBC] transition-all" 
+                                                placeholder="Write something inspiring..."
+                                                defaultValue={editingBlog?.content || ''}
+                                            ></textarea>
+                                        </div>
+                                        <Button type="submit" className="w-full h-16 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-[24px] text-lg shadow-xl shadow-[#219EBC]/20">
+                                            {editingBlog ? 'Update Article' : 'Publish Live'} <Send className="w-5 h-5 ml-2" />
+                                        </Button>
+                                    </form>
+                                </CardContent>
+                            </Card>
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="career">
+                        <CareerManagement />
+                    </TabsContent>
+
+                    <TabsContent value="resources" className="space-y-12">
+                        {/* Manage Resources Section */}
+                        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                            <CardHeader className="p-12 border-b border-gray-50">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-3xl font-black text-[#023047] mb-2">Manage Resources</h3>
+                                        <p className="text-gray-400">View, edit, and delete learning resources</p>
+                                    </div>
+                                    <Button 
+                                        onClick={handleNewResource}
+                                        className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl transition-all hover:shadow-lg hover:shadow-[#219EBC]/20 hover:scale-105"
+                                    >
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        Add Resource
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-12">
+                                {loadingResources ? (
+                                    <div className="text-center py-12">
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                                        <p className="text-gray-600">Loading resources...</p>
+                                    </div>
+                                ) : resources.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                        <p className="text-gray-400 text-lg font-bold">No resources yet</p>
+                                        <p className="text-gray-400 text-sm mt-2">Add your first learning resource to get started</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {resources.map((resource: any) => (
+                                            <div 
+                                                key={resource.id} 
+                                                className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#219EBC]/20 hover:-translate-y-1"
+                                            >
+                                                {/* Resource Thumbnail */}
+                                                <div className="relative w-full h-48 bg-gray-100 overflow-hidden group">
+                                                    {resource.imageUrl ? (
+                                                        <img 
+                                                            src={resource.imageUrl} 
+                                                            alt={resource.title}
+                                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#219EBC]/10 to-[#023047]/10 transition-all duration-300 group-hover:from-[#219EBC]/20 group-hover:to-[#023047]/20">
+                                                            <BookOpen className="w-16 h-16 text-gray-300 transition-transform duration-300 group-hover:scale-110" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                
+                                                {/* Resource Info */}
+                                                <div className="p-6">
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <h4 className="text-lg font-bold text-[#023047] line-clamp-2 flex-1">
+                                                            {resource.title}
+                                                        </h4>
+                                                    </div>
+                                                    
+                                                    {/* Badges */}
+                                                    <div className="flex flex-wrap gap-2 mb-3">
+                                                        <Badge 
+                                                            className="bg-blue-50 text-blue-600 border-0 font-bold text-xs transition-all hover:bg-blue-100"
+                                                            data-testid="type-badge"
+                                                        >
+                                                            {resource.type}
+                                                        </Badge>
+                                                        <Badge 
+                                                            className="bg-purple-50 text-purple-600 border-0 font-bold text-xs transition-all hover:bg-purple-100"
+                                                            data-testid="category-badge"
+                                                        >
+                                                            {resource.category}
+                                                        </Badge>
+                                                    </div>
+                                                    
+                                                    {/* Access Count */}
+                                                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+                                                        <Eye className="w-4 h-4" />
+                                                        <span>{resource.accessCount} views</span>
+                                                    </div>
+                                                    
+                                                    {/* Action Buttons */}
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => handleEditResource(resource)}
+                                                            disabled={deletingResourceId === resource.id}
+                                                            className="flex-1 h-9 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center gap-2 transition-all duration-200 font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md hover:scale-105"
+                                                            data-testid="edit-button"
+                                                        >
+                                                            <Edit className="w-4 h-4" />
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteResource(resource.id, resource.title)}
+                                                            disabled={deletingResourceId === resource.id}
+                                                            className="flex-1 h-9 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center gap-2 transition-all duration-200 font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md hover:scale-105"
+                                                            data-testid="delete-button"
+                                                        >
+                                                            {deletingResourceId === resource.id ? (
+                                                                <>
+                                                                    <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                                                                    Deleting...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Trash2 className="w-4 h-4" />
+                                                                    Delete
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Add/Edit Resource Form */}
+                        <div ref={resourceFormRef}>
+                            <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                                <CardHeader className="p-12 border-b border-gray-50">
+                                    <h3 className="text-3xl font-black text-[#023047] mb-2">
+                                        {editingResource ? 'Edit Resource' : 'Add New Resource'}
+                                    </h3>
+                                    <p className="text-gray-400">
+                                        {editingResource ? 'Update resource information' : 'Add a new learning resource to the platform'}
+                                    </p>
+                                </CardHeader>
+                                <CardContent className="p-12">
+                                    <form ref={resourceFormElementRef} className="space-y-8" onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        const form = e.currentTarget;
+                                        const formData = new FormData(form);
+                                        
+                                        // Client-side validation
+                                        const title = formData.get('title') as string;
+                                        const description = formData.get('description') as string;
+                                        const url = formData.get('url') as string;
+                                        const imageUrl = formData.get('imageUrl') as string;
+                                        
+                                        // Clear previous errors
+                                        document.querySelectorAll('.validation-error').forEach(el => el.remove());
+                                        
+                                        let hasErrors = false;
+                                        
+                                        // Validate title
+                                        if (title.length < 3 || title.length > 200) {
+                                            const titleInput = form.querySelector('input[name="title"]');
+                                            const error = document.createElement('p');
+                                            error.className = 'validation-error text-red-500 text-xs mt-1 ml-1';
+                                            error.textContent = 'Title must be between 3 and 200 characters';
+                                            titleInput?.parentElement?.appendChild(error);
+                                            hasErrors = true;
+                                        }
+                                        
+                                        // Validate description
+                                        if (description.length < 10) {
+                                            const descInput = form.querySelector('textarea[name="description"]');
+                                            const error = document.createElement('p');
+                                            error.className = 'validation-error text-red-500 text-xs mt-1 ml-1';
+                                            error.textContent = 'Description must be at least 10 characters';
+                                            descInput?.parentElement?.appendChild(error);
+                                            hasErrors = true;
+                                        }
+                                        
+                                        // Validate URL format
+                                        try {
+                                            new URL(url);
+                                        } catch {
+                                            const urlInput = form.querySelector('input[name="url"]');
+                                            const error = document.createElement('p');
+                                            error.className = 'validation-error text-red-500 text-xs mt-1 ml-1';
+                                            error.textContent = 'Please enter a valid URL';
+                                            urlInput?.parentElement?.appendChild(error);
+                                            hasErrors = true;
+                                        }
+                                        
+                                        // Validate image URL format (if provided)
+                                        if (imageUrl) {
+                                            try {
+                                                new URL(imageUrl);
+                                            } catch {
+                                                const imgUrlInput = form.querySelector('input[name="imageUrl"]');
+                                                const error = document.createElement('p');
+                                                error.className = 'validation-error text-red-500 text-xs mt-1 ml-1';
+                                                error.textContent = 'Please enter a valid image URL';
+                                                imgUrlInput?.parentElement?.appendChild(error);
+                                                hasErrors = true;
+                                            }
+                                        }
+                                        
+                                        if (hasErrors) {
+                                            toast.error('Please fix the validation errors');
+                                            return;
+                                        }
+                                        
+                                        // Set loading state
+                                        setLoadingResources(true);
+                                        
+                                        try {
+                                            const resourceData = {
+                                                title,
+                                                description,
+                                                category: formData.get('category') as string,
+                                                type: formData.get('type') as string,
+                                                url,
+                                                imageUrl: imageUrl || undefined,
+                                            };
+
+                                            const apiUrl = editingResource ? `/api/resources/${editingResource.id}` : '/api/resources';
+                                            const method = editingResource ? 'PATCH' : 'POST';
+
+                                            const response = await fetch(apiUrl, {
+                                                method,
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify(resourceData),
+                                            });
+
+                                            if (!response.ok) {
+                                                throw new Error(`HTTP error! status: ${response.status}`);
+                                            }
+
+                                            const data = await response.json();
+
+                                            if (data.success) {
+                                                toast.success(editingResource ? "Resource updated successfully! 🎉" : "Resource created successfully! 🎉");
+                                                if (form && typeof form.reset === 'function') {
+                                                    form.reset();
+                                                }
+                                                setResourceImagePreview(null);
+                                                setEditingResource(null);
+                                                fetchResources();
+                                            } else {
+                                                throw new Error(data.error?.message || `Failed to ${editingResource ? 'update' : 'create'} resource`);
+                                            }
+                                        } catch (error) {
+                                            console.error('Resource save error:', error);
+                                            const errorMessage = error instanceof Error ? error.message : `Failed to ${editingResource ? 'update' : 'create'} resource`;
+                                            toast.error(errorMessage);
+                                            // Maintain stable UI state - form data is preserved on error
+                                        } finally {
+                                            setLoadingResources(false);
+                                        }
+                                    }}>
+                                        {editingResource && (
+                                            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Edit className="w-5 h-5 text-blue-600" />
+                                                    <span className="text-blue-600 font-bold">Editing: {editingResource.title}</span>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleCancelResourceEdit}
+                                                    className="text-blue-600 hover:text-blue-800 font-bold text-sm"
+                                                >
+                                                    Cancel Edit
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Title *</label>
+                                            <Input 
+                                                name="title" 
+                                                required 
+                                                placeholder="e.g., Complete React Tutorial" 
+                                                className="h-14 bg-gray-50 border-0 rounded-2xl"
+                                                defaultValue={editingResource?.title || ''}
+                                                minLength={3}
+                                                maxLength={200}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Description *</label>
+                                            <textarea 
+                                                name="description"
+                                                required
+                                                rows={4}
+                                                className="w-full bg-gray-50 border-0 rounded-[32px] p-6 outline-none focus:ring-2 focus:ring-[#219EBC] transition-all" 
+                                                placeholder="Describe the resource and what learners will gain from it..."
+                                                defaultValue={editingResource?.description || ''}
+                                                minLength={10}
+                                            ></textarea>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-8">
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Category *</label>
+                                                <select 
+                                                    name="category" 
+                                                    required 
+                                                    className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
+                                                    defaultValue={editingResource?.category || ''}
+                                                >
+                                                    <option value="">Select a category</option>
+                                                    <option value="PROGRAMMING">Programming</option>
+                                                    <option value="DESIGN">Design</option>
+                                                    <option value="BUSINESS">Business</option>
+                                                    <option value="DATA_SCIENCE">Data Science</option>
+                                                    <option value="DEVOPS">DevOps</option>
+                                                    <option value="MOBILE">Mobile</option>
+                                                    <option value="WEB">Web</option>
+                                                    <option value="OTHER">Other</option>
+                                                </select>
+                                            </div>
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Type *</label>
+                                                <select 
+                                                    name="type" 
+                                                    required 
+                                                    className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
+                                                    defaultValue={editingResource?.type || ''}
+                                                >
+                                                    <option value="">Select a type</option>
+                                                    <option value="ARTICLE">Article</option>
+                                                    <option value="VIDEO">Video</option>
+                                                    <option value="COURSE">Course</option>
+                                                    <option value="BOOK">Book</option>
+                                                    <option value="TOOL">Tool</option>
+                                                    <option value="DOCUMENTATION">Documentation</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Resource URL *</label>
+                                            <Input 
+                                                name="url" 
+                                                type="url"
+                                                required 
+                                                placeholder="e.g., https://example.com/resource" 
+                                                className="h-14 bg-gray-50 border-0 rounded-2xl"
+                                                defaultValue={editingResource?.url || ''}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Resource Image</label>
+                                            <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
+                                                {resourceImagePreview && (
+                                                    <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
+                                                        <img 
+                                                            src={resourceImagePreview} 
+                                                            alt="Resource preview" 
+                                                            className="w-full h-full object-cover"
+                                                            onError={() => {
+                                                                setResourceImagePreview(null);
+                                                                toast.error("Invalid image URL");
+                                                            }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setResourceImagePreview(null)}
+                                                            className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all"
+                                                        >
+                                                            <XCircle className="w-5 h-5" />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                
+                                                <div className="space-y-2">
+                                                    <Input 
+                                                        name="imageUrl" 
+                                                        type="url"
+                                                        placeholder="Paste image URL here..." 
+                                                        className="h-12 bg-white border border-gray-200 rounded-xl"
+                                                        defaultValue={editingResource?.imageUrl || ''}
+                                                        onChange={(e) => {
+                                                            const url = e.target.value;
+                                                            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                                                                setResourceImagePreview(url);
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+
+                                                <div className="relative">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        id="resourceImageUpload"
+                                                        disabled={uploadingResourceImage}
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (!file) return;
+                                                            
+                                                            setUploadingResourceImage(true);
+                                                            try {
+                                                                const reader = new FileReader();
+                                                                reader.onloadend = async () => {
+                                                                    try {
+                                                                        const base64Image = reader.result as string;
+                                                                        
+                                                                        const response = await fetch('/api/upload', {
+                                                                            method: 'POST',
+                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                            body: JSON.stringify({ 
+                                                                                image: base64Image,
+                                                                                folder: 'velonx/resources'
+                                                                            }),
+                                                                        });
+
+                                                                        if (!response.ok) {
+                                                                            throw new Error(`HTTP error! status: ${response.status}`);
+                                                                        }
+
+                                                                        const data = await response.json();
+                                                                        
+                                                                        if (data.success) {
+                                                                            setResourceImagePreview(data.data.url);
+                                                                            const imageUrlInput = document.querySelector('input[name="imageUrl"]') as HTMLInputElement;
+                                                                            if (imageUrlInput) {
+                                                                                imageUrlInput.value = data.data.url;
+                                                                            }
+                                                                            toast.success("Image uploaded successfully!");
+                                                                        } else {
+                                                                            throw new Error(data.error?.message || 'Failed to upload image');
+                                                                        }
+                                                                    } catch (error) {
+                                                                        console.error('Image upload error:', error);
+                                                                        const errorMessage = error instanceof Error ? error.message : 'Failed to upload image';
+                                                                        toast.error(errorMessage);
+                                                                    } finally {
+                                                                        setUploadingResourceImage(false);
+                                                                    }
+                                                                };
+                                                                
+                                                                reader.onerror = () => {
+                                                                    toast.error('Failed to read image file');
+                                                                    setUploadingResourceImage(false);
+                                                                };
+                                                                
+                                                                reader.readAsDataURL(file);
+                                                            } catch (error) {
+                                                                console.error('File processing error:', error);
+                                                                toast.error("Failed to process image file");
+                                                                setUploadingResourceImage(false);
+                                                            }
+                                                        }}
+                                                    />
+                                                    <label
+                                                        htmlFor="resourceImageUpload"
+                                                        className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingResourceImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    >
+                                                        {uploadingResourceImage ? (
+                                                            <>
+                                                                <div className="w-4 h-4 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                                                                Uploading...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Download className="w-4 h-4" />
+                                                                Or upload from computer
+                                                            </>
+                                                        )}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <Button 
+                                            type="submit" 
+                                            disabled={loadingResources}
+                                            className="w-full h-16 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-[24px] text-lg shadow-xl shadow-[#219EBC]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {loadingResources ? (
+                                                <>
+                                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                                    {editingResource ? 'Updating...' : 'Creating...'}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {editingResource ? 'Update Resource' : 'Create Resource'} <BookOpen className="w-5 h-5 ml-2" />
+                                                </>
+                                            )}
+                                        </Button>
+                                    </form>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="analytics">
+                        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                            <CardHeader className="p-12 border-b border-gray-50">
+                                <h3 className="text-3xl font-black text-[#023047] mb-2">Analytics Dashboard</h3>
+                                <p className="text-gray-400">Platform insights and metrics</p>
+                            </CardHeader>
+                            <CardContent className="p-12">
+                                <div className="text-center py-20">
+                                    <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <p className="text-gray-400 text-lg font-bold">Analytics Coming Soon</p>
+                                    <p className="text-gray-400 text-sm mt-2">Detailed platform analytics will be available here</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="performance">
+                        <PerformanceMetrics />
+                    </TabsContent>
+
+                    <TabsContent value="platform">
+                        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                            <CardHeader className="p-12 border-b border-gray-50">
+                                <h3 className="text-3xl font-black text-[#023047] mb-2">Platform Information</h3>
+                                <p className="text-gray-400">System status and configuration</p>
+                            </CardHeader>
+                            <CardContent className="p-12">
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div className="bg-gray-50 p-6 rounded-2xl">
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Total Users</p>
+                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.totalUsers ?? 0}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-6 rounded-2xl">
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Total Events</p>
+                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.totalEvents ?? 0}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-6 rounded-2xl">
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Total Projects</p>
+                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.totalProjects ?? 0}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-6 rounded-2xl">
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Total Mentors</p>
+                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.totalMentors ?? 0}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-6 rounded-2xl">
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Pending Requests</p>
+                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.pendingRequests ?? 0}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-6 rounded-2xl">
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">System Status</p>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                                                <span className="text-lg font-bold text-green-600">Healthy</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+            </main>
+
+            {/* Event Attendees Dialog */}
+            <Dialog open={!!selectedEventForAttendees} onOpenChange={() => setSelectedEventForAttendees(null)}>
+                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-white rounded-[32px]">
+                    {selectedEventForAttendees && (
+                        <>
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black text-[#023047]">
+                                    Event Attendees
+                                </DialogTitle>
+                                <div className="mt-4 p-4 bg-gray-50 rounded-2xl">
+                                    <h4 className="font-bold text-[#023047] mb-1">{selectedEventForAttendees.title}</h4>
+                                    <p className="text-sm text-gray-500">
+                                        {new Date(selectedEventForAttendees.date).toLocaleDateString('en-US', { 
+                                            year: 'numeric', 
+                                            month: 'long', 
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </p>
+                                    <div className="mt-3 flex items-center gap-2">
+                                        <Badge className="bg-[#219EBC]/10 text-[#219EBC] border-0 font-bold">
+                                            {eventAttendees.length} / {selectedEventForAttendees.maxSeats} Registered
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </DialogHeader>
+                            
+                            <div className="mt-6">
+                                {eventAttendees.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                        <p className="text-gray-400 text-lg font-bold">No registrations yet</p>
+                                        <p className="text-gray-400 text-sm mt-2">Attendees will appear here once they register</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {eventAttendees.map((attendee: any) => (
+                                            <div 
+                                                key={attendee.id} 
+                                                className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
+                                            >
+                                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#219EBC] to-[#023047] flex items-center justify-center text-white font-black text-lg shadow-lg">
+                                                    {attendee.user?.name?.[0] || 'U'}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="font-bold text-[#023047]">{attendee.user?.name || 'Unknown'}</p>
+                                                    <div className="flex items-center gap-4 mt-1">
+                                                        <span className="text-xs text-gray-500 flex items-center gap-1">
+                                                            <Mail className="w-3 h-3" />
+                                                            {attendee.user?.email}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <Badge className="bg-green-50 text-green-600 border-0 font-bold text-xs">
+                                                        {attendee.status}
+                                                    </Badge>
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        {new Date(attendee.createdAt).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
+}

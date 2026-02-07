@@ -1,191 +1,274 @@
-"use client";
+/**
+ * Resources Page
+ * Feature: resources-page-ui-improvements
+ * 
+ * Main page component for browsing and discovering learning resources.
+ * Integrates search, filtering, pagination, and resource display.
+ * 
+ * Requirements:
+ * - 1.1: Real search functionality with debouncing
+ * - 1.2: API integration for fetching resources
+ * - 1.3: Display search results in grid
+ * - 2.1: Complete category filtering
+ * - 3.1: Resource type filtering
+ * - 5.1: Pagination implementation
+ * - 8.4: Page header with title and description
+ */
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Search, Key, Folder, Code, Brain, Shield, Smartphone, Server, BookOpen, Sparkles, Zap, RotateCcw, Play, Trophy, Download, ExternalLink, ChevronRight, ArrowRight } from "lucide-react";
-import toast from "react-hot-toast";
+'use client';
 
+import * as React from 'react';
+import { Sparkles, Search, X } from 'lucide-react';
+import {
+  ResourcesGrid,
+  Pagination,
+  FilterPanel,
+} from '@/components/resources';
+import { useResources } from '@/lib/hooks/useResources';
+import { useResourceFilters } from '@/lib/hooks/useResourceFilters';
+import { ResourceCategory, ResourceType } from '@/lib/types/resources.types';
+import { ScreenReaderAnnouncer } from '@/components/screen-reader-announcer';
+
+/**
+ * ResourcesPage Component
+ * 
+ * Main page component that orchestrates:
+ * - Search functionality with debouncing
+ * - Category and type filtering
+ * - Resource grid display with loading/error states
+ * - Pagination
+ * - URL synchronization for shareable links
+ * 
+ * Validates: Requirements 1.1, 1.2, 1.3, 2.1, 3.1, 5.1, 8.4
+ */
 export default function ResourcesPage() {
-    const [typingText, setTypingText] = useState("");
-    const targetText = 'const velonx = "Building Futures";';
-    const [wpm, setWpm] = useState(0);
-    const [isTyping, setIsTyping] = useState(false);
+  // Screen reader announcements
+  const [announcement, setAnnouncement] = React.useState('');
 
-    const categories = [
-        { id: 1, name: "Web Development", items: 24, icon: Code, color: "bg-blue-100 text-blue-600" },
-        { id: 2, name: "Data Structures", items: 36, icon: Folder, color: "bg-green-100 text-green-600" },
-        { id: 3, name: "Machine Learning", items: 18, icon: Brain, color: "bg-purple-100 text-purple-600" },
-        { id: 4, name: "Cybersecurity", items: 12, icon: Shield, color: "bg-red-100 text-red-600" },
-        { id: 5, name: "Mobile Development", items: 15, icon: Smartphone, color: "bg-orange-100 text-orange-600" },
-        { id: 6, name: "DevOps & Cloud", items: 20, icon: Server, color: "bg-cyan-100 text-cyan-600" },
-    ];
+  // Use resource filters hook for state management with URL sync
+  const {
+    filters,
+    setSearch,
+    toggleCategory,
+    toggleType,
+    clearAllFilters,
+    removeFilter,
+    setPage,
+  } = useResourceFilters();
 
-    const roadmaps = [
-        { title: "Frontend Developer", duration: "3-6 months", level: "Beginner", color: "#219EBC" },
-        { title: "Backend Developer", duration: "4-8 months", level: "Intermediate", color: "#6A96A0" },
-        { title: "Full Stack Developer", duration: "6-12 months", level: "Advanced", color: "#E9C46A" },
-        { title: "AI/ML Engineer", duration: "8-12 months", level: "Advanced", color: "#F4A261" },
-    ];
+  // Fetch resources from API with current filters
+  const {
+    resources,
+    pagination,
+    isLoading,
+    error,
+    refetch,
+    retry,
+  } = useResources({
+    search: filters.search,
+    category: filters.categories[0], // API currently supports single category
+    type: filters.types[0], // API currently supports single type
+    page: filters.page,
+    pageSize: filters.pageSize,
+  });
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        toast.success("Searching for the best resources...");
-    };
+  // Track if retry is in progress
+  const [isRetrying, setIsRetrying] = React.useState(false);
 
-    const handleCategoryClick = (categoryName: string) => {
-        window.open("https://keyracer.in", "_blank");
-    };
-
-    const handleRoadmapClick = (title: string) => {
-        toast.success(`Starting your ${title} journey!`);
-    };
-
-    const handleDownload = (resourceName: string) => {
-        toast.success(`Downloading ${resourceName}...`);
-    };
-
-    const handleTypingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        setTypingText(val);
-        if (!isTyping && val.length > 0) setIsTyping(true);
-
-        if (val === targetText) {
-            toast.success("Correct! Your typing speed is improving.");
-            setTypingText("");
-            setIsTyping(false);
-            setWpm(prev => Math.min(prev + 5, 120));
-        }
-    };
-
-    return (
-        <div className="min-h-screen pt-24 bg-white">
-            {/* Hero Section */}
-            <section className="relative py-16 bg-gradient-to-b from-gray-50 to-white">
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6 mx-auto">
-                            <Sparkles className="w-4 h-4" />
-                            Learning Hub
-                        </div>
-                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-gray-900">
-                            Master New <span className="text-[#219EBC]">Skills</span> Every Day
-                        </h1>
-                        <p className="text-gray-600 text-xl mb-8 max-w-2xl mx-auto">
-                            Curated roadmaps, tutorials, notes, and tools to accelerate your learning journey.
-                        </p>
-                        <form onSubmit={handleSearch} className="relative max-w-xl mx-auto">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                            <Input placeholder="Search tutorials, roadmaps, notes..." className="pl-14 py-7 rounded-full bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 text-lg shadow-sm focus:ring-2 focus:ring-[#219EBC]/20" />
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-
-
-
-            {/* Categories */}
-            <section className="py-20 animate-on-scroll bg-white">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-black text-gray-900 mb-4">Browse by Category</h2>
-                        <div className="w-20 h-1 bg-[#219EBC] mx-auto rounded-full" />
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                        {categories.map((cat) => (
-                            <button
-                                key={cat.id}
-                                onClick={() => handleCategoryClick(cat.name)}
-                                className="group bg-gray-50 hover:bg-white p-6 rounded-2xl border border-gray-100 hover:border-[#219EBC] hover:shadow-xl transition-all text-center"
-                            >
-                                <div className={`w-14 h-14 rounded-2xl ${cat.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
-                                    <cat.icon className="w-7 h-7" />
-                                </div>
-                                <h3 className="font-bold text-gray-900 mb-1 group-hover:text-[#219EBC] transition-colors">{cat.name}</h3>
-                                <p className="text-gray-500 text-sm">{cat.items} resources</p>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Roadmaps */}
-            <section className="py-20 animate-on-scroll bg-gray-50">
-                <div className="container mx-auto px-4">
-                    <div className="flex justify-between items-end mb-12">
-                        <div>
-                            <h2 className="text-3xl font-black text-gray-900 mb-2">Step-by-Step Roadmaps</h2>
-                            <p className="text-gray-500">Follow these path to master your favorite stack</p>
-                        </div>
-                        <Button variant="outline" className="rounded-full border-gray-300 text-gray-700 hidden md:flex">
-                            View All Paths <ChevronRight className="w-4 h-4 ml-2" />
-                        </Button>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {roadmaps.map((map) => (
-                            <Card key={map.title} className="bg-white border border-gray-200 hover:border-[#219EBC] transition-all group cursor-pointer overflow-hidden shadow-sm hover:shadow-lg">
-                                <CardHeader>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="p-3 rounded-xl bg-gray-50 text-gray-900">
-                                            <BookOpen className="w-6 h-6" style={{ color: map.color }} />
-                                        </div>
-                                        <Badge className="bg-gray-100 text-gray-600 border-0">{map.level}</Badge>
-                                    </div>
-                                    <CardTitle className="text-gray-900 group-hover:text-[#219EBC] transition-colors">{map.title}</CardTitle>
-                                    <CardDescription>{map.duration} duration</CardDescription>
-                                </CardHeader>
-                                <CardFooter>
-                                    <Button
-                                        onClick={() => handleRoadmapClick(map.title)}
-                                        className="w-full bg-gray-50 hover:bg-[#219EBC] text-[#219EBC] hover:text-white border-0 font-bold rounded-full group/btn"
-                                    >
-                                        Start Path <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Resources Grid */}
-            <section className="py-20 animate-on-scroll bg-white">
-                <div className="container mx-auto px-4">
-                    <h2 className="text-2xl font-black text-gray-900 mb-8">Popular Downloads</h2>
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {[
-                            { title: "React Cheat Sheet", type: "PDF", size: "2.4 MB" },
-                            { title: "Node.js Best Practices", type: "Guide", size: "1.8 MB" },
-                            { title: "System Design Primer", type: "E-Book", size: "5.2 MB" },
-                        ].map((res, i) => (
-                            <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-[#219EBC] shadow-sm">
-                                        <Download className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-900">{res.title}</h4>
-                                        <p className="text-gray-500 text-sm">{res.type} • {res.size}</p>
-                                    </div>
-                                </div>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="text-gray-400 hover:text-[#219EBC]"
-                                    onClick={() => handleDownload(res.title)}
-                                >
-                                    <Download className="w-5 h-5" />
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-        </div>
+  // Track if any filters are active (needed for ResourcesGrid)
+  const hasActiveFilters = React.useMemo(() => {
+    return !!(
+      filters.search ||
+      filters.categories.length > 0 ||
+      filters.types.length > 0
     );
+  }, [filters.search, filters.categories.length, filters.types.length]);
+
+  // Announce loading state changes
+  React.useEffect(() => {
+    if (isLoading) {
+      setAnnouncement('Loading resources...');
+    } else if (error) {
+      setAnnouncement('Error loading resources. Please try again.');
+    } else if (resources && resources.length > 0) {
+      const count = resources.length;
+      const total = pagination?.totalCount || count;
+      setAnnouncement(`Loaded ${count} of ${total} resources`);
+    } else if (resources && resources.length === 0) {
+      setAnnouncement('No resources found');
+    }
+  }, [isLoading, error, resources, pagination?.totalCount]);
+
+  // Announce filter changes
+  React.useEffect(() => {
+    if (!isLoading) {
+      const filterCount = (filters.search ? 1 : 0) + filters.categories.length + filters.types.length;
+      if (filterCount > 0) {
+        setAnnouncement(`${filterCount} ${filterCount === 1 ? 'filter' : 'filters'} applied`);
+      }
+    }
+  }, [filters.search, filters.categories.length, filters.types.length, isLoading]);
+
+  // Handle search change
+  const handleSearchChange = React.useCallback(
+    (value: string) => {
+      setSearch(value);
+    },
+    [setSearch]
+  );
+
+  // Handle category toggle
+  const handleCategoryToggle = React.useCallback(
+    (category: ResourceCategory) => {
+      toggleCategory(category);
+    },
+    [toggleCategory]
+  );
+
+  // Handle type toggle
+  const handleTypeToggle = React.useCallback(
+    (type: ResourceType) => {
+      toggleType(type);
+    },
+    [toggleType]
+  );
+
+  // Handle clear all filters
+  const handleClearAllFilters = React.useCallback(() => {
+    clearAllFilters();
+  }, [clearAllFilters]);
+
+  // Handle page change
+  const handlePageChange = React.useCallback(
+    (page: number) => {
+      setPage(page);
+      // Scroll to top of results
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    [setPage]
+  );
+
+  // Handle retry after error
+  const handleRetry = React.useCallback(async () => {
+    setIsRetrying(true);
+    try {
+      await retry();
+    } finally {
+      setIsRetrying(false);
+    }
+  }, [retry]);
+
+  return (
+    <div className="min-h-screen pt-24 bg-background">
+      {/* Screen Reader Announcements */}
+      <ScreenReaderAnnouncer message={announcement} politeness="polite" />
+
+      {/* Hero Section / Header */}
+      <section className="relative py-16 bg-background overflow-hidden" aria-labelledby="page-title">
+
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <div className="max-w-3xl mx-auto">
+            {/* Title */}
+            <h1
+              id="page-title"
+              className="text-4xl md:text-6xl mb-6 text-foreground"
+              style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
+            >
+              Master New <span className="text-primary">Skills</span> Every Day
+            </h1>
+
+            {/* Description */}
+            <p
+              className="text-muted-foreground text-xl mb-8 mx-auto whitespace-nowrap"
+              style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
+            >
+              Curated tutorials, articles, courses, and tools to accelerate your learning journey.
+            </p>
+
+            {/* Search Bar - Matching Events/Projects Style */}
+            <div className="w-full max-w-md mx-auto pt-2 md:pt-4">
+              <div className="relative">
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <input
+                  placeholder="Search resources by title or description..."
+                  className="w-full pl-12 pr-12 py-3 md:py-4 rounded-full bg-card border-2 border-border focus:border-primary outline-none text-foreground placeholder:text-muted-foreground transition-all shadow-sm hover:shadow-md focus:shadow-lg"
+                  aria-label="Search resources"
+                  type="search"
+                  value={filters.search || ''}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  style={{ fontFamily: "'Montserrat', sans-serif" }}
+                />
+                {filters.search && (
+                  <button
+                    onClick={() => handleSearchChange('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors"
+                    aria-label="Clear search"
+                  >
+                    <X className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+
+      {/* Filters Section */}
+      <section className="py-8 bg-background" aria-labelledby="filters-heading">
+        <div className="container mx-auto px-4">
+          <h2 id="filters-heading" className="sr-only">Filter Resources</h2>
+
+          <div className="flex items-center justify-end">
+            {/* Filter Panel - Right Side */}
+            <FilterPanel
+              selectedCategories={filters.categories}
+              selectedTypes={filters.types}
+              onCategoryToggle={handleCategoryToggle}
+              onTypeToggle={handleTypeToggle}
+              onClearAll={handleClearAllFilters}
+              resourceCount={pagination?.totalCount}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+
+      {/* Resources Grid Section */}
+      <main className="py-12 bg-background" aria-labelledby="resources-heading">
+        <div className="container mx-auto px-4">
+          <h2 id="resources-heading" className="sr-only">Available Resources</h2>
+          <ResourcesGrid
+            resources={resources || []}
+            isLoading={isLoading}
+            error={error}
+            hasActiveFilters={hasActiveFilters}
+            onRetry={handleRetry}
+            onClearFilters={handleClearAllFilters}
+            isRetrying={isRetrying}
+          />
+        </div>
+      </main>
+
+      {/* Pagination Section */}
+      {pagination && pagination.totalPages > 1 && (
+        <section className="py-8 bg-background border-t">
+          <div className="container mx-auto px-4">
+            <Pagination
+              currentPage={filters.page}
+              totalPages={pagination.totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </section>
+      )}
+    </div>
+  );
 }

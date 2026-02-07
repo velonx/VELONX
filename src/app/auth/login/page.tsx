@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import InteractiveRobot from "@/components/interactive-robot";
+import SplineScene from "@/components/SplineScene";
 import { User, Shield, ArrowRight, Mail, Lock, Eye, EyeOff, Sparkles, Zap, Trophy, Code, Rocket } from "lucide-react";
 
 export default function LoginPage() {
@@ -19,22 +19,34 @@ export default function LoginPage() {
     const [loginState, setLoginState] = useState<"idle" | "success" | "error">("idle");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isRedirecting, setIsRedirecting] = useState(false);
 
-    // Redirect to dashboard if already logged in
+    // Redirect to dashboard if already logged in (but not during login process)
     useEffect(() => {
-        if (status === "authenticated" && session?.user) {
-            const dashboardPath = session.user.role === "admin"
+        console.log("useEffect - status:", status, "isRedirecting:", isRedirecting);
+        if (status === "authenticated" && session?.user && !isRedirecting) {
+            console.log("useEffect - User is authenticated, redirecting...");
+            console.log("useEffect - User role:", session.user.role);
+            const dashboardPath = session.user.role === "ADMIN"
                 ? "/dashboard/admin"
                 : "/dashboard/student";
+            console.log("useEffect - Redirecting to:", dashboardPath);
             router.push(dashboardPath);
         }
-    }, [status, session, router]);
+    }, [status, session, router, isRedirecting]);
 
     const handleLogin = async (role: "student" | "admin") => {
+        console.log("=== LOGIN STARTED ===");
+        console.log("Role:", role);
+        console.log("Email:", email);
+        console.log("Password length:", password.length);
+
         setLoading(true);
         setLoginState("idle");
+        setIsRedirecting(true);
 
         try {
+            console.log("Calling signIn...");
             const result = await signIn("credentials", {
                 email,
                 password,
@@ -42,23 +54,36 @@ export default function LoginPage() {
                 redirect: false,
             });
 
+            console.log("Login result:", result);
+
             if (result?.ok) {
+                console.log("✅ Login successful!");
                 setLoginState("success");
-                setTimeout(() => {
-                    if (role === "admin") {
-                        router.push("/dashboard/admin");
-                    } else {
-                        router.push("/dashboard/student");
-                    }
-                }, 500);
+
+                // Wait a bit for session to update
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Check session
+                const response = await fetch('/api/auth/session');
+                const sessionData = await response.json();
+                console.log("Session after login:", sessionData);
+
+                const callbackUrl = role === "admin" ? "/dashboard/admin" : "/dashboard/student";
+                console.log("Redirecting to:", callbackUrl);
+
+                // Use router.push instead of window.location
+                router.push(callbackUrl);
             } else {
+                console.error("❌ Login failed:", result?.error);
                 setLoginState("error");
+                setIsRedirecting(false);
                 setTimeout(() => setLoginState("idle"), 2000);
                 setLoading(false);
             }
         } catch (error) {
-            console.error("Login error:", error);
+            console.error("❌ Login exception:", error);
             setLoginState("error");
+            setIsRedirecting(false);
             setTimeout(() => setLoginState("idle"), 2000);
             setLoading(false);
         }
@@ -92,61 +117,30 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex pt-16">
+        <div className="min-h-screen flex pt-16 bg-background">
             {/* Left Side - Animated Illustration */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a0a0f]">
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0">
                     {/* Floating Orbs */}
-                    <div className="absolute top-[10%] left-[10%] w-32 h-32 rounded-full bg-cyan-500/20 blur-3xl animate-float" />
-                    <div className="absolute top-[40%] right-[20%] w-48 h-48 rounded-full bg-violet-500/20 blur-3xl animate-float" style={{ animationDelay: '1s' }} />
-                    <div className="absolute bottom-[20%] left-[30%] w-40 h-40 rounded-full bg-yellow-500/15 blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-
-                    {/* Grid Pattern */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+                    <div className="absolute top-[10%] left-[10%] w-32 h-32 rounded-full bg-[#219EBC]/10 blur-3xl animate-float" />
+                    <div className="absolute top-[40%] right-[20%] w-48 h-48 rounded-full bg-[#0f2c59]/10 blur-3xl animate-float" style={{ animationDelay: '1s' }} />
+                    <div className="absolute bottom-[20%] left-[30%] w-40 h-40 rounded-full bg-[#219EBC]/5 blur-3xl animate-float" style={{ animationDelay: '2s' }} />
                 </div>
 
                 {/* Main Content */}
                 <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
-                    {/* Logo removed - already in header */}
-
-                    {/* Interactive Robot Mascot */}
-                    <div className="relative mb-8">
-                        <InteractiveRobot
-                            showPassword={showPassword}
-                            loginState={loginState}
-                            size="lg"
-                        />
-
-                        {/* Floating Icons */}
-                        <div className="absolute -top-4 -right-8 animate-bounce-in" style={{ animationDelay: '0.2s' }}>
-                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 backdrop-blur-sm border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                                <Code className="w-7 h-7 text-cyan-400" />
-                            </div>
-                        </div>
-                        <div className="absolute -bottom-4 -left-8 animate-bounce-in" style={{ animationDelay: '0.4s' }}>
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 backdrop-blur-sm border border-yellow-500/30 flex items-center justify-center shadow-lg shadow-yellow-500/20">
-                                <Trophy className="w-6 h-6 text-yellow-400" />
-                            </div>
-                        </div>
-                        <div className="absolute top-1/2 -right-12 animate-bounce-in" style={{ animationDelay: '0.6s' }}>
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500/20 to-violet-600/10 backdrop-blur-sm border border-violet-500/30 flex items-center justify-center shadow-lg shadow-violet-500/20">
-                                <Zap className="w-5 h-5 text-violet-400" />
-                            </div>
-                        </div>
-                        <div className="absolute -bottom-8 right-4 animate-bounce-in" style={{ animationDelay: '0.8s' }}>
-                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-sm border border-green-500/30 flex items-center justify-center shadow-lg shadow-green-500/20">
-                                <Rocket className="w-5 h-5 text-green-400" />
-                            </div>
-                        </div>
+                    {/* Interactive 3D Robot */}
+                    <div className="relative mb-8 w-full h-[400px]">
+                        <SplineScene showPassword={showPassword} loginState="idle" />
                     </div>
 
                     {/* Text Content */}
                     <div className="text-center mt-8">
-                        <h2 className="text-3xl font-black text-white mb-3">
-                            <span className="gradient-text-cyan">Welcome</span> <span className="text-white">to Velonx</span>
+                        <h2 className="text-3xl text-[#023047] mb-3" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                            Welcome to Velonx
                         </h2>
-                        <p className="text-gray-400 max-w-sm">
+                        <p className="text-muted-foreground max-w-sm" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>
                             Your gateway to building real projects, learning new skills, and connecting with tech enthusiasts.
                         </p>
                     </div>
@@ -154,60 +148,48 @@ export default function LoginPage() {
                     {/* Stats Row */}
                     <div className="flex gap-8 mt-10">
                         <div className="text-center">
-                            <div className="text-2xl font-bold gradient-text-cyan">1000+</div>
-                            <div className="text-gray-500 text-sm">Members</div>
+                            <div className="text-2xl font-bold text-[#219EBC]" style={{ fontFamily: "'Montserrat', sans-serif" }}>1000+</div>
+                            <div className="text-muted-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Members</div>
                         </div>
-                        <div className="w-px bg-white/10" />
+                        <div className="w-px bg-border" />
                         <div className="text-center">
-                            <div className="text-2xl font-bold gradient-text-yellow">50+</div>
-                            <div className="text-gray-500 text-sm">Projects</div>
+                            <div className="text-2xl font-bold text-[#219EBC]" style={{ fontFamily: "'Montserrat', sans-serif" }}>50+</div>
+                            <div className="text-muted-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Projects</div>
                         </div>
-                        <div className="w-px bg-white/10" />
+                        <div className="w-px bg-border" />
                         <div className="text-center">
-                            <div className="text-2xl font-bold gradient-text-violet">30+</div>
-                            <div className="text-gray-500 text-sm">Events</div>
+                            <div className="text-2xl font-bold text-[#219EBC]" style={{ fontFamily: "'Montserrat', sans-serif" }}>30+</div>
+                            <div className="text-muted-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Events</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-[#0a0a0f] relative overflow-hidden">
-                {/* Subtle Background Elements */}
-                <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-cyan-500/5 blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-violet-500/5 blur-3xl" />
-
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background relative overflow-hidden">
                 <div className="w-full max-w-md relative z-10">
-                    {/* Mobile Logo */}
-                    <div className="lg:hidden text-center mb-8">
-                        {/* Mobile Logo removed - already in header */}
-                        {/* Mobile Robot */}
-                        <div className="flex justify-center mb-6">
-                            <InteractiveRobot
-                                showPassword={showPassword}
-                                loginState={loginState}
-                                size="sm"
-                            />
-                        </div>
+                    {/* Mobile 3D Robot */}
+                    <div className="lg:hidden flex justify-center mb-6 h-[250px]">
+                        <SplineScene showPassword={showPassword} loginState="idle" />
                     </div>
 
                     {/* Header */}
                     <div className="text-center mb-8">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 px-4 py-2 text-sm font-medium text-cyan-300 mb-4">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-4" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                             <Sparkles className="w-4 h-4" />
                             Welcome Back
                         </div>
-                        <h1 className="text-3xl font-black text-white mb-2">Login</h1>
-                        <p className="text-gray-400">Continue your innovation journey</p>
+                        <h1 className="text-3xl text-[#023047] mb-2" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>Login</h1>
+                        <p className="text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>Continue your innovation journey</p>
                     </div>
 
                     {/* Role Tabs */}
                     <Tabs defaultValue="student" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/5 p-1.5 rounded-2xl border border-white/5">
-                            <TabsTrigger value="student" className="gap-2 rounded-xl py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-600 data-[state=active]:text-black font-medium transition-all">
+                        <TabsList className="grid w-full grid-cols-2 mb-6 bg-muted p-1.5 rounded-2xl border border-border">
+                            <TabsTrigger value="student" className="gap-2 rounded-xl py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#0f2c59] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-medium transition-all" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                                 <User className="w-4 h-4" /> Student
                             </TabsTrigger>
-                            <TabsTrigger value="admin" className="gap-2 rounded-xl py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-violet-600 data-[state=active]:text-white font-medium transition-all">
+                            <TabsTrigger value="admin" className="gap-2 rounded-xl py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#0f2c59] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-medium transition-all" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                                 <Shield className="w-4 h-4" /> Admin
                             </TabsTrigger>
                         </TabsList>
@@ -215,38 +197,40 @@ export default function LoginPage() {
                         <TabsContent value="student">
                             <form onSubmit={(e) => { e.preventDefault(); handleLogin("student"); }} className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label className="text-gray-300 text-sm">Email</Label>
+                                    <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Email</Label>
                                     <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                         <Input
                                             type="email"
                                             placeholder="student@example.com"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="pl-12 py-6 rounded-xl bg-white/5 border-white/10 text-white focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all input-focus-glow"
+                                            className="pl-12 py-6 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
-                                        <Label className="text-gray-300 text-sm">Password</Label>
-                                        <Link href="#" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">Forgot Password?</Link>
+                                        <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Password</Label>
+                                        <Link href="#" className="text-sm text-[#219EBC] hover:text-[#1a7a94] transition-colors" style={{ fontFamily: "'Montserrat', sans-serif" }}>Forgot Password?</Link>
                                     </div>
                                     <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                         <Input
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="pl-12 pr-12 py-6 rounded-xl bg-white/5 border-white/10 text-white focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all input-focus-glow"
+                                            className="pl-12 pr-12 py-6 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
                                         >
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                         </button>
@@ -254,7 +238,8 @@ export default function LoginPage() {
                                 </div>
                                 <Button
                                     type="submit"
-                                    className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-black font-semibold rounded-xl py-6 shadow-lg shadow-cyan-500/25 transition-all hover:shadow-cyan-500/40 btn-magnetic"
+                                    className="w-full bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-xl py-6 shadow-lg shadow-[#0f2c59]/30 transition-all"
+                                    style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}
                                     disabled={loading}
                                 >
                                     {loading ? "Signing in..." : "Log In"} <ArrowRight className="w-4 h-4 ml-2" />
@@ -265,38 +250,40 @@ export default function LoginPage() {
                         <TabsContent value="admin">
                             <form onSubmit={(e) => { e.preventDefault(); handleLogin("admin"); }} className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label className="text-gray-300 text-sm">Admin Email</Label>
+                                    <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Admin Email</Label>
                                     <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                         <Input
                                             type="email"
                                             placeholder="admin@velonx.com"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="pl-12 py-6 rounded-xl bg-white/5 border-white/10 text-white focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                                            className="pl-12 py-6 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
-                                        <Label className="text-gray-300 text-sm">Password</Label>
-                                        <Link href="#" className="text-sm text-violet-400 hover:text-violet-300 transition-colors">Forgot Password?</Link>
+                                        <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Password</Label>
+                                        <Link href="#" className="text-sm text-[#219EBC] hover:text-[#1a7a94] transition-colors" style={{ fontFamily: "'Montserrat', sans-serif" }}>Forgot Password?</Link>
                                     </div>
                                     <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                         <Input
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="pl-12 pr-12 py-6 rounded-xl bg-white/5 border-white/10 text-white focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                                            className="pl-12 pr-12 py-6 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
                                         >
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                         </button>
@@ -304,7 +291,8 @@ export default function LoginPage() {
                                 </div>
                                 <Button
                                     type="submit"
-                                    className="w-full bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-400 hover:to-violet-500 text-white font-semibold rounded-xl py-6 shadow-lg shadow-violet-500/25 transition-all hover:shadow-violet-500/40 btn-magnetic"
+                                    className="w-full bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-xl py-6 shadow-lg shadow-[#0f2c59]/30 transition-all"
+                                    style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}
                                     disabled={loading}
                                 >
                                     {loading ? "Signing in..." : "Sign In as Admin"} <ArrowRight className="w-4 h-4 ml-2" />
@@ -316,10 +304,10 @@ export default function LoginPage() {
                     {/* Divider */}
                     <div className="relative my-8">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-white/10"></div>
+                            <div className="w-full border-t border-border"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-[#0a0a0f] text-gray-500">Or</span>
+                            <span className="px-4 bg-background text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>Or</span>
                         </div>
                     </div>
 
@@ -327,7 +315,8 @@ export default function LoginPage() {
                     <div className="space-y-3">
                         <Button
                             variant="outline"
-                            className="w-full py-6 rounded-xl border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all group"
+                            className="w-full py-6 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all group"
+                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                             onClick={handleGoogleLogin}
                             disabled={loading}
                         >
@@ -341,7 +330,8 @@ export default function LoginPage() {
                         </Button>
                         <Button
                             variant="outline"
-                            className="w-full py-6 rounded-xl border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all"
+                            className="w-full py-6 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all"
+                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                             onClick={handleGitHubLogin}
                             disabled={loading}
                         >
@@ -353,8 +343,8 @@ export default function LoginPage() {
                     </div>
 
                     {/* Sign Up Link */}
-                    <p className="text-center text-sm text-gray-500 mt-8">
-                        Don&apos;t have an account? <Link href="/auth/signup" className="text-cyan-400 font-medium hover:text-cyan-300 transition-colors underline-offset-4 hover:underline">Sign up</Link>
+                    <p className="text-center text-sm text-muted-foreground mt-8" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        Don&apos;t have an account? <Link href="/auth/signup" className="text-[#219EBC] font-medium hover:text-[#1a7a94] transition-colors underline-offset-4 hover:underline">Sign up</Link>
                     </p>
                 </div>
             </div>

@@ -8,14 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import InteractiveRobot from "@/components/interactive-robot";
-import { ArrowRight, Sparkles, Rocket, Users, Trophy, Code, Mail, Lock, User, Eye, EyeOff, Zap, Target } from "lucide-react";
+import SplineScene from "@/components/SplineScene";
+import { ArrowRight, Sparkles, Rocket, Users, Trophy, Code, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { authApi } from "@/lib/api/client";
 
 export default function SignupPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [signupState, setSignupState] = useState<"idle" | "success" | "error">("idle");
     const [error, setError] = useState<string | null>(null);
 
     // Form state
@@ -42,7 +42,17 @@ export default function SignupPage() {
         setLoading(true);
 
         try {
-            // Use NextAuth credentials sign in (for demo, this creates a session)
+            // Create student account only (admins are seeded in database)
+            const fullName = `${firstName} ${lastName}`.trim();
+            
+            await authApi.signup({
+                name: fullName,
+                email: email,
+                password: password,
+                role: "STUDENT", // Only students can sign up
+            });
+
+            // Then, sign in with the new credentials
             const result = await signIn("credentials", {
                 email: email,
                 password: password,
@@ -50,21 +60,23 @@ export default function SignupPage() {
             });
 
             if (result?.error) {
-                setSignupState("error");
-                setError("Failed to create account. Please try again.");
-                setTimeout(() => setSignupState("idle"), 2000);
+                setError("Account created but login failed. Please try logging in manually.");
             } else {
-                setSignupState("success");
-                // Redirect after success animation
                 setTimeout(() => {
                     router.push("/dashboard/student");
                 }, 1000);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("Signup error:", err);
-            setSignupState("error");
-            setError("An unexpected error occurred");
-            setTimeout(() => setSignupState("idle"), 2000);
+            
+            // Handle specific error messages
+            if (err.code === "USER_EXISTS") {
+                setError("An account with this email already exists");
+            } else if (err.message) {
+                setError(err.message);
+            } else {
+                setError("Failed to create account. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
@@ -76,8 +88,6 @@ export default function SignupPage() {
             await signIn("google", { callbackUrl: "/dashboard/student" });
         } catch (error) {
             console.error("Google signup error:", error);
-            setSignupState("error");
-            setTimeout(() => setSignupState("idle"), 2000);
             setLoading(false);
         }
     };
@@ -88,206 +98,148 @@ export default function SignupPage() {
             await signIn("github", { callbackUrl: "/dashboard/student" });
         } catch (error) {
             console.error("GitHub signup error:", error);
-            setSignupState("error");
-            setTimeout(() => setSignupState("idle"), 2000);
             setLoading(false);
         }
     };
 
-
     return (
-        <div className="min-h-screen flex pt-16">
+        <div className="min-h-screen flex pt-16 bg-background">
             {/* Left Side - Animated Illustration */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-[#1a0f2e] via-[#0d1f3c] to-[#0a0a0f]">
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0">
-                    {/* Floating Orbs */}
-                    <div className="absolute top-[15%] right-[15%] w-40 h-40 rounded-full bg-yellow-500/20 blur-3xl animate-float" />
-                    <div className="absolute top-[50%] left-[10%] w-48 h-48 rounded-full bg-violet-500/20 blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
-                    <div className="absolute bottom-[15%] right-[25%] w-36 h-36 rounded-full bg-cyan-500/15 blur-3xl animate-float" style={{ animationDelay: '0.5s' }} />
-
-                    {/* Grid Pattern */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(168,85,247,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+                    <div className="absolute top-[15%] right-[15%] w-40 h-40 rounded-full bg-[#219EBC]/10 blur-3xl animate-float" />
+                    <div className="absolute top-[50%] left-[10%] w-48 h-48 rounded-full bg-[#0f2c59]/10 blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
+                    <div className="absolute bottom-[15%] right-[25%] w-36 h-36 rounded-full bg-[#219EBC]/5 blur-3xl animate-float" style={{ animationDelay: '0.5s' }} />
                 </div>
 
                 {/* Main Content */}
                 <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
-                    {/* Logo */}
-                    <Link href="/" className="absolute top-8 left-8">
-                        <img src="/logo.png" alt="Velonx" className="h-10 w-auto" />
-                    </Link>
-
-                    {/* Interactive Robot Mascot */}
-                    <div className="relative mb-8">
-                        <InteractiveRobot
-                            showPassword={showPassword}
-                            loginState={signupState}
-                            size="lg"
-                        />
-
-                        {/* Floating Icons */}
-                        <div className="absolute -top-8 left-0 animate-bounce-in" style={{ animationDelay: '0.2s' }}>
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 backdrop-blur-sm border border-yellow-500/30 flex items-center justify-center shadow-lg shadow-yellow-500/20">
-                                <Trophy className="w-6 h-6 text-yellow-400" />
-                            </div>
-                        </div>
-                        <div className="absolute top-8 -right-16 animate-bounce-in" style={{ animationDelay: '0.4s' }}>
-                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 backdrop-blur-sm border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                                <Code className="w-7 h-7 text-cyan-400" />
-                            </div>
-                        </div>
-                        <div className="absolute bottom-4 -left-12 animate-bounce-in" style={{ animationDelay: '0.6s' }}>
-                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500/20 to-violet-600/10 backdrop-blur-sm border border-violet-500/30 flex items-center justify-center shadow-lg shadow-violet-500/20">
-                                <Target className="w-5 h-5 text-violet-400" />
-                            </div>
-                        </div>
-                        <div className="absolute -bottom-4 right-4 animate-bounce-in" style={{ animationDelay: '0.8s' }}>
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-sm border border-green-500/30 flex items-center justify-center shadow-lg shadow-green-500/20">
-                                <Zap className="w-5 h-5 text-green-400" />
-                            </div>
-                        </div>
-
-                        {/* Star particles */}
-                        <div className="absolute -top-4 right-8 w-2 h-2 bg-white rounded-full animate-twinkle" />
-                        <div className="absolute top-12 -left-8 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-twinkle" style={{ animationDelay: '0.5s' }} />
-                        <div className="absolute bottom-8 right-16 w-1 h-1 bg-cyan-300 rounded-full animate-twinkle" style={{ animationDelay: '1s' }} />
+                    {/* Interactive Robot */}
+                    <div className="relative mb-8 w-full h-[400px]">
+                        <SplineScene showPassword={showPassword} loginState="idle" />
                     </div>
 
-                    {/* Text Content */}
-                    <div className="text-center mt-12">
-                        <h2 className="text-3xl font-black text-white mb-3">
-                            <span className="text-white">Start Building</span> <span className="gradient-text-yellow">Your Future</span>
+                    <div className="text-center mt-8">
+                        <h2 className="text-3xl text-[#023047] mb-3" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                            Start Building Your Future
                         </h2>
-                        <p className="text-gray-400 max-w-sm">
+                        <p className="text-muted-foreground max-w-sm" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>
                             Join thousands of students who are already building real projects and launching their tech careers.
                         </p>
                     </div>
 
-                    {/* Stats Row */}
                     <div className="grid grid-cols-2 gap-4 mt-10">
-                        <div className="glass rounded-2xl p-4 border border-white/10 text-center animate-fade-in-up stagger-1 hover-lift">
-                            <Rocket className="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-                            <div className="text-xl font-bold text-white">50+</div>
-                            <div className="text-gray-500 text-xs">Projects Built</div>
+                        <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
+                            <Rocket className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
+                            <div className="text-xl font-bold text-[#023047]" style={{ fontFamily: "'Montserrat', sans-serif" }}>50+</div>
+                            <div className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>Projects Built</div>
                         </div>
-                        <div className="glass rounded-2xl p-4 border border-white/10 text-center animate-fade-in-up stagger-2 hover-lift">
-                            <Users className="w-6 h-6 text-violet-400 mx-auto mb-2" />
-                            <div className="text-xl font-bold text-white">1000+</div>
-                            <div className="text-gray-500 text-xs">Members</div>
+                        <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
+                            <Users className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
+                            <div className="text-xl font-bold text-[#023047]" style={{ fontFamily: "'Montserrat', sans-serif" }}>1000+</div>
+                            <div className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>Members</div>
                         </div>
-                        <div className="glass rounded-2xl p-4 border border-white/10 text-center animate-fade-in-up stagger-3 hover-lift">
-                            <Trophy className="w-6 h-6 text-yellow-400 mx-auto mb-2" />
-                            <div className="text-xl font-bold text-white">30+</div>
-                            <div className="text-gray-500 text-xs">Events Hosted</div>
+                        <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
+                            <Trophy className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
+                            <div className="text-xl font-bold text-[#023047]" style={{ fontFamily: "'Montserrat', sans-serif" }}>30+</div>
+                            <div className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>Events Hosted</div>
                         </div>
-                        <div className="glass rounded-2xl p-4 border border-white/10 text-center animate-fade-in-up stagger-4 hover-lift">
-                            <Code className="w-6 h-6 text-green-400 mx-auto mb-2" />
-                            <div className="text-xl font-bold text-white">Free</div>
-                            <div className="text-gray-500 text-xs">Forever</div>
+                        <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
+                            <Code className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
+                            <div className="text-xl font-bold text-[#023047]" style={{ fontFamily: "'Montserrat', sans-serif" }}>Free</div>
+                            <div className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>Forever</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Right Side - Signup Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-[#0a0a0f] relative overflow-hidden">
-                {/* Subtle Background Elements */}
-                <div className="absolute top-0 left-0 w-96 h-96 rounded-full bg-violet-500/5 blur-3xl" />
-                <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full bg-yellow-500/5 blur-3xl" />
-
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background relative overflow-hidden">
                 <div className="w-full max-w-md relative z-10">
-                    {/* Mobile Logo */}
-                    <div className="lg:hidden text-center mb-6">
-                        <Link href="/">
-                            <img src="/logo.png" alt="Velonx" className="h-12 w-auto mx-auto mb-4" />
-                        </Link>
-                        {/* Mobile Robot */}
-                        <div className="flex justify-center mb-4">
-                            <InteractiveRobot
-                                showPassword={showPassword}
-                                loginState={signupState}
-                                size="sm"
-                            />
-                        </div>
+                    {/* Mobile Interactive Robot */}
+                    <div className="lg:hidden flex justify-center mb-6 h-[250px]">
+                        <SplineScene showPassword={showPassword} loginState="idle" />
                     </div>
 
-                    {/* Header */}
                     <div className="text-center mb-6">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 px-4 py-2 text-sm font-medium text-yellow-300 mb-4">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-4" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                             <Sparkles className="w-4 h-4" />
                             Join 1000+ Students
                         </div>
-                        <h1 className="text-3xl font-black text-white mb-2">Create Account</h1>
-                        <p className="text-gray-400">Start your innovation journey today</p>
+                        <h1 className="text-3xl text-[#023047] mb-2" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>Create Account</h1>
+                        <p className="text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>Start your innovation journey today</p>
                     </div>
 
-                    {/* Form */}
                     <form onSubmit={handleSignup} className="space-y-4">
-                        {/* Error Display */}
                         {error && (
-                            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
+                            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                                 {error}
                             </div>
                         )}
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-gray-300 text-sm">First Name</Label>
+                                <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>First Name</Label>
                                 <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                     <Input
                                         placeholder="John"
                                         value={firstName}
                                         onChange={(e) => setFirstName(e.target.value)}
-                                        className="pl-10 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+                                        className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                        style={{ fontFamily: "'Montserrat', sans-serif" }}
                                         required
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-gray-300 text-sm">Last Name</Label>
+                                <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Last Name</Label>
                                 <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                     <Input
                                         placeholder="Doe"
                                         value={lastName}
                                         onChange={(e) => setLastName(e.target.value)}
-                                        className="pl-10 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+                                        className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                        style={{ fontFamily: "'Montserrat', sans-serif" }}
                                         required
                                     />
                                 </div>
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-gray-300 text-sm">Email</Label>
+                            <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Email</Label>
                             <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                 <Input
                                     type="email"
                                     placeholder="john@example.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="pl-12 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+                                    className="pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                     required
                                 />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-gray-300 text-sm">Password</Label>
+                            <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Password</Label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                 <Input
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Create a strong password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="pl-12 pr-12 py-5 rounded-xl bg-white/5 border-white/10 text-white focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+                                    className="pl-12 pr-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                     required
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
@@ -299,38 +251,37 @@ export default function SignupPage() {
                                 id="terms"
                                 checked={agreedToTerms}
                                 onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
-                                className="border-white/20 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500 mt-0.5"
+                                className="border-border data-[state=checked]:bg-[#219EBC] data-[state=checked]:border-[#219EBC] mt-0.5"
                             />
-                            <label htmlFor="terms" className="text-sm text-gray-400 leading-tight">
-                                I agree to the <Link href="#" className="text-yellow-400 hover:underline">Terms of Service</Link> and <Link href="#" className="text-yellow-400 hover:underline">Privacy Policy</Link>
+                            <label htmlFor="terms" className="text-sm text-muted-foreground leading-tight" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                I agree to the <Link href="#" className="text-[#219EBC] hover:underline">Terms of Service</Link> and <Link href="#" className="text-[#219EBC] hover:underline">Privacy Policy</Link>
                             </label>
                         </div>
 
                         <Button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-semibold rounded-xl py-6 shadow-lg shadow-yellow-500/25 transition-all hover:shadow-yellow-500/40 btn-magnetic"
+                            className="w-full bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-xl py-6 shadow-lg shadow-[#0f2c59]/30 transition-all"
+                            style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}
                             disabled={loading}
                         >
-
                             {loading ? "Creating Account..." : "Create Account"} <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     </form>
 
-                    {/* Divider */}
                     <div className="relative my-6">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-white/10"></div>
+                            <div className="w-full border-t border-border"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-[#0a0a0f] text-gray-500">Or sign up with</span>
+                            <span className="px-4 bg-background text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>Or sign up with</span>
                         </div>
                     </div>
 
-                    {/* Social Logins */}
                     <div className="grid grid-cols-2 gap-4">
                         <Button
                             variant="outline"
-                            className="py-5 rounded-xl border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all"
+                            className="py-5 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all"
+                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                             onClick={handleGoogleSignup}
                             disabled={loading}
                         >
@@ -344,7 +295,8 @@ export default function SignupPage() {
                         </Button>
                         <Button
                             variant="outline"
-                            className="py-5 rounded-xl border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all"
+                            className="py-5 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all"
+                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                             onClick={handleGitHubSignup}
                             disabled={loading}
                         >
@@ -355,9 +307,8 @@ export default function SignupPage() {
                         </Button>
                     </div>
 
-                    {/* Sign In Link */}
-                    <p className="text-center text-sm text-gray-500 mt-6">
-                        Already have an account? <Link href="/auth/login" className="text-yellow-400 font-medium hover:text-yellow-300 transition-colors underline-offset-4 hover:underline">Sign In</Link>
+                    <p className="text-center text-sm text-muted-foreground mt-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        Already have an account? <Link href="/auth/login" className="text-[#219EBC] font-medium hover:text-[#1a7a94] transition-colors underline-offset-4 hover:underline">Sign In</Link>
                     </p>
                 </div>
             </div>

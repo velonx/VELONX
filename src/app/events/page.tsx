@@ -1,52 +1,189 @@
 "use client";
 
-import { useState } from "react";
+import { useState, lazy, Suspense, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Users, ArrowRight, Sparkles, MapPin, Clock, ExternalLink, Code, Smartphone, Cloud, PenTool as Tool, LayoutGrid, RotateCcw } from "lucide-react";
-import { EVENTS, SCHEDULED_MEETINGS } from "@/lib/mock-data";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Calendar, Users, ArrowRight, Sparkles, MapPin, Clock, ExternalLink, Code, Smartphone, Cloud, PenTool as Tool, LayoutGrid, RotateCcw, LogIn, CheckCircle2, Search, X } from "lucide-react";
+import { SCHEDULED_MEETINGS } from "@/lib/mock-data";
 import EventsSidebar from "@/components/events/EventsSidebar";
-import EventCalendar from "@/components/events/EventCalendar";
 import ScheduledMeetings from "@/components/events/ScheduledMeetings";
 import AddEventForm from "@/components/events/AddEventForm";
-import EventAnalytics from "@/components/events/EventAnalytics";
+import EventCard from "@/components/events/EventCard";
+import EventsGrid from "@/components/events/EventsGrid";
+import { EventsPagination } from "@/components/events/EventsPagination";
+import SkipLinks from "@/components/SkipLinks";
 import toast from "react-hot-toast";
+import { useEvents } from "@/lib/api/hooks";
+import { eventsApi } from "@/lib/api/client";
+import { useEventFilters } from "@/lib/hooks/useEventFilters";
+import { useEventRegistration } from "@/lib/hooks/useEventRegistration";
+import { useKeyboardNavigation, useFocusReturn } from "@/lib/hooks/useKeyboardNavigation";
+
+// Lazy load heavy components for better performance (Requirement 6.9, 6.10)
+const EventCalendar = lazy(() => import("@/components/events/EventCalendar"));
+const EventAnalytics = lazy(() => import("@/components/events/EventAnalytics"));
+const EventDetailsModal = lazy(() => import("@/components/events/EventDetailsModal"));
+const RegistrationConfirmDialog = lazy(() => import("@/components/events/RegistrationConfirmDialog"));
+const UnregisterConfirmDialog = lazy(() => import("@/components/events/UnregisterConfirmDialog"));
+
+// Loading fallback component
+const LoadingFallback = () => (
+    <div className="flex items-center justify-center p-8">
+        <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-muted-foreground text-sm">Loading...</p>
+        </div>
+    </div>
+);
 
 export default function EventsPage() {
-    const { data: session } = useSession();
-    const isAdmin = session?.user?.role === "admin";
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const isAdmin = session?.user?.role === "ADMIN";
     const [currentView, setCurrentView] = useState<"events" | "calendar" | "analytics">("events");
     const [currentStatus, setCurrentStatus] = useState<"upcoming" | "past">("upcoming");
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
     const [showAddEventDialog, setShowAddEventDialog] = useState(false);
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+    const [showEventDetailsModal, setShowEventDetailsModal] = useState(false);
+    const [showRegistrationDialog, setShowRegistrationDialog] = useState(false);
+    const [showUnregisterDialog, setShowUnregisterDialog] = useState(false);
+    const [eventToRegister, setEventToRegister] = useState<any | null>(null);
+    const [eventToUnregister, setEventToUnregister] = useState<any | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const upcomingEvents = EVENTS;
-    const pastEvents = [
-        {
-            id: 101,
-            title: "Intro to Web3",
-            date: "2024-12-10",
-            type: "Online",
-            attendees: 120,
-            description: "Learn the basics of blockchain and decentralized apps.",
-            topics: ["Blockchain", "Ethereum", "DApps"]
-        },
-        {
-            id: 102,
-            title: "React Performance Workshop",
-            date: "2024-11-25",
-            type: "Offline",
-            attendees: 85,
-            description: "Deep dive into React profiling and optimization techniques.",
-            topics: ["React", "Performance", "Web Dev"]
-        },
-    ];
+    // Refs for keyboard navigation
+    const searchInputRef = useRef<HTMLInputElement>(null);
+    const mainContentRef = useRef<HTMLDivElement>(null);
 
-    const handleRegister = (eventTitle: string) => {
-        toast.success(`Successfully registered for "${eventTitle}"! Check your email for details.`);
+    // Use event registration hook
+    const { register, unregister, isRegistering } = useEventRegistration();
+
+    // Use event filters hook for pagination and filter state
+    const { filters, setPage, setPageSize } = useEventFilters();
+
+    // Fetch events from API with pagination
+    const { data: upcomingEvents, loading, pagination, refetch } = useEvents({
+        status: currentStatus === 'upcoming' ? 'UPCOMING' : 'COMPLETED',
+        page: filters.page,
+        pageSize: filters.pageSize,
+    });
+
+    // Focus return for modals
+    useFocusReturn(showEventDetailsModal);
+    useFocusReturn(showRegistrationDialog);
+    useFocusReturn(showUnregisterDialog);
+    useFocusReturn(showLoginDialog);
+    useFocusReturn(showAddEventDialog);
+
+    // Keyboard shortcuts
+    useKeyboardNavigation({
+        shortcuts: [
+            {
+                key: '/',
+                handler: (e) => {
+                    e.preventDefault();
+                    // Focus search input if it exists
+                    if (searchInputRef.current) {
+                        searchInputRef.current.focus();
+                        toast.success('Search focused - start typing to search events');
+                    }
+                },
+                description: 'Focus search input',
+            },
+            {
+                key: 'Escape',
+                handler: () => {
+                    // Close any open modals
+                    if (showEventDetailsModal) {
+                        handleCloseEventDetails();
+                    } else if (showRegistrationDialog) {
+                        setShowRegistrationDialog(false);
+                        setEventToRegister(null);
+                    } else if (showUnregisterDialog) {
+                        setShowUnregisterDialog(false);
+                        setEventToUnregister(null);
+                    } else if (showLoginDialog) {
+                        setShowLoginDialog(false);
+                    } else if (showAddEventDialog) {
+                        setShowAddEventDialog(false);
+                    }
+                },
+                description: 'Close modal or dialog',
+            },
+        ],
+        enableFocusTracking: true,
+    });
+
+    const handleRegister = async (eventId: string, eventTitle: string) => {
+        // Check if user is logged in
+        if (!session) {
+            setShowLoginDialog(true);
+            return;
+        }
+
+        // Find the event and show confirmation dialog
+        const event = upcomingEvents?.find(e => e.id === eventId);
+        if (event) {
+            setEventToRegister(event);
+            setShowRegistrationDialog(true);
+        }
+    };
+
+    const handleConfirmRegistration = async () => {
+        if (!eventToRegister) return;
+
+        try {
+            await register(eventToRegister.id, eventToRegister.title);
+            setShowRegistrationDialog(false);
+            setEventToRegister(null);
+            refetch(); // Refresh the events list
+        } catch (error) {
+            // Error handling is done in the hook
+        }
+    };
+
+    const handleUnregister = async (eventId: string, eventTitle?: string) => {
+        if (!session) {
+            setShowLoginDialog(true);
+            return;
+        }
+
+        // Find the event and show confirmation dialog
+        const event = upcomingEvents?.find(e => e.id === eventId);
+        if (event) {
+            setEventToUnregister(event);
+            setShowUnregisterDialog(true);
+        }
+    };
+
+    const handleConfirmUnregistration = async () => {
+        if (!eventToUnregister) return;
+
+        try {
+            await unregister(eventToUnregister.id, eventToUnregister.title);
+            setShowUnregisterDialog(false);
+            setEventToUnregister(null);
+            refetch(); // Refresh the events list
+        } catch (error) {
+            // Error handling is done in the hook
+        }
+    };
+
+    const handleViewDetails = (event: any) => {
+        setSelectedEvent(event);
+        setShowEventDetailsModal(true);
+    };
+
+    const handleCloseEventDetails = () => {
+        setShowEventDetailsModal(false);
+        setSelectedEvent(null);
     };
 
     const handleAddToCalendar = (eventTitle: string) => {
@@ -65,37 +202,89 @@ export default function EventsPage() {
     const handleEventAdded = () => {
         toast.success("Event created successfully! It will appear on the calendar.");
         setShowAddEventDialog(false);
+        refetch(); // Refresh the events list
     };
 
+    // Helper function to check if user is registered for an event
+    const isUserRegistered = (eventId: string) => {
+        const event = upcomingEvents?.find(e => e.id === eventId);
+        return (event as any)?.isUserRegistered || false;
+    };
+
+    // Filter events based on search query
+    const filteredEvents = upcomingEvents?.filter(event => {
+        if (!searchQuery.trim()) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+            event.title.toLowerCase().includes(query) ||
+            event.description?.toLowerCase().includes(query) ||
+            (event as any).category?.toLowerCase().includes(query)
+        );
+    }) || [];
+
     return (
-        <div className="min-h-screen pt-24 bg-white">
-            {/* Hero Section */}
-            <section className="relative py-16">
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <div className="max-w-3xl mx-auto space-y-6">
-                        <h1 className="text-5xl md:text-7xl font-bold text-[#023047] tracking-tight">
+        <div className="min-h-screen pt-16 md:pt-24 bg-background">
+            {/* Skip Links for Keyboard Navigation */}
+            <SkipLinks />
+
+            {/* Hero Section - Optimized for mobile */}
+            <section className="relative py-8 md:py-12 lg:py-16 bg-background overflow-hidden" role="banner">
+                <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center">
+                    <div className="max-w-3xl mx-auto space-y-4 md:space-y-6">
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground tracking-tight" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
                             Join Our Events
                         </h1>
-                        <p className="text-gray-500 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed px-4 sm:px-0" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
                             Participate in live coding sessions, workshops, hackathons, and networking events to grow your skills and connect with the community.
                         </p>
-                        <div className="pt-4">
-                            <button className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-full px-10 py-4 text-lg transition-all shadow-lg shadow-[#219EBC]/25 flex items-center gap-2 mx-auto">
-                                Browse Events <ArrowRight className="w-5 h-5" />
-                            </button>
+                        <div className="w-full max-w-md mx-auto pt-2 md:pt-4">
+                            <div className="relative">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
+                                <input
+                                    ref={searchInputRef}
+                                    type="search"
+                                    placeholder="Search events by title, description, or category..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-12 pr-12 py-3 md:py-4 rounded-full bg-card border-2 border-border focus:border-primary outline-none text-foreground placeholder:text-muted-foreground transition-all shadow-sm hover:shadow-md focus:shadow-lg"
+                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                                    aria-label="Search events"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery('')}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                        aria-label="Clear search"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" role="separator" aria-hidden="true" />
 
             {/* Main Content with Sidebar */}
-            <section className="py-16 animate-on-scroll bg-gray-50">
-                <div className="container mx-auto px-4">
-                    <div className="flex flex-col lg:flex-row gap-8">
+            <section
+                className="py-8 md:py-12 lg:py-16 animate-on-scroll bg-background"
+                id="main-content"
+                ref={mainContentRef}
+                tabIndex={-1}
+                role="main"
+                aria-label="Events content"
+            >
+                <div className="container mx-auto px-4 sm:px-6">
+                    {/* Keyboard shortcut hint */}
+                    <div className="sr-only" role="status" aria-live="polite">
+                        Press forward slash (/) to focus search. Press Escape to close modals.
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
                         {/* Sidebar */}
-                        <div className="w-full lg:w-72 shrink-0">
+                        <aside className="w-full lg:w-72 shrink-0" role="complementary" aria-label="Event filters and navigation">
                             <EventsSidebar
                                 currentView={currentView}
                                 onViewChange={setCurrentView}
@@ -104,100 +293,70 @@ export default function EventsPage() {
                                 onAddEvent={handleAddEvent}
                                 isAdmin={isAdmin}
                             />
-                        </div>
+                        </aside>
 
                         {/* Main Content */}
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0" role="region" aria-label="Events list">
                             {currentView === "events" ? (
-                                <div className="space-y-8">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {(currentStatus === "upcoming" ? upcomingEvents : pastEvents).map((event, index) => {
-                                            const colors = [
-                                                "from-red-500 to-rose-600",
-                                                "from-indigo-600 to-blue-700",
-                                                "from-blue-600 to-cyan-500",
-                                                "from-orange-500 to-amber-600",
-                                                "from-emerald-500 to-teal-600",
-                                                "from-rose-500 to-pink-600"
-                                            ];
-                                            const icons = [Code, Sparkles, Smartphone, Users, Cloud, Tool];
-                                            const Icon = icons[index % icons.length];
-                                            const bgColor = colors[index % colors.length];
+                                <div className="space-y-6 md:space-y-8">
+                                    <EventsGrid
+                                        events={filteredEvents}
+                                        isLoading={loading}
+                                        skeletonCount={filters.pageSize}
+                                        onViewDetails={handleViewDetails}
+                                        onRegister={(eventId) => {
+                                            const event = upcomingEvents?.find(e => e.id === eventId);
+                                            if (event) {
+                                                handleRegister(eventId, event.title);
+                                            }
+                                        }}
+                                        onUnregister={(eventId) => {
+                                            const event = upcomingEvents?.find(e => e.id === eventId);
+                                            handleUnregister(eventId, event?.title);
+                                        }}
+                                        isRegistered={isUserRegistered}
+                                        emptyState={
+                                            <div className="text-center py-12 md:py-20 text-muted-foreground" role="status">
+                                                <Calendar className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 opacity-50" aria-hidden="true" />
+                                                <p className="text-lg md:text-xl font-bold">
+                                                    {searchQuery ? `No events matching "${searchQuery}"` : `No ${currentStatus} events found`}
+                                                </p>
+                                                <p className="text-sm mt-2">
+                                                    {searchQuery ? 'Try a different search term' : 'Check back later for new events!'}
+                                                </p>
+                                            </div>
+                                        }
+                                    />
 
-                                            return (
-                                                <Card key={event.id} className="bg-[#0f172a] border-0 rounded-[24px] overflow-hidden shadow-2xl hover:scale-[1.02] transition-all group">
-                                                    {/* Top Section */}
-                                                    <div className={`h-40 bg-gradient-to-br ${bgColor} relative flex items-center justify-center`}>
-                                                        <div className="absolute top-4 right-4">
-                                                            <Badge className="bg-orange-500/20 text-orange-400 border-0 uppercase text-[10px] font-bold tracking-widest px-3 py-1 backdrop-blur-md">
-                                                                {event.type}
-                                                            </Badge>
-                                                        </div>
-                                                        <div className="text-white transform group-hover:scale-110 transition-transform duration-500">
-                                                            <Icon className="w-16 h-16 opacity-90" />
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Bottom Section */}
-                                                    <CardHeader className="p-6 pb-0">
-                                                        <div className="text-[#219EBC] font-bold text-sm mb-3 flex items-center gap-2">
-                                                            <Calendar className="w-4 h-4" />
-                                                            {event.date}
-                                                        </div>
-                                                        <CardTitle className="text-white text-2xl font-bold leading-tight mb-3">
-                                                            {event.title}
-                                                        </CardTitle>
-                                                        <CardDescription className="text-gray-400 text-sm line-clamp-2 leading-relaxed mb-4">
-                                                            Join us for this exciting exploration into {event.title.toLowerCase()}. Learn from industry experts and build real skills.
-                                                        </CardDescription>
-
-                                                        {/* Tags */}
-                                                        <div className="flex flex-wrap gap-2 mb-6">
-                                                            {["JavaScript", "React", "Node.js"].map(tag => (
-                                                                <Badge key={tag} className="bg-white/5 text-gray-400 hover:text-white border-0 text-[10px] font-medium transition-colors">
-                                                                    {tag}
-                                                                </Badge>
-                                                            ))}
-                                                        </div>
-
-                                                        {/* Progress */}
-                                                        <div className="space-y-2 mb-8">
-                                                            <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider">
-                                                                <span className="text-gray-500 flex items-center gap-1.5">
-                                                                    <Users className="w-3.5 h-3.5" /> Attendees
-                                                                </span>
-                                                                <span className="text-white">42/50</span>
-                                                            </div>
-                                                            <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                                                                <div
-                                                                    className="h-full bg-orange-500 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.5)]"
-                                                                    style={{ width: '84%' }}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </CardHeader>
-
-                                                    <CardFooter className="p-6 pt-0">
-                                                        <button
-                                                            onClick={() => handleRegister(event.title)}
-                                                            className="w-full h-12 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-blue-600/20 text-sm"
-                                                        >
-                                                            Register Now <ArrowRight className="w-4 h-4" />
-                                                        </button>
-                                                    </CardFooter>
-                                                </Card>
-                                            );
-                                        })}
-                                    </div>
+                                    {/* Pagination Controls */}
+                                    {pagination && pagination.totalCount > 0 && (
+                                        <EventsPagination
+                                            currentPage={filters.page}
+                                            totalPages={pagination.totalPages}
+                                            pageSize={filters.pageSize}
+                                            totalCount={pagination.totalCount}
+                                            onPageChange={setPage}
+                                            onPageSizeChange={setPageSize}
+                                            variant="pagination"
+                                            isLoading={loading}
+                                            scrollToTop={true}
+                                            className="pb-4 md:pb-8"
+                                        />
+                                    )}
                                 </div>
                             ) : currentView === "calendar" ? (
-                                <EventCalendar
-                                    meetings={SCHEDULED_MEETINGS}
-                                    onDateSelect={handleDateSelect}
-                                    selectedDate={selectedDate}
-                                />
+                                <Suspense fallback={<LoadingFallback />}>
+                                    <EventCalendar
+                                        events={upcomingEvents || []}
+                                        onDateSelect={handleDateSelect}
+                                        selectedDate={selectedDate}
+                                        isLoading={loading}
+                                    />
+                                </Suspense>
                             ) : (
-                                <EventAnalytics meetings={SCHEDULED_MEETINGS} />
+                                <Suspense fallback={<LoadingFallback />}>
+                                    <EventAnalytics events={upcomingEvents || []} />
+                                </Suspense>
                             )}
                         </div>
                     </div>
@@ -216,6 +375,88 @@ export default function EventsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Login Required Dialog */}
+            <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+                <DialogContent className="max-w-md bg-background rounded-[32px]">
+                    <DialogHeader className="text-center">
+                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                            <LogIn className="w-8 h-8 text-primary" />
+                        </div>
+                        <DialogTitle className="text-2xl font-black text-foreground">
+                            Login Required
+                        </DialogTitle>
+                        <DialogDescription className="text-muted-foreground mt-2">
+                            You need to be logged in to register for events. Please sign in or create an account to continue.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-3 mt-6">
+                        <Button
+                            onClick={() => router.push('/auth/login')}
+                            className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl"
+                        >
+                            Sign In
+                        </Button>
+                        <Button
+                            onClick={() => router.push('/auth/signup')}
+                            variant="outline"
+                            className="w-full h-12 border-2 border-border hover:border-primary text-foreground font-bold rounded-xl"
+                        >
+                            Create Account
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Event Details Modal */}
+            <Suspense fallback={null}>
+                <EventDetailsModal
+                    event={selectedEvent}
+                    isOpen={showEventDetailsModal}
+                    onClose={handleCloseEventDetails}
+                    onRegister={(eventId) => {
+                        const event = upcomingEvents?.find(e => e.id === eventId);
+                        if (event) {
+                            handleRegister(eventId, event.title);
+                        }
+                    }}
+                    onUnregister={(eventId) => {
+                        const event = upcomingEvents?.find(e => e.id === eventId);
+                        handleUnregister(eventId, event?.title);
+                    }}
+                    isRegistered={selectedEvent ? isUserRegistered(selectedEvent.id) : false}
+                    isLoading={isRegistering}
+                    userRole={session?.user?.role as 'STUDENT' | 'ADMIN' | undefined}
+                />
+            </Suspense>
+
+            {/* Registration Confirmation Dialog */}
+            <Suspense fallback={null}>
+                <RegistrationConfirmDialog
+                    event={eventToRegister}
+                    isOpen={showRegistrationDialog}
+                    onClose={() => {
+                        setShowRegistrationDialog(false);
+                        setEventToRegister(null);
+                    }}
+                    onConfirm={handleConfirmRegistration}
+                    isLoading={isRegistering}
+                />
+            </Suspense>
+
+            {/* Unregister Confirmation Dialog */}
+            <Suspense fallback={null}>
+                <UnregisterConfirmDialog
+                    event={eventToUnregister}
+                    isOpen={showUnregisterDialog}
+                    onClose={() => {
+                        setShowUnregisterDialog(false);
+                        setEventToUnregister(null);
+                    }}
+                    onConfirm={handleConfirmUnregistration}
+                    isLoading={isRegistering}
+                />
+            </Suspense>
         </div>
     );
 }

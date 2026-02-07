@@ -1,0 +1,503 @@
+"use client";
+
+import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PlusCircle, CheckCircle, Clock } from "lucide-react";
+import toast from "react-hot-toast";
+import { useProjects } from "@/lib/api/hooks";
+import { SearchBar } from "@/components/projects/SearchBar";
+import { FilterPanel } from "@/components/projects/FilterPanel";
+import { SortControl } from "@/components/projects/SortControl";
+import { ProjectsGrid } from "@/components/projects/ProjectsGrid";
+import { ProjectsErrorBoundary } from "@/components/projects/ProjectsErrorBoundary";
+import { ErrorState } from "@/components/projects/ErrorState";
+
+// Code splitting: Lazy load ProjectModal since it's only needed when user clicks a project
+const ProjectModal = lazy(() => 
+  import("@/components/projects/ProjectModal").then(mod => ({ default: mod.ProjectModal }))
+);
+import {
+  ExtendedProject,
+  ProjectFilters,
+  SortOption,
+  UserProjectRelationship,
+} from "@/lib/types/project-page.types";
+import {
+  processProjects,
+  getUniqueTechStacks,
+  createEmptyFilters,
+} from "@/lib/utils/project-filters";
+import {
+  getUserProjectRelationship,
+} from "@/lib/utils/project-helpers";
+import {
+  loadSortPreference,
+  loadFilterPreference,
+  saveFilterPreference,
+} from "@/lib/utils/session-storage";
+import { performanceMonitor } from "@/lib/services/performance-monitor.service";
+import { usePerformanceMonitoring, useWebVitals } from "@/lib/hooks/usePerformanceMonitoring";
+
+function ProjectsPageContent() {
+    const { data: session } = useSession();
+    const router = useRouter();
+
+    // Performance monitoring
+    usePerformanceMonitoring('ProjectsPage');
+    
+    // Web Vitals monitoring (LCP, FID, CLS)
+    useWebVitals();
+
+    // State management
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [filters, setFilters] = useState<ProjectFilters>(() => 
+        loadFilterPreference(createEmptyFilters())
+    );
+    const [sortBy, setSortBy] = useState<SortOption>(() => 
+        loadSortPreference('newest')
+    );
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [joiningProjects, setJoiningProjects] = useState<Set<string>>(new Set());
+    const [activeTab, setActiveTab] = useState<'running' | 'completed'>('running');
+
+    // Fetch projects from API
+    const { 
+        data: runningProjects, 
+        loading: runningLoading, 
+        error: runningError,
+        refetch: refetchRunning 
+    } = useProjects({
+        status: 'IN_PROGRESS',
+        pageSize: 100
+    });
+    const { 
+        data: completedProjects, 
+        loading: completedLoading, 
+        error: completedError,
+        refetch: refetchCompleted 
+    } = useProjects({
+        status: 'COMPLETED',
+        pageSize: 100
+    });
+
+    // Track retry state
+    const [isRetrying, setIsRetrying] = useState(false);
+
+    // Save filter preferences to session storage when they change
+    useEffect(() => {
+        saveFilterPreference(filters);
+    }, [filters]);
+
+    // Convert API projects to ExtendedProject type
+    // Memoized to avoid unnecessary conversions on every render
+    const extendedRunningProjects = useMemo<ExtendedProject[]>(() => {
+        const startTime = performance.now();
+        const result = (runningProjects || []).map(project => ({
+            ...project,
+            category: project.category as any,
+            difficulty: project.difficulty as any,
+            joinRequests: project.joinRequests as any,
+        }));
+        
+        // Track conversion time for performance monitoring
+        const duration = performance.now() - startTime;
+        if (duration > 50) { // Only log if conversion takes more than 50ms
+            console.debug(`[Performance] Running projects conversion took ${duration.toFixed(2)}ms`);
+        }
+        
+        return result;
+    }, [runningProjects]);
+
+    const extendedCompletedProjects = useMemo<ExtendedProject[]>(() => {
+        const startTime = performance.now();
+        const result = (completedProjects || []).map(project => ({
+            ...project,
+            category: project.category as any,
+            difficulty: project.difficulty as any,
+            joinRequests: project.joinRequests as any,
+        }));
+        
+        // Track conversion time for performance monitoring
+        const duration = performance.now() - startTime;
+        if (duration > 50) { // Only log if conversion takes more than 50ms
+            console.debug(`[Performance] Completed projects conversion took ${duration.toFixed(2)}ms`);
+        }
+        
+        return result;
+    }, [completedProjects]);
+
+    // Process projects with search, filters, and sort
+    // Memoized to avoid reprocessing on every render
+    const processedRunningProjects = useMemo(() => {
+        const startTime = performance.now();
+        const result = processProjects(extendedRunningProjects, searchTerm, filters, sortBy);
+        
+        // Track processing time for performance monitoring
+        const duration = performance.now() - startTime;
+        if (duration > 100) { // Only log if processing takes more than 100ms
+            console.debug(`[Performance] Running projects processing took ${duration.toFixed(2)}ms for ${extendedRunningProjects.length} projects`);
+        }
+        
+        return result;
+    }, [extendedRunningProjects, searchTerm, filters, sortBy]);
+
+    const processedCompletedProjects = useMemo(() => {
+        const startTime = performance.now();
+        const result = processProjects(extendedCompletedProjects, searchTerm, filters, sortBy);
+        
+        // Track processing time for performance monitoring
+        const duration = performance.now() - startTime;
+        if (duration > 100) { // Only log if processing takes more than 100ms
+            console.debug(`[Performance] Completed projects processing took ${duration.toFixed(2)}ms for ${extendedCompletedProjects.length} projects`);
+        }
+        
+        return result;
+    }, [extendedCompletedProjects, searchTerm, filters, sortBy]);
+
+    // Get unique tech stacks for filter panel
+    // Memoized to avoid recalculating on every render
+    const availableTechStacks = useMemo(() => {
+        const allProjects = [...extendedRunningProjects, ...extendedCompletedProjects];
+        return getUniqueTechStacks(allProjects);
+    }, [extendedRunningProjects, extendedCompletedProjects]);
+
+    // Calculate join request statuses for all projects
+    // Memoized to avoid recalculating on every render
+    const joinRequestStatuses = useMemo(() => {
+        const statusMap = new Map<string, UserProjectRelationship>();
+        const allProjects = [...extendedRunningProjects, ...extendedCompletedProjects];
+        
+        allProjects.forEach(project => {
+            const relationship = getUserProjectRelationship(project, session?.user?.id);
+            statusMap.set(project.id, relationship);
+        });
+        
+        return statusMap;
+    }, [extendedRunningProjects, extendedCompletedProjects, session?.user?.id]);
+
+    // Get selected project for modal
+    // Memoized to avoid searching on every render
+    const selectedProject = useMemo(() => {
+        if (!selectedProjectId) return null;
+        
+        const allProjects = [...extendedRunningProjects, ...extendedCompletedProjects];
+        return allProjects.find(p => p.id === selectedProjectId) || null;
+    }, [selectedProjectId, extendedRunningProjects, extendedCompletedProjects]);
+
+    // Handlers - All memoized with useCallback to prevent unnecessary re-renders
+    const handleSearchChange = useCallback((value: string) => {
+        setSearchTerm(value);
+    }, []);
+
+    const handleFilterChange = useCallback((newFilters: ProjectFilters) => {
+        setFilters(newFilters);
+    }, []);
+
+    const handleSortChange = useCallback((newSort: SortOption) => {
+        setSortBy(newSort);
+    }, []);
+
+    const handleProjectClick = useCallback((projectId: string) => {
+        setSelectedProjectId(projectId);
+    }, []);
+
+    const handleModalClose = useCallback(() => {
+        setSelectedProjectId(null);
+    }, []);
+
+    const handleJoinRequest = useCallback(async (projectId: string) => {
+        if (!session?.user?.id) {
+            toast.error("Please sign in to join projects");
+            router.push('/auth/login');
+            return;
+        }
+
+        const requestStartTime = performance.now();
+
+        // Optimistic update
+        setJoiningProjects(prev => new Set(prev).add(projectId));
+
+        try {
+            const response = await fetch(`/api/projects/${projectId}/join-requests`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                toast.success('Join request sent to project owner! They\'ll review it soon.');
+                
+                // Refetch projects to update join request status
+                await refetchRunning();
+                await refetchCompleted();
+                
+                // Track successful join request
+                const duration = performance.now() - requestStartTime;
+                performanceMonitor.trackRequest({
+                    endpoint: `/api/projects/${projectId}/join-requests`,
+                    method: 'POST',
+                    statusCode: 200,
+                    duration,
+                    timestamp: Date.now(),
+                    userId: session.user.id,
+                }).catch(err => console.debug('[Performance] Failed to track metric:', err));
+            } else {
+                toast.error(data.error?.message || 'Failed to send join request');
+                
+                // Track failed join request
+                const duration = performance.now() - requestStartTime;
+                performanceMonitor.trackRequest({
+                    endpoint: `/api/projects/${projectId}/join-requests`,
+                    method: 'POST',
+                    statusCode: response.status,
+                    duration,
+                    timestamp: Date.now(),
+                    userId: session.user.id,
+                }).catch(err => console.debug('[Performance] Failed to track metric:', err));
+            }
+        } catch (error: any) {
+            toast.error('Failed to send join request');
+            
+            // Track error
+            const duration = performance.now() - requestStartTime;
+            performanceMonitor.trackRequest({
+                endpoint: `/api/projects/${projectId}/join-requests`,
+                method: 'POST',
+                statusCode: 500,
+                duration,
+                timestamp: Date.now(),
+                userId: session?.user?.id,
+            }).catch(err => console.debug('[Performance] Failed to track metric:', err));
+        } finally {
+            setJoiningProjects(prev => {
+                const next = new Set(prev);
+                next.delete(projectId);
+                return next;
+            });
+        }
+    }, [session?.user?.id, router, refetchRunning, refetchCompleted]);
+
+    const handleSubmitClick = useCallback(() => {
+        if (!session?.user?.id) {
+            toast.error("Please sign in to submit project ideas");
+            router.push('/auth/login');
+            return;
+        }
+        router.push('/submit-project');
+    }, [session?.user?.id, router]);
+
+    const handleClearFilters = useCallback(() => {
+        setFilters(createEmptyFilters());
+        setSearchTerm("");
+    }, []);
+
+    // Handle retry for API errors
+    const handleRetry = useCallback(async () => {
+        setIsRetrying(true);
+        try {
+            await Promise.all([refetchRunning(), refetchCompleted()]);
+        } catch (error) {
+            console.error("Retry failed:", error);
+        } finally {
+            setIsRetrying(false);
+        }
+    }, [refetchRunning, refetchCompleted]);
+
+    // Determine which projects to show based on active tab
+    const currentProjects = activeTab === 'running' 
+        ? processedRunningProjects 
+        : processedCompletedProjects;
+
+    // Determine error type based on error message
+    const getErrorType = (error: Error | null): "api" | "network" | "timeout" | "generic" => {
+        if (!error) return "generic";
+        const message = error.message.toLowerCase();
+        if (message.includes("network") || message.includes("fetch")) return "network";
+        if (message.includes("timeout")) return "timeout";
+        return "api";
+    };
+
+    return (
+        <div className="min-h-screen pt-24 bg-background">
+            {/* Hero Section */}
+            <section className="relative py-16 bg-background overflow-hidden">
+                {/* Background Blobs - Same as landing page */}
+                <div className="absolute w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] md:w-[800px] md:h-[800px] rounded-full bg-[#CFF5FF] top-[-100px] sm:top-[-150px] md:top-[-200px] right-[-100px] sm:right-[-150px] md:right-[-200px] blur-[60px] sm:blur-[70px] md:blur-[80px] opacity-60 animate-blob-float" />
+                <div className="absolute w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px] rounded-full bg-[#FEF3C7] bottom-[-50px] left-[-50px] sm:left-[-75px] md:left-[-100px] blur-[60px] sm:blur-[70px] md:blur-[80px] opacity-60 animate-blob-float-delayed" />
+                
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <div className="max-w-3xl mx-auto">
+                        <h1 className="text-4xl md:text-6xl text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
+                            Build Projects That Matter
+                        </h1>
+                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                            Join active projects, collaborate with peers, and create solutions that make a difference.
+                        </p>
+                        <div className="flex justify-center gap-4 mb-8">
+                            <Button
+                                className="bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-full px-8 py-6 text-lg shadow-lg shadow-[#0f2c59]/30"
+                                onClick={handleSubmitClick}
+                                style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}
+                            >
+                                <PlusCircle className="w-5 h-5 mr-2" /> Submit Idea
+                            </Button>
+                        </div>
+
+                        {/* Search Bar */}
+                        <div className="max-w-xl mx-auto">
+                            <SearchBar
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                placeholder="Search projects by name or description..."
+                                isLoading={false}
+                                resultsCount={currentProjects.length}
+                                className="w-full"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+
+            {/* Filters Section */}
+            <section className="py-8 bg-background">
+                <div className="container mx-auto px-4">
+                    <div className="flex items-center justify-end gap-3">
+                        <FilterPanel
+                            filters={filters}
+                            onChange={handleFilterChange}
+                            availableTechStacks={availableTechStacks}
+                            projectCount={currentProjects.length}
+                        />
+                        <SortControl
+                            value={sortBy}
+                            onChange={handleSortChange}
+                        />
+                    </div>
+                </div>
+            </section>
+
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+
+            {/* Projects Section */}
+            <section className="py-16 animate-on-scroll">
+                <div className="container mx-auto px-4">
+
+                    {/* Tabs */}
+                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'running' | 'completed')} className="w-full">
+                        <div className="flex justify-center mb-10">
+                            <TabsList className="bg-background border-2 border-border p-1 rounded-xl shadow-sm">
+                                <TabsTrigger 
+                                    value="running" 
+                                    className="px-8 py-3.5 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#219EBC] data-[state=active]:to-[#1a7a94] data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted font-semibold gap-2.5 transition-all duration-200"
+                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                                >
+                                    <Clock className="w-5 h-5" /> 
+                                    <span>Running Projects</span>
+                                    {runningProjects && runningProjects.length > 0 && (
+                                        <span className="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-white/20 data-[state=active]:bg-background/30 font-bold">
+                                            {runningProjects.length}
+                                        </span>
+                                    )}
+                                </TabsTrigger>
+                                <TabsTrigger 
+                                    value="completed" 
+                                    className="px-8 py-3.5 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#10B981] data-[state=active]:to-[#059669] data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted font-semibold gap-2.5 transition-all duration-200"
+                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                                >
+                                    <CheckCircle className="w-5 h-5" /> 
+                                    <span>Hall of Fame</span>
+                                    {completedProjects && completedProjects.length > 0 && (
+                                        <span className="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-white/20 data-[state=active]:bg-background/30 font-bold">
+                                            {completedProjects.length}
+                                        </span>
+                                    )}
+                                </TabsTrigger>
+                            </TabsList>
+                        </div>
+
+                        <TabsContent value="running">
+                            {runningError ? (
+                                <ErrorState
+                                    type={getErrorType(runningError)}
+                                    message={runningError.message}
+                                    onRetry={handleRetry}
+                                    isRetrying={isRetrying}
+                                />
+                            ) : (
+                                <ProjectsGrid
+                                    projects={processedRunningProjects}
+                                    isLoading={runningLoading}
+                                    isRefetching={false}
+                                    emptyStateType={searchTerm || filters.techStack.length > 0 || filters.difficulty || filters.category || filters.teamSize ? 'no-results' : 'no-projects'}
+                                    onEmptyAction={searchTerm || filters.techStack.length > 0 || filters.difficulty || filters.category || filters.teamSize ? handleClearFilters : handleSubmitClick}
+                                    emptyActionLabel={searchTerm || filters.techStack.length > 0 || filters.difficulty || filters.category || filters.teamSize ? 'Clear Filters' : 'Submit Project'}
+                                    joinRequestStatuses={joinRequestStatuses}
+                                    onJoinRequest={handleJoinRequest}
+                                    onProjectClick={handleProjectClick}
+                                    joiningProjects={joiningProjects}
+                                    currentUserId={session?.user?.id}
+                                />
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value="completed">
+                            {completedError ? (
+                                <ErrorState
+                                    type={getErrorType(completedError)}
+                                    message={completedError.message}
+                                    onRetry={handleRetry}
+                                    isRetrying={isRetrying}
+                                />
+                            ) : (
+                                <ProjectsGrid
+                                    projects={processedCompletedProjects}
+                                    isLoading={completedLoading}
+                                    isRefetching={false}
+                                    emptyStateType={searchTerm || filters.techStack.length > 0 || filters.difficulty || filters.category || filters.teamSize ? 'no-results' : 'no-completed'}
+                                    onEmptyAction={searchTerm || filters.techStack.length > 0 || filters.difficulty || filters.category || filters.teamSize ? handleClearFilters : undefined}
+                                    emptyActionLabel={searchTerm || filters.techStack.length > 0 || filters.difficulty || filters.category || filters.teamSize ? 'Clear Filters' : undefined}
+                                    joinRequestStatuses={joinRequestStatuses}
+                                    onJoinRequest={handleJoinRequest}
+                                    onProjectClick={handleProjectClick}
+                                    joiningProjects={joiningProjects}
+                                    currentUserId={session?.user?.id}
+                                />
+                            )}
+                        </TabsContent>
+                    </Tabs>
+                </div>
+            </section>
+
+            {/* Project Modal - Lazy loaded with Suspense */}
+            <Suspense fallback={null}>
+                <ProjectModal
+                    projectId={selectedProjectId}
+                    isOpen={!!selectedProjectId}
+                    onClose={handleModalClose}
+                    onJoinRequest={handleJoinRequest}
+                    project={selectedProject}
+                    joinRequestStatus={selectedProjectId ? joinRequestStatuses.get(selectedProjectId) : undefined}
+                    isJoining={selectedProjectId ? joiningProjects.has(selectedProjectId) : false}
+                />
+            </Suspense>
+        </div>
+    );
+}
+
+/**
+ * Projects Page with Error Boundary
+ * Wraps the main content with error boundary for graceful error handling
+ */
+export default function ProjectsPage() {
+    return (
+        <ProjectsErrorBoundary>
+            <ProjectsPageContent />
+        </ProjectsErrorBoundary>
+    );
+}

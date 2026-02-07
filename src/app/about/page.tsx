@@ -1,8 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Rocket, Target, Users, Shield, Zap, Sparkles } from "lucide-react";
+import { Rocket, Target, Users, Shield, Zap, Sparkles, Heart, Lightbulb } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { HoverEffect } from "@/components/ui/card-hover-effect";
+
+// Enable ISR with revalidation every 24 hours
+export const revalidate = 86400;
 
 export default function AboutPage() {
     const stats = [
@@ -12,11 +16,32 @@ export default function AboutPage() {
         { label: "Success Rate", value: "98%", icon: Zap },
     ];
 
+    const coreValues = [
+        {
+            title: "Integrity",
+            description: "Honesty and transparency in everything we do. We build trust through consistent actions and open communication.",
+            link: "#values",
+            icon: <Shield className="w-12 h-12" />,
+        },
+        {
+            title: "Inclusion",
+            description: "A welcoming space for all tech enthusiasts. We celebrate diversity and create opportunities for everyone.",
+            link: "#values",
+            icon: <Heart className="w-12 h-12" />,
+        },
+        {
+            title: "Impact",
+            description: "Making a real difference in students' careers. We measure success by the lives we transform.",
+            link: "#values",
+            icon: <Lightbulb className="w-12 h-12" />,
+        },
+    ];
+
     return (
-        <div className="min-h-screen pt-24 bg-white">
+        <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
-            <section className="py-20 bg-gradient-to-b from-gray-50 to-white overflow-hidden relative">
-                <div className="absolute top-20 left-10 w-64 h-64 bg-[#219EBC]/5 rounded-full blur-3xl" />
+            <section className="py-20 bg-background overflow-hidden relative">
+                
                 <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#FFB703]/5 rounded-full blur-3xl" />
 
                 <div className="container mx-auto px-4 relative z-10 text-center">
@@ -32,7 +57,8 @@ export default function AboutPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl md:text-7xl font-black text-gray-900 mb-8 leading-tight"
+                        className="text-5xl md:text-7xl text-foreground mb-8 leading-tight"
+                        style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
                     >
                         Empowering the <br />
                         <span className="text-[#219EBC]">Next Generation</span>
@@ -41,7 +67,8 @@ export default function AboutPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="text-gray-500 text-xl max-w-3xl mx-auto leading-relaxed"
+                        className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed"
+                        style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
                     >
                         Velonx is more than a platform; it's a movement. we're building a community where students can learn, build, and grow together in the ever-evolving world of technology.
                     </motion.p>
@@ -60,12 +87,12 @@ export default function AboutPage() {
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <Card className="border-0 shadow-xl shadow-black/5 rounded-[32px] bg-white text-center p-8 hover:scale-[1.02] transition-transform">
+                                <Card className="border-0 shadow-xl shadow-black/5 rounded-[32px] bg-background text-center p-8 hover:scale-[1.02] transition-transform">
                                     <div className="w-12 h-12 bg-[#219EBC]/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#219EBC]">
                                         <stat.icon className="w-6 h-6" />
                                     </div>
-                                    <div className="text-3xl font-black text-gray-900 mb-1">{stat.value}</div>
-                                    <div className="text-gray-400 text-sm font-bold uppercase tracking-wider">{stat.label}</div>
+                                    <div className="text-3xl font-black text-foreground mb-1">{stat.value}</div>
+                                    <div className="text-muted-foreground text-sm font-bold uppercase tracking-wider">{stat.label}</div>
                                 </Card>
                             </motion.div>
                         ))}
@@ -88,15 +115,15 @@ export default function AboutPage() {
                             <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[#FFB703]/20 rounded-[48px] -z-10" />
                         </div>
                         <div>
-                            <h2 className="text-4xl font-black text-gray-900 mb-8">Our Mission & <span className="text-[#219EBC]">Vision</span></h2>
+                            <h2 className="text-4xl mb-8 text-foreground" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>Our Mission & <span className="text-[#219EBC]">Vision</span></h2>
                             <div className="space-y-12">
                                 <div className="flex gap-6">
                                     <div className="w-16 h-16 bg-[#219EBC] rounded-3xl shrink-0 flex items-center justify-center text-white shadow-lg shadow-[#219EBC]/30">
                                         <Target className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-2">Accessibility in Education</h3>
-                                        <p className="text-gray-500 leading-relaxed">
+                                        <h3 className="text-xl font-bold text-foreground mb-2">Accessibility in Education</h3>
+                                        <p className="text-muted-foreground leading-relaxed">
                                             We believe high-quality tech education should be accessible to everyone, regardless of their background or location.
                                         </p>
                                     </div>
@@ -106,8 +133,8 @@ export default function AboutPage() {
                                         <Rocket className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-2">Incorporate Innovation</h3>
-                                        <p className="text-gray-500 leading-relaxed">
+                                        <h3 className="text-xl font-bold text-foreground mb-2">Incorporate Innovation</h3>
+                                        <p className="text-muted-foreground leading-relaxed">
                                             Our platform encourages hands-on learning through real-world projects, fostering a culture of innovation and creativity.
                                         </p>
                                     </div>
@@ -117,8 +144,8 @@ export default function AboutPage() {
                                         <Users className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-2">Community First</h3>
-                                        <p className="text-gray-500 leading-relaxed">
+                                        <h3 className="text-xl font-bold text-foreground mb-2">Community First</h3>
+                                        <p className="text-muted-foreground leading-relaxed">
                                             Velonx is built on the foundation of community. We support each other, learn together, and grow as a collective.
                                         </p>
                                     </div>
@@ -132,20 +159,13 @@ export default function AboutPage() {
             {/* Core Values */}
             <section className="py-24 bg-gray-50">
                 <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-4xl font-black text-gray-900 mb-16">The Core Values that <span className="text-[#219EBC]">Drive Us</span></h2>
-                    <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        {[
-                            { title: "Integrity", desc: "Honesty and transparency in everything we do.", color: "#219EBC" },
-                            { title: "Inclusion", desc: "A welcoming space for all tech enthusiasts.", color: "#FFB703" },
-                            { title: "Impact", desc: "Making a real difference in students' careers.", color: "#023047" },
-                        ].map((value, i) => (
-                            <div key={i} className="bg-white p-12 rounded-[48px] shadow-xl shadow-black/5 hover-lift transition-all border border-gray-100">
-                                <div className="w-4 h-20 rounded-full mx-auto mb-8" style={{ backgroundColor: value.color }} />
-                                <h3 className="text-2xl font-black text-gray-900 mb-4">{value.title}</h3>
-                                <p className="text-gray-500 leading-relaxed">{value.desc}</p>
-                            </div>
-                        ))}
-                    </div>
+                    <h2 className="text-4xl mb-4 text-foreground" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                        The Core Values that <span className="text-[#219EBC]">Drive Us</span>
+                    </h2>
+                    <p className="text-muted-foreground text-lg mb-12 max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                        Our principles guide every decision we make and every feature we build
+                    </p>
+                    <HoverEffect items={coreValues} />
                 </div>
             </section>
 
@@ -157,14 +177,14 @@ export default function AboutPage() {
                         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#FFB703]/5 rounded-full -ml-48 -mb-48 group-hover:scale-110 transition-transform duration-1000" />
 
                         <h2 className="text-4xl md:text-5xl font-black mb-8 relative z-10">Ready to start your journey?</h2>
-                        <p className="text-gray-400 text-xl mb-12 max-w-2xl mx-auto relative z-10 leading-relaxed">
+                        <p className="text-muted-foreground text-xl mb-12 max-w-2xl mx-auto relative z-10 leading-relaxed">
                             Join thousands of students who are already building the future on Velonx.
                         </p>
                         <div className="flex flex-wrap justify-center gap-6 relative z-10">
-                            <button className="h-16 px-10 bg-white text-[#023047] font-black rounded-[24px] hover:bg-gray-100 transition-all text-lg shadow-2xl shadow-white/10">
+                            <button className="h-16 px-10 bg-background text-[#023047] font-black rounded-[24px] hover:bg-muted transition-all text-lg shadow-2xl shadow-white/10">
                                 Join the Community
                             </button>
-                            <button className="h-16 px-10 bg-white/5 border border-white/20 text-white font-black rounded-[24px] hover:bg-white/10 transition-all text-lg">
+                            <button className="h-16 px-10 bg-background/5 border border-white/20 text-white font-black rounded-[24px] hover:bg-background/10 transition-all text-lg">
                                 Contact Our Team
                             </button>
                         </div>

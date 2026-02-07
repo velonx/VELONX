@@ -1,0 +1,97 @@
+/* Tech Grid Background - Cyberpunk Style */
+.tech-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-color: #0a0e1a;
+    overflow: hidden;
+}
+
+.tech-grid-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(33, 158, 188, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(33, 158, 188, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+}
+
+.tech-grid-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 30%, rgba(33, 158, 188, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(233, 196, 106, 0.08) 0%, transparent 60%);
+}
+
+@keyframes gridMove {
+    0% {
+        transform: perspective(500px) rotateX(60deg) translateY(0);
+    }
+
+    100% {
+        transform: perspective(500px) rotateX(60deg) translateY(50px);
+    }
+}
+
+/* Neon Accents */
+.neon-line {
+    position: absolute;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 107, 0.8), transparent);
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    animation: neonPulse 3s ease-in-out infinite;
+}
+
+.neon-line-vertical {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, rgba(33, 158, 188, 0.8), transparent);
+    box-shadow: 0 0 10px rgba(33, 158, 188, 0.5);
+    animation: neonPulse 3s ease-in-out infinite 1.5s;
+}
+
+@keyframes neonPulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Tech Particles */
+.tech-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(33, 158, 188, 0.6);
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(33, 158, 188, 0.8);
+    animation: particleFloat 15s linear infinite;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100vh) translateX(100px);
+        opacity: 0;
+    }
+}

@@ -1,85 +1,125 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MENTORS } from "@/lib/mock-data";
-import { Search, Star, MessageCircle, Linkedin, Sparkles, Filter, Loader2, Calendar, ArrowRight } from "lucide-react";
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Search, Sparkles, Filter, Loader2, ArrowRight, LogIn } from "lucide-react";
 import toast from "react-hot-toast";
+import { useMentors } from "@/lib/api/hooks";
+import BookingDialog from "@/components/mentors/BookingDialog";
+import { MentorCard } from "@/components/mentors/MentorCard";
 
 export default function MentorsPage() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const [selectedTag, setSelectedTag] = useState("All");
     const [searchQuery, setSearchQuery] = useState("");
-    const [connectingId, setConnectingId] = useState<number | null>(null);
+    const [connectingId, setConnectingId] = useState<string | null>(null);
+    const [selectedMentor, setSelectedMentor] = useState<any | null>(null);
+    const [showBookingDialog, setShowBookingDialog] = useState(false);
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
 
     const tags = ["All", "Frontend", "Backend", "AI/ML", "Mobile", "DevOps", "Design"];
 
-    const filteredMentors = MENTORS.filter(mentor => {
-        const matchesTag = selectedTag === "All" || mentor.expertise.includes(selectedTag);
+    // Fetch mentors from API
+    const { data: mentors, loading } = useMentors({ pageSize: 50 });
+
+    const filteredMentors = mentors?.filter(mentor => {
+        const matchesTag = selectedTag === "All" || mentor.expertise.some(exp =>
+            exp.toLowerCase().includes(selectedTag.toLowerCase())
+        );
         const matchesSearch = mentor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             mentor.company.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesTag && matchesSearch;
-    });
+    }) || [];
 
-    const handleConnect = async (mentorId: number, mentorName: string) => {
-        setConnectingId(mentorId);
-        // Simulate connection
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        toast.success(`Request sent to connect with ${mentorName}!`);
-        setConnectingId(null);
+    const handleConnect = async (mentor: any) => {
+        // Check if user is logged in
+        if (!session) {
+            setShowLoginDialog(true);
+            return;
+        }
+
+        // Open booking dialog
+        setSelectedMentor(mentor);
+        setShowBookingDialog(true);
+    };
+
+    const handleBookingSuccess = () => {
+        setShowBookingDialog(false);
+        setSelectedMentor(null);
+        // Optionally refresh data or navigate to dashboard
     };
 
     const handleLinkedin = (mentorName: string) => {
         toast.success(`Opening ${mentorName}'s LinkedIn profile...`);
     };
 
+
+
+    if (loading) {
+        return (
+            <div className="min-h-screen pt-24 flex items-center justify-center bg-background">
+                <div className="w-16 h-16 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen pt-24 bg-white">
+        <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
-            <section className="relative py-16 bg-gradient-to-b from-gray-50 to-white">
+            <section className="relative py-16 bg-background overflow-hidden">
+
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#E9C46A]/10 border border-[#E9C46A]/30 px-4 py-2 text-sm font-medium text-[#8B7A52] mb-6 mx-auto">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-secondary/10 border border-secondary/30 px-4 py-2 text-sm font-medium text-secondary mb-6 mx-auto" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                             <Sparkles className="w-4 h-4" />
                             Mentorship Program
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-gray-900">
-                            Connect with <span className="text-[#E9C46A]">Industry Mentors</span>
+                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
+                            Connect with <span className="text-secondary">Industry Mentors</span>
                         </h1>
-                        <p className="text-gray-600 text-xl mb-8 max-w-2xl mx-auto">
+                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
                             Get guidance from experienced professionals who have been in your shoes and succeeded.
                         </p>
                         <div className="relative max-w-xl mx-auto">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
                             <Input
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search mentors by name or expertise..."
-                                className="pl-14 py-7 rounded-full bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 text-lg shadow-sm focus:ring-2 focus:ring-[#E9C46A]/20"
+                                className="pl-14 py-7 rounded-full bg-background border-border text-foreground placeholder:text-muted-foreground text-lg shadow-sm focus:ring-2 focus:ring-secondary/20"
+                                aria-label="Search mentors by name or expertise"
                             />
                         </div>
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+
+
 
             {/* Filters */}
-            <section className="py-8 bg-white border-b border-gray-100">
-                <div className="container mx-auto px-4">
-                    <div className="flex flex-wrap justify-center gap-3">
+            <section className="py-8 bg-background border-b border-border">
+                <div className="container mx-auto px-4 sm:px-6 md:px-8">
+                    <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
                         {tags.map((tag) => (
                             <Button
                                 key={tag}
                                 variant={selectedTag === tag ? "default" : "outline"}
                                 onClick={() => setSelectedTag(tag)}
-                                className={`rounded-full px-6 transition-all ${selectedTag === tag
-                                    ? 'bg-[#219EBC] hover:bg-[#1a7a94] text-white border-[#219EBC]'
-                                    : 'text-gray-700 hover:bg-gray-50 border-gray-300'
+                                className={`touch-target rounded-full px-4 sm:px-6 py-2.5 sm:py-3 transition-all text-sm sm:text-base ${selectedTag === tag
+                                    ? 'bg-primary hover:bg-primary/90 text-primary-foreground border-primary'
+                                    : 'text-foreground hover:bg-muted border-border'
                                     }`}
+                                aria-label={`Filter mentors by ${tag}`}
+                                aria-pressed={selectedTag === tag}
                             >
                                 {tag}
                             </Button>
@@ -87,76 +127,32 @@ export default function MentorsPage() {
                         <Button
                             variant="outline"
                             onClick={() => toast.success("More filters coming soon!")}
-                            className="rounded-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                            className="touch-target rounded-full border-border text-foreground hover:bg-muted px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base"
+                            aria-label="Show more filter options"
                         >
-                            <Filter className="w-4 h-4 mr-2" /> More Filters
+                            <Filter className="w-4 h-4 mr-2" aria-hidden="true" /> More Filters
                         </Button>
                     </div>
                 </div>
             </section>
 
             {/* Mentors Grid */}
-            <section className="py-16 animate-on-scroll bg-gray-50/50">
+            <section className="py-16 bg-muted/30">
                 <div className="container mx-auto px-4">
                     {filteredMentors.length > 0 ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {filteredMentors.map((mentor, index) => (
-                                <Card key={mentor.id} className="bg-white border border-gray-200 hover:border-[#219EBC] hover:shadow-xl transition-all group overflow-hidden flex flex-col">
-                                    <div className={`h-2 ${index % 3 === 0 ? 'bg-[#E9C46A]' : index % 3 === 1 ? 'bg-[#219EBC]' : 'bg-[#F4A261]'}`} />
-                                    <CardHeader>
-                                        <div className="flex items-start gap-4">
-                                            <Avatar className="w-16 h-16 border-2 border-gray-50 shadow-sm">
-                                                <AvatarFallback className={`text-xl font-bold ${index % 3 === 0 ? 'bg-orange-50 text-orange-600' : index % 3 === 1 ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
-                                                    {mentor.name.split(' ').map(n => n[0]).join('')}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="flex-1">
-                                                <CardTitle className="text-gray-900 text-lg group-hover:text-[#219EBC] transition-colors">{mentor.name}</CardTitle>
-                                                <CardDescription className="text-gray-500 font-medium">{mentor.company}</CardDescription>
-                                                <div className="flex items-center gap-1 mt-1">
-                                                    <Star className="w-4 h-4 fill-[#E9C46A] text-[#E9C46A]" />
-                                                    <span className="text-sm font-bold text-gray-700">{mentor.rating}</span>
-                                                    <span className="text-gray-400 text-sm">• {mentor.sessions} sessions</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="flex-1">
-                                        <div className="flex flex-wrap gap-2 mb-4">
-                                            {mentor.expertise.map((skill) => (
-                                                <Badge key={skill} className="bg-gray-100 text-gray-600 border-0 hover:bg-[#219EBC]/10 hover:text-[#219EBC] transition-colors">{skill}</Badge>
-                                            ))}
-                                        </div>
-                                        <p className="text-gray-600 text-sm leading-relaxed">
-                                            Available for 1:1 mentoring sessions. Helping students transition into high-impact tech roles at top companies.
-                                        </p>
-                                    </CardContent>
-                                    <CardFooter className="gap-2 pt-0">
-                                        <Button
-                                            onClick={() => handleConnect(mentor.id, mentor.name)}
-                                            disabled={connectingId === mentor.id}
-                                            className="flex-1 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-full py-6 shadow-md shadow-[#219EBC]/10"
-                                        >
-                                            {connectingId === mentor.id ? (
-                                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
-                                            ) : (
-                                                <><MessageCircle className="w-4 h-4 mr-2" /> Book Session</>
-                                            )}
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => handleLinkedin(mentor.name)}
-                                            className="rounded-full border-gray-300 text-gray-400 hover:text-blue-600 hover:border-blue-600 w-12 h-12"
-                                        >
-                                            <Linkedin className="w-5 h-5" />
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
+                                <MentorCard
+                                    key={mentor.id}
+                                    mentor={mentor}
+                                    onBookSession={handleConnect}
+                                    onLinkedinClick={handleLinkedin}
+                                    index={index}
+                                />
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 italic text-gray-500 shadow-sm">
+                        <div className="text-center py-20 bg-card rounded-3xl border border-border italic text-muted-foreground shadow-sm">
                             No mentors found matching your search. Try different keywords!
                         </div>
                     )}
@@ -164,25 +160,68 @@ export default function MentorsPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-white">
+            <section className="py-20 bg-background">
                 <div className="container mx-auto px-4 max-w-4xl">
                     <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-10 text-center text-white relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#219EBC]/10 blur-3xl rounded-full -mr-20 -mt-20" />
-                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#E9C46A]/10 blur-3xl rounded-full -ml-20 -mb-20" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-3xl rounded-full -mr-20 -mt-20" />
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/10 blur-3xl rounded-full -ml-20 -mb-20" />
 
                         <h2 className="text-3xl font-bold mb-4 relative z-10">Want to become a Mentor?</h2>
-                        <p className="text-gray-400 mb-8 max-w-xl mx-auto relative z-10 text-lg">
+                        <p className="text-muted-foreground mb-8 max-w-xl mx-auto relative z-10 text-lg">
                             Share your knowledge and help the next generation of tech leaders. Join our elite pool of mentors today.
                         </p>
                         <Button
-                            onClick={() => toast.success("Redirecting to application form...")}
-                            className="bg-white hover:bg-gray-100 text-gray-900 font-bold rounded-full px-10 py-6 text-lg relative z-10"
+                            onClick={() => router.push('/apply-mentor')}
+                            className="touch-target bg-background hover:bg-muted text-foreground font-bold rounded-full px-8 sm:px-10 py-5 sm:py-6 text-base sm:text-lg relative z-10"
+                            aria-label="Apply to become a mentor"
                         >
-                            Apply to Mentor <ArrowRight className="w-5 h-5 ml-2" />
+                            Apply to Mentor <ArrowRight className="w-5 h-5 ml-2" aria-hidden="true" />
                         </Button>
                     </div>
                 </div>
             </section>
+
+            {/* Booking Dialog */}
+            {selectedMentor && (
+                <BookingDialog
+                    open={showBookingDialog}
+                    onOpenChange={setShowBookingDialog}
+                    mentor={selectedMentor}
+                    onSuccess={handleBookingSuccess}
+                />
+            )}
+
+            {/* Login Required Dialog */}
+            <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+                <DialogContent className="max-w-md bg-background rounded-[32px]">
+                    <DialogHeader className="text-center">
+                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                            <LogIn className="w-8 h-8 text-primary" />
+                        </div>
+                        <DialogTitle className="text-2xl font-black text-foreground">
+                            Login Required
+                        </DialogTitle>
+                        <DialogDescription className="text-muted-foreground mt-2">
+                            You need to be logged in to book mentor sessions. Please sign in or create an account to continue.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-3 mt-6">
+                        <Button
+                            onClick={() => router.push('/auth/login')}
+                            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl"
+                        >
+                            Sign In
+                        </Button>
+                        <Button
+                            onClick={() => router.push('/auth/signup')}
+                            variant="outline"
+                            className="w-full h-12 border-2 border-border hover:border-primary text-foreground font-bold rounded-xl"
+                        >
+                            Create Account
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

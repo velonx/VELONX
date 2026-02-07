@@ -1,9 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Play, Quote, Star, Twitter, Linkedin, Github, Code } from "lucide-react";
+import { ArrowRight, Quote, Star, Briefcase, Lightbulb, Users, Code, Eye, Smartphone, Palette } from "lucide-react";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import toast from "react-hot-toast";
+import FloatingNavDemo from "@/components/floating-navbar-demo";
+import { HoverEffect } from "@/components/ui/card-hover-effect";
+import { OrganizationSchema } from "@/components/structured-data";
+import { FlipText } from "@/components/ui/flip-text";
+import "./tech-background.css";
 
 export default function Home() {
     const handleJoinClick = () => {
@@ -19,242 +24,549 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-white font-outfit">
+        <div className="min-h-screen bg-background font-outfit">
+            <OrganizationSchema />
+            {/* Floating Navbar */}
+            <FloatingNavDemo />
+
             {/* Hero Section */}
-            <section className="relative min-h-screen flex items-center pt-32 pb-20 grid-pattern-light overflow-hidden">
-                <div className="container mx-auto px-4 md:px-6 relative z-10">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <section className="relative min-h-[80vh] md:min-h-screen flex items-center pt-16 sm:pt-20 md:pt-24 pb-12 sm:pb-16 md:pb-20 overflow-hidden">
+                {/* Hero Background Image */}
+                <div className="absolute inset-0 z-0">
+                    {/* Background Image */}
+                    <div
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                        style={{
+                            backgroundImage: "url('/images/hero-background.png')",
+                        }}
+                    />
+                    {/* Gradient Overlay for text readability - works in both light and dark mode */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+                </div>
+
+                <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10">
+                    <div className="flex items-center justify-center">
                         <ScrollReveal>
-                            <div className="space-y-8">
-                                {/* Main Headline */}
-                                <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] text-[#023047]">
-                                    Empower Your <br /> Future in <span className="text-[#219EBC]">Tech</span>
+                            <div className="space-y-3 sm:space-y-4 md:space-y-5 text-center max-w-4xl">
+                                {/* Small Label */}
+                                <div className="inline-block">
+                                    <span className="text-cyan-400 text-xs sm:text-sm font-bold uppercase tracking-[0.1em] px-3 sm:px-4 py-1.5 sm:py-2 bg-cyan-400/10 backdrop-blur-sm rounded-full border border-cyan-400/20">
+                                        Welcome to Velonx
+                                    </span>
+                                </div>
+
+                                {/* Main Headline - Responsive sizing with animated text */}
+                                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight leading-[1.2] text-white" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
+                                    Empowering the Next Generation of{" "}
+                                    <FlipText
+                                        words={["Innovators", "Developers", "Creators", "Builders", "Leaders"]}
+                                        className="text-white"
+                                        duration={2500}
+                                    />
                                 </h1>
 
-                                {/* Subtext */}
-                                <p className="text-gray-500 text-lg md:text-xl max-w-xl leading-relaxed">
-                                    Join the premier student tech community focused on real-world projects, innovation, and collaboration. Build your portfolio and network with industry leaders.
+                                {/* Subtext - Responsive sizing */}
+                                <p className="text-gray-100 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                                    Join a thriving community where students and tech enthusiasts transform their potential into impact. Connect with expert mentors, build real projects, and launch your dream career.
                                 </p>
 
-                                {/* Buttons */}
-                                <div className="flex flex-wrap gap-4 pt-4">
-                                    <Link href="/auth/signup">
+                                {/* Buttons - Touch-friendly sizing */}
+                                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 pt-2 justify-center">
+                                    <Link href="/auth/signup" className="w-full sm:w-auto">
                                         <button
                                             onClick={handleJoinClick}
-                                            className="coral-gradient coral-gradient-hover text-white font-bold rounded-xl px-8 py-4 text-base flex items-center gap-2 transition-all shadow-lg shadow-coral-500/25"
+                                            className="w-full sm:w-auto touch-target bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-full px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0f2c59]/30"
+                                            style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}
+                                            aria-label="Start your journey with Velonx"
                                         >
-                                            Join Community <ArrowRight className="w-5 h-5" />
+                                            Start Your Journey <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                                         </button>
                                     </Link>
-                                    <button className="flex items-center gap-3 text-[#023047] font-bold px-6 py-4 hover:bg-gray-50 transition-all rounded-xl">
-                                        <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center">
-                                            <Play className="w-4 h-4 fill-[#023047]" />
-                                        </div>
-                                        Watch Video
-                                    </button>
-                                </div>
-
-                                {/* Stats Overlay */}
-                                <div className="flex items-center gap-10 pt-8 border-t border-gray-100">
-                                    <div>
-                                        <div className="text-2xl font-bold text-[#023047]">12k+</div>
-                                        <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400">Members</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-[#023047]">500+</div>
-                                        <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400">Projects</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-[#023047]">50+</div>
-                                        <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400">Partners</div>
-                                    </div>
                                 </div>
                             </div>
                         </ScrollReveal>
 
-                        {/* Hero Illustration Wrapper */}
-                        <ScrollReveal>
-                            <div className="relative">
-                                {/* Main Card */}
-                                <div className="relative z-10 aspect-square rounded-[40px] bg-white shadow-2xl shadow-blue-500/10 border border-white flex items-center justify-center p-12 overflow-hidden">
-                                    {/* Background soft glow */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-[#219EBC]/5 to-transparent" />
-                                    <img src="/logo.png" alt="Velonx" className="w-full h-auto object-contain relative z-20" />
-                                    <div className="absolute bottom-12 left-0 right-0 text-center">
 
-                                    </div>
-                                </div>
-
-                                {/* Floating Elements */}
-                                <div className="absolute -top-6 -left-12 z-20 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white flex items-center gap-3 animate-float-slow">
-                                    <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600">
-                                        <Code className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <div className="text-xs font-bold text-[#023047]">New Project</div>
-                                        <div className="text-[10px] text-gray-400">AI Assistant Started</div>
-                                    </div>
-                                </div>
-
-                                <div className="absolute -bottom-6 -right-6 z-20 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white flex items-center gap-3 animate-float" style={{ animationDelay: '1s' }}>
-                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Mentor" className="w-8 h-8 rounded-full" />
-                                    </div>
-                                    <div>
-                                        <div className="text-xs font-bold text-[#023047]">New Mentor</div>
-                                        <div className="text-[10px] text-gray-400">Satwik joined</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </ScrollReveal>
                     </div>
                 </div>
             </section>
 
             {/* Why Velonx Section */}
             <ScrollReveal>
-                <section className="relative py-28 bg-white">
-                    <div className="container mx-auto px-4 text-center">
-                        <div className="max-w-2xl mx-auto mb-20">
-                            <h2 className="text-4xl md:text-5xl font-bold text-[#023047] mb-6">Why Velonx?</h2>
-                            <p className="text-gray-500 text-sm md:text-base leading-relaxed">
-                                We provide the ecosystem you need to transition from student to professional through hands-on experience.
-                            </p>
-                        </div>
+                <section className="relative py-16 sm:py-20 md:py-24 lg:py-28 bg-background">
+                    <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
 
-                        <div className="grid md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
                             {[
                                 {
-                                    icon: <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-[#126783]"><div className="w-6 h-4 border-2 border-blue-600 rounded-sm" /></div>,
+                                    icon: <Users className="w-10 h-10 sm:w-12 sm:h-12" />,
+                                    title: "Expert Mentors",
+                                    desc: "Learn from industry professionals who've been there. Get personalized guidance, career advice, and technical expertise to accelerate your growth journey.",
+                                    color: "#8b5cf6",
+                                    link: "/mentors",
+                                    linkText: "Meet Our Mentors"
+                                },
+                                {
+                                    icon: <Briefcase className="w-10 h-10 sm:w-12 sm:h-12" />,
                                     title: "Real Projects",
-                                    desc: "Work on live projects that solve real-world problems. Gain experience that matters to recruiters."
+                                    desc: "Build your portfolio with hands-on projects that matter. Work on real-world challenges, showcase your skills, and create impact-driven solutions.",
+                                    color: "#3b82f6",
+                                    link: "/projects",
+                                    linkText: "Browse Projects"
                                 },
                                 {
-                                    icon: <div className="w-12 h-12 rounded-2xl bg-cyan-50 flex items-center justify-center text-[#219EBC]"><div className="w-2 h-6 bg-cyan-500 rounded-full" /></div>,
-                                    title: "Innovation",
-                                    desc: "Access cutting-edge tools and resources. Push the boundaries of what's possible in tech."
-                                },
-                                {
-                                    icon: <div className="w-12 h-12 rounded-2xl bg-coral-50 flex items-center justify-center text-[#FF7D61]"><div className="w-6 h-6 border-2 border-[#FF7D61] rounded-full flex items-center justify-center"><div className="w-2 h-2 bg-[#FF7D61] rounded-full" /></div></div>,
-                                    title: "Collaboration",
-                                    desc: "Connect with peers and mentors globally. Build your network while building your skills."
+                                    icon: <Lightbulb className="w-10 h-10 sm:w-12 sm:h-12" />,
+                                    title: "Career Growth",
+                                    desc: "Launch your dream career with confidence. Access exclusive opportunities, interview prep resources, and direct connections to top companies.",
+                                    color: "#f59e0b",
+                                    link: "/career",
+                                    linkText: "Explore Careers"
                                 },
                             ].map((feature, i) => (
-                                <div
-                                    key={i}
-                                    className="bg-white rounded-[32px] p-10 text-left border border-gray-50 hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500 group"
-                                >
-                                    <div className="mb-8">{feature.icon}</div>
-                                    <h3 className="text-[#023047] text-2xl font-bold mb-4">{feature.title}</h3>
-                                    <p className="text-gray-500 text-sm leading-relaxed">{feature.desc}</p>
-                                </div>
+                                <ScrollReveal key={i} delay={i * 150}>
+                                    <div
+                                        className="bg-card rounded-[20px] sm:rounded-[25px] md:rounded-[30px] p-6 sm:p-8 md:p-10 lg:p-12 text-center border border-border hover:shadow-2xl hover:-translate-y-2 sm:hover:-translate-y-4 transition-all duration-500 group relative overflow-hidden"
+                                    >
+                                        {/* Animated gradient background on hover */}
+                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-br from-transparent via-transparent to-transparent" style={{ background: `linear-gradient(135deg, transparent 0%, ${feature.color}10 100%)` }} />
+
+                                        {/* Top accent bar */}
+                                        <div className="absolute top-0 left-0 w-full h-1.5 transition-all" style={{ background: feature.color }} />
+
+                                        {/* Icon container with enhanced styling */}
+                                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl mx-auto mb-6 sm:mb-8 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-lg group-hover:shadow-2xl" style={{ background: `linear-gradient(135deg, ${feature.color}20, ${feature.color}10)`, color: feature.color }}>
+                                            {feature.icon}
+                                            {/* Glow effect */}
+                                            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ boxShadow: `0 0 30px ${feature.color}40` }} />
+                                        </div>
+
+                                        <h3 className="relative text-foreground text-3xl sm:text-4xl md:text-5xl mb-4 sm:mb-6" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                                            {feature.title}
+                                        </h3>
+
+                                        <p className="relative text-muted-foreground text-sm sm:text-base leading-relaxed mb-6 sm:mb-8" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                            {feature.desc}
+                                        </p>
+
+                                        <Link
+                                            href={feature.link}
+                                            className="relative inline-flex items-center gap-2 font-semibold text-sm px-6 py-2.5 rounded-full transition-all duration-300 hover:gap-3 group/link"
+                                            style={{
+                                                fontFamily: "'Montserrat', sans-serif",
+                                                background: `${feature.color}15`,
+                                                color: feature.color,
+                                                border: `1.5px solid ${feature.color}30`
+                                            }}
+                                        >
+                                            {feature.linkText}
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover/link:translate-x-1">
+                                                <path d="M5 12h14" />
+                                                <path d="m12 5 7 7-7 7" />
+                                            </svg>
+                                        </Link>
+                                    </div>
+                                </ScrollReveal>
                             ))}
                         </div>
                     </div>
                 </section>
             </ScrollReveal>
 
-            {/* Community Showcase Section */}
-            <ScrollReveal>
-                <section className="relative py-28 bg-[#F8FAFC]">
-                    <div className="container mx-auto px-4">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-                            <div>
-                                <h2 className="text-4xl md:text-5xl font-bold text-[#023047] mb-4">Community Showcase</h2>
-                                <p className="text-gray-500">See what our members are building and achieving.</p>
-                            </div>
-                            <Link href="/projects">
-                                <button className="px-6 py-2.5 rounded-xl border-2 border-[#023047] text-[#023047] font-bold text-sm hover:bg-[#023047] hover:text-white transition-all">
-                                    View All Projects
-                                </button>
-                            </Link>
-                        </div>
+            {/* Community Showcase Section - Horizontal Scrolling Carousel */}
+            <div className="w-full overflow-hidden py-16 sm:py-20 md:py-24 lg:py-28">
+                {/* Section Header */}
+                <div className="text-center mb-12 md:mb-16">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground mb-4" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 600 }}>
+                        Community Showcase
+                    </h2>
+                    <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        Discover amazing projects built by our talented community members
+                    </p>
+                </div>
 
-                        <div className="grid lg:grid-cols-2 gap-8">
-                            {/* Project Card */}
-                            <div className="bg-white rounded-[40px] overflow-hidden border border-gray-100 shadow-xl shadow-blue-500/5 group">
-                                <div className="aspect-[16/9] bg-gray-100 relative">
-                                    <div className="absolute top-4 left-4 flex gap-1.5">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-                                        <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                                    </div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-gray-200 to-transparent flex items-center justify-center px-12">
-                                        {/* Browser-like window preview */}
-                                        <div className="w-full h-3/4 bg-white rounded-t-xl shadow-sm" />
-                                    </div>
-                                </div>
-                                <div className="p-8">
-                                    <div className="flex gap-2 mb-4">
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#219EBC] bg-[#219EBC]/5 px-2 py-1 rounded">EdTech</span>
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-cyan-500 bg-cyan-500/5 px-2 py-1 rounded">React Native</span>
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-[#023047] mb-2">StudySync App</h3>
-                                    <p className="text-gray-500 text-sm mb-6">A collaborative study platform helping students organize group sessions efficiently.</p>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex -space-x-2">
-                                            {[1, 2, 3].map((_, i) => (
-                                                <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-                                                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 6}`} alt="Core" />
+                {/* Infinite Scrolling Showcase */}
+                <div className="relative">
+                    {/* Gradient Overlays for fade effect */}
+                    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+
+                    {/* Scrolling Container */}
+                    <div className="flex gap-6 animate-marquee hover:pause-animation">
+                        {/* Duplicate projects for seamless loop */}
+                        {[...Array(2)].map((_, groupIndex) => (
+                            <div key={groupIndex} className="flex gap-6 flex-shrink-0">
+                                {/* Project 1: KeyRacer */}
+                                <div className="w-[380px] flex-shrink-0 group">
+                                    <a
+                                        href="https://keyracer.in"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block"
+                                    >
+                                        <div className="relative h-[420px] rounded-3xl overflow-hidden border border-border bg-card shadow-xl modern-card-hover magnetic-glow">
+                                            {/* Animated gradient background */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-cyan-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                                            {/* Content */}
+                                            <div className="relative p-8 h-full flex flex-col">
+                                                {/* Tags */}
+                                                <div className="flex flex-wrap gap-2 mb-6">
+                                                    <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        EdTech
+                                                    </span>
+                                                    <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full bg-cyan-500/10 text-cyan-500 border border-cyan-500/20" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        Skills Platform
+                                                    </span>
                                                 </div>
-                                            ))}
-                                        </div>
-                                        <Link href="/projects/studysync" className="text-[#023047] text-xs font-bold flex items-center gap-1 hover:gap-2 transition-all">
-                                            View Details <ArrowRight className="w-4 h-4" />
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
 
-                            {/* Testimonial Card */}
-                            <div className="bg-[#023047] rounded-[40px] p-12 text-white flex flex-col justify-between relative overflow-hidden group">
-                                <div className="absolute top-12 right-12 text-blue-400/20 group-hover:text-blue-400/30 transition-colors">
-                                    <Quote className="w-24 h-24 rotate-180" />
+                                                {/* Icon Area */}
+                                                <div className="flex-grow flex items-center justify-center mb-6">
+                                                    <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-2xl scale-glow-hover">
+                                                        <Code className="w-12 h-12 text-white" />
+                                                    </div>
+                                                </div>
+
+                                                {/* Project Info */}
+                                                <div>
+                                                    <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-blue-500 transition-colors" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        KeyRacer
+                                                    </h3>
+                                                    <p className="text-muted-foreground text-sm leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        The ultimate typing, coding, hackathon, and professional skills hub. Master multiple skills all in one place.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
                                 </div>
-                                <div className="relative z-10">
-                                    <div className="flex gap-1 mb-8">
-                                        {[1, 2, 3, 4, 5].map((_, i) => (
-                                            <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                        ))}
+
+                                {/* Project 2: AI Code Assistant */}
+                                <div className="w-[380px] flex-shrink-0 group">
+                                    <div className="relative h-[420px] rounded-3xl overflow-hidden border border-border bg-card shadow-xl modern-card-hover magnetic-glow">
+                                        {/* Animated gradient background */}
+                                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-violet-500/10 to-fuchsia-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                                        {/* Content */}
+                                        <div className="relative p-8 h-full flex flex-col">
+                                            {/* Tags */}
+                                            <div className="flex flex-wrap gap-2 mb-6">
+                                                <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full bg-purple-500/10 text-purple-500 border border-purple-500/20" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    AI/ML
+                                                </span>
+                                                <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full bg-violet-500/10 text-violet-500 border border-violet-500/20" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    Developer Tools
+                                                </span>
+                                            </div>
+
+                                            {/* Icon Area */}
+                                            <div className="flex-grow flex items-center justify-center mb-6">
+                                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-2xl scale-glow-hover">
+                                                    <Lightbulb className="w-12 h-12 text-white" />
+                                                </div>
+                                            </div>
+
+                                            {/* Project Info */}
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-purple-500 transition-colors" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    AI Code Assistant
+                                                </h3>
+                                                <p className="text-muted-foreground text-sm leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    An intelligent code completion tool powered by advanced machine learning models, helping developers write better code faster.
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <p className="text-xl md:text-2xl font-medium leading-relaxed mb-12">
-                                        "Velonx changed my career trajectory. The mentorship I received here helped me land my dream internship at a top tech firm."
-                                    </p>
                                 </div>
-                                <div className="flex items-center gap-4 relative z-10">
-                                    <div className="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center font-bold text-lg">
-                                        JM
+
+                                {/* Project 3: HealthTrack */}
+                                <div className="w-[380px] flex-shrink-0 group">
+                                    <div className="relative h-[420px] rounded-3xl overflow-hidden border border-border bg-card shadow-xl modern-card-hover magnetic-glow">
+                                        {/* Animated gradient background */}
+                                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-teal-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                                        {/* Content */}
+                                        <div className="relative p-8 h-full flex flex-col">
+                                            {/* Tags */}
+                                            <div className="flex flex-wrap gap-2 mb-6">
+                                                <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    HealthTech
+                                                </span>
+                                                <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full bg-teal-500/10 text-teal-500 border border-teal-500/20" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    Mobile App
+                                                </span>
+                                            </div>
+
+                                            {/* Icon Area */}
+                                            <div className="flex-grow flex items-center justify-center mb-6">
+                                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-2xl scale-glow-hover">
+                                                    <Smartphone className="w-12 h-12 text-white" />
+                                                </div>
+                                            </div>
+
+                                            {/* Project Info */}
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-emerald-500 transition-colors" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    HealthTrack
+                                                </h3>
+                                                <p className="text-muted-foreground text-sm leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    Mobile fitness tracking app with AI-powered insights and personalized workout recommendations for healthier living.
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <div className="font-bold text-lg">James Miller</div>
-                                        <div className="text-blue-300 text-sm">CS Student, Stanford</div>
+                                </div>
+
+                                {/* Project 4: DesignHub */}
+                                <div className="w-[380px] flex-shrink-0 group">
+                                    <div className="relative h-[420px] rounded-3xl overflow-hidden border border-border bg-card shadow-xl modern-card-hover magnetic-glow">
+                                        {/* Animated gradient background */}
+                                        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-red-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                                        {/* Content */}
+                                        <div className="relative p-8 h-full flex flex-col">
+                                            {/* Tags */}
+                                            <div className="flex flex-wrap gap-2 mb-6">
+                                                <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full bg-orange-500/10 text-orange-500 border border-orange-500/20" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    Design
+                                                </span>
+                                                <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full bg-pink-500/10 text-pink-500 border border-pink-500/20" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    Collaboration
+                                                </span>
+                                            </div>
+
+                                            {/* Icon Area */}
+                                            <div className="flex-grow flex items-center justify-center mb-6">
+                                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-500 to-pink-600 flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-2xl scale-glow-hover">
+                                                    <Palette className="w-12 h-12 text-white" />
+                                                </div>
+                                            </div>
+
+                                            {/* Project Info */}
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-orange-500 transition-colors" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    DesignHub
+                                                </h3>
+                                                <p className="text-muted-foreground text-sm leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                    Collaborative design platform for creative teams to share ideas, iterate on designs, and build amazing products together.
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
-                </section>
-            </ScrollReveal>
+                </div>
+            </div>
+
+
+            {/* Modern Animated Testimonials Section */}
+            <div className="w-full overflow-hidden py-12">
+                {/* Section Header */}
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4" style={{ fontFamily: "'Great Vibes', cursive" }}>
+                        What People Say
+                    </h2>
+                    <p className="text-muted-foreground text-lg" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        Trusted by students and professionals worldwide
+                    </p>
+                </div>
+
+                {/* Infinite Scrolling Testimonials */}
+                <div className="relative">
+                    {/* Gradient Overlays for fade effect */}
+                    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+
+                    {/* Scrolling Container */}
+                    <div className="flex gap-6 animate-marquee hover:pause-animation">
+                        {/* Duplicate testimonials for seamless loop */}
+                        {[...Array(2)].map((_, groupIndex) => (
+                            <div key={groupIndex} className="flex gap-6 flex-shrink-0">
+                                {/* Testimonial 1 */}
+                                <div className="w-[380px] flex-shrink-0 group">
+                                    <div className="relative p-[2px] rounded-3xl bg-gradient-to-br from-blue-500/50 via-purple-500/50 to-pink-500/50 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 transition-all duration-300">
+                                        <div className="bg-card backdrop-blur-xl rounded-3xl p-8 h-full border border-border/50 shadow-2xl transition-all duration-300 group-hover:shadow-blue-500/20">
+                                            {/* Stars */}
+                                            <div className="flex gap-1 mb-4">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                                ))}
+                                            </div>
+
+                                            {/* Quote */}
+                                            <Quote className="w-8 h-8 text-muted-foreground/20 mb-4" />
+
+                                            {/* Testimonial Text */}
+                                            <p className="text-foreground text-sm leading-relaxed mb-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                Velonx is an incredibly innovative platform that has successfully spearheaded countless high-impact projects. The mentorship here is world-class.
+                                            </p>
+
+                                            {/* Author */}
+                                            <div className="flex items-center gap-3 pt-4 border-t border-border/50">
+                                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                                                    TL
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-foreground font-semibold text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        Tamara Lottering
+                                                    </h4>
+                                                    <p className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        Lead UX Researcher
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Testimonial 2 */}
+                                <div className="w-[380px] flex-shrink-0 group">
+                                    <div className="relative p-[2px] rounded-3xl bg-gradient-to-br from-cyan-500/50 via-teal-500/50 to-emerald-500/50 hover:from-cyan-500 hover:via-teal-500 hover:to-emerald-500 transition-all duration-300">
+                                        <div className="bg-card backdrop-blur-xl rounded-3xl p-8 h-full border border-border/50 shadow-2xl transition-all duration-300 group-hover:shadow-cyan-500/20">
+                                            {/* Stars */}
+                                            <div className="flex gap-1 mb-4">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                                ))}
+                                            </div>
+
+                                            {/* Quote */}
+                                            <Quote className="w-8 h-8 text-muted-foreground/20 mb-4" />
+
+                                            {/* Testimonial Text */}
+                                            <p className="text-foreground text-sm leading-relaxed mb-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                I have been absolutely blown away by what Velonx offers in terms of skills, dedication and commitment. Every project delivered beyond expectations.
+                                            </p>
+
+                                            {/* Author */}
+                                            <div className="flex items-center gap-3 pt-4 border-t border-border/50">
+                                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-white font-bold">
+                                                    MS
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-foreground font-semibold text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        Muhammad Shahzar
+                                                    </h4>
+                                                    <p className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        CEO, EnableAI
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Testimonial 3 */}
+                                <div className="w-[380px] flex-shrink-0 group">
+                                    <div className="relative p-[2px] rounded-3xl bg-gradient-to-br from-orange-500/50 via-red-500/50 to-pink-500/50 hover:from-orange-500 hover:via-red-500 hover:to-pink-500 transition-all duration-300">
+                                        <div className="bg-card backdrop-blur-xl rounded-3xl p-8 h-full border border-border/50 shadow-2xl transition-all duration-300 group-hover:shadow-orange-500/20">
+                                            {/* Stars */}
+                                            <div className="flex gap-1 mb-4">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                                ))}
+                                            </div>
+
+                                            {/* Quote */}
+                                            <Quote className="w-8 h-8 text-muted-foreground/20 mb-4" />
+
+                                            {/* Testimonial Text */}
+                                            <p className="text-foreground text-sm leading-relaxed mb-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                You are hungry, talented, and prolific. A real asset to any team. Your willingness to learn and improve is admirable. You make hard work fun!
+                                            </p>
+
+                                            {/* Author */}
+                                            <div className="flex items-center gap-3 pt-4 border-t border-border/50">
+                                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                                                    KR
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-foreground font-semibold text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        Karsten Rowe
+                                                    </h4>
+                                                    <p className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        Director of Design
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Testimonial 4 */}
+                                <div className="w-[380px] flex-shrink-0 group">
+                                    <div className="relative p-[2px] rounded-3xl bg-gradient-to-br from-violet-500/50 via-purple-500/50 to-fuchsia-500/50 hover:from-violet-500 hover:via-purple-500 hover:to-fuchsia-500 transition-all duration-300">
+                                        <div className="bg-card backdrop-blur-xl rounded-3xl p-8 h-full border border-border/50 shadow-2xl transition-all duration-300 group-hover:shadow-violet-500/20">
+                                            {/* Stars */}
+                                            <div className="flex gap-1 mb-4">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                                ))}
+                                            </div>
+
+                                            {/* Quote */}
+                                            <Quote className="w-8 h-8 text-muted-foreground/20 mb-4" />
+
+                                            {/* Testimonial Text */}
+                                            <p className="text-foreground text-sm leading-relaxed mb-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                Velonx transformed my career. The real-world projects and mentorship helped me land my dream job at a Fortune 500 company. Forever grateful!
+                                            </p>
+
+                                            {/* Author */}
+                                            <div className="flex items-center gap-3 pt-4 border-t border-border/50">
+                                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-bold">
+                                                    JM
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-foreground font-semibold text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        James Miller
+                                                    </h4>
+                                                    <p className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                                        Software Engineer
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-            {/* CTA Section */}
+            {/* CTA Section - Dark Theme */}
             <ScrollReveal>
-                <section className="relative py-32 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#023047] via-[#126783] to-[#219EBC]" />
-                    <div className="container mx-auto px-4 relative z-10 text-center">
+                <section className="relative py-20 sm:py-24 md:py-28 lg:py-32 overflow-hidden">
+                    {/* Dark gradient background matching the reference */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#1a2332] via-[#0f1419] to-[#1a2332]" />
+
+                    {/* Subtle pattern overlay */}
+                    <div className="absolute inset-0 opacity-5">
+                        <div className="absolute inset-0" style={{
+                            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+                            backgroundSize: '40px 40px'
+                        }} />
+                    </div>
+
+                    <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10 text-center">
                         <div className="max-w-3xl mx-auto">
-                            <h2 className="text-4xl md:text-6xl font-bold mb-8 text-white">
-                                Ready to Launch Your <br /> Tech Journey?
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 sm:mb-5 md:mb-6 text-white leading-tight" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                                Ready to Launch Your Career?
                             </h2>
-                            <p className="text-white/80 mb-12 text-lg md:text-xl">
-                                Join thousands of students building the future today.
+                            <p className="text-gray-400 mb-8 sm:mb-10 md:mb-12 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                                Join thousands of students transforming their skills into real-world experience. Start building your future today.
                             </p>
-                            <Link href="/auth/signup">
+                            <Link href="/auth/signup" className="inline-block w-full sm:w-auto">
                                 <button
                                     onClick={handleJoinClick}
-                                    className="coral-gradient coral-gradient-hover text-white font-bold rounded-xl px-10 py-5 text-lg transition-all shadow-2xl shadow-black/20"
+                                    className="w-full sm:w-auto touch-target bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-full px-8 sm:px-10 py-3 sm:py-4 text-sm sm:text-base transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                                    style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}
+                                    aria-label="Get started with Velonx for free"
                                 >
                                     Get Started for Free
                                 </button>

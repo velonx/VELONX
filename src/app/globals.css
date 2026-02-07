@@ -10,6 +10,8 @@
     --font-sans: var(--font-outfit);
     --font-mono: var(--font-geist-mono);
     --font-bebas: var(--font-bebas);
+    --font-great-vibes: var(--font-great-vibes);
+    --font-dancing-script: var(--font-dancing-script);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -60,10 +62,12 @@
     --secondary: #FF7D61;
     --secondary-foreground: #FFFFFF;
     --muted: #F8FAFC;
-    --muted-foreground: #64748B;
+    --muted-foreground: #475569;
+    /* Improved from #64748B for better contrast */
     --accent: #219EBC;
     --accent-foreground: #FFFFFF;
-    --destructive: #EF4444;
+    --destructive: #DC2626;
+    /* Improved from #EF4444 for better contrast */
     --border: #E2E8F0;
     --input: #E2E8F0;
     --ring: #219EBC;
@@ -75,13 +79,41 @@
     --velonx-bg: #F8FAFC;
 }
 
+/* Dark Mode Theme */
+.dark {
+    --background: #0a0e1a;
+    --foreground: #E2E8F0;
+    --card: #141824;
+    --card-foreground: #E2E8F0;
+    --popover: #1a1f2e;
+    --popover-foreground: #E2E8F0;
+    --primary: #219EBC;
+    --primary-foreground: #020617;
+    --secondary: #FF7D61;
+    --secondary-foreground: #FFFFFF;
+    --muted: #1a1f2e;
+    --muted-foreground: #94A3B8;
+    --accent: #219EBC;
+    --accent-foreground: #020617;
+    --destructive: #EF4444;
+    --border: #1e293b;
+    --input: #1e293b;
+    --ring: #219EBC;
+
+    /* Brand Colors remain same but with adjusted usage */
+    --velonx-navy: #219EBC;
+    --velonx-teal: #4FC3F7;
+    --velonx-coral: #FF8E53;
+    --velonx-bg: #0a0e1a;
+}
+
 @layer base {
     * {
         @apply border-border;
     }
 
     body {
-        @apply bg-background text-foreground antialiased font-sans;
+        @apply bg-background text-foreground antialiased font-sans transition-colors duration-300;
     }
 }
 
@@ -1515,6 +1547,81 @@
 
     0%,
     100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Blob Float Animation */
+@keyframes blob-float {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(20px, -20px) scale(1.1);
+    }
+}
+
+.animate-blob-float {
+    animation: blob-float 10s infinite alternate;
+}
+
+.animate-blob-float-delayed {
+    animation: blob-float 10s infinite alternate;
+    animation-delay: 2s;
+}
+
+/* Spinning Orbit Rings */
+@keyframes spin-slow {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-reverse {
+    100% {
+        transform: rotate(-360deg);
+    }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+}
+
+.animate-spin-reverse {
+    animation: spin-reverse 25s linear infinite;
+}
+
+/* Floating Logo Animation */
+@keyframes float-logo {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.animate-float-logo {
+    animation: float-logo 6s ease-in-out infinite;
+}
+
+/* Upload zone pulse */
+.animate-upload-pulse {
+    animation: uploadPulse 2s ease-in-out infinite;
+}
+
+@keyframes uploadPulse {
+
+    0%,
+    100% {
         border-color: rgba(255, 255, 255, 0.1);
     }
 
@@ -1643,6 +1750,14 @@
     }
 }
 
+/* Respect prefers-reduced-motion for skeleton shimmer */
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-shimmer {
+        animation: none;
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
 /* Icon spin on hover */
 .icon-spin-hover {
     transition: transform 0.5s ease;
@@ -1662,4 +1777,1581 @@
     background: linear-gradient(135deg, currentColor, rgba(255, 255, 255, 0.8));
     -webkit-background-clip: text;
     background-clip: text;
+}
+
+
+/* Pulse Glow Animation for Coral/Orange Button */
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(255, 107, 107, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+    }
+}
+
+.pulse-btn {
+    animation: pulse-glow 2s infinite;
+}
+
+/* ==========================================
+   KEYBOARD NAVIGATION & ACCESSIBILITY
+   ========================================== */
+
+/* Enhanced focus indicators for keyboard navigation */
+*:focus-visible {
+    outline: 3px solid var(--color-ring, #219EBC);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Focus styles for interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[role="link"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+    outline: 3px solid var(--color-ring, #219EBC);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(33, 158, 188, 0.1);
+}
+
+/* Focus styles for cards and interactive containers */
+.card:focus-visible,
+[role="article"]:focus-visible,
+[role="region"]:focus-visible {
+    outline: 2px solid var(--color-ring, #219EBC);
+    outline-offset: 4px;
+}
+
+/* Skip to main content link */
+.skip-to-main {
+    position: absolute;
+    left: -9999px;
+    z-index: 999;
+    padding: 1rem 1.5rem;
+    background-color: var(--color-primary, #023047);
+    color: var(--color-primary-foreground, #FFFFFF);
+    text-decoration: none;
+    border-radius: 0.5rem;
+}
+
+.skip-to-main:focus {
+    left: 1rem;
+    top: 1rem;
+}
+
+/* Remove focus outline for mouse users */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Enhanced focus for primary buttons */
+button[data-variant="default"]:focus-visible,
+.glow-button:focus-visible {
+    outline: 3px solid #3b82f6;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.2);
+}
+
+/* Enhanced focus for destructive buttons */
+button[data-variant="destructive"]:focus-visible {
+    outline: 3px solid #ef4444;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.2);
+}
+
+/* Focus styles for navigation links */
+nav a:focus-visible {
+    outline: 2px solid var(--color-ring, #219EBC);
+    outline-offset: 4px;
+    background-color: rgba(33, 158, 188, 0.05);
+    border-radius: 0.5rem;
+}
+
+/* Focus styles for dropdown menu items */
+[role="menuitem"]:focus-visible,
+[role="option"]:focus-visible {
+    outline: 2px solid var(--color-ring, #219EBC);
+    outline-offset: -2px;
+    background-color: rgba(33, 158, 188, 0.1);
+}
+
+/* Keyboard navigation helper - show focus ring on tab */
+body.using-keyboard *:focus {
+    outline: 3px solid var(--color-ring, #219EBC);
+    outline-offset: 2px;
+}
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Screen reader only but focusable */
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+}
+
+/* ==========================================
+   COLOR CONTRAST IMPROVEMENTS (WCAG AA)
+   ========================================== */
+
+/* Ensure text on light backgrounds meets WCAG AA (4.5:1 for normal text) */
+.text-contrast-light {
+    color: #1e293b;
+    /* Darker gray for better contrast on white */
+}
+
+.text-contrast-muted {
+    color: #475569;
+    /* Improved muted text color */
+}
+
+/* Ensure text on colored backgrounds has sufficient contrast */
+.bg-primary-accessible {
+    background-color: #023047;
+    color: #ffffff;
+}
+
+.bg-secondary-accessible {
+    background-color: #d14d2f;
+    /* Darker coral for better contrast */
+    color: #ffffff;
+}
+
+.bg-accent-accessible {
+    background-color: #1a7a94;
+    /* Darker teal for better contrast */
+    color: #ffffff;
+}
+
+/* Link colors with proper contrast */
+.link-accessible {
+    color: #0369a1;
+    /* Darker blue for better contrast */
+    text-decoration: underline;
+}
+
+.link-accessible:hover {
+    color: #023047;
+}
+
+/* Badge colors with proper contrast */
+.badge-accessible {
+    background-color: #e0f2fe;
+    color: #075985;
+    border: 1px solid #bae6fd;
+}
+
+/* Error/destructive colors with proper contrast */
+.text-destructive-accessible {
+    color: #b91c1c;
+    /* Darker red for better contrast */
+}
+
+.bg-destructive-accessible {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+/* Success colors with proper contrast */
+.text-success-accessible {
+    color: #15803d;
+    /* Darker green for better contrast */
+}
+
+.bg-success-accessible {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+/* Warning colors with proper contrast */
+.text-warning-accessible {
+    color: #a16207;
+    /* Darker yellow for better contrast */
+}
+
+.bg-warning-accessible {
+    background-color: #ca8a04;
+    color: #ffffff;
+}
+
+/* Ensure placeholder text has sufficient contrast */
+::placeholder {
+    color: #64748b;
+    opacity: 1;
+}
+
+/* Disabled state with proper contrast indication */
+:disabled,
+[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Focus visible states with high contrast */
+:focus-visible {
+    outline: 3px solid #0369a1;
+    outline-offset: 2px;
+}
+
+
+/* ==========================================
+   MOBILE RESPONSIVENESS IMPROVEMENTS
+   ========================================== */
+
+/* Prevent horizontal scrolling on all viewports */
+html,
+body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* Responsive container with proper padding */
+.responsive-container {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+    .responsive-container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .responsive-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .responsive-container {
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+}
+
+/* Touch target minimum size (44x44px for WCAG 2.1 Level AAA) */
+.touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive text sizing */
+.text-responsive-xs {
+    font-size: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .text-responsive-xs {
+        font-size: 0.875rem;
+    }
+}
+
+.text-responsive-sm {
+    font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+    .text-responsive-sm {
+        font-size: 1rem;
+    }
+}
+
+.text-responsive-base {
+    font-size: 1rem;
+}
+
+@media (min-width: 640px) {
+    .text-responsive-base {
+        font-size: 1.125rem;
+    }
+}
+
+.text-responsive-lg {
+    font-size: 1.125rem;
+}
+
+@media (min-width: 640px) {
+    .text-responsive-lg {
+        font-size: 1.25rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .text-responsive-lg {
+        font-size: 1.5rem;
+    }
+}
+
+.text-responsive-xl {
+    font-size: 1.25rem;
+}
+
+@media (min-width: 640px) {
+    .text-responsive-xl {
+        font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .text-responsive-xl {
+        font-size: 1.875rem;
+    }
+}
+
+.text-responsive-2xl {
+    font-size: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .text-responsive-2xl {
+        font-size: 1.875rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .text-responsive-2xl {
+        font-size: 2.25rem;
+    }
+}
+
+.text-responsive-3xl {
+    font-size: 1.875rem;
+}
+
+@media (min-width: 640px) {
+    .text-responsive-3xl {
+        font-size: 2.25rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .text-responsive-3xl {
+        font-size: 3rem;
+    }
+}
+
+.text-responsive-4xl {
+    font-size: 2.25rem;
+}
+
+@media (min-width: 640px) {
+    .text-responsive-4xl {
+        font-size: 3rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .text-responsive-4xl {
+        font-size: 3.75rem;
+    }
+}
+
+/* Responsive spacing utilities */
+.space-responsive-sm>*+* {
+    margin-top: 1rem;
+}
+
+@media (min-width: 640px) {
+    .space-responsive-sm>*+* {
+        margin-top: 1.5rem;
+    }
+}
+
+.space-responsive-md>*+* {
+    margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .space-responsive-md>*+* {
+        margin-top: 2rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .space-responsive-md>*+* {
+        margin-top: 2.5rem;
+    }
+}
+
+.space-responsive-lg>*+* {
+    margin-top: 2rem;
+}
+
+@media (min-width: 640px) {
+    .space-responsive-lg>*+* {
+        margin-top: 2.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .space-responsive-lg>*+* {
+        margin-top: 3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .space-responsive-lg>*+* {
+        margin-top: 4rem;
+    }
+}
+
+/* Responsive grid utilities */
+.grid-responsive-1 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .grid-responsive-1 {
+        gap: 1.5rem;
+    }
+}
+
+.grid-responsive-2 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .grid-responsive-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+.grid-responsive-3 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .grid-responsive-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-responsive-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+.grid-responsive-4 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .grid-responsive-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-responsive-4 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .grid-responsive-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+/* Mobile-first flex utilities */
+.flex-responsive-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .flex-responsive-col {
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+}
+
+/* Responsive padding utilities */
+.p-responsive-sm {
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .p-responsive-sm {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .p-responsive-sm {
+        padding: 2rem;
+    }
+}
+
+.p-responsive-md {
+    padding: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .p-responsive-md {
+        padding: 2rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .p-responsive-md {
+        padding: 2.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .p-responsive-md {
+        padding: 3rem;
+    }
+}
+
+.p-responsive-lg {
+    padding: 2rem;
+}
+
+@media (min-width: 640px) {
+    .p-responsive-lg {
+        padding: 2.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .p-responsive-lg {
+        padding: 3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .p-responsive-lg {
+        padding: 4rem;
+    }
+}
+
+/* Responsive margin utilities */
+.my-responsive-sm {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+    .my-responsive-sm {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.my-responsive-md {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .my-responsive-md {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .my-responsive-md {
+        margin-top: 2.5rem;
+        margin-bottom: 2.5rem;
+    }
+}
+
+.my-responsive-lg {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+    .my-responsive-lg {
+        margin-top: 2.5rem;
+        margin-bottom: 2.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .my-responsive-lg {
+        margin-top: 3rem;
+        margin-bottom: 3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .my-responsive-lg {
+        margin-top: 4rem;
+        margin-bottom: 4rem;
+    }
+}
+
+/* Responsive button sizing */
+.btn-responsive {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+    .btn-responsive {
+        padding: 0.875rem 1.75rem;
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .btn-responsive {
+        padding: 1rem 2rem;
+        font-size: 1.125rem;
+    }
+}
+
+/* Responsive card padding */
+.card-responsive {
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .card-responsive {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-responsive {
+        padding: 2rem;
+    }
+}
+
+/* Hide/show utilities for different viewports */
+.hide-mobile {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .hide-mobile {
+        display: block;
+    }
+}
+
+.show-mobile {
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .show-mobile {
+        display: none;
+    }
+}
+
+/* Responsive image container */
+.responsive-image-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+.responsive-image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Aspect ratio utilities for responsive images */
+.aspect-responsive-16-9 {
+    aspect-ratio: 16 / 9;
+}
+
+.aspect-responsive-4-3 {
+    aspect-ratio: 4 / 3;
+}
+
+.aspect-responsive-1-1 {
+    aspect-ratio: 1 / 1;
+}
+
+/* Responsive hero section */
+.hero-responsive {
+    min-height: 60vh;
+    padding-top: 4rem;
+    padding-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .hero-responsive {
+        min-height: 70vh;
+        padding-top: 6rem;
+        padding-bottom: 3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-responsive {
+        min-height: 80vh;
+        padding-top: 8rem;
+        padding-bottom: 4rem;
+    }
+}
+
+/* Responsive section padding */
+.section-responsive {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+@media (min-width: 640px) {
+    .section-responsive {
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .section-responsive {
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .section-responsive {
+        padding-top: 6rem;
+        padding-bottom: 6rem;
+    }
+}
+
+/* Responsive navbar height */
+.navbar-responsive {
+    height: 4rem;
+}
+
+@media (min-width: 768px) {
+    .navbar-responsive {
+        height: 5rem;
+    }
+}
+
+/* Responsive modal/dialog */
+.modal-responsive {
+    width: 95vw;
+    max-width: 95vw;
+    margin: 1rem;
+}
+
+@media (min-width: 640px) {
+    .modal-responsive {
+        width: 90vw;
+        max-width: 32rem;
+        margin: 2rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal-responsive {
+        width: 80vw;
+        max-width: 42rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .modal-responsive {
+        width: 70vw;
+        max-width: 48rem;
+    }
+}
+
+/* Responsive table wrapper */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+    min-width: 600px;
+}
+
+/* Responsive form layout */
+.form-responsive {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .form-responsive {
+        gap: 1.5rem;
+    }
+}
+
+.form-responsive-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .form-responsive-row {
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+}
+
+/* Responsive sidebar layout */
+.layout-responsive-sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+    .layout-responsive-sidebar {
+        flex-direction: row;
+    }
+}
+
+.layout-responsive-sidebar-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.layout-responsive-sidebar-aside {
+    width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .layout-responsive-sidebar-aside {
+        width: 20rem;
+        flex-shrink: 0;
+    }
+}
+
+/* Prevent text overflow on small screens */
+.text-truncate-responsive {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+    .text-truncate-responsive {
+        white-space: normal;
+    }
+}
+
+/* Responsive max-width utilities */
+.max-w-responsive-sm {
+    max-width: 100%;
+}
+
+@media (min-width: 640px) {
+    .max-w-responsive-sm {
+        max-width: 24rem;
+    }
+}
+
+.max-w-responsive-md {
+    max-width: 100%;
+}
+
+@media (min-width: 768px) {
+    .max-w-responsive-md {
+        max-width: 28rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .max-w-responsive-md {
+        max-width: 32rem;
+    }
+}
+
+.max-w-responsive-lg {
+    max-width: 100%;
+}
+
+@media (min-width: 768px) {
+    .max-w-responsive-lg {
+        max-width: 42rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .max-w-responsive-lg {
+        max-width: 48rem;
+    }
+}
+
+.max-w-responsive-xl {
+    max-width: 100%;
+}
+
+@media (min-width: 768px) {
+    .max-w-responsive-xl {
+        max-width: 56rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .max-w-responsive-xl {
+        max-width: 64rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .max-w-responsive-xl {
+        max-width: 72rem;
+    }
+}
+
+/* Safe area insets for mobile devices (notches, etc.) */
+@supports (padding: max(0px)) {
+    .safe-area-inset-top {
+        padding-top: max(env(safe-area-inset-top), 1rem);
+    }
+
+    .safe-area-inset-bottom {
+        padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+    }
+
+    .safe-area-inset-left {
+        padding-left: max(env(safe-area-inset-left), 1rem);
+    }
+
+    .safe-area-inset-right {
+        padding-right: max(env(safe-area-inset-right), 1rem);
+    }
+}
+
+/* ==========================================
+   RESOURCES PAGE TRANSITIONS & ANIMATIONS
+   Feature: resources-page-ui-improvements
+   Requirement: 6.4 - Loading transitions and animations
+   ========================================== */
+
+/* Smooth fade-in for resource cards */
+.resource-card-enter {
+    animation: resourceCardFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes resourceCardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Staggered animation for grid items */
+.resource-grid-item {
+    opacity: 0;
+    animation: resourceCardFadeIn 0.5s ease-out forwards;
+}
+
+.resource-grid-item:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.resource-grid-item:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.resource-grid-item:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.resource-grid-item:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.resource-grid-item:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.resource-grid-item:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.resource-grid-item:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.resource-grid-item:nth-child(8) {
+    animation-delay: 0.4s;
+}
+
+.resource-grid-item:nth-child(9) {
+    animation-delay: 0.45s;
+}
+
+.resource-grid-item:nth-child(10) {
+    animation-delay: 0.5s;
+}
+
+.resource-grid-item:nth-child(11) {
+    animation-delay: 0.55s;
+}
+
+.resource-grid-item:nth-child(12) {
+    animation-delay: 0.6s;
+}
+
+/* Smooth transition for filter changes */
+.filter-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Filter chip animations */
+.filter-chip-enter {
+    animation: filterChipSlideIn 0.3s ease-out forwards;
+}
+
+@keyframes filterChipSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.filter-chip-exit {
+    animation: filterChipSlideOut 0.2s ease-in forwards;
+}
+
+@keyframes filterChipSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(-10px) scale(0.9);
+    }
+}
+
+/* Loading state transitions */
+.loading-state-enter {
+    animation: loadingFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes loadingFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Error state bounce-in animation */
+.error-state-enter {
+    animation: errorBounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes errorBounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(30px);
+    }
+
+    50% {
+        transform: scale(1.05) translateY(-5px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Empty state gentle fade-in */
+.empty-state-enter {
+    animation: emptyStateFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes emptyStateFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Pagination transition */
+.pagination-transition {
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination-button-active {
+    animation: paginationPulse 0.3s ease-out;
+}
+
+@keyframes paginationPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Search bar focus animation */
+.search-bar-focus {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-bar-focus:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 158, 188, 0.15);
+}
+
+/* Resource card hover animation */
+.resource-card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.resource-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Filter panel slide animation */
+.filter-panel-slide {
+    animation: filterPanelSlide 0.3s ease-out forwards;
+}
+
+@keyframes filterPanelSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Active filter badge pulse */
+.active-filter-pulse {
+    animation: activeFilterPulse 2s ease-in-out infinite;
+}
+
+@keyframes activeFilterPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(33, 158, 188, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(33, 158, 188, 0);
+    }
+}
+
+/* Smooth content swap animation */
+.content-swap-exit {
+    animation: contentSwapExit 0.2s ease-in forwards;
+}
+
+@keyframes contentSwapExit {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+.content-swap-enter {
+    animation: contentSwapEnter 0.3s ease-out forwards;
+}
+
+@keyframes contentSwapEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Retry button animation */
+.retry-button-hover {
+    transition: all 0.2s ease-in-out;
+}
+
+.retry-button-hover:hover {
+    transform: scale(1.05);
+}
+
+.retry-button-hover:active {
+    transform: scale(0.95);
+}
+
+/* ==========================================
+   PREFERS-REDUCED-MOTION OVERRIDES
+   Respects user's motion preferences
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    /* Disable all resource page animations */
+    .resource-card-enter,
+    .resource-grid-item,
+    .filter-chip-enter,
+    .filter-chip-exit,
+    .loading-state-enter,
+    .error-state-enter,
+    .empty-state-enter,
+    .pagination-button-active,
+    .filter-panel-slide,
+    .active-filter-pulse,
+    .content-swap-exit,
+    .content-swap-enter {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+
+    /* Reduce transitions to instant */
+    .filter-transition,
+    .pagination-transition,
+    .search-bar-focus,
+    .resource-card-hover,
+    .retry-button-hover {
+        transition: none;
+    }
+
+    /* Keep focus states but remove animations */
+    .search-bar-focus:focus-within {
+        transform: none;
+        box-shadow: 0 0 0 3px rgba(33, 158, 188, 0.3);
+    }
+
+    .resource-card-hover:hover {
+        transform: none;
+        box-shadow: 0 0 0 2px rgba(33, 158, 188, 0.5);
+    }
+
+    /* Disable skeleton shimmer */
+    .skeleton-shimmer {
+        animation: none;
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+/* Flip Text Animations */
+@keyframes flip-out {
+    0% {
+        transform: rotateX(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotateX(90deg);
+        opacity: 0;
+    }
+}
+
+@keyframes flip-in {
+    0% {
+        transform: rotateX(-90deg);
+        opacity: 0;
+    }
+
+    100% {
+        transform: rotateX(0deg);
+        opacity: 1;
+    }
+}
+
+.animate-flip-out {
+    animation: flip-out 0.6s ease-in-out forwards;
+}
+
+.animate-flip-in {
+    animation: flip-in 0.6s ease-in-out forwards;
+}
+
+/* Marquee Animation for Testimonials */
+@keyframes marquee {
+    0% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-marquee {
+    animation: marquee 40s linear infinite;
+}
+
+.hover\:pause-animation:hover {
+    animation-play-state: paused;
+}
+
+/* ==========================================
+   MODERN SHOWCASE ANIMATIONS
+   ========================================== */
+
+/* 3D Perspective Card */
+.perspective-card {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+/* Smooth Gradient Shift Animation */
+@keyframes gradient-shift {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+}
+
+/* Floating Animation - Smooth */
+@keyframes float-smooth {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-float-smooth {
+    animation: float-smooth 4s ease-in-out infinite;
+}
+
+/* Continuous floating for icons */
+@keyframes float-continuous {
+
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    33% {
+        transform: translateY(-8px) rotate(2deg);
+    }
+
+    66% {
+        transform: translateY(-4px) rotate(-2deg);
+    }
+}
+
+.animate-float-continuous {
+    animation: float-continuous 3s ease-in-out infinite;
+}
+
+/* Modern Card Hover with 3D Tilt */
+.modern-card-hover {
+    position: relative;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-style: preserve-3d;
+}
+
+.modern-card-hover:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow:
+        0 30px 60px -12px rgba(0, 0, 0, 0.25),
+        0 18px 36px -18px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Magnetic Glow Effect */
+.magnetic-glow {
+    position: relative;
+}
+
+.magnetic-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(135deg,
+            rgba(59, 130, 246, 0.5),
+            rgba(168, 85, 247, 0.5),
+            rgba(251, 146, 60, 0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.magnetic-glow:hover::before {
+    opacity: 1;
+}
+
+/* Smooth Scale and Glow */
+.scale-glow-hover {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scale-glow-hover:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+/* Stagger Animation Helper */
+.stagger-delay-1 {
+    animation-delay: 0.1s;
+}
+
+.stagger-delay-2 {
+    animation-delay: 0.2s;
+}
+
+.stagger-delay-3 {
+    animation-delay: 0.3s;
+}
+
+.stagger-delay-4 {
+    animation-delay: 0.4s;
+}
+
+/* Event Card Animations */
+@keyframes card-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 10px 40px -10px hsl(var(--primary) / 0.1);
+    }
+
+    50% {
+        box-shadow: 0 20px 60px -10px hsl(var(--primary) / 0.3);
+    }
+}
+
+@keyframes progress-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+@keyframes icon-bounce {
+
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+.event-card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.event-card-hover:hover {
+    transform: translateY(-8px);
+    animation: card-glow 2s ease-in-out infinite;
+}
+
+.progress-pulse {
+    animation: progress-pulse 2s ease-in-out infinite;
+}
+
+.icon-bounce {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-bounce:hover {
+    animation: icon-bounce 0.6s ease-in-out;
 }

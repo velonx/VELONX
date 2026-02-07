@@ -1,0 +1,4215 @@
+{
+  "config": {
+    "configFile": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/playwright.config.ts",
+    "rootDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-report/results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "iPad",
+        "name": "iPad",
+        "testDir": "/Users/rishipandey/Desktop/velonxwebsite/VELONX/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 5,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "example.spec.ts",
+      "file": "example.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Example E2E Tests",
+          "file": "example.spec.ts",
+          "line": 12,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Home Page",
+              "file": "example.spec.ts",
+              "line": 13,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should load home page successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-39ad405b089b912b844c",
+                  "file": "example.spec.ts",
+                  "line": 14,
+                  "column": 9
+                },
+                {
+                  "title": "should have navigation links",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-3f65680c1c1c890e49ed",
+                  "file": "example.spec.ts",
+                  "line": 22,
+                  "column": 9
+                },
+                {
+                  "title": "should load home page successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-c2309a46c71f50173006",
+                  "file": "example.spec.ts",
+                  "line": 14,
+                  "column": 9
+                },
+                {
+                  "title": "should have navigation links",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-9b3e556dad9df9c32aa2",
+                  "file": "example.spec.ts",
+                  "line": 22,
+                  "column": 9
+                },
+                {
+                  "title": "should load home page successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-b23faa9490d19f0e32b9",
+                  "file": "example.spec.ts",
+                  "line": 14,
+                  "column": 9
+                },
+                {
+                  "title": "should have navigation links",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-b0fcd032e6e01d76445a",
+                  "file": "example.spec.ts",
+                  "line": 22,
+                  "column": 9
+                },
+                {
+                  "title": "should load home page successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-5305feaffe9767d94646",
+                  "file": "example.spec.ts",
+                  "line": 14,
+                  "column": 9
+                },
+                {
+                  "title": "should have navigation links",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-dd7b19b623414813469c",
+                  "file": "example.spec.ts",
+                  "line": 22,
+                  "column": 9
+                },
+                {
+                  "title": "should load home page successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-3dadff2c895dea59ae73",
+                  "file": "example.spec.ts",
+                  "line": 14,
+                  "column": 9
+                },
+                {
+                  "title": "should have navigation links",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-ccee44387cdb65481919",
+                  "file": "example.spec.ts",
+                  "line": 22,
+                  "column": 9
+                },
+                {
+                  "title": "should load home page successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-0d99ccfd0991a6febf45",
+                  "file": "example.spec.ts",
+                  "line": 14,
+                  "column": 9
+                },
+                {
+                  "title": "should have navigation links",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-8db36e3da56541f4a49f",
+                  "file": "example.spec.ts",
+                  "line": 22,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Authentication Flow",
+              "file": "example.spec.ts",
+              "line": 31,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should login as student",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-cacdc5a13e90ca9b914d",
+                  "file": "example.spec.ts",
+                  "line": 32,
+                  "column": 9
+                },
+                {
+                  "title": "should logout successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-5c6d98f03e4b12f601ff",
+                  "file": "example.spec.ts",
+                  "line": 39,
+                  "column": 9
+                },
+                {
+                  "title": "should login as student",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-d11e1578bcc156e5b7cf",
+                  "file": "example.spec.ts",
+                  "line": 32,
+                  "column": 9
+                },
+                {
+                  "title": "should logout successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-d662c574dc8d08c73ae4",
+                  "file": "example.spec.ts",
+                  "line": 39,
+                  "column": 9
+                },
+                {
+                  "title": "should login as student",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-785d37c93950822bc68c",
+                  "file": "example.spec.ts",
+                  "line": 32,
+                  "column": 9
+                },
+                {
+                  "title": "should logout successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-6bd29e6f8d1830b51a30",
+                  "file": "example.spec.ts",
+                  "line": 39,
+                  "column": 9
+                },
+                {
+                  "title": "should login as student",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-4f2d3cd267d6731c9f9e",
+                  "file": "example.spec.ts",
+                  "line": 32,
+                  "column": 9
+                },
+                {
+                  "title": "should logout successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-179dbd6af36907a7b65c",
+                  "file": "example.spec.ts",
+                  "line": 39,
+                  "column": 9
+                },
+                {
+                  "title": "should login as student",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-796d574b256d968c5255",
+                  "file": "example.spec.ts",
+                  "line": 32,
+                  "column": 9
+                },
+                {
+                  "title": "should logout successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-6702a1e9487fa4c4dca6",
+                  "file": "example.spec.ts",
+                  "line": 39,
+                  "column": 9
+                },
+                {
+                  "title": "should login as student",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-6831a60e7aacf1c5385f",
+                  "file": "example.spec.ts",
+                  "line": 32,
+                  "column": 9
+                },
+                {
+                  "title": "should logout successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-95b5ee78f4cc683b99d6",
+                  "file": "example.spec.ts",
+                  "line": 39,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Dashboard Navigation",
+              "file": "example.spec.ts",
+              "line": 51,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should navigate to student dashboard",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-913db8c05b3f124902f6",
+                  "file": "example.spec.ts",
+                  "line": 57,
+                  "column": 9
+                },
+                {
+                  "title": "should display user information",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-541e6af7778b23302218",
+                  "file": "example.spec.ts",
+                  "line": 62,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to student dashboard",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-0545a081370792987fcc",
+                  "file": "example.spec.ts",
+                  "line": 57,
+                  "column": 9
+                },
+                {
+                  "title": "should display user information",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-f8075801dfff7954b5c2",
+                  "file": "example.spec.ts",
+                  "line": 62,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to student dashboard",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-29a03ca6450825c0afaf",
+                  "file": "example.spec.ts",
+                  "line": 57,
+                  "column": 9
+                },
+                {
+                  "title": "should display user information",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-e75c6700dd77c0768f31",
+                  "file": "example.spec.ts",
+                  "line": 62,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to student dashboard",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-0d9e506bb5a11696abb9",
+                  "file": "example.spec.ts",
+                  "line": 57,
+                  "column": 9
+                },
+                {
+                  "title": "should display user information",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-6bfae2df9bc796c339e5",
+                  "file": "example.spec.ts",
+                  "line": 62,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to student dashboard",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-80ace48f65297979e066",
+                  "file": "example.spec.ts",
+                  "line": 57,
+                  "column": 9
+                },
+                {
+                  "title": "should display user information",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-a2a49191304928e79553",
+                  "file": "example.spec.ts",
+                  "line": 62,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to student dashboard",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-2b7e6fb0fff8500931ae",
+                  "file": "example.spec.ts",
+                  "line": 57,
+                  "column": 9
+                },
+                {
+                  "title": "should display user information",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-333aec9989d8106b9261",
+                  "file": "example.spec.ts",
+                  "line": 62,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Responsive Design",
+              "file": "example.spec.ts",
+              "line": 71,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should work on mobile viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-b6dd44a429393f9f8594",
+                  "file": "example.spec.ts",
+                  "line": 72,
+                  "column": 9
+                },
+                {
+                  "title": "should work on tablet viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-2cb0f3473d55de93be22",
+                  "file": "example.spec.ts",
+                  "line": 86,
+                  "column": 9
+                },
+                {
+                  "title": "should work on mobile viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-71923076de932e2fe6ab",
+                  "file": "example.spec.ts",
+                  "line": 72,
+                  "column": 9
+                },
+                {
+                  "title": "should work on tablet viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-6ec32cd651713d500c22",
+                  "file": "example.spec.ts",
+                  "line": 86,
+                  "column": 9
+                },
+                {
+                  "title": "should work on mobile viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-05ad1c7b1d852399d84b",
+                  "file": "example.spec.ts",
+                  "line": 72,
+                  "column": 9
+                },
+                {
+                  "title": "should work on tablet viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-582b5eaecf27903594b0",
+                  "file": "example.spec.ts",
+                  "line": 86,
+                  "column": 9
+                },
+                {
+                  "title": "should work on mobile viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-01d4c6c67e38be597ff8",
+                  "file": "example.spec.ts",
+                  "line": 72,
+                  "column": 9
+                },
+                {
+                  "title": "should work on tablet viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-1b6ac909191e9edf3f89",
+                  "file": "example.spec.ts",
+                  "line": 86,
+                  "column": 9
+                },
+                {
+                  "title": "should work on mobile viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-625c7bf244518bcc2782",
+                  "file": "example.spec.ts",
+                  "line": 72,
+                  "column": 9
+                },
+                {
+                  "title": "should work on tablet viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-1fe0d995d256e4b9b93f",
+                  "file": "example.spec.ts",
+                  "line": 86,
+                  "column": 9
+                },
+                {
+                  "title": "should work on mobile viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-1d2043ccd9e7138dc1d0",
+                  "file": "example.spec.ts",
+                  "line": 72,
+                  "column": 9
+                },
+                {
+                  "title": "should work on tablet viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-db63f4d02c7840e22233",
+                  "file": "example.spec.ts",
+                  "line": 86,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Accessibility",
+              "file": "example.spec.ts",
+              "line": 98,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should have proper page title",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-41e419a26ad0dad211de",
+                  "file": "example.spec.ts",
+                  "line": 99,
+                  "column": 9
+                },
+                {
+                  "title": "should support keyboard navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-97ea30672a5351eaf6e5",
+                  "file": "example.spec.ts",
+                  "line": 107,
+                  "column": 9
+                },
+                {
+                  "title": "should have proper page title",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-1b02da5001a448c9d0c0",
+                  "file": "example.spec.ts",
+                  "line": 99,
+                  "column": 9
+                },
+                {
+                  "title": "should support keyboard navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-b9a7cea319f17052eb20",
+                  "file": "example.spec.ts",
+                  "line": 107,
+                  "column": 9
+                },
+                {
+                  "title": "should have proper page title",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-a7ca6799c13c30d0c419",
+                  "file": "example.spec.ts",
+                  "line": 99,
+                  "column": 9
+                },
+                {
+                  "title": "should support keyboard navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-58dfd87a5bc7054ed415",
+                  "file": "example.spec.ts",
+                  "line": 107,
+                  "column": 9
+                },
+                {
+                  "title": "should have proper page title",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-76069d7c67aa7f0149b9",
+                  "file": "example.spec.ts",
+                  "line": 99,
+                  "column": 9
+                },
+                {
+                  "title": "should support keyboard navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-01c4bd142c32d8e23fbc",
+                  "file": "example.spec.ts",
+                  "line": 107,
+                  "column": 9
+                },
+                {
+                  "title": "should have proper page title",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-4a4973feb0912ea58118",
+                  "file": "example.spec.ts",
+                  "line": 99,
+                  "column": 9
+                },
+                {
+                  "title": "should support keyboard navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-5e4dab8e3e22d20f1c9c",
+                  "file": "example.spec.ts",
+                  "line": 107,
+                  "column": 9
+                },
+                {
+                  "title": "should have proper page title",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-7dd3a5ef7d4816cfdd60",
+                  "file": "example.spec.ts",
+                  "line": 99,
+                  "column": 9
+                },
+                {
+                  "title": "should support keyboard navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "iPad",
+                      "projectName": "iPad",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "a30a6eba6312f6b87ea5-e7d15dadcc656b0366e9",
+                  "file": "example.spec.ts",
+                  "line": 107,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "mentor-booking.spec.ts",
+      "file": "mentor-booking.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Mentor Booking Flow",
+          "file": "mentor-booking.spec.ts",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should complete full mentor booking flow: search → booking → session → review",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-310fd2df576c1363f18c",
+              "file": "mentor-booking.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "should filter mentors by expertise",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-a2379bb4f2298fed408c",
+              "file": "mentor-booking.spec.ts",
+              "line": 145,
+              "column": 7
+            },
+            {
+              "title": "should search mentors by name",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-8633ab515f3e1ec568fc",
+              "file": "mentor-booking.spec.ts",
+              "line": 170,
+              "column": 7
+            },
+            {
+              "title": "should require login to book mentor session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-f340777036d79a2f41ca",
+              "file": "mentor-booking.spec.ts",
+              "line": 189,
+              "column": 7
+            },
+            {
+              "title": "should display mentor details correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-6a29411588dc26e5457c",
+              "file": "mentor-booking.spec.ts",
+              "line": 217,
+              "column": 7
+            },
+            {
+              "title": "should show mentor rating and session count",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-a1d8513c4a7b048b7d3d",
+              "file": "mentor-booking.spec.ts",
+              "line": 237,
+              "column": 7
+            },
+            {
+              "title": "should handle booking form validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-6303874aabaafe77bbcd",
+              "file": "mentor-booking.spec.ts",
+              "line": 256,
+              "column": 7
+            },
+            {
+              "title": "should complete full mentor booking flow: search → booking → session → review",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-972de90839fec2455207",
+              "file": "mentor-booking.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "should filter mentors by expertise",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-cf7d5db0b29d864d0157",
+              "file": "mentor-booking.spec.ts",
+              "line": 145,
+              "column": 7
+            },
+            {
+              "title": "should search mentors by name",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-90156174a8fd90dbfe25",
+              "file": "mentor-booking.spec.ts",
+              "line": 170,
+              "column": 7
+            },
+            {
+              "title": "should require login to book mentor session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-485dcdf9d07d41bc3609",
+              "file": "mentor-booking.spec.ts",
+              "line": 189,
+              "column": 7
+            },
+            {
+              "title": "should display mentor details correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-04418769f3424f1e39ce",
+              "file": "mentor-booking.spec.ts",
+              "line": 217,
+              "column": 7
+            },
+            {
+              "title": "should show mentor rating and session count",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-84e7b454a259cb4704f2",
+              "file": "mentor-booking.spec.ts",
+              "line": 237,
+              "column": 7
+            },
+            {
+              "title": "should handle booking form validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-23e779783de18d328040",
+              "file": "mentor-booking.spec.ts",
+              "line": 256,
+              "column": 7
+            },
+            {
+              "title": "should complete full mentor booking flow: search → booking → session → review",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-4705232359fbb8f17dda",
+              "file": "mentor-booking.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "should filter mentors by expertise",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-a5b32384c699789eafd3",
+              "file": "mentor-booking.spec.ts",
+              "line": 145,
+              "column": 7
+            },
+            {
+              "title": "should search mentors by name",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-bd855c5f33cda2bd509f",
+              "file": "mentor-booking.spec.ts",
+              "line": 170,
+              "column": 7
+            },
+            {
+              "title": "should require login to book mentor session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-73e9136dfc8b1d5b1ffd",
+              "file": "mentor-booking.spec.ts",
+              "line": 189,
+              "column": 7
+            },
+            {
+              "title": "should display mentor details correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-48da50c464dc42ae393d",
+              "file": "mentor-booking.spec.ts",
+              "line": 217,
+              "column": 7
+            },
+            {
+              "title": "should show mentor rating and session count",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-aebaaea374d15dab7c8c",
+              "file": "mentor-booking.spec.ts",
+              "line": 237,
+              "column": 7
+            },
+            {
+              "title": "should handle booking form validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-f4841bfc9896fff4ab15",
+              "file": "mentor-booking.spec.ts",
+              "line": 256,
+              "column": 7
+            },
+            {
+              "title": "should complete full mentor booking flow: search → booking → session → review",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-4f8ecac753d1c0d47981",
+              "file": "mentor-booking.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "should filter mentors by expertise",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-3a13f19c2a4a551311a3",
+              "file": "mentor-booking.spec.ts",
+              "line": 145,
+              "column": 7
+            },
+            {
+              "title": "should search mentors by name",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-a96c6a4fc07223d86ee3",
+              "file": "mentor-booking.spec.ts",
+              "line": 170,
+              "column": 7
+            },
+            {
+              "title": "should require login to book mentor session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-6026f953878deb940981",
+              "file": "mentor-booking.spec.ts",
+              "line": 189,
+              "column": 7
+            },
+            {
+              "title": "should display mentor details correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-0f3f5d814a8a8e0192dc",
+              "file": "mentor-booking.spec.ts",
+              "line": 217,
+              "column": 7
+            },
+            {
+              "title": "should show mentor rating and session count",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-bd73cfb9f98238da26f8",
+              "file": "mentor-booking.spec.ts",
+              "line": 237,
+              "column": 7
+            },
+            {
+              "title": "should handle booking form validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-9a0604f2f84118095637",
+              "file": "mentor-booking.spec.ts",
+              "line": 256,
+              "column": 7
+            },
+            {
+              "title": "should complete full mentor booking flow: search → booking → session → review",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-dfe9eaeca0430b2ca9af",
+              "file": "mentor-booking.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "should filter mentors by expertise",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-1ff9b3644a20c6dcbfb6",
+              "file": "mentor-booking.spec.ts",
+              "line": 145,
+              "column": 7
+            },
+            {
+              "title": "should search mentors by name",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-b5ce3f27869728c54bdb",
+              "file": "mentor-booking.spec.ts",
+              "line": 170,
+              "column": 7
+            },
+            {
+              "title": "should require login to book mentor session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-b4316386cf49faa0bd59",
+              "file": "mentor-booking.spec.ts",
+              "line": 189,
+              "column": 7
+            },
+            {
+              "title": "should display mentor details correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-149c27a125a8e40ab961",
+              "file": "mentor-booking.spec.ts",
+              "line": 217,
+              "column": 7
+            },
+            {
+              "title": "should show mentor rating and session count",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-79e0f29f8e4b4de72718",
+              "file": "mentor-booking.spec.ts",
+              "line": 237,
+              "column": 7
+            },
+            {
+              "title": "should handle booking form validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-bcdbca8e3be2bbbe38fa",
+              "file": "mentor-booking.spec.ts",
+              "line": 256,
+              "column": 7
+            },
+            {
+              "title": "should complete full mentor booking flow: search → booking → session → review",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-1f92da8b85fe59e9d0f2",
+              "file": "mentor-booking.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "should filter mentors by expertise",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-30bda3893ad25d2b3b4f",
+              "file": "mentor-booking.spec.ts",
+              "line": 145,
+              "column": 7
+            },
+            {
+              "title": "should search mentors by name",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-ca7b65975d415c03224b",
+              "file": "mentor-booking.spec.ts",
+              "line": 170,
+              "column": 7
+            },
+            {
+              "title": "should require login to book mentor session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-503595161bda2e6d7ad3",
+              "file": "mentor-booking.spec.ts",
+              "line": 189,
+              "column": 7
+            },
+            {
+              "title": "should display mentor details correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-ab0bd19f25b29a2258d2",
+              "file": "mentor-booking.spec.ts",
+              "line": 217,
+              "column": 7
+            },
+            {
+              "title": "should show mentor rating and session count",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-065e4280c5c3ec19dc75",
+              "file": "mentor-booking.spec.ts",
+              "line": 237,
+              "column": 7
+            },
+            {
+              "title": "should handle booking form validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0729f58209b8b7420f8d-5dda14ea9146228883b0",
+              "file": "mentor-booking.spec.ts",
+              "line": 256,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "project-submission.spec.ts",
+      "file": "project-submission.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Project Submission Flow",
+          "file": "project-submission.spec.ts",
+          "line": 30,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should complete full project flow: creation → submission → approval → join requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-858e7bbbd445cb4633fb",
+              "file": "project-submission.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "should validate project submission form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-8f25fab15a9ff9c96d6c",
+              "file": "project-submission.spec.ts",
+              "line": 163,
+              "column": 7
+            },
+            {
+              "title": "should require at least one technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-7e2501df11b28ac5d65a",
+              "file": "project-submission.spec.ts",
+              "line": 178,
+              "column": 7
+            },
+            {
+              "title": "should add and remove technologies",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-185003eb8c9f1e6b10e5",
+              "file": "project-submission.spec.ts",
+              "line": 203,
+              "column": 7
+            },
+            {
+              "title": "should enforce character limits",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-26397302d86c3bf896b6",
+              "file": "project-submission.spec.ts",
+              "line": 233,
+              "column": 7
+            },
+            {
+              "title": "should display projects list",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-188caa6633ac6db667bf",
+              "file": "project-submission.spec.ts",
+              "line": 257,
+              "column": 7
+            },
+            {
+              "title": "should filter projects by technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-e5340f260c2d3c379da1",
+              "file": "project-submission.spec.ts",
+              "line": 275,
+              "column": 7
+            },
+            {
+              "title": "should search projects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-698ec9b204d46d6346d5",
+              "file": "project-submission.spec.ts",
+              "line": 300,
+              "column": 7
+            },
+            {
+              "title": "should require login to submit project",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-15ef6c1e9b5e4fb83919",
+              "file": "project-submission.spec.ts",
+              "line": 322,
+              "column": 7
+            },
+            {
+              "title": "should show submission success message",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-9f94c7c827e56b96038a",
+              "file": "project-submission.spec.ts",
+              "line": 341,
+              "column": 7
+            },
+            {
+              "title": "should complete full project flow: creation → submission → approval → join requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-98853deaa69f15ec726c",
+              "file": "project-submission.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "should validate project submission form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-38a32a7c0a877b11c9cd",
+              "file": "project-submission.spec.ts",
+              "line": 163,
+              "column": 7
+            },
+            {
+              "title": "should require at least one technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-8bc0f033c72177716c3b",
+              "file": "project-submission.spec.ts",
+              "line": 178,
+              "column": 7
+            },
+            {
+              "title": "should add and remove technologies",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-29300964953fae5fe156",
+              "file": "project-submission.spec.ts",
+              "line": 203,
+              "column": 7
+            },
+            {
+              "title": "should enforce character limits",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-95c868bfea2d62e5abb2",
+              "file": "project-submission.spec.ts",
+              "line": 233,
+              "column": 7
+            },
+            {
+              "title": "should display projects list",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-804f843e47f19f56b883",
+              "file": "project-submission.spec.ts",
+              "line": 257,
+              "column": 7
+            },
+            {
+              "title": "should filter projects by technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-d5a76bd1dd71e71f1ddc",
+              "file": "project-submission.spec.ts",
+              "line": 275,
+              "column": 7
+            },
+            {
+              "title": "should search projects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-d3d256b312bd62845639",
+              "file": "project-submission.spec.ts",
+              "line": 300,
+              "column": 7
+            },
+            {
+              "title": "should require login to submit project",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-1870b04f2dd25544f0b2",
+              "file": "project-submission.spec.ts",
+              "line": 322,
+              "column": 7
+            },
+            {
+              "title": "should show submission success message",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-1820d4475da7367a49ec",
+              "file": "project-submission.spec.ts",
+              "line": 341,
+              "column": 7
+            },
+            {
+              "title": "should complete full project flow: creation → submission → approval → join requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-c7f0c74f488fa9e986cc",
+              "file": "project-submission.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "should validate project submission form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-21d2ea5a92a1c1ccecfd",
+              "file": "project-submission.spec.ts",
+              "line": 163,
+              "column": 7
+            },
+            {
+              "title": "should require at least one technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-e5651d57db6dc8790529",
+              "file": "project-submission.spec.ts",
+              "line": 178,
+              "column": 7
+            },
+            {
+              "title": "should add and remove technologies",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-40e27885077117c2f31b",
+              "file": "project-submission.spec.ts",
+              "line": 203,
+              "column": 7
+            },
+            {
+              "title": "should enforce character limits",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-8dccff444da63e525ce2",
+              "file": "project-submission.spec.ts",
+              "line": 233,
+              "column": 7
+            },
+            {
+              "title": "should display projects list",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-7ffc2bc73bf6f351400a",
+              "file": "project-submission.spec.ts",
+              "line": 257,
+              "column": 7
+            },
+            {
+              "title": "should filter projects by technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-c6dbac38c7e7e4792e92",
+              "file": "project-submission.spec.ts",
+              "line": 275,
+              "column": 7
+            },
+            {
+              "title": "should search projects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-cef314e5e36f8ca214c2",
+              "file": "project-submission.spec.ts",
+              "line": 300,
+              "column": 7
+            },
+            {
+              "title": "should require login to submit project",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-1e05f6f83e9d772af8ab",
+              "file": "project-submission.spec.ts",
+              "line": 322,
+              "column": 7
+            },
+            {
+              "title": "should show submission success message",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-c1cbcc23fcb41125e446",
+              "file": "project-submission.spec.ts",
+              "line": 341,
+              "column": 7
+            },
+            {
+              "title": "should complete full project flow: creation → submission → approval → join requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-2f5a77109db69184e9dd",
+              "file": "project-submission.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "should validate project submission form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-49afca79199733031c22",
+              "file": "project-submission.spec.ts",
+              "line": 163,
+              "column": 7
+            },
+            {
+              "title": "should require at least one technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-7dfcfede9f9014289e0f",
+              "file": "project-submission.spec.ts",
+              "line": 178,
+              "column": 7
+            },
+            {
+              "title": "should add and remove technologies",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-fed7d971fca85889401a",
+              "file": "project-submission.spec.ts",
+              "line": 203,
+              "column": 7
+            },
+            {
+              "title": "should enforce character limits",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-bb16bf07690dfb5a1439",
+              "file": "project-submission.spec.ts",
+              "line": 233,
+              "column": 7
+            },
+            {
+              "title": "should display projects list",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-639be7c5626b63f2c550",
+              "file": "project-submission.spec.ts",
+              "line": 257,
+              "column": 7
+            },
+            {
+              "title": "should filter projects by technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-4df80782f4d7be3cbd91",
+              "file": "project-submission.spec.ts",
+              "line": 275,
+              "column": 7
+            },
+            {
+              "title": "should search projects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-b17fec6477d406e5db00",
+              "file": "project-submission.spec.ts",
+              "line": 300,
+              "column": 7
+            },
+            {
+              "title": "should require login to submit project",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-1aed80a33a3b5c3089ab",
+              "file": "project-submission.spec.ts",
+              "line": 322,
+              "column": 7
+            },
+            {
+              "title": "should show submission success message",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-e6b99ac6f346735bf669",
+              "file": "project-submission.spec.ts",
+              "line": 341,
+              "column": 7
+            },
+            {
+              "title": "should complete full project flow: creation → submission → approval → join requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-8cef7e680a0cbf7d7fd3",
+              "file": "project-submission.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "should validate project submission form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-c87873fa3ebfaf619c96",
+              "file": "project-submission.spec.ts",
+              "line": 163,
+              "column": 7
+            },
+            {
+              "title": "should require at least one technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-b68578ce76c91392af42",
+              "file": "project-submission.spec.ts",
+              "line": 178,
+              "column": 7
+            },
+            {
+              "title": "should add and remove technologies",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-07774328438acde6a9dd",
+              "file": "project-submission.spec.ts",
+              "line": 203,
+              "column": 7
+            },
+            {
+              "title": "should enforce character limits",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-3eec0fe95ad87b582e5d",
+              "file": "project-submission.spec.ts",
+              "line": 233,
+              "column": 7
+            },
+            {
+              "title": "should display projects list",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-47f2d8405f5621adf8f1",
+              "file": "project-submission.spec.ts",
+              "line": 257,
+              "column": 7
+            },
+            {
+              "title": "should filter projects by technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-c141a134fba8f80e2b09",
+              "file": "project-submission.spec.ts",
+              "line": 275,
+              "column": 7
+            },
+            {
+              "title": "should search projects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-18a1e21f1d485269e243",
+              "file": "project-submission.spec.ts",
+              "line": 300,
+              "column": 7
+            },
+            {
+              "title": "should require login to submit project",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-70d3cfa04933055ef62a",
+              "file": "project-submission.spec.ts",
+              "line": 322,
+              "column": 7
+            },
+            {
+              "title": "should show submission success message",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-01580eb4493333d47139",
+              "file": "project-submission.spec.ts",
+              "line": 341,
+              "column": 7
+            },
+            {
+              "title": "should complete full project flow: creation → submission → approval → join requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-eb73ae619b890c027802",
+              "file": "project-submission.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "should validate project submission form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-1fc0d9949495abb7a24e",
+              "file": "project-submission.spec.ts",
+              "line": 163,
+              "column": 7
+            },
+            {
+              "title": "should require at least one technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-5dd7a3a530d8356aa5af",
+              "file": "project-submission.spec.ts",
+              "line": 178,
+              "column": 7
+            },
+            {
+              "title": "should add and remove technologies",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-5f2725c9a4caddb94390",
+              "file": "project-submission.spec.ts",
+              "line": 203,
+              "column": 7
+            },
+            {
+              "title": "should enforce character limits",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-444c0a4d51365f1e32e7",
+              "file": "project-submission.spec.ts",
+              "line": 233,
+              "column": 7
+            },
+            {
+              "title": "should display projects list",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-8ac604b8a5fcaf8608df",
+              "file": "project-submission.spec.ts",
+              "line": 257,
+              "column": 7
+            },
+            {
+              "title": "should filter projects by technology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-cae2df33b1b31c5c3330",
+              "file": "project-submission.spec.ts",
+              "line": 275,
+              "column": 7
+            },
+            {
+              "title": "should search projects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-f5365f2752b1e06127a1",
+              "file": "project-submission.spec.ts",
+              "line": 300,
+              "column": 7
+            },
+            {
+              "title": "should require login to submit project",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-3cc1f0c72e52dc5b9008",
+              "file": "project-submission.spec.ts",
+              "line": 322,
+              "column": 7
+            },
+            {
+              "title": "should show submission success message",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0ec63a9d0be5ed25eef2-dbb41ff5b18e3ad179dd",
+              "file": "project-submission.spec.ts",
+              "line": 341,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "student-onboarding.spec.ts",
+      "file": "student-onboarding.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Student Onboarding Flow",
+          "file": "student-onboarding.spec.ts",
+          "line": 27,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should complete full onboarding: registration → profile setup → dashboard access",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-f7b043b3f4e0c2db7e12",
+              "file": "student-onboarding.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "should show validation errors for invalid registration data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-050d843eef15e9432c5e",
+              "file": "student-onboarding.spec.ts",
+              "line": 92,
+              "column": 7
+            },
+            {
+              "title": "should show error for existing email",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-76a5b4df5cd19dbf1313",
+              "file": "student-onboarding.spec.ts",
+              "line": 104,
+              "column": 7
+            },
+            {
+              "title": "should enforce password requirements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-f5c150f2897d5f38e15e",
+              "file": "student-onboarding.spec.ts",
+              "line": 137,
+              "column": 7
+            },
+            {
+              "title": "should require terms acceptance",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-5e28c3584024f98aa4e0",
+              "file": "student-onboarding.spec.ts",
+              "line": 164,
+              "column": 7
+            },
+            {
+              "title": "should toggle password visibility",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-77c3c1f9ed3e847dc398",
+              "file": "student-onboarding.spec.ts",
+              "line": 190,
+              "column": 7
+            },
+            {
+              "title": "should complete full onboarding: registration → profile setup → dashboard access",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-1eaa9085f08be06f32f5",
+              "file": "student-onboarding.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "should show validation errors for invalid registration data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-90f6eb9670d7c5f3dc2d",
+              "file": "student-onboarding.spec.ts",
+              "line": 92,
+              "column": 7
+            },
+            {
+              "title": "should show error for existing email",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-0b29be073bc92a05bbd9",
+              "file": "student-onboarding.spec.ts",
+              "line": 104,
+              "column": 7
+            },
+            {
+              "title": "should enforce password requirements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-61338929af44480a651a",
+              "file": "student-onboarding.spec.ts",
+              "line": 137,
+              "column": 7
+            },
+            {
+              "title": "should require terms acceptance",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-d65099cf5b262c32f78f",
+              "file": "student-onboarding.spec.ts",
+              "line": 164,
+              "column": 7
+            },
+            {
+              "title": "should toggle password visibility",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-e871921f60ed5df60f78",
+              "file": "student-onboarding.spec.ts",
+              "line": 190,
+              "column": 7
+            },
+            {
+              "title": "should complete full onboarding: registration → profile setup → dashboard access",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-14955fa29503268d6d8a",
+              "file": "student-onboarding.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "should show validation errors for invalid registration data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-ca372e6f5916d4072f2a",
+              "file": "student-onboarding.spec.ts",
+              "line": 92,
+              "column": 7
+            },
+            {
+              "title": "should show error for existing email",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-d2301342d31703197a4b",
+              "file": "student-onboarding.spec.ts",
+              "line": 104,
+              "column": 7
+            },
+            {
+              "title": "should enforce password requirements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-2e1fe6d441d3bff19a0b",
+              "file": "student-onboarding.spec.ts",
+              "line": 137,
+              "column": 7
+            },
+            {
+              "title": "should require terms acceptance",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-ca90c2e1e151a5c59e25",
+              "file": "student-onboarding.spec.ts",
+              "line": 164,
+              "column": 7
+            },
+            {
+              "title": "should toggle password visibility",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-128b01df193733f1a614",
+              "file": "student-onboarding.spec.ts",
+              "line": 190,
+              "column": 7
+            },
+            {
+              "title": "should complete full onboarding: registration → profile setup → dashboard access",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-41e31e25879284b295a0",
+              "file": "student-onboarding.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "should show validation errors for invalid registration data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-43b6e86c388d40b63e29",
+              "file": "student-onboarding.spec.ts",
+              "line": 92,
+              "column": 7
+            },
+            {
+              "title": "should show error for existing email",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-18ef65a1f6f53c2389ee",
+              "file": "student-onboarding.spec.ts",
+              "line": 104,
+              "column": 7
+            },
+            {
+              "title": "should enforce password requirements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-104531b03b19ebfb157b",
+              "file": "student-onboarding.spec.ts",
+              "line": 137,
+              "column": 7
+            },
+            {
+              "title": "should require terms acceptance",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-3dbeef10d93689032aff",
+              "file": "student-onboarding.spec.ts",
+              "line": 164,
+              "column": 7
+            },
+            {
+              "title": "should toggle password visibility",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-9fed9f21a999c20c2e70",
+              "file": "student-onboarding.spec.ts",
+              "line": 190,
+              "column": 7
+            },
+            {
+              "title": "should complete full onboarding: registration → profile setup → dashboard access",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-dbb91da0d79e4d6e72a3",
+              "file": "student-onboarding.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "should show validation errors for invalid registration data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-84c971e11186f87f2021",
+              "file": "student-onboarding.spec.ts",
+              "line": 92,
+              "column": 7
+            },
+            {
+              "title": "should show error for existing email",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-2e711098a810fb61d897",
+              "file": "student-onboarding.spec.ts",
+              "line": 104,
+              "column": 7
+            },
+            {
+              "title": "should enforce password requirements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-5927a7b019d366d16b00",
+              "file": "student-onboarding.spec.ts",
+              "line": 137,
+              "column": 7
+            },
+            {
+              "title": "should require terms acceptance",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-64a905ce34e5ddf70af8",
+              "file": "student-onboarding.spec.ts",
+              "line": 164,
+              "column": 7
+            },
+            {
+              "title": "should toggle password visibility",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-12bc7228e55f1fd01790",
+              "file": "student-onboarding.spec.ts",
+              "line": 190,
+              "column": 7
+            },
+            {
+              "title": "should complete full onboarding: registration → profile setup → dashboard access",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-549b4584654555e5bf8c",
+              "file": "student-onboarding.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "should show validation errors for invalid registration data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-5f4d1a600ca08f792465",
+              "file": "student-onboarding.spec.ts",
+              "line": 92,
+              "column": 7
+            },
+            {
+              "title": "should show error for existing email",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-2392073a69948d51fa70",
+              "file": "student-onboarding.spec.ts",
+              "line": 104,
+              "column": 7
+            },
+            {
+              "title": "should enforce password requirements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-ce6ad33474ef6bea0122",
+              "file": "student-onboarding.spec.ts",
+              "line": 137,
+              "column": 7
+            },
+            {
+              "title": "should require terms acceptance",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-079b65ec8862cb8302df",
+              "file": "student-onboarding.spec.ts",
+              "line": 164,
+              "column": 7
+            },
+            {
+              "title": "should toggle password visibility",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f0048c5aefa6fa148fcf-59da9d8261d51e2df50a",
+              "file": "student-onboarding.spec.ts",
+              "line": 190,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-01-22T11:13:59.459Z",
+    "duration": 66.14999999999998,
+    "expected": 0,
+    "skipped": 198,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

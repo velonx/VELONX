@@ -109,7 +109,7 @@ export default function AddEventForm({
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title" className="text-white">
-                            Event Title <span className="text-red-400">*</span>
+                            Event Title <span className="text-red-400" aria-label="required">*</span>
                         </Label>
                         <Input
                             id="title"
@@ -118,13 +118,16 @@ export default function AddEventForm({
                             placeholder="e.g., Web Development Workshop"
                             className="bg-white/5 border-white/10 text-white"
                             required
+                            aria-required="true"
+                            aria-describedby="title-hint"
                         />
+                        <p id="title-hint" className="sr-only">Enter a descriptive title for your event</p>
                     </div>
 
                     {/* Description */}
                     <div className="space-y-2">
                         <Label htmlFor="description" className="text-white">
-                            Description <span className="text-red-400">*</span>
+                            Description <span className="text-red-400" aria-label="required">*</span>
                         </Label>
                         <Textarea
                             id="description"
@@ -134,14 +137,17 @@ export default function AddEventForm({
                             className="bg-white/5 border-white/10 text-white resize-none"
                             rows={3}
                             required
+                            aria-required="true"
+                            aria-describedby="description-hint"
                         />
+                        <p id="description-hint" className="sr-only">Provide a brief description of what attendees can expect from this event</p>
                     </div>
 
                     {/* Date and Time Row */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="date" className="text-white">
-                                Date <span className="text-red-400">*</span>
+                                Date <span className="text-red-400" aria-label="required">*</span>
                             </Label>
                             <Input
                                 id="date"
@@ -150,11 +156,14 @@ export default function AddEventForm({
                                 onChange={(e) => handleChange("date", e.target.value)}
                                 className="bg-white/5 border-white/10 text-white"
                                 required
+                                aria-required="true"
+                                aria-describedby="date-hint"
                             />
+                            <p id="date-hint" className="sr-only">Select the date when the event will take place</p>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="time" className="text-white">
-                                Time <span className="text-red-400">*</span>
+                                Time <span className="text-red-400" aria-label="required">*</span>
                             </Label>
                             <Input
                                 id="time"
@@ -163,7 +172,10 @@ export default function AddEventForm({
                                 placeholder="e.g., 9:00 - 11:00 AM"
                                 className="bg-white/5 border-white/10 text-white"
                                 required
+                                aria-required="true"
+                                aria-describedby="time-hint"
                             />
+                            <p id="time-hint" className="sr-only">Enter the time range for the event, for example 9:00 - 11:00 AM</p>
                         </div>
                     </div>
 
@@ -171,13 +183,18 @@ export default function AddEventForm({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="platform" className="text-white">
-                                Meeting Platform <span className="text-red-400">*</span>
+                                Meeting Platform <span className="text-red-400" aria-label="required">*</span>
                             </Label>
                             <Select
                                 value={formData.platform}
                                 onValueChange={(value) => handleChange("platform", value)}
                             >
-                                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                <SelectTrigger 
+                                    id="platform"
+                                    className="bg-white/5 border-white/10 text-white"
+                                    aria-label="Select meeting platform"
+                                    aria-describedby="platform-hint"
+                                >
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#0a0a0f] border-white/10">
@@ -187,16 +204,22 @@ export default function AddEventForm({
                                     <SelectItem value="discord">Discord</SelectItem>
                                 </SelectContent>
                             </Select>
+                            <p id="platform-hint" className="sr-only">Choose the platform where the event will be hosted</p>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="type" className="text-white">
-                                Event Type <span className="text-red-400">*</span>
+                                Event Type <span className="text-red-400" aria-label="required">*</span>
                             </Label>
                             <Select
                                 value={formData.type}
                                 onValueChange={(value) => handleChange("type", value)}
                             >
-                                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                <SelectTrigger 
+                                    id="type"
+                                    className="bg-white/5 border-white/10 text-white"
+                                    aria-label="Select event type"
+                                    aria-describedby="type-hint"
+                                >
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#0a0a0f] border-white/10">
@@ -206,13 +229,14 @@ export default function AddEventForm({
                                     <SelectItem value="webinar">Webinar</SelectItem>
                                 </SelectContent>
                             </Select>
+                            <p id="type-hint" className="sr-only">Select the type of event you are creating</p>
                         </div>
                     </div>
 
                     {/* Meeting Link */}
                     <div className="space-y-2">
                         <Label htmlFor="meetingLink" className="text-white">
-                            Meeting Link <span className="text-red-400">*</span>
+                            Meeting Link <span className="text-red-400" aria-label="required">*</span>
                         </Label>
                         <Input
                             id="meetingLink"
@@ -222,13 +246,16 @@ export default function AddEventForm({
                             placeholder="https://meet.google.com/abc-defg-hij"
                             className="bg-white/5 border-white/10 text-white"
                             required
+                            aria-required="true"
+                            aria-describedby="meetingLink-hint"
                         />
+                        <p id="meetingLink-hint" className="sr-only">Enter the full URL for the meeting link where attendees will join</p>
                     </div>
 
                     {/* Max Attendees */}
                     <div className="space-y-2">
                         <Label htmlFor="maxAttendees" className="text-white">
-                            Maximum Attendees <span className="text-red-400">*</span>
+                            Maximum Attendees <span className="text-red-400" aria-label="required">*</span>
                         </Label>
                         <Input
                             id="maxAttendees"
@@ -239,7 +266,10 @@ export default function AddEventForm({
                             placeholder="e.g., 50"
                             className="bg-white/5 border-white/10 text-white"
                             required
+                            aria-required="true"
+                            aria-describedby="maxAttendees-hint"
                         />
+                        <p id="maxAttendees-hint" className="sr-only">Enter the maximum number of people who can register for this event</p>
                     </div>
 
                     <DialogFooter className="gap-2">

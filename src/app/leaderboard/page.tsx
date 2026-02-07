@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LEADERBOARD } from "@/lib/mock-data";
 import { Trophy, Medal, Zap, TrendingUp, Sparkles, Crown, Flame, Target, Users, Diamond, Clock, ChevronRight, Bell, User } from "lucide-react";
+import { useLeaderboard } from "@/lib/api/hooks";
 
 // Avatar options for users to choose from
 const AVATAR_OPTIONS = [
@@ -17,15 +17,6 @@ const AVATAR_OPTIONS = [
     { id: 4, name: "Wizard Owl", src: "/avatars/wizard-owl.png" },
     { id: 5, name: "Punk Dog", src: "/avatars/punk-dog.png" },
 ];
-
-// Extended leaderboard with avatars and more data
-const EXTENDED_LEADERBOARD = LEADERBOARD.map((user, index) => ({
-    ...user,
-    avatarSrc: AVATAR_OPTIONS[index % AVATAR_OPTIONS.length].src,
-    followers: Math.floor(Math.random() * 15000) + 1000,
-    prize: index === 0 ? 100000 : index === 1 ? 50000 : index === 2 ? 20000 : Math.floor(1000 / (index + 1)) * 100,
-    earnPoints: 2000,
-}));
 
 export default function LeaderboardPage() {
     const { data: session } = useSession();
@@ -37,8 +28,19 @@ export default function LeaderboardPage() {
     });
     const [activeTab, setActiveTab] = useState<"daily" | "monthly">("daily");
 
+    // Fetch leaderboard from API
+    const { data: leaderboardData, loading } = useLeaderboard({ pageSize: 50 });
+
+    // Extend leaderboard with avatars
+    const EXTENDED_LEADERBOARD = leaderboardData?.map((user, index) => ({
+        ...user,
+        avatarSrc: user.image || AVATAR_OPTIONS[index % AVATAR_OPTIONS.length].src,
+        followers: Math.floor(Math.random() * 15000) + 1000,
+        prize: index === 0 ? 100000 : index === 1 ? 50000 : index === 2 ? 20000 : Math.floor(1000 / (index + 1)) * 100,
+        earnPoints: 2000,
+    })) || [];
+
     const top3 = EXTENDED_LEADERBOARD.slice(0, 3);
-    const rest = EXTENDED_LEADERBOARD.slice(3);
 
     // Countdown timer effect
     useEffect(() => {
@@ -70,27 +72,36 @@ export default function LeaderboardPage() {
         return () => clearInterval(timer);
     }, []);
 
+    if (loading) {
+        return (
+            <div className="min-h-screen pt-24 flex items-center justify-center bg-background">
+                <div className="w-16 h-16 rounded-full border-4 border-[#219EBC] border-t-transparent animate-spin" />
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen pt-24 bg-white">
+        <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
-            <section className="relative py-12 bg-gradient-to-b from-gray-50 to-white">
+            <section className="relative py-12 bg-background overflow-hidden">
+                
                 <div className="container mx-auto px-4 text-center">
                     <div className="max-w-3xl mx-auto mb-12">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                             <Trophy className="w-4 h-4" />
                             Community Champions
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-gray-900 leading-tight">
+                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground leading-tight" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
                             The <span className="text-[#219EBC]">Leaderboard</span>
                         </h1>
-                        <p className="text-gray-500 text-xl max-w-2xl mx-auto">
+                        <p className="text-muted-foreground text-xl max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
                             Climb to the top by contributing to projects, attending events, and helping fellow students!
                         </p>
                     </div>
 
                     {/* Period Toggle */}
                     <div className="flex justify-center mb-16">
-                        <div className="inline-flex bg-gray-100 rounded-2xl p-1.5 border border-gray-200">
+                        <div className="inline-flex bg-gray-100 rounded-2xl p-1.5 border border-border">
                             {[
                                 { id: "daily", label: "Daily" },
                                 { id: "monthly", label: "Monthly" }
@@ -100,7 +111,7 @@ export default function LeaderboardPage() {
                                     onClick={() => setActiveTab(tab.id as any)}
                                     className={`px-10 py-3 rounded-xl font-bold transition-all ${activeTab === tab.id
                                         ? "bg-white text-[#219EBC] shadow-lg shadow-black/5"
-                                        : "text-gray-400 hover:text-gray-600"
+                                        : "text-muted-foreground hover:text-muted-foreground"
                                         }`}
                                 >
                                     {tab.label}
@@ -114,24 +125,30 @@ export default function LeaderboardPage() {
                         {/* 2nd Place */}
                         <div className="text-center group animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
                             <div className="relative mb-6">
-                                <div className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-[24px] overflow-hidden border-4 border-gray-200/50 shadow-2xl bg-white p-2 group-hover:scale-105 transition-transform">
-                                    <img
-                                        src={top3[1]?.avatarSrc}
-                                        alt={top3[1]?.name}
-                                        className="w-full h-full object-cover rounded-[18px]"
-                                    />
+                                <div className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-[24px] overflow-hidden border-4 border-border/50 shadow-2xl bg-background p-2 group-hover:scale-105 transition-transform">
+                                    {top3[1]?.avatarSrc ? (
+                                        <img
+                                            src={top3[1].avatarSrc}
+                                            alt={top3[1]?.name || 'User avatar'}
+                                            className="w-full h-full object-cover rounded-[18px]"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-200 rounded-[18px] flex items-center justify-center">
+                                            <span className="text-muted-foreground text-2xl">👤</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gray-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">2</div>
                             </div>
-                            <h3 className="text-gray-900 font-bold text-lg mb-1">{top3[1]?.name}</h3>
+                            <h3 className="text-foreground font-bold text-lg mb-1">{top3[1]?.name}</h3>
                             <div className="flex items-center justify-center gap-1.5 mb-2 text-[#219EBC] font-semibold text-sm">
                                 <Diamond className="w-4 h-4" />
                                 {top3[1]?.xp.toLocaleString()} XP
                             </div>
 
                             {/* Podium Block */}
-                            <div className="w-32 md:w-44 h-32 mt-6 bg-gradient-to-t from-gray-100 to-white rounded-t-[32px] border-x border-t border-gray-200 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center pt-8">
-                                <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Silver</span>
+                            <div className="w-32 md:w-44 h-32 mt-6 bg-gradient-to-t from-gray-100 to-white rounded-t-[32px] border-x border-t border-border shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center pt-8">
+                                <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Silver</span>
                                 <div className="text-2xl font-black text-gray-300">2nd</div>
                             </div>
                         </div>
@@ -142,16 +159,22 @@ export default function LeaderboardPage() {
                                 <div className="absolute -top-12 left-1/2 -translate-x-1/2">
                                     <Crown className="w-12 h-12 text-[#FFB703] drop-shadow-lg animate-bounce" />
                                 </div>
-                                <div className="w-32 h-32 md:w-44 md:h-44 mx-auto rounded-[32px] overflow-hidden border-[6px] border-[#FFB703]/30 shadow-2xl shadow-[#FFB703]/20 bg-white p-2 group-hover:scale-110 transition-transform">
-                                    <img
-                                        src={top3[0]?.avatarSrc}
-                                        alt={top3[0]?.name}
-                                        className="w-full h-full object-cover rounded-[24px]"
-                                    />
+                                <div className="w-32 h-32 md:w-44 md:h-44 mx-auto rounded-[32px] overflow-hidden border-[6px] border-[#FFB703]/30 shadow-2xl shadow-[#FFB703]/20 bg-background p-2 group-hover:scale-110 transition-transform">
+                                    {top3[0]?.avatarSrc ? (
+                                        <img
+                                            src={top3[0].avatarSrc}
+                                            alt={top3[0]?.name || 'User avatar'}
+                                            className="w-full h-full object-cover rounded-[24px]"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-200 rounded-[24px] flex items-center justify-center">
+                                            <span className="text-muted-foreground text-4xl">👤</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-[#FFB703] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">1</div>
                             </div>
-                            <h3 className="text-gray-900 font-black text-2xl mb-1">{top3[0]?.name}</h3>
+                            <h3 className="text-foreground font-black text-2xl mb-1">{top3[0]?.name}</h3>
                             <div className="flex items-center justify-center gap-1.5 mb-2 bg-[#FF10F0]/10 rounded-full px-4 py-1.5 mx-auto w-fit text-[#FF10F0] font-bold text-sm shadow-sm">
                                 <Diamond className="w-4 h-4 animate-pulse" />
                                 {top3[0]?.xp.toLocaleString()} XP
@@ -167,16 +190,22 @@ export default function LeaderboardPage() {
                         {/* 3rd Place */}
                         <div className="text-center group animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
                             <div className="relative mb-6">
-                                <div className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-[24px] overflow-hidden border-4 border-[#F4A261]/30 shadow-2xl bg-white p-2 group-hover:scale-105 transition-transform">
-                                    <img
-                                        src={top3[2]?.avatarSrc}
-                                        alt={top3[2]?.name}
-                                        className="w-full h-full object-cover rounded-[18px]"
-                                    />
+                                <div className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-[24px] overflow-hidden border-4 border-[#F4A261]/30 shadow-2xl bg-background p-2 group-hover:scale-105 transition-transform">
+                                    {top3[2]?.avatarSrc ? (
+                                        <img
+                                            src={top3[2].avatarSrc}
+                                            alt={top3[2]?.name || 'User avatar'}
+                                            className="w-full h-full object-cover rounded-[18px]"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-200 rounded-[18px] flex items-center justify-center">
+                                            <span className="text-muted-foreground text-2xl">👤</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#F4A261] text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">3</div>
                             </div>
-                            <h3 className="text-gray-900 font-bold text-lg mb-1">{top3[2]?.name}</h3>
+                            <h3 className="text-foreground font-bold text-lg mb-1">{top3[2]?.name}</h3>
                             <div className="flex items-center justify-center gap-1.5 mb-2 text-[#2A9D8F] font-semibold text-sm">
                                 <Diamond className="w-4 h-4" />
                                 {top3[2]?.xp.toLocaleString()} XP
@@ -193,13 +222,13 @@ export default function LeaderboardPage() {
                     {/* Timer Banner */}
                     <div className="max-w-md mx-auto mb-20">
                         <div className="bg-[#023047] rounded-3xl p-6 text-white shadow-xl flex items-center justify-between overflow-hidden relative group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-background/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
                             <div className="flex items-center gap-4 relative z-10">
-                                <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">
+                                <div className="w-12 h-12 bg-background/10 rounded-2xl flex items-center justify-center">
                                     <Clock className="w-6 h-6 text-[#219EBC]" />
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Season Ends In</p>
+                                    <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest mb-1">Season Ends In</p>
                                     <div className="font-mono text-xl font-black">
                                         {timeLeft.days}d {String(timeLeft.hours).padStart(2, '0')}h {String(timeLeft.minutes).padStart(2, '0')}m
                                     </div>
@@ -218,13 +247,13 @@ export default function LeaderboardPage() {
                 <div className="container mx-auto px-4 max-w-5xl">
                     <div className="grid md:grid-cols-12 gap-8 items-center">
                         <div className="md:col-span-8">
-                            <h2 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
+                            <h2 className="text-2xl font-black text-foreground mb-6 flex items-center gap-3">
                                 <Medal className="w-6 h-6 text-[#219EBC]" />
                                 Rankings Table
                             </h2>
-                            <div className="bg-white rounded-[32px] border border-gray-200 shadow-sm overflow-hidden">
+                            <div className="bg-background rounded-[32px] border border-border shadow-sm overflow-hidden">
                                 {/* Table Header */}
-                                <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-gray-100 text-gray-400 text-xs font-bold uppercase tracking-widest bg-gray-50/50">
+                                <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-border text-muted-foreground text-xs font-bold uppercase tracking-widest bg-gray-50/50">
                                     <div className="col-span-1">#</div>
                                     <div className="col-span-5">Champion</div>
                                     <div className="col-span-3 text-center">Activity</div>
@@ -235,25 +264,25 @@ export default function LeaderboardPage() {
                                 <div className="divide-y divide-gray-100">
                                     {EXTENDED_LEADERBOARD.map((user, index) => (
                                         <div
-                                            key={user.rank}
-                                            className={`grid grid-cols-12 gap-4 px-8 py-5 items-center hover:bg-gray-50/50 transition-all cursor-pointer group ${session?.user?.name === user.name ? 'bg-[#219EBC]/5' : ''}`}
+                                            key={user.id}
+                                            className={`grid grid-cols-12 gap-4 px-8 py-5 items-center hover:bg-muted/50 transition-all cursor-pointer group ${session?.user?.name === user.name ? 'bg-[#219EBC]/5' : ''}`}
                                         >
-                                            <div className="col-span-1 font-bold text-gray-400 group-hover:text-[#219EBC]">{user.rank}</div>
+                                            <div className="col-span-1 font-bold text-muted-foreground group-hover:text-[#219EBC]">{user.rank}</div>
                                             <div className="col-span-5 flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-gray-100 group-hover:border-[#219EBC]/30 transition-colors">
-                                                    <img src={user.avatarSrc} alt={user.name} className="w-full h-full object-cover" />
+                                                <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-border group-hover:border-[#219EBC]/30 transition-colors">
+                                                    <img src={user.avatarSrc} alt={user.name || 'User'} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-gray-900 group-hover:text-[#219EBC] transition-colors">{user.name}</p>
-                                                    <Badge variant="outline" className="text-[10px] uppercase font-bold text-gray-400 py-0 px-2 rounded-md">Lvl {user.level}</Badge>
+                                                    <p className="font-bold text-foreground group-hover:text-[#219EBC] transition-colors">{user.name || 'Anonymous'}</p>
+                                                    <Badge variant="outline" className="text-[10px] uppercase font-bold text-muted-foreground py-0 px-2 rounded-md">Lvl {user.level}</Badge>
                                                 </div>
                                             </div>
                                             <div className="col-span-3 text-center">
-                                                <p className="text-sm font-bold text-gray-700">{user.projects} Projects</p>
-                                                <p className="text-[11px] text-gray-400">Successfully Built</p>
+                                                <p className="text-sm font-bold text-foreground">{user.projectCount} Projects</p>
+                                                <p className="text-[11px] text-muted-foreground">Successfully Built</p>
                                             </div>
                                             <div className="col-span-3 text-right">
-                                                <div className="flex items-center justify-end gap-1.5 font-black text-gray-900 text-lg">
+                                                <div className="flex items-center justify-end gap-1.5 font-black text-foreground text-lg">
                                                     <Diamond className="w-4 h-4 text-[#219EBC]" />
                                                     {user.xp.toLocaleString()}
                                                 </div>
@@ -271,38 +300,38 @@ export default function LeaderboardPage() {
                                         <Flame className="w-8 h-8 text-white" />
                                     </div>
                                     <CardTitle className="text-2xl font-black">Join the Bloom!</CardTitle>
-                                    <p className="text-gray-400 text-sm">Become part of the elite 1%</p>
+                                    <p className="text-muted-foreground text-sm">Become part of the elite 1%</p>
                                 </CardHeader>
                                 <CardContent className="space-y-6 py-6 text-center">
-                                    <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 text-left border border-white/10">
-                                        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">🔥</div>
+                                    <div className="flex items-center gap-4 bg-background/5 rounded-2xl p-4 text-left border border-white/10">
+                                        <div className="w-12 h-12 bg-background/10 rounded-xl flex items-center justify-center text-xl">🔥</div>
                                         <div>
                                             <p className="text-sm font-bold">Daily Hot Streaks</p>
-                                            <p className="text-xs text-gray-400">Earn up to 2.5x more XP</p>
+                                            <p className="text-xs text-muted-foreground">Earn up to 2.5x more XP</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 text-left border border-white/10">
-                                        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">🤝</div>
+                                    <div className="flex items-center gap-4 bg-background/5 rounded-2xl p-4 text-left border border-white/10">
+                                        <div className="w-12 h-12 bg-background/10 rounded-xl flex items-center justify-center text-xl">🤝</div>
                                         <div>
                                             <p className="text-sm font-bold">Refer & Earn</p>
-                                            <p className="text-xs text-gray-400">+500 XP per student</p>
+                                            <p className="text-xs text-muted-foreground">+500 XP per student</p>
                                         </div>
                                     </div>
-                                    <Button className="w-full h-14 bg-white text-[#023047] font-black rounded-2xl hover:bg-gray-100 transition-all text-lg mt-4">
+                                    <Button className="w-full h-14 bg-background text-[#023047] font-black rounded-2xl hover:bg-muted transition-all text-lg mt-4">
                                         Boost My Score
                                     </Button>
                                 </CardContent>
                             </Card>
 
-                            <div className="bg-white rounded-[32px] p-8 border border-gray-200">
-                                <h4 className="text-gray-900 font-black text-xl mb-6">Recent Activity</h4>
+                            <div className="bg-background rounded-[32px] p-8 border border-border">
+                                <h4 className="text-foreground font-black text-xl mb-6">Recent Activity</h4>
                                 <div className="space-y-6">
                                     {[1, 2, 3].map(i => (
                                         <div key={i} className="flex gap-4">
                                             <div className="w-1.5 h-1.5 rounded-full bg-[#219EBC] mt-2" />
                                             <div>
-                                                <p className="text-sm font-bold text-gray-900">Alice completed "AI Bot"</p>
-                                                <p className="text-xs text-gray-500">2 minutes ago • +150 XP</p>
+                                                <p className="text-sm font-bold text-foreground">Alice completed "AI Bot"</p>
+                                                <p className="text-xs text-muted-foreground">2 minutes ago • +150 XP</p>
                                             </div>
                                         </div>
                                     ))}

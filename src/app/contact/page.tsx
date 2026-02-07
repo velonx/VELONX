@@ -24,14 +24,15 @@ export default function ContactPage() {
     };
 
     return (
-        <div className="min-h-screen pt-24 bg-white">
+        <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
-            <section className="py-20 bg-gradient-to-b from-gray-50 to-white overflow-hidden relative">
+            <section className="py-20 bg-background overflow-hidden relative">
+                
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-7xl font-black text-gray-900 mb-8 leading-tight"
+                        className="text-5xl md:text-7xl font-black text-foreground mb-8 leading-tight"
                     >
                         Get in <span className="text-[#219EBC]">Touch</span>
                     </motion.h1>
@@ -39,7 +40,7 @@ export default function ContactPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-gray-500 text-xl max-w-2xl mx-auto leading-relaxed"
+                        className="text-muted-foreground text-xl max-w-2xl mx-auto leading-relaxed"
                     >
                         Have a question about the platform or want to partner with us? We're here to help you grow.
                     </motion.p>
@@ -55,33 +56,33 @@ export default function ContactPage() {
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="bg-white p-8 md:p-12 rounded-[56px] border border-gray-100 shadow-2xl shadow-black/5"
+                            className="bg-background p-8 md:p-12 rounded-[56px] border border-border shadow-2xl shadow-black/5"
                         >
-                            <h2 className="text-3xl font-black text-gray-900 mb-8">Send us a message</h2>
+                            <h2 className="text-3xl font-black text-foreground mb-8">Send us a message</h2>
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-4">Full Name</label>
+                                        <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest ml-4">Full Name</label>
                                         <input
                                             type="text"
                                             placeholder="John Doe"
-                                            className="w-full h-16 bg-gray-50 border-0 rounded-3xl px-8 focus:ring-2 focus:ring-[#219EBC] transition-all outline-none text-gray-900 font-medium"
+                                            className="w-full h-16 bg-gray-50 border-0 rounded-3xl px-8 focus:ring-2 focus:ring-[#219EBC] transition-all outline-none text-foreground font-medium"
                                             required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-4">Email</label>
+                                        <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest ml-4">Email</label>
                                         <input
                                             type="email"
                                             placeholder="john@example.com"
-                                            className="w-full h-16 bg-gray-50 border-0 rounded-3xl px-8 focus:ring-2 focus:ring-[#219EBC] transition-all outline-none text-gray-900 font-medium"
+                                            className="w-full h-16 bg-gray-50 border-0 rounded-3xl px-8 focus:ring-2 focus:ring-[#219EBC] transition-all outline-none text-foreground font-medium"
                                             required
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-4">Subject</label>
-                                    <select className="w-full h-16 bg-gray-50 border-0 rounded-3xl px-8 focus:ring-2 focus:ring-[#219EBC] transition-all outline-none text-gray-900 font-medium appearance-none">
+                                    <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest ml-4">Subject</label>
+                                    <select className="w-full h-16 bg-gray-50 border-0 rounded-3xl px-8 focus:ring-2 focus:ring-[#219EBC] transition-all outline-none text-foreground font-medium appearance-none">
                                         <option>General Inquiry</option>
                                         <option>Partnership</option>
                                         <option>Technical Support</option>
@@ -89,11 +90,11 @@ export default function ContactPage() {
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-4">Message</label>
+                                    <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest ml-4">Message</label>
                                     <textarea
                                         placeholder="How can we help you?"
                                         rows={5}
-                                        className="w-full bg-gray-50 border-0 rounded-[32px] p-8 focus:ring-2 focus:ring-[#219EBC] transition-all outline-none text-gray-900 font-medium resize-none"
+                                        className="w-full bg-gray-50 border-0 rounded-[32px] p-8 focus:ring-2 focus:ring-[#219EBC] transition-all outline-none text-foreground font-medium resize-none"
                                         required
                                     ></textarea>
                                 </div>
@@ -112,27 +113,27 @@ export default function ContactPage() {
                                 viewport={{ once: true }}
                                 className="grid sm:grid-cols-2 gap-6"
                             >
-                                <div className="bg-gray-50 p-8 rounded-[40px] border border-gray-100">
+                                <div className="bg-gray-50 p-8 rounded-[40px] border border-border">
                                     <div className="w-12 h-12 bg-[#219EBC]/10 rounded-2xl flex items-center justify-center text-[#219EBC] mb-6">
                                         <Mail className="w-6 h-6" />
                                     </div>
-                                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Email Us</p>
-                                    <p className="text-gray-900 font-black">hello@velonx.com</p>
+                                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">Email Us</p>
+                                    <p className="text-foreground font-black">hello@velonx.com</p>
                                 </div>
-                                <div className="bg-gray-50 p-8 rounded-[40px] border border-gray-100">
+                                <div className="bg-gray-50 p-8 rounded-[40px] border border-border">
                                     <div className="w-12 h-12 bg-[#FFB703]/10 rounded-2xl flex items-center justify-center text-[#FFB703] mb-6">
                                         <Phone className="w-6 h-6" />
                                     </div>
-                                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Call Us</p>
-                                    <p className="text-gray-900 font-black">+1 (555) 000-0000</p>
+                                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">Call Us</p>
+                                    <p className="text-foreground font-black">+1 (555) 000-0000</p>
                                 </div>
-                                <div className="sm:col-span-2 bg-gray-50 p-8 rounded-[40px] border border-gray-100 flex items-center gap-8">
+                                <div className="sm:col-span-2 bg-gray-50 p-8 rounded-[40px] border border-border flex items-center gap-8">
                                     <div className="w-16 h-16 bg-[#023047]/5 rounded-[24px] flex items-center justify-center text-[#023047] shrink-0">
                                         <MapPin className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Our Headquarters</p>
-                                        <p className="text-gray-900 font-black text-lg">Silicon Valley, CA, USA</p>
+                                        <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">Our Headquarters</p>
+                                        <p className="text-foreground font-black text-lg">Silicon Valley, CA, USA</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -159,7 +160,7 @@ export default function ContactPage() {
                                         <Link
                                             key={i}
                                             href={link.path}
-                                            className="flex items-center justify-between p-6 bg-white rounded-3xl group hover:bg-[#219EBC] hover:text-white transition-all shadow-sm"
+                                            className="flex items-center justify-between p-6 bg-background rounded-3xl group hover:bg-[#219EBC] hover:text-white transition-all shadow-sm"
                                         >
                                             <span className="font-bold">{link.label}</span>
                                             <ExternalLink className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" />
