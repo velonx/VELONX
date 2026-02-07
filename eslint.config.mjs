@@ -1,16 +1,13 @@
-import { defineConfig } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals.js";
-import nextTs from "eslint-config-next/typescript.js";
+import { createRequire } from "module";
 
-export default defineConfig([
-  nextVitals,
-  nextTs,
+const require = createRequire(import.meta.url);
+const nextConfig = require("eslint-config-next");
+
+const config = [
+  ...nextConfig,
   {
-    ignores: [
-      ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
-    ],
+    ignores: [".next/**", "out/**", "build/**", "next-env.d.ts"],
   },
-]);
+];
+
+export default config;
