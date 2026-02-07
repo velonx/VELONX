@@ -9,14 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SplineScene from "@/components/SplineScene";
-import { User, Shield, ArrowRight, Mail, Lock, Eye, EyeOff, Sparkles, Zap, Trophy, Code, Rocket } from "lucide-react";
+import { User, Shield, ArrowRight, Mail, Lock, Eye, EyeOff, Sparkles } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();
     const { data: session, status } = useSession();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [loginState, setLoginState] = useState<"idle" | "success" | "error">("idle");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isRedirecting, setIsRedirecting] = useState(false);
@@ -40,9 +39,8 @@ export default function LoginPage() {
         console.log("Role:", role);
         console.log("Email:", email);
         console.log("Password length:", password.length);
-
+        
         setLoading(true);
-        setLoginState("idle");
         setIsRedirecting(true);
 
         try {
@@ -58,40 +56,30 @@ export default function LoginPage() {
 
             if (result?.ok) {
                 console.log("✅ Login successful!");
-                setLoginState("success");
-
+                
                 // Wait a bit for session to update
                 await new Promise(resolve => setTimeout(resolve, 500));
-
+                
                 // Check session
                 const response = await fetch('/api/auth/session');
                 const sessionData = await response.json();
                 console.log("Session after login:", sessionData);
-
+                
                 const callbackUrl = role === "admin" ? "/dashboard/admin" : "/dashboard/student";
                 console.log("Redirecting to:", callbackUrl);
-
+                
                 // Use router.push instead of window.location
                 router.push(callbackUrl);
             } else {
                 console.error("❌ Login failed:", result?.error);
-                setLoginState("error");
                 setIsRedirecting(false);
-                setTimeout(() => setLoginState("idle"), 2000);
                 setLoading(false);
             }
         } catch (error) {
             console.error("❌ Login exception:", error);
-            setLoginState("error");
             setIsRedirecting(false);
-            setTimeout(() => setLoginState("idle"), 2000);
             setLoading(false);
         }
-    };
-
-    const handleLoginError = () => {
-        setLoginState("error");
-        setTimeout(() => setLoginState("idle"), 2000);
     };
 
     const handleGoogleLogin = async () => {
@@ -100,7 +88,6 @@ export default function LoginPage() {
             await signIn("google", { callbackUrl: "/dashboard/student" });
         } catch (error) {
             console.error("Google login error:", error);
-            handleLoginError();
             setLoading(false);
         }
     };
@@ -111,13 +98,12 @@ export default function LoginPage() {
             await signIn("github", { callbackUrl: "/dashboard/student" });
         } catch (error) {
             console.error("GitHub login error:", error);
-            handleLoginError();
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex pt-16 bg-background">
+        <div className="min-h-screen flex pt-16 bg-white">
             {/* Left Side - Animated Illustration */}
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
                 {/* Animated Background Elements */}
@@ -130,7 +116,7 @@ export default function LoginPage() {
 
                 {/* Main Content */}
                 <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
-                    {/* Interactive 3D Robot */}
+                    {/* Interactive Robot */}
                     <div className="relative mb-8 w-full h-[400px]">
                         <SplineScene showPassword={showPassword} loginState="idle" />
                     </div>
@@ -140,7 +126,7 @@ export default function LoginPage() {
                         <h2 className="text-3xl text-[#023047] mb-3" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
                             Welcome to Velonx
                         </h2>
-                        <p className="text-muted-foreground max-w-sm" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>
+                        <p className="text-gray-600 max-w-sm" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>
                             Your gateway to building real projects, learning new skills, and connecting with tech enthusiasts.
                         </p>
                     </div>
@@ -149,26 +135,26 @@ export default function LoginPage() {
                     <div className="flex gap-8 mt-10">
                         <div className="text-center">
                             <div className="text-2xl font-bold text-[#219EBC]" style={{ fontFamily: "'Montserrat', sans-serif" }}>1000+</div>
-                            <div className="text-muted-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Members</div>
+                            <div className="text-gray-500 text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Members</div>
                         </div>
-                        <div className="w-px bg-border" />
+                        <div className="w-px bg-gray-200" />
                         <div className="text-center">
                             <div className="text-2xl font-bold text-[#219EBC]" style={{ fontFamily: "'Montserrat', sans-serif" }}>50+</div>
-                            <div className="text-muted-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Projects</div>
+                            <div className="text-gray-500 text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Projects</div>
                         </div>
-                        <div className="w-px bg-border" />
+                        <div className="w-px bg-gray-200" />
                         <div className="text-center">
                             <div className="text-2xl font-bold text-[#219EBC]" style={{ fontFamily: "'Montserrat', sans-serif" }}>30+</div>
-                            <div className="text-muted-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Events</div>
+                            <div className="text-gray-500 text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Events</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background relative overflow-hidden">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white relative overflow-hidden">
                 <div className="w-full max-w-md relative z-10">
-                    {/* Mobile 3D Robot */}
+                    {/* Mobile Interactive Robot */}
                     <div className="lg:hidden flex justify-center mb-6 h-[250px]">
                         <SplineScene showPassword={showPassword} loginState="idle" />
                     </div>
@@ -180,12 +166,12 @@ export default function LoginPage() {
                             Welcome Back
                         </div>
                         <h1 className="text-3xl text-[#023047] mb-2" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>Login</h1>
-                        <p className="text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>Continue your innovation journey</p>
+                        <p className="text-gray-600" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>Continue your innovation journey</p>
                     </div>
 
                     {/* Role Tabs */}
                     <Tabs defaultValue="student" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 mb-6 bg-muted p-1.5 rounded-2xl border border-border">
+                        <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 p-1.5 rounded-2xl border border-gray-200">
                             <TabsTrigger value="student" className="gap-2 rounded-xl py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#0f2c59] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-medium transition-all" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                                 <User className="w-4 h-4" /> Student
                             </TabsTrigger>
@@ -197,15 +183,15 @@ export default function LoginPage() {
                         <TabsContent value="student">
                             <form onSubmit={(e) => { e.preventDefault(); handleLogin("student"); }} className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Email</Label>
+                                    <Label className="text-gray-700 text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Email</Label>
                                     <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <Input
                                             type="email"
                                             placeholder="student@example.com"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="pl-12 py-6 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                            className="pl-12 py-6 rounded-xl bg-gray-50 border-gray-200 text-gray-900 focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
                                         />
@@ -213,24 +199,24 @@ export default function LoginPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
-                                        <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Password</Label>
+                                        <Label className="text-gray-700 text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Password</Label>
                                         <Link href="#" className="text-sm text-[#219EBC] hover:text-[#1a7a94] transition-colors" style={{ fontFamily: "'Montserrat', sans-serif" }}>Forgot Password?</Link>
                                     </div>
                                     <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <Input
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="pl-12 pr-12 py-6 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                            className="pl-12 pr-12 py-6 rounded-xl bg-gray-50 border-gray-200 text-gray-900 focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                                         >
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                         </button>
@@ -250,15 +236,15 @@ export default function LoginPage() {
                         <TabsContent value="admin">
                             <form onSubmit={(e) => { e.preventDefault(); handleLogin("admin"); }} className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Admin Email</Label>
+                                    <Label className="text-gray-700 text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Admin Email</Label>
                                     <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <Input
                                             type="email"
                                             placeholder="admin@velonx.com"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="pl-12 py-6 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                            className="pl-12 py-6 rounded-xl bg-gray-50 border-gray-200 text-gray-900 focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
                                         />
@@ -266,24 +252,24 @@ export default function LoginPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
-                                        <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Password</Label>
+                                        <Label className="text-gray-700 text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Password</Label>
                                         <Link href="#" className="text-sm text-[#219EBC] hover:text-[#1a7a94] transition-colors" style={{ fontFamily: "'Montserrat', sans-serif" }}>Forgot Password?</Link>
                                     </div>
                                     <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <Input
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="pl-12 pr-12 py-6 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                            className="pl-12 pr-12 py-6 rounded-xl bg-gray-50 border-gray-200 text-gray-900 focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                                         >
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                         </button>
@@ -304,10 +290,10 @@ export default function LoginPage() {
                     {/* Divider */}
                     <div className="relative my-8">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-border"></div>
+                            <div className="w-full border-t border-gray-200"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-background text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>Or</span>
+                            <span className="px-4 bg-white text-gray-500" style={{ fontFamily: "'Montserrat', sans-serif" }}>Or</span>
                         </div>
                     </div>
 
@@ -315,7 +301,7 @@ export default function LoginPage() {
                     <div className="space-y-3">
                         <Button
                             variant="outline"
-                            className="w-full py-6 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all group"
+                            className="w-full py-6 rounded-xl border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all group"
                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                             onClick={handleGoogleLogin}
                             disabled={loading}
@@ -330,7 +316,7 @@ export default function LoginPage() {
                         </Button>
                         <Button
                             variant="outline"
-                            className="w-full py-6 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all"
+                            className="w-full py-6 rounded-xl border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all"
                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                             onClick={handleGitHubLogin}
                             disabled={loading}
@@ -343,7 +329,7 @@ export default function LoginPage() {
                     </div>
 
                     {/* Sign Up Link */}
-                    <p className="text-center text-sm text-muted-foreground mt-8" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                    <p className="text-center text-sm text-gray-500 mt-8" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                         Don&apos;t have an account? <Link href="/auth/signup" className="text-[#219EBC] font-medium hover:text-[#1a7a94] transition-colors underline-offset-4 hover:underline">Sign up</Link>
                     </p>
                 </div>
