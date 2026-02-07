@@ -1,13 +1,11 @@
-import { createRequire } from "module";
-
-const require = createRequire(import.meta.url);
-const nextConfig = require("eslint-config-next");
-
-const config = [
-  ...nextConfig,
+export default [
+  {
+    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+    rules: {
+      "no-console": "warn",
+    },
+  },
   {
     ignores: [".next/**", "out/**", "build/**", "next-env.d.ts"],
   },
 ];
-
-export default config;
