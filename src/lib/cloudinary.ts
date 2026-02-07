@@ -1,18 +1,28 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-// Debug: Log what environment variables are being loaded
-console.log('🔍 Cloudinary Environment Variables:', {
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY ? '✅ SET' : '❌ NOT SET',
-  api_secret: process.env.CLOUDINARY_API_SECRET ? '✅ SET' : '❌ NOT SET',
-});
-
 // Configure Cloudinary
+// Note: These credentials should NEVER be exposed to the client
+// API_KEY and API_SECRET must remain server-side only
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+// Validate configuration in development only
+if (process.env.NODE_ENV === 'development') {
+  const hasCloudName = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const hasApiKey = !!process.env.CLOUDINARY_API_KEY;
+  const hasApiSecret = !!process.env.CLOUDINARY_API_SECRET;
+  
+  if (!hasCloudName || !hasApiKey || !hasApiSecret) {
+    console.warn('⚠️ Cloudinary configuration incomplete:', {
+      cloud_name: hasCloudName ? '✅' : '❌',
+      api_key: hasApiKey ? '✅' : '❌',
+      api_secret: hasApiSecret ? '✅' : '❌',
+    });
+  }
+}
 
 export default cloudinary;
 
