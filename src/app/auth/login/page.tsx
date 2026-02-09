@@ -19,6 +19,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isRedirecting, setIsRedirecting] = useState(false);
+    const [robotState, setRobotState] = useState<"idle" | "success" | "error">("idle");
 
     // Redirect to dashboard if already logged in (but not during login process)
     useEffect(() => {
@@ -34,6 +35,20 @@ export default function LoginPage() {
         }
     }, [status, session, router, isRedirecting]);
 
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(e.target.value);
+        if (robotState === "error") {
+            setRobotState("idle");
+        }
+    };
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(e.target.value);
+        if (robotState === "error") {
+            setRobotState("idle");
+        }
+    };
+
     const handleLogin = async (role: "student" | "admin") => {
         console.log("=== LOGIN STARTED ===");
         console.log("Role:", role);
@@ -42,6 +57,7 @@ export default function LoginPage() {
         
         setLoading(true);
         setIsRedirecting(true);
+        setRobotState("idle"); // Keep neutral during loading
 
         try {
             console.log("Calling signIn...");
@@ -57,8 +73,11 @@ export default function LoginPage() {
             if (result?.ok) {
                 console.log("✅ Login successful!");
                 
-                // Wait a bit for session to update
-                await new Promise(resolve => setTimeout(resolve, 500));
+                // Show success state
+                setRobotState("success");
+                
+                // Wait to show happy robot (1000ms)
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 
                 // Check session
                 const response = await fetch('/api/auth/session');
@@ -72,11 +91,15 @@ export default function LoginPage() {
                 router.push(callbackUrl);
             } else {
                 console.error("❌ Login failed:", result?.error);
+                // Show error state
+                setRobotState("error");
                 setIsRedirecting(false);
                 setLoading(false);
             }
         } catch (error) {
             console.error("❌ Login exception:", error);
+            // Show error state
+            setRobotState("error");
             setIsRedirecting(false);
             setLoading(false);
         }
@@ -118,7 +141,7 @@ export default function LoginPage() {
                 <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
                     {/* Interactive Robot */}
                     <div className="relative mb-8 w-full h-[400px]">
-                        <SplineScene showPassword={showPassword} loginState="idle" />
+                        <SplineScene showPassword={showPassword} loginState={robotState} />
                     </div>
 
                     {/* Text Content */}
@@ -156,7 +179,7 @@ export default function LoginPage() {
                 <div className="w-full max-w-md relative z-10">
                     {/* Mobile Interactive Robot */}
                     <div className="lg:hidden flex justify-center mb-6 h-[250px]">
-                        <SplineScene showPassword={showPassword} loginState="idle" />
+                        <SplineScene showPassword={showPassword} loginState={robotState} />
                     </div>
 
                     {/* Header */}
@@ -190,7 +213,7 @@ export default function LoginPage() {
                                             type="email"
                                             placeholder="student@example.com"
                                             value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
+                                            onChange={handleEmailChange}
                                             className="pl-12 py-6 rounded-xl bg-gray-50 border-gray-200 text-gray-900 focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
@@ -208,7 +231,7 @@ export default function LoginPage() {
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
                                             value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
+                                            onChange={handlePasswordChange}
                                             className="pl-12 pr-12 py-6 rounded-xl bg-gray-50 border-gray-200 text-gray-900 focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
@@ -243,7 +266,7 @@ export default function LoginPage() {
                                             type="email"
                                             placeholder="admin@velonx.com"
                                             value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
+                                            onChange={handleEmailChange}
                                             className="pl-12 py-6 rounded-xl bg-gray-50 border-gray-200 text-gray-900 focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required
@@ -261,7 +284,7 @@ export default function LoginPage() {
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
                                             value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
+                                            onChange={handlePasswordChange}
                                             className="pl-12 pr-12 py-6 rounded-xl bg-gray-50 border-gray-200 text-gray-900 focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                                             required

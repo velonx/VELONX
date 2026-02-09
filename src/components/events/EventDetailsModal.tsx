@@ -87,6 +87,7 @@ export default function EventDetailsModal({
   const INITIAL_ATTENDEES_DISPLAY = 12;
 
   // Fetch attendees when modal opens (admin only)
+   
   useEffect(() => {
     if (isOpen && event && isAdmin) {
       setIsLoadingAttendees(true);

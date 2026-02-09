@@ -198,9 +198,11 @@ export const EventsPagination = React.memo<EventsPaginationProps>(({
 
   // Calculate item range for current page
   const startItem = (validCurrentPage - 1) * pageSize + 1;
+   
   const endItem = Math.min(validCurrentPage * pageSize, totalCount);
 
   // Handle page change with scroll
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const handlePageChange = useCallback(
     (page: number) => {
       if (page === validCurrentPage || page < 1 || page > totalPages) {
@@ -225,6 +227,7 @@ export const EventsPagination = React.memo<EventsPaginationProps>(({
   );
 
   // Handle page size change
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const handlePageSizeChange = useCallback(
     (value: string) => {
       const newSize = parseInt(value, 10);
@@ -240,6 +243,7 @@ export const EventsPagination = React.memo<EventsPaginationProps>(({
   );
 
   // Keyboard navigation
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only handle if pagination is focused

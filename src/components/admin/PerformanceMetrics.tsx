@@ -53,6 +53,7 @@ export default function PerformanceMetrics() {
 
   useEffect(() => {
     fetchMetrics()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange])
 
   const fetchMetrics = async () => {

@@ -17,6 +17,7 @@ export default function SignupPage() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [robotState, setRobotState] = useState<"idle" | "success" | "error">("idle");
 
     // Form state
     const [firstName, setFirstName] = useState("");
@@ -25,21 +26,33 @@ export default function SignupPage() {
     const [password, setPassword] = useState("");
     const [agreedToTerms, setAgreedToTerms] = useState(false);
 
+    // Reset robot state when user types after error
+    const handleFieldChange = (setter: (value: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setter(e.target.value);
+        if (robotState === "error") {
+            setRobotState("idle");
+            setError(null);
+        }
+    };
+
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
         if (!agreedToTerms) {
             setError("Please agree to the Terms of Service and Privacy Policy");
+            setRobotState("error");
             return;
         }
 
         if (password.length < 6) {
             setError("Password must be at least 6 characters");
+            setRobotState("error");
             return;
         }
 
         setLoading(true);
+        setRobotState("idle"); // Keep neutral during loading
 
         try {
             // Create student account only (admins are seeded in database)
@@ -61,13 +74,21 @@ export default function SignupPage() {
 
             if (result?.error) {
                 setError("Account created but login failed. Please try logging in manually.");
+                setRobotState("error");
             } else {
-                setTimeout(() => {
-                    router.push("/dashboard/student");
-                }, 1000);
+                // Show success state
+                setRobotState("success");
+                
+                // Wait to show happy robot
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                router.push("/dashboard/student");
             }
         } catch (err: any) {
             console.error("Signup error:", err);
+            
+            // Show error state
+            setRobotState("error");
             
             // Handle specific error messages
             if (err.code === "USER_EXISTS") {
@@ -117,7 +138,7 @@ export default function SignupPage() {
                 <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
                     {/* Interactive Robot */}
                     <div className="relative mb-8 w-full h-[400px]">
-                        <SplineScene showPassword={showPassword} loginState="idle" />
+                        <SplineScene showPassword={showPassword} loginState={robotState} />
                     </div>
 
                     <div className="text-center mt-8">
@@ -159,7 +180,7 @@ export default function SignupPage() {
                 <div className="w-full max-w-md relative z-10">
                     {/* Mobile Interactive Robot */}
                     <div className="lg:hidden flex justify-center mb-6 h-[250px]">
-                        <SplineScene showPassword={showPassword} loginState="idle" />
+                        <SplineScene showPassword={showPassword} loginState={robotState} />
                     </div>
 
                     <div className="text-center mb-6">
@@ -186,7 +207,7 @@ export default function SignupPage() {
                                     <Input
                                         placeholder="John"
                                         value={firstName}
-                                        onChange={(e) => setFirstName(e.target.value)}
+                                        onChange={handleFieldChange(setFirstName)}
                                         className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                         style={{ fontFamily: "'Montserrat', sans-serif" }}
                                         required
@@ -200,7 +221,7 @@ export default function SignupPage() {
                                     <Input
                                         placeholder="Doe"
                                         value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)}
+                                        onChange={handleFieldChange(setLastName)}
                                         className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                         style={{ fontFamily: "'Montserrat', sans-serif" }}
                                         required
@@ -216,7 +237,7 @@ export default function SignupPage() {
                                     type="email"
                                     placeholder="john@example.com"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={handleFieldChange(setEmail)}
                                     className="pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                                     required
@@ -231,7 +252,7 @@ export default function SignupPage() {
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Create a strong password"
                                     value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    onChange={handleFieldChange(setPassword)}
                                     className="pl-12 pr-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
                                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                                     required

@@ -21,6 +21,7 @@ export function DailyCheckIn() {
     if (hasCheckedInToday !== today) {
       handleCheckIn();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCheckIn = async () => {

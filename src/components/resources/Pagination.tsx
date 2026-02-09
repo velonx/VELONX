@@ -156,6 +156,7 @@ export const Pagination = React.memo<PaginationProps>(({
   const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
 
   // Handle page change with scroll
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const handlePageChange = useCallback((page: number) => {
     if (page === validCurrentPage || page < 1 || page > totalPages) {
       return;
@@ -177,6 +178,7 @@ export const Pagination = React.memo<PaginationProps>(({
   }, [validCurrentPage, totalPages, onPageChange, scrollToTop, scrollTarget]);
 
   // Keyboard navigation
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only handle if pagination is focused

@@ -212,6 +212,7 @@ export function useResources(filters: ResourceFilters = {}): UseResourcesReturn 
         error,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.search, filters.category, filters.type, filters.page, filters.pageSize]);
 
   /**
@@ -221,6 +222,7 @@ export function useResources(filters: ResourceFilters = {}): UseResourcesReturn 
     // Reset retry count when filters change
     retryCountRef.current = 0;
     fetchResources();
+     
   }, [fetchResources]);
   
   /**

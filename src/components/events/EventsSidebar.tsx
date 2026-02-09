@@ -70,6 +70,7 @@ export default function EventsSidebar({
         },
     ];
 
+     
     const SidebarContent = () => (
         <div className="space-y-8">
             {/* Header */}

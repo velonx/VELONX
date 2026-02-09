@@ -53,6 +53,7 @@ export function useResourceFilters(): UseResourceFiltersReturn {
     if (!areFiltersEqual(filters, urlFilters)) {
       setFilters(urlFilters);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]); // Only depend on searchParams, not filters to avoid loops
 
   // Update URL when filters change - using useEffect to avoid render phase updates

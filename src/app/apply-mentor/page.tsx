@@ -125,11 +125,11 @@ export default function ApplyMentorPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>We'll contact you for a brief interview</span>
+                  <span>We&apos;ll contact you for a brief interview</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Once approved, you'll be added to our mentor directory</span>
+                  <span>Once approved, you&apos;ll be added to our mentor directory</span>
                 </li>
               </ul>
             </div>

@@ -31,11 +31,12 @@ export default function LeaderboardPage() {
     // Fetch leaderboard from API
     const { data: leaderboardData, loading } = useLeaderboard({ pageSize: 50 });
 
-    // Extend leaderboard with avatars
+    // Extend leaderboard with avatars (use deterministic values based on index)
+     
     const EXTENDED_LEADERBOARD = leaderboardData?.map((user, index) => ({
         ...user,
         avatarSrc: user.image || AVATAR_OPTIONS[index % AVATAR_OPTIONS.length].src,
-        followers: Math.floor(Math.random() * 15000) + 1000,
+        followers: Math.floor((index * 137 + 1000) % 15000) + 1000, // Deterministic pseudo-random
         prize: index === 0 ? 100000 : index === 1 ? 50000 : index === 2 ? 20000 : Math.floor(1000 / (index + 1)) * 100,
         earnPoints: 2000,
     })) || [];
