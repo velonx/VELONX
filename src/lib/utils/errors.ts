@@ -480,20 +480,21 @@ export function handleError(error: unknown, requestId?: string): NextResponse<Er
  */
 type APIRouteHandler<TContext = any> = (
   request: NextRequest,
-  context?: TContext
+  context: TContext
 ) => Promise<NextResponse> | NextResponse;
 
 /**
  * Wrap API route handler with centralized error handling
  * 
  * Usage:
- * export const GET = withErrorHandler(async (request) => {
+ * export const GET = withErrorHandler(async (request, context) => {
+ *   const { id } = await context.params;
  *   // Your route logic here
  *   return NextResponse.json({ data: 'success' })
  * })
  */
 export function withErrorHandler<TContext = any>(handler: APIRouteHandler<TContext>): APIRouteHandler<TContext> {
-  return async (request: NextRequest, context?: TContext) => {
+  return async (request: NextRequest, context: TContext) => {
     const requestId = randomUUID();
     const startTime = Date.now();
     

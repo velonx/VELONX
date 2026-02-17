@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Menu, User, LogOut, LayoutDashboard, Settings, Bell, Search, Sparkles } from "lucide-react";
+import { Menu, LogOut, LayoutDashboard, Settings, MessageSquare, Users, Rss, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
 import { UnreadCountBadge } from "@/components/unread-count-badge";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -28,6 +28,12 @@ const navLinks = [
     { href: "/career", label: "Career" },
     { href: "/blog", label: "Blog" },
     { href: "/leaderboard", label: "Leaderboard" },
+];
+
+const communityLinks = [
+    { href: "/community/feed", label: "Feed", icon: Rss },
+    { href: "/community/rooms", label: "Rooms", icon: MessageSquare },
+    { href: "/community/groups", label: "Groups", icon: Users },
 ];
 
 export function Navbar() {
@@ -77,6 +83,29 @@ export function Navbar() {
                             {link.label}
                         </Link>
                     ))}
+                    
+                    {/* Community Dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button
+                                className="relative flex items-center space-x-1.5 text-muted-foreground hover:text-foreground px-3 py-2 rounded-full transition-all duration-200 hover:bg-muted text-sm font-medium"
+                                aria-label="Community menu"
+                            >
+                                Community
+                                <ChevronDown className="w-3 h-3" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-48 p-2 bg-card border border-border shadow-xl rounded-xl">
+                            {communityLinks.map((link) => (
+                                <DropdownMenuItem key={link.href} asChild className="cursor-pointer rounded-lg py-2.5 focus:bg-muted">
+                                    <Link href={link.href} className="flex items-center gap-3 font-medium">
+                                        <link.icon className="w-4 h-4" />
+                                        {link.label}
+                                    </Link>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </nav>
 
                 {/* Desktop Auth Section */}
@@ -206,6 +235,24 @@ export function Navbar() {
                                             {link.label}
                                         </Link>
                                     ))}
+                                    
+                                    {/* Community Section */}
+                                    <div className="mt-2 border-t border-border pt-2">
+                                        <div className="px-6 py-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                            Community
+                                        </div>
+                                        {communityLinks.map((link) => (
+                                            <Link
+                                                key={link.href}
+                                                href={link.href}
+                                                onClick={() => setOpen(false)}
+                                                className="flex items-center gap-3 px-6 py-3 text-base font-bold text-muted-foreground hover:text-accent hover:bg-muted rounded-2xl transition-all"
+                                            >
+                                                <link.icon className="w-5 h-5" />
+                                                {link.label}
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </nav>
                                 {!session && (
                                     <div className="mt-auto p-4 space-y-3">

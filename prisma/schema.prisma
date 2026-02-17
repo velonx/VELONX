@@ -20,6 +20,30 @@ enum UserRole {
   ADMIN
 }
 
+// Community Enums
+enum PostVisibility {
+  PUBLIC
+  FOLLOWERS
+  GROUP
+}
+
+enum ReactionType {
+  LIKE
+  LOVE
+  INSIGHTFUL
+  CELEBRATE
+}
+
+enum ModerationType {
+  MESSAGE_DELETE
+  POST_DELETE
+  USER_MUTE
+  USER_KICK
+  CONTENT_FLAG
+  POST_PIN
+  POST_UNPIN
+}
+
 // Notification Type Enum
 enum NotificationType {
   INFO
@@ -27,6 +51,11 @@ enum NotificationType {
   AWARD
   EVENT
   WARNING
+  COMMENT           // Community: Someone commented on user's post
+  REACTION          // Community: Someone reacted to user's post
+  MENTION           // Community: User was mentioned in a post or message
+  JOIN_REQUEST_APPROVED  // Community: Join request to private group was approved
+  MODERATOR_ASSIGNED     // Community: User was assigned as moderator
 }
 
 // Gamification Enums
@@ -104,6 +133,13 @@ model User {
   weeklyDigest          Boolean   @default(true)
   unsubscribeToken      String?
   
+  // Community notification preferences
+  communityComments     Boolean   @default(true)
+  communityReactions    Boolean   @default(true)
+  communityMentions     Boolean   @default(true)
+  communityGroupUpdates Boolean   @default(true)
+  communityModeration   Boolean   @default(true)
+  
   // Gamification fields
   xpMultiplier      Float     @default(1.0)
   referralCode      String?
@@ -131,6 +167,26 @@ model User {
   badges           UserBadge[]
   achievements     Achievement[]
   xpTransactions   XPTransaction[]
+  
+  // Community relations
+  roomsCreated        DiscussionRoom[]    @relation("RoomCreator")
+  roomMemberships     RoomMember[]        @relation("RoomMemberships")
+  roomModerations     RoomModerator[]     @relation("RoomModerations")
+  groupsOwned         CommunityGroup[]    @relation("GroupOwner")
+  groupMemberships    GroupMember[]       @relation("GroupMemberships")
+  groupModerations    GroupModerator[]    @relation("GroupModerations")
+  groupJoinRequests   GroupJoinRequest[]  @relation("GroupJoinRequests")
+  chatMessages        ChatMessage[]       @relation("AuthoredMessages")
+  communityPosts      CommunityPost[]     @relation("AuthoredPosts")
+  postReactions       PostReaction[]      @relation("PostReactions")
+  postComments        PostComment[]       @relation("PostComments")
+  following           Follow[]            @relation("Following")
+  followers           Follow[]            @relation("Followers")
+  mutedUsers          UserMute[]          @relation("MutedUsers")
+  mutedByModerator    UserMute[]          @relation("MutedByModerator")
+  blocking            UserBlock[]         @relation("Blocking")
+  blockedBy           UserBlock[]         @relation("BlockedBy")
+  moderatorActions    ModerationLog[]     @relation("ModeratorActions")
   
   @@map("users")
 }
@@ -721,4 +777,279 @@ model AuditLog {
   @@index([timestamp])
   @@index([result, timestamp])
   @@map("audit_logs")
+}
+
+// ============================================
+// COMMUNITY DISCUSSION ROOMS MODELS
+// ============================================
+
+// Discussion Room Model
+model DiscussionRoom {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  isPrivate   Boolean  @default(false)
+  creatorId   String   @db.ObjectId
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  creator     User              @relation("RoomCreator", fields: [creatorId], references: [id])
+  members     RoomMember[]
+  messages    ChatMessage[]
+  moderators  RoomModerator[]
+  
+  @@map("discussion_rooms")
+}
+
+// Room Member Junction
+model RoomMember {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId    String   @db.ObjectId
+  userId    String   @db.ObjectId
+  joinedAt  DateTime @default(now())
+  
+  room      DiscussionRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user      User           @relation("RoomMemberships", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([roomId, userId])
+  @@index([userId])
+  @@index([roomId])
+  @@map("room_members")
+}
+
+// Room Moderator Junction
+model RoomModerator {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId    String   @db.ObjectId
+  userId    String   @db.ObjectId
+  assignedAt DateTime @default(now())
+  
+  room      DiscussionRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user      User           @relation("RoomModerations", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([roomId, userId])
+  @@map("room_moderators")
+}
+
+// Chat Message Model
+model ChatMessage {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  roomId    String?  @db.ObjectId
+  groupId   String?  @db.ObjectId
+  authorId  String   @db.ObjectId
+  isEdited  Boolean  @default(false)
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  room      DiscussionRoom? @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  group     CommunityGroup? @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  author    User            @relation("AuthoredMessages", fields: [authorId], references: [id], onDelete: Cascade)
+  
+  @@index([roomId, createdAt])
+  @@index([groupId, createdAt])
+  @@index([authorId])
+  @@map("chat_messages")
+}
+
+// Community Group Model
+model CommunityGroup {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  isPrivate   Boolean  @default(false)
+  ownerId     String   @db.ObjectId
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  owner       User              @relation("GroupOwner", fields: [ownerId], references: [id])
+  members     GroupMember[]
+  posts       CommunityPost[]
+  messages    ChatMessage[]
+  moderators  GroupModerator[]
+  joinRequests GroupJoinRequest[]
+  
+  @@map("community_groups")
+}
+
+// Group Member Junction
+model GroupMember {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  groupId   String   @db.ObjectId
+  userId    String   @db.ObjectId
+  joinedAt  DateTime @default(now())
+  
+  group     CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User           @relation("GroupMemberships", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@index([groupId])
+  @@map("group_members")
+}
+
+// Group Moderator Junction
+model GroupModerator {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  groupId   String   @db.ObjectId
+  userId    String   @db.ObjectId
+  assignedAt DateTime @default(now())
+  
+  group     CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User           @relation("GroupModerations", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([groupId, userId])
+  @@map("group_moderators")
+}
+
+// Group Join Request Model
+model GroupJoinRequest {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  groupId   String   @db.ObjectId
+  userId    String   @db.ObjectId
+  status    RequestStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  group     CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User           @relation("GroupJoinRequests", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@index([groupId, status])
+  @@map("group_join_requests")
+}
+
+// Community Post Model
+model CommunityPost {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  content     String
+  authorId    String         @db.ObjectId
+  groupId     String?        @db.ObjectId
+  visibility  PostVisibility @default(PUBLIC)
+  imageUrls   String[]
+  linkUrls    String[]
+  isEdited    Boolean        @default(false)
+  isPinned    Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  
+  author      User              @relation("AuthoredPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  group       CommunityGroup?   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  reactions   PostReaction[]
+  comments    PostComment[]
+  
+  @@index([authorId, createdAt])
+  @@index([groupId, createdAt])
+  @@index([visibility, createdAt])
+  @@index([isPinned, createdAt])
+  @@index([groupId, isPinned, createdAt])
+  @@index([visibility, isPinned, createdAt])
+  @@map("community_posts")
+}
+
+// Post Reaction Model
+model PostReaction {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String       @db.ObjectId
+  userId    String       @db.ObjectId
+  type      ReactionType
+  createdAt DateTime     @default(now())
+  
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User          @relation("PostReactions", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+  @@map("post_reactions")
+}
+
+// Post Comment Model
+model PostComment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String   @db.ObjectId
+  authorId  String   @db.ObjectId
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User          @relation("PostComments", fields: [authorId], references: [id], onDelete: Cascade)
+  
+  @@index([postId, createdAt])
+  @@index([authorId])
+  @@map("post_comments")
+}
+
+// Follow Relationship Model
+model Follow {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  followerId  String   @db.ObjectId
+  followingId String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  
+  follower    User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+  
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("follows")
+}
+
+// User Mute Model
+model UserMute {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId    String?  @db.ObjectId
+  groupId   String?  @db.ObjectId
+  userId    String   @db.ObjectId
+  mutedBy   String   @db.ObjectId
+  reason    String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user      User @relation("MutedUsers", fields: [userId], references: [id], onDelete: Cascade)
+  moderator User @relation("MutedByModerator", fields: [mutedBy], references: [id], onDelete: Cascade)
+  
+  @@index([userId, expiresAt])
+  @@index([roomId])
+  @@index([groupId])
+  @@map("user_mutes")
+}
+
+// User Block Model
+model UserBlock {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  blockerId String   @db.ObjectId
+  blockedId String   @db.ObjectId
+  createdAt DateTime @default(now())
+  
+  blocker   User @relation("Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked   User @relation("BlockedBy", fields: [blockedId], references: [id], onDelete: Cascade)
+  
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+  @@map("user_blocks")
+}
+
+// Moderation Log Model
+model ModerationLog {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  moderatorId String         @db.ObjectId
+  targetId    String         // ID of affected user/content
+  type        ModerationType
+  reason      String?
+  metadata    Json?
+  createdAt   DateTime       @default(now())
+  
+  moderator   User @relation("ModeratorActions", fields: [moderatorId], references: [id])
+  
+  @@index([moderatorId, createdAt])
+  @@index([type, createdAt])
+  @@map("moderation_logs")
 }

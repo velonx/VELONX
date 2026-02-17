@@ -95,7 +95,7 @@ export async function PATCH(request: NextRequest) {
     } catch (error) {
         if (error instanceof z.ZodError) {
             return NextResponse.json(
-                { error: 'Invalid preferences data', details: error.errors },
+                { error: 'Invalid preferences data', details: error.issues },
                 { status: 400 }
             );
         }

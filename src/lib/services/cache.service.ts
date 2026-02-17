@@ -313,6 +313,17 @@ export const CacheKeys = {
     list: (page: number) => `project:list:${page}`,
     all: () => `project:*`,
   },
+  
+  feed: {
+    user: (userId: string, filter: string, cursor: string, limit: number) => 
+      `feed:${userId}:${filter}:${cursor}:${limit}`,
+    userAll: (userId: string) => `feed:${userId}:*`,
+    group: (groupId: string, cursor: string, limit: number) => 
+      `feed:group:${groupId}:${cursor}:${limit}`,
+    groupAll: (groupId: string) => `feed:group:${groupId}:*`,
+    trending: (limit: number) => `feed:trending:${limit}`,
+    allGroups: () => `feed:group:*`,
+  },
 }
 
 /**
@@ -334,6 +345,8 @@ export const CacheTTL = {
   EVENT_LIST: 300,
   PROJECT_DETAILS: 300,
   PROJECT_LIST: 300,
+  FEED: 300,              // 5 minutes for feed cache
+  FEED_TRENDING: 300,     // 5 minutes for trending feed
 }
 
 // Export singleton instance

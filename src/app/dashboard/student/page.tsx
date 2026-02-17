@@ -25,6 +25,14 @@ import { DailyCheckIn } from "@/components/daily-check-in";
 import SessionCard from "@/components/dashboard/SessionCard";
 import ReviewDialog from "@/components/dashboard/ReviewDialog";
 import ProjectJoinRequests from "@/components/dashboard/ProjectJoinRequests";
+import { FollowersList } from "@/components/community/FollowersList";
+import { FollowingList } from "@/components/community/FollowingList";
+import { PostCard } from "@/components/community/PostCard";
+import { GroupCard } from "@/components/community/GroupCard";
+import { RoomCard } from "@/components/community/RoomCard";
+import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
+import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
+import { useDiscussionRooms } from "@/lib/hooks/useDiscussionRooms";
 
 // Overview Components
 import WelcomeSection from "@/components/dashboard/student/Overview/WelcomeSection";
@@ -103,6 +111,21 @@ export default function StudentDashboard() {
     const [loadingSessions, setLoadingSessions] = useState(false);
     const [selectedSessionForReview, setSelectedSessionForReview] = useState<MentorSession | null>(null);
     const [showReviewDialog, setShowReviewDialog] = useState(false);
+    const [showFollowersDialog, setShowFollowersDialog] = useState(false);
+    const [showFollowingDialog, setShowFollowingDialog] = useState(false);
+
+    // Fetch user's community posts
+    const { posts, isLoading: postsLoading } = useCommunityPosts({ 
+        authorId: session?.user?.id 
+    });
+
+    // Fetch user's groups
+    const { groups, isLoading: groupsLoading } = useCommunityGroups();
+    const userGroups = groups?.filter(g => g.ownerId === session?.user?.id) || [];
+
+    // Fetch user's rooms
+    const { rooms, isLoading: roomsLoading } = useDiscussionRooms();
+    const userRooms = rooms?.filter(r => r.creatorId === session?.user?.id) || [];
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -165,6 +188,7 @@ export default function StudentDashboard() {
 
     const navItems = [
         { icon: LayoutDashboard, label: "Dashboard" },
+        { icon: Users, label: "Community" },
         { icon: Timer, label: "Tracking" },
         { icon: Settings, label: "Setting" },
     ];
@@ -480,6 +504,179 @@ export default function StudentDashboard() {
                     </>
                 )}
 
+                {activeTab === "Community" && (
+                    <>
+                        {/* Community Header */}
+                        <header className="mb-12">
+                            <h1 className="text-3xl font-black text-[#023047] mb-2 flex items-center gap-3">
+                                <Users className="w-8 h-8 text-[#219EBC]" />
+                                My Community Profile
+                            </h1>
+                            <p className="text-muted-foreground font-medium tracking-tight">Your posts, followers, groups, and discussion rooms</p>
+                        </header>
+
+                        {/* Community Stats */}
+                        <div className="grid grid-cols-4 gap-6 mb-12">
+                            <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                                        <Target className="w-5 h-5 text-blue-600" />
+                                    </div>
+                                </div>
+                                <p className="text-3xl font-black text-[#023047] mb-1">{posts?.length || 0}</p>
+                                <p className="text-sm text-muted-foreground font-bold">Posts Created</p>
+                            </Card>
+                            <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+                                        <Users className="w-5 h-5 text-emerald-600" />
+                                    </div>
+                                </div>
+                                <p className="text-3xl font-black text-[#023047] mb-1">{userGroups.length}</p>
+                                <p className="text-sm text-muted-foreground font-bold">Groups Joined</p>
+                            </Card>
+                            <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                                        <Target className="w-5 h-5 text-purple-600" />
+                                    </div>
+                                </div>
+                                <p className="text-3xl font-black text-[#023047] mb-1">{userRooms.length}</p>
+                                <p className="text-sm text-muted-foreground font-bold">Rooms Joined</p>
+                            </Card>
+                            <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                                        <TrendingUp className="w-5 h-5 text-orange-600" />
+                                    </div>
+                                </div>
+                                <p className="text-3xl font-black text-[#023047] mb-1">0</p>
+                                <p className="text-sm text-muted-foreground font-bold">Total Reactions</p>
+                            </Card>
+                        </div>
+
+                        {/* Posts Section */}
+                        <section className="mb-12">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-2xl font-black text-[#023047]">My Posts</h3>
+                                <Button
+                                    onClick={() => router.push('/community/feed')}
+                                    variant="outline"
+                                    className="rounded-xl"
+                                >
+                                    View Feed
+                                </Button>
+                            </div>
+                            {postsLoading ? (
+                                <div className="text-center py-12">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                                    <p className="text-muted-foreground">Loading posts...</p>
+                                </div>
+                            ) : posts && posts.length > 0 ? (
+                                <div className="space-y-4">
+                                    {posts.slice(0, 3).map((post) => (
+                                        <PostCard key={post.id} post={post} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
+                                    <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold text-foreground mb-2">No Posts Yet</h3>
+                                    <p className="text-muted-foreground mb-6">
+                                        Share your first post with the community
+                                    </p>
+                                    <Button
+                                        onClick={() => router.push('/community/feed')}
+                                        className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                                    >
+                                        Create Post
+                                    </Button>
+                                </Card>
+                            )}
+                        </section>
+
+                        {/* Groups Section */}
+                        <section className="mb-12">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-2xl font-black text-[#023047]">My Groups</h3>
+                                <Button
+                                    onClick={() => router.push('/community/groups')}
+                                    variant="outline"
+                                    className="rounded-xl"
+                                >
+                                    Browse Groups
+                                </Button>
+                            </div>
+                            {groupsLoading ? (
+                                <div className="text-center py-12">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                                    <p className="text-muted-foreground">Loading groups...</p>
+                                </div>
+                            ) : userGroups.length > 0 ? (
+                                <div className="grid grid-cols-3 gap-4">
+                                    {userGroups.slice(0, 3).map((group) => (
+                                        <GroupCard key={group.id} group={group} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
+                                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold text-foreground mb-2">No Groups Yet</h3>
+                                    <p className="text-muted-foreground mb-6">
+                                        Join or create a group to connect with others
+                                    </p>
+                                    <Button
+                                        onClick={() => router.push('/community/groups')}
+                                        className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                                    >
+                                        Explore Groups
+                                    </Button>
+                                </Card>
+                            )}
+                        </section>
+
+                        {/* Rooms Section */}
+                        <section>
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-2xl font-black text-[#023047]">My Discussion Rooms</h3>
+                                <Button
+                                    onClick={() => router.push('/community/rooms')}
+                                    variant="outline"
+                                    className="rounded-xl"
+                                >
+                                    Browse Rooms
+                                </Button>
+                            </div>
+                            {roomsLoading ? (
+                                <div className="text-center py-12">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                                    <p className="text-muted-foreground">Loading rooms...</p>
+                                </div>
+                            ) : userRooms.length > 0 ? (
+                                <div className="grid grid-cols-3 gap-4">
+                                    {userRooms.slice(0, 3).map((room) => (
+                                        <RoomCard key={room.id} room={room} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
+                                    <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold text-foreground mb-2">No Rooms Yet</h3>
+                                    <p className="text-muted-foreground mb-6">
+                                        Join a discussion room to chat in real-time
+                                    </p>
+                                    <Button
+                                        onClick={() => router.push('/community/rooms')}
+                                        className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                                    >
+                                        Explore Rooms
+                                    </Button>
+                                </Card>
+                            )}
+                        </section>
+                    </>
+                )}
+
                 {activeTab === "Setting" && (
                     <div className="text-center py-20">
                         <Settings className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -542,6 +739,20 @@ export default function StudentDashboard() {
                     onSuccess={handleReviewSuccess}
                 />
             )}
+
+            {/* Followers Dialog */}
+            <FollowersList 
+                userId={session?.user?.id || ''}
+                isOpen={showFollowersDialog}
+                onClose={() => setShowFollowersDialog(false)}
+            />
+
+            {/* Following Dialog */}
+            <FollowingList 
+                userId={session?.user?.id || ''}
+                isOpen={showFollowingDialog}
+                onClose={() => setShowFollowingDialog(false)}
+            />
         </div>
     );
 }

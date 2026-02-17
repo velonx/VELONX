@@ -16,7 +16,7 @@ const sendEmailSchema = z.object({
         'weeklyDigest',
     ]),
     recipient: z.string().email(),
-    data: z.record(z.any()).optional(),
+    data: z.record(z.string(), z.any()).optional(),
 });
 
 /**

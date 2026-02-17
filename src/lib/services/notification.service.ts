@@ -785,6 +785,326 @@ export class NotificationService {
       },
     });
   }
+
+  // ============================================================================
+  // Community Notification Helpers
+  // ============================================================================
+
+  /**
+   * Check if user has enabled a specific community notification preference
+   * Returns true if preference is enabled or if user doesn't exist (fail-safe)
+   */
+  private async checkCommunityNotificationPreference(
+    userId: string,
+    preferenceField: 'communityComments' | 'communityReactions' | 'communityMentions' | 'communityGroupUpdates' | 'communityModeration'
+  ): Promise<boolean> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { [preferenceField]: true },
+      });
+
+      if (!user) {
+        return true; // Default to sending if user not found
+      }
+
+      return user[preferenceField] as boolean;
+    } catch (error) {
+      console.error('[Notification] Error checking community preference:', error);
+      return true; // Default to sending if check fails
+    }
+  }
+
+  /**
+   * Create notification when someone comments on a user's post
+   * Respects user's communityComments notification preference
+   * Validates: Requirements 8.2
+   */
+  async createPostCommentNotification(commentData: {
+    postId: string;
+    postAuthorId: string;
+    postContent: string;
+    commenterName: string;
+    commentContent: string;
+  }) {
+    // Check notification preference
+    const preferencesEnabled = await this.checkCommunityNotificationPreference(
+      commentData.postAuthorId,
+      'communityComments'
+    );
+
+    if (!preferencesEnabled) {
+      return null; // User has disabled comment notifications
+    }
+
+    const truncatedPost = commentData.postContent.length > 50
+      ? commentData.postContent.substring(0, 50) + '...'
+      : commentData.postContent;
+
+    return this.createNotification({
+      userId: commentData.postAuthorId,
+      title: 'New Comment on Your Post',
+      description: `${commentData.commenterName} commented on your post: "${truncatedPost}"`,
+      type: NotificationType.COMMENT,
+      actionUrl: `/community/posts/${commentData.postId}`,
+      metadata: {
+        postId: commentData.postId,
+        commentContent: commentData.commentContent,
+        eventType: 'post_comment',
+      },
+    });
+  }
+
+  /**
+   * Create notification when someone reacts to a user's post
+   * Respects user's communityReactions notification preference
+   * Validates: Requirements 8.3
+   */
+  async createPostReactionNotification(reactionData: {
+    postId: string;
+    postAuthorId: string;
+    postContent: string;
+    reactorName: string;
+    reactionType: string;
+  }) {
+    // Check notification preference
+    const preferencesEnabled = await this.checkCommunityNotificationPreference(
+      reactionData.postAuthorId,
+      'communityReactions'
+    );
+
+    if (!preferencesEnabled) {
+      return null; // User has disabled reaction notifications
+    }
+
+    const truncatedPost = reactionData.postContent.length > 50
+      ? reactionData.postContent.substring(0, 50) + '...'
+      : reactionData.postContent;
+
+    const reactionEmoji = {
+      LIKE: '👍',
+      LOVE: '❤️',
+      INSIGHTFUL: '💡',
+      CELEBRATE: '🎉',
+    }[reactionData.reactionType] || '👍';
+
+    return this.createNotification({
+      userId: reactionData.postAuthorId,
+      title: 'New Reaction on Your Post',
+      description: `${reactionData.reactorName} reacted ${reactionEmoji} to your post: "${truncatedPost}"`,
+      type: NotificationType.REACTION,
+      actionUrl: `/community/posts/${reactionData.postId}`,
+      metadata: {
+        postId: reactionData.postId,
+        reactionType: reactionData.reactionType,
+        eventType: 'post_reaction',
+      },
+    });
+  }
+
+  /**
+   * Create notification when a user is mentioned in a post or message
+   * Respects user's communityMentions notification preference
+   * Validates: Requirements 8.4
+   */
+  async createMentionNotification(mentionData: {
+    mentionedUserId: string;
+    mentionerName: string;
+    contentType: 'post' | 'message';
+    contentId: string;
+    contentPreview: string;
+    roomId?: string;
+    groupId?: string;
+  }) {
+    // Check notification preference
+    const preferencesEnabled = await this.checkCommunityNotificationPreference(
+      mentionData.mentionedUserId,
+      'communityMentions'
+    );
+
+    if (!preferencesEnabled) {
+      return null; // User has disabled mention notifications
+    }
+
+    const truncatedContent = mentionData.contentPreview.length > 50
+      ? mentionData.contentPreview.substring(0, 50) + '...'
+      : mentionData.contentPreview;
+
+    const contentTypeText = mentionData.contentType === 'post' ? 'post' : 'message';
+    const actionUrl = mentionData.contentType === 'post'
+      ? `/community/posts/${mentionData.contentId}`
+      : mentionData.roomId
+        ? `/community/rooms/${mentionData.roomId}`
+        : `/community/groups/${mentionData.groupId}`;
+
+    return this.createNotification({
+      userId: mentionData.mentionedUserId,
+      title: 'You Were Mentioned',
+      description: `${mentionData.mentionerName} mentioned you in a ${contentTypeText}: "${truncatedContent}"`,
+      type: NotificationType.MENTION,
+      actionUrl,
+      metadata: {
+        contentId: mentionData.contentId,
+        contentType: mentionData.contentType,
+        roomId: mentionData.roomId,
+        groupId: mentionData.groupId,
+        eventType: 'user_mention',
+      },
+    });
+  }
+
+  /**
+   * Create notification when a user's join request to a private group is approved
+   * Respects user's communityGroupUpdates notification preference
+   * Validates: Requirements 8.5
+   */
+  async createGroupJoinRequestApprovedNotification(requestData: {
+    requestId: string;
+    groupId: string;
+    groupName: string;
+    userId: string;
+    approvedByName: string;
+  }) {
+    // Check notification preference
+    const preferencesEnabled = await this.checkCommunityNotificationPreference(
+      requestData.userId,
+      'communityGroupUpdates'
+    );
+
+    if (!preferencesEnabled) {
+      return null; // User has disabled group update notifications
+    }
+
+    return this.createNotification({
+      userId: requestData.userId,
+      title: 'Group Join Request Approved',
+      description: `Your request to join "${requestData.groupName}" has been approved! You are now a member of the group.`,
+      type: NotificationType.JOIN_REQUEST_APPROVED,
+      actionUrl: `/community/groups/${requestData.groupId}`,
+      metadata: {
+        requestId: requestData.requestId,
+        groupId: requestData.groupId,
+        eventType: 'group_join_approved',
+      },
+    });
+  }
+
+  /**
+   * Create notification when a user is assigned as a moderator in a room or group
+   * Respects user's communityModeration notification preference
+   * Validates: Requirements 8.6
+   */
+  async createModeratorAssignedNotification(moderatorData: {
+    userId: string;
+    entityType: 'room' | 'group';
+    entityId: string;
+    entityName: string;
+    assignedByName: string;
+  }) {
+    // Check notification preference
+    const preferencesEnabled = await this.checkCommunityNotificationPreference(
+      moderatorData.userId,
+      'communityModeration'
+    );
+
+    if (!preferencesEnabled) {
+      return null; // User has disabled moderation notifications
+    }
+
+    const entityTypeText = moderatorData.entityType === 'room' ? 'discussion room' : 'group';
+    const actionUrl = moderatorData.entityType === 'room'
+      ? `/community/rooms/${moderatorData.entityId}`
+      : `/community/groups/${moderatorData.entityId}`;
+
+    return this.createNotification({
+      userId: moderatorData.userId,
+      title: 'Moderator Role Assigned',
+      description: `${moderatorData.assignedByName} has assigned you as a moderator of the ${entityTypeText} "${moderatorData.entityName}". You now have moderation permissions.`,
+      type: NotificationType.MODERATOR_ASSIGNED,
+      actionUrl,
+      metadata: {
+        entityType: moderatorData.entityType,
+        entityId: moderatorData.entityId,
+        eventType: 'moderator_assigned',
+      },
+    });
+  }
+
+  /**
+   * Create notification when a user receives a new message in a discussion room
+   * Respects user's communityGroupUpdates notification preference
+   */
+  async createRoomMessageNotification(messageData: {
+    roomId: string;
+    roomName: string;
+    recipientId: string;
+    senderName: string;
+    messagePreview: string;
+  }) {
+    // Check notification preference
+    const preferencesEnabled = await this.checkCommunityNotificationPreference(
+      messageData.recipientId,
+      'communityGroupUpdates'
+    );
+
+    if (!preferencesEnabled) {
+      return null; // User has disabled group update notifications
+    }
+
+    const truncatedMessage = messageData.messagePreview.length > 50
+      ? messageData.messagePreview.substring(0, 50) + '...'
+      : messageData.messagePreview;
+
+    return this.createNotification({
+      userId: messageData.recipientId,
+      title: `New Message in ${messageData.roomName}`,
+      description: `${messageData.senderName}: "${truncatedMessage}"`,
+      type: NotificationType.INFO,
+      actionUrl: `/community/rooms/${messageData.roomId}`,
+      metadata: {
+        roomId: messageData.roomId,
+        eventType: 'room_message',
+      },
+    });
+  }
+
+  /**
+   * Create notification when a user receives a new message in a group
+   * Respects user's communityGroupUpdates notification preference
+   */
+  async createGroupMessageNotification(messageData: {
+    groupId: string;
+    groupName: string;
+    recipientId: string;
+    senderName: string;
+    messagePreview: string;
+  }) {
+    // Check notification preference
+    const preferencesEnabled = await this.checkCommunityNotificationPreference(
+      messageData.recipientId,
+      'communityGroupUpdates'
+    );
+
+    if (!preferencesEnabled) {
+      return null; // User has disabled group update notifications
+    }
+
+    const truncatedMessage = messageData.messagePreview.length > 50
+      ? messageData.messagePreview.substring(0, 50) + '...'
+      : messageData.messagePreview;
+
+    return this.createNotification({
+      userId: messageData.recipientId,
+      title: `New Message in ${messageData.groupName}`,
+      description: `${messageData.senderName}: "${truncatedMessage}"`,
+      type: NotificationType.INFO,
+      actionUrl: `/community/groups/${messageData.groupId}`,
+      metadata: {
+        groupId: messageData.groupId,
+        eventType: 'group_message',
+      },
+    });
+  }
 }
 
 export const notificationService = new NotificationService();
