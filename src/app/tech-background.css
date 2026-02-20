@@ -37,6 +37,181 @@
 }
 
 /* Neon Accents */
+.pause-animation {
+    animation-play-state: paused;
+}
+
+/* ==========================================
+   MONITOR SCREEN EFFECT
+   ========================================== */
+
+/* Monitor outer frame/bezel */
+.monitor-frame {
+    position: relative;
+    background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+    border: 2px solid rgba(148, 163, 184, 0.15);
+    border-radius: 20px;
+    padding: 0;
+    box-shadow:
+        0 0 40px rgba(100, 116, 139, 0.06),
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+/* Monitor top bar (title bar with dots) */
+.monitor-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: rgba(15, 15, 26, 0.95);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.monitor-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.monitor-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+}
+
+.monitor-dot:hover {
+    opacity: 1;
+}
+
+.monitor-title {
+    font-size: 13px;
+    color: rgba(203, 213, 225, 0.4);
+    letter-spacing: 0.5px;
+    user-select: none;
+}
+
+/* Monitor screen area */
+.monitor-screen {
+    position: relative;
+    background: #0a0a12;
+    overflow: hidden;
+    min-height: 420px;
+}
+
+/* Subtle CRT scanlines overlay */
+.monitor-scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.06) 2px,
+            rgba(0, 0, 0, 0.06) 4px);
+    animation: scanlineFlicker 8s ease-in-out infinite;
+}
+
+@keyframes scanlineFlicker {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+}
+
+/* Screen inner glow */
+.monitor-screen-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+    background: radial-gradient(ellipse at center,
+            rgba(100, 116, 139, 0.04) 0%,
+            transparent 70%);
+    animation: screenPulse 4s ease-in-out infinite;
+}
+
+@keyframes screenPulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Monitor stand */
+.monitor-stand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.monitor-neck {
+    width: 60px;
+    height: 40px;
+    background: linear-gradient(180deg, #1a1a2e, #12121f);
+    border-left: 1px solid rgba(148, 163, 184, 0.1);
+    border-right: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.monitor-base {
+    width: 180px;
+    height: 8px;
+    background: linear-gradient(180deg, #1a1a2e, #0f0f1a);
+    border-radius: 0 0 30px 30px;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-top: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .monitor-frame {
+        border-radius: 14px;
+    }
+
+    .monitor-top-bar {
+        padding: 8px 14px;
+    }
+
+    .monitor-dot {
+        width: 10px;
+        height: 10px;
+    }
+
+    .monitor-title {
+        font-size: 11px;
+    }
+
+    .monitor-screen {
+        min-height: 350px;
+    }
+
+    .monitor-neck {
+        width: 40px;
+        height: 28px;
+    }
+
+    .monitor-base {
+        width: 120px;
+        height: 6px;
+    }
+}
+
 .neon-line {
     position: absolute;
     height: 2px;

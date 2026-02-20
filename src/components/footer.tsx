@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Twitter, Linkedin, Github } from "lucide-react";
+import { Twitter, Linkedin, Github, Facebook, Share2 } from "lucide-react";
 
 export function Footer() {
     return (
@@ -15,10 +15,39 @@ export function Footer() {
                         <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mb-8">
                             Empowering the next generation of tech leaders through community, collaboration, and innovation.
                         </p>
-                        <div className="flex items-center gap-4 text-muted-foreground">
-                            <a href="#" className="hover:text-[#219EBC] transition-colors"><Twitter className="w-5 h-5" /></a>
-                            <a href="#" className="hover:text-[#219EBC] transition-colors"><Linkedin className="w-5 h-5" /></a>
-                            <a href="#" className="hover:text-[#219EBC] transition-colors"><Github className="w-5 h-5" /></a>
+                        <div className="flex items-center">
+                            <button
+                                className="font-outfit relative overflow-hidden justify-center flex w-36 h-12 rounded-3xl text-white bg-blue-600 cursor-pointer transition-all duration-[5000ms] ease-in-out group hover:rounded-lg"
+                            >
+                                <span
+                                    className="absolute inset-0 flex items-center justify-center gap-2 text-md transition-all duration-300 ease-in-out translate-y-0 group-hover:-translate-y-10 group-hover:opacity-0"
+                                >
+                                    <span>Share</span>
+                                    <Share2 className="w-5 h-5" />
+                                </span>
+                                <span
+                                    className="absolute inset-0 flex gap-5 items-center justify-center px-7 opacity-0 transition-opacity ease-in-out group-hover:opacity-100"
+                                >
+                                    <a
+                                        href="#"
+                                        className="transition-transform text-lg duration-200 ease-in-out translate-y-10 group-hover:translate-y-0 hover:text-white/80"
+                                    >
+                                        <Twitter className="w-5 h-5" />
+                                    </a>
+                                    <a
+                                        href="#"
+                                        className="transition-transform text-lg duration-200 ease-in-out translate-y-10 group-hover:translate-y-0 group-hover:delay-75 hover:text-white/80"
+                                    >
+                                        <Facebook className="w-5 h-5" />
+                                    </a>
+                                    <a
+                                        href="#"
+                                        className="transition-transform text-lg duration-200 ease-in-out translate-y-10 group-hover:translate-y-0 group-hover:delay-150 hover:text-white/80"
+                                    >
+                                        <Linkedin className="w-5 h-5" />
+                                    </a>
+                                </span>
+                            </button>
                         </div>
                     </div>
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Bebas_Neue, Outfit, Great_Vibes, Dancing_Script } from "next/font/google";
+import { Geist, Geist_Mono, Bebas_Neue, Outfit, Great_Vibes, Dancing_Script, Amatic_SC, Indie_Flower, Sniglet } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -43,6 +43,24 @@ const dancingScript = Dancing_Script({
   subsets: ["latin"],
 });
 
+const amaticSC = Amatic_SC({
+  weight: ["400", "700"],
+  variable: "--font-amatic-sc",
+  subsets: ["latin"],
+});
+
+const indieFlower = Indie_Flower({
+  weight: "400",
+  variable: "--font-indie-flower",
+  subsets: ["latin"],
+});
+
+const sniglet = Sniglet({
+  weight: ["400", "800"],
+  variable: "--font-sniglet",
+  subsets: ["latin"],
+});
+
 import { defaultMetadata } from "@/lib/seo.config";
 
 export const metadata = defaultMetadata;
@@ -55,7 +73,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${outfit.variable} ${greatVibes.variable} ${dancingScript.variable} antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${outfit.variable} ${greatVibes.variable} ${dancingScript.variable} ${amaticSC.variable} ${indieFlower.variable} ${sniglet.variable} antialiased min-h-screen flex flex-col`}
       >
         <GoogleAnalytics />
         <Providers>
