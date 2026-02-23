@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { secureFetch } from "@/lib/utils/csrf";
 import { TrendingUp, Users, MessageSquare } from "lucide-react";
 import { Feed } from "@/components/community/Feed";
 import { FeedFilter } from "@/components/community/FeedFilter";
 import { PostComposer } from "@/components/community/PostComposer";
 import { TrendingPosts } from "@/components/community/TrendingPosts";
-import { useFeed } from "@/lib/hooks/useFeed";
+
 import toast from "react-hot-toast";
 
 export default function FeedPage() {
@@ -20,13 +21,27 @@ export default function FeedPage() {
   const [filter, setFilter] = useState<"ALL" | "FOLLOWING" | "GROUPS">("ALL");
   const [showComposer, setShowComposer] = useState(false);
 
-  // Fetch feed with current filter
-  const { posts, loading, hasMore, loadMore, refetch } = useFeed({ filter });
 
-  const handlePostCreated = () => {
+
+  /**
+   * Handle creating a new post via API, then refresh the feed
+   */
+  const handleCreatePost = async (data: import('@/lib/hooks/useCommunityPosts').CreatePostData) => {
+    const response = await secureFetch('/api/community/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'Failed to create post');
+    }
+
     setShowComposer(false);
-    refetch();
     toast.success("Post created successfully!");
+    // Feed component manages its own data — it will pick up new posts on next refresh
+    window.location.reload();
   };
 
   if (!session) {
@@ -80,13 +95,13 @@ export default function FeedPage() {
       <section className="relative py-16 bg-background overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
-            <h1 
+            <h1
               className="text-4xl md:text-6xl text-foreground"
               style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
             >
               Your Feed
             </h1>
-            <p 
+            <p
               className="text-muted-foreground text-xl max-w-2xl mx-auto"
               style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
             >
@@ -106,7 +121,7 @@ export default function FeedPage() {
             <div className="lg:col-span-2 space-y-6">
               {/* Post Composer */}
               {!showComposer ? (
-                <Card 
+                <Card
                   className="cursor-pointer hover:shadow-lg transition-all"
                   onClick={() => setShowComposer(true)}
                 >
@@ -122,31 +137,20 @@ export default function FeedPage() {
                   </CardContent>
                 </Card>
               ) : (
-                <PostComposer 
-                  onPostCreated={handlePostCreated}
-                  onCancel={() => setShowComposer(false)}
+                <PostComposer
+                  onSubmit={handleCreatePost}
                 />
               )}
 
               {/* Feed Filter */}
-              <FeedFilter 
+              <FeedFilter
                 currentFilter={filter}
                 onFilterChange={setFilter}
               />
 
               {/* Feed */}
-              <Feed 
-                posts={posts}
-                loading={loading}
-                hasMore={hasMore}
-                onLoadMore={loadMore}
-                emptyMessage={
-                  filter === "FOLLOWING" 
-                    ? "Follow users to see their posts here"
-                    : filter === "GROUPS"
-                    ? "Join groups to see their posts here"
-                    : "No posts yet. Start following users or join groups!"
-                }
+              <Feed
+                filter={filter}
               />
             </div>
 
@@ -164,16 +168,16 @@ export default function FeedPage() {
               {/* Quick Links */}
               <Card>
                 <CardContent className="py-6 space-y-3">
-                  <Link href="/community/rooms">
-                    <Button variant="ghost" className="w-full justify-start gap-2">
-                      <MessageSquare className="w-4 h-4" />
-                      Browse Discussion Rooms
-                    </Button>
-                  </Link>
                   <Link href="/community/groups">
                     <Button variant="ghost" className="w-full justify-start gap-2">
                       <Users className="w-4 h-4" />
-                      Discover Groups
+                      Browse Groups
+                    </Button>
+                  </Link>
+                  <Link href="/community/search">
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <Users className="w-4 h-4" />
+                      Search Community
                     </Button>
                   </Link>
                 </CardContent>

@@ -53,10 +53,18 @@ export default function SubmitProjectPage() {
     setLoading(true);
 
     try {
+      // Get CSRF token for the POST request
+      const { getCSRFToken } = await import('@/lib/utils/csrf');
+      const csrfToken = await getCSRFToken();
+
       // Create a user request for project submission
       const response = await fetch('/api/user-requests', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        credentials: 'include',
         body: JSON.stringify({
           type: 'PROJECT_SUBMISSION',
           reason: JSON.stringify({
@@ -201,7 +209,7 @@ export default function SubmitProjectPage() {
                     <Lightbulb className="w-5 h-5 text-[#219EBC]" />
                     Project Details
                   </h3>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="title" className="text-sm font-bold text-foreground">
                       Project Title *
@@ -241,7 +249,7 @@ export default function SubmitProjectPage() {
                     <Code className="w-5 h-5 text-[#219EBC]" />
                     Technical Stack
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <Label className="text-sm font-bold text-foreground">
                       Technologies * (Add at least 1)

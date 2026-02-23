@@ -2,16 +2,17 @@
  * Performance Monitoring Utilities for Projects Page
  * Feature: project-page-ui-improvements
  * 
- * Provides utilities for tracking and monitoring performance metrics
- * specific to the projects page, including:
+ * Provides purely client-side utilities for tracking and monitoring
+ * performance metrics specific to the projects page, including:
  * - Filter operation timing
  * - Sort operation timing
  * - Search operation timing
  * - Component render timing
  * - API request timing
+ * 
+ * NOTE: This file must NOT import any server-side services (Prisma, Redis, etc.)
+ * as it is used by client components via usePerformanceMonitoring hook.
  */
-
-import { performanceMonitor } from '@/lib/services/performance-monitor.service';
 
 /**
  * Performance thresholds (in milliseconds)
@@ -25,117 +26,81 @@ export const PERFORMANCE_THRESHOLDS = {
 } as const;
 
 /**
- * Track filter operation performance
+ * Track filter operation performance (client-side only)
  */
 export async function trackFilterPerformance(
   projectCount: number,
   duration: number,
   filterType: string
 ): Promise<void> {
-  try {
-    await performanceMonitor.trackRequest({
-      endpoint: `/projects/filter/${filterType}`,
-      method: 'FILTER',
-      statusCode: 200,
-      duration,
-      timestamp: Date.now(),
-    });
-
-    // Log warning if operation is slow
-    if (duration > PERFORMANCE_THRESHOLDS.FILTER_OPERATION) {
-      console.warn(
-        `[Performance] Slow filter operation: ${filterType} took ${duration.toFixed(2)}ms for ${projectCount} projects`
-      );
-    }
-  } catch (error) {
-    // Silently fail - don't disrupt user experience
-    console.debug('[Performance] Failed to track filter metric:', error);
+  // Log warning if operation is slow
+  if (duration > PERFORMANCE_THRESHOLDS.FILTER_OPERATION) {
+    console.warn(
+      `[Performance] Slow filter operation: ${filterType} took ${duration.toFixed(2)}ms for ${projectCount} projects`
+    );
+  } else if (process.env.NODE_ENV === 'development') {
+    console.debug(
+      `[Performance] Filter ${filterType}: ${duration.toFixed(2)}ms for ${projectCount} projects`
+    );
   }
 }
 
 /**
- * Track sort operation performance
+ * Track sort operation performance (client-side only)
  */
 export async function trackSortPerformance(
   projectCount: number,
   duration: number,
   sortType: string
 ): Promise<void> {
-  try {
-    await performanceMonitor.trackRequest({
-      endpoint: `/projects/sort/${sortType}`,
-      method: 'SORT',
-      statusCode: 200,
-      duration,
-      timestamp: Date.now(),
-    });
-
-    // Log warning if operation is slow
-    if (duration > PERFORMANCE_THRESHOLDS.SORT_OPERATION) {
-      console.warn(
-        `[Performance] Slow sort operation: ${sortType} took ${duration.toFixed(2)}ms for ${projectCount} projects`
-      );
-    }
-  } catch (error) {
-    // Silently fail - don't disrupt user experience
-    console.debug('[Performance] Failed to track sort metric:', error);
+  // Log warning if operation is slow
+  if (duration > PERFORMANCE_THRESHOLDS.SORT_OPERATION) {
+    console.warn(
+      `[Performance] Slow sort operation: ${sortType} took ${duration.toFixed(2)}ms for ${projectCount} projects`
+    );
+  } else if (process.env.NODE_ENV === 'development') {
+    console.debug(
+      `[Performance] Sort ${sortType}: ${duration.toFixed(2)}ms for ${projectCount} projects`
+    );
   }
 }
 
 /**
- * Track search operation performance
+ * Track search operation performance (client-side only)
  */
 export async function trackSearchPerformance(
   projectCount: number,
   duration: number,
   searchTerm: string
 ): Promise<void> {
-  try {
-    await performanceMonitor.trackRequest({
-      endpoint: '/projects/search',
-      method: 'SEARCH',
-      statusCode: 200,
-      duration,
-      timestamp: Date.now(),
-    });
-
-    // Log warning if operation is slow
-    if (duration > PERFORMANCE_THRESHOLDS.SEARCH_OPERATION) {
-      console.warn(
-        `[Performance] Slow search operation: "${searchTerm}" took ${duration.toFixed(2)}ms for ${projectCount} projects`
-      );
-    }
-  } catch (error) {
-    // Silently fail - don't disrupt user experience
-    console.debug('[Performance] Failed to track search metric:', error);
+  // Log warning if operation is slow
+  if (duration > PERFORMANCE_THRESHOLDS.SEARCH_OPERATION) {
+    console.warn(
+      `[Performance] Slow search operation: "${searchTerm}" took ${duration.toFixed(2)}ms for ${projectCount} projects`
+    );
+  } else if (process.env.NODE_ENV === 'development') {
+    console.debug(
+      `[Performance] Search "${searchTerm}": ${duration.toFixed(2)}ms for ${projectCount} projects`
+    );
   }
 }
 
 /**
- * Track component render performance
+ * Track component render performance (client-side only)
  */
 export async function trackComponentRender(
   componentName: string,
   duration: number
 ): Promise<void> {
-  try {
-    await performanceMonitor.trackRequest({
-      endpoint: `/projects/component/${componentName}`,
-      method: 'RENDER',
-      statusCode: 200,
-      duration,
-      timestamp: Date.now(),
-    });
-
-    // Log warning if render is slow
-    if (duration > PERFORMANCE_THRESHOLDS.COMPONENT_RENDER) {
-      console.warn(
-        `[Performance] Slow component render: ${componentName} took ${duration.toFixed(2)}ms`
-      );
-    }
-  } catch (error) {
-    // Silently fail - don't disrupt user experience
-    console.debug('[Performance] Failed to track component metric:', error);
+  // Log warning if render is slow
+  if (duration > PERFORMANCE_THRESHOLDS.COMPONENT_RENDER) {
+    console.warn(
+      `[Performance] Slow component render: ${componentName} took ${duration.toFixed(2)}ms`
+    );
+  } else if (process.env.NODE_ENV === 'development') {
+    console.debug(
+      `[Performance] Component ${componentName}: ${duration.toFixed(2)}ms`
+    );
   }
 }
 
@@ -182,7 +147,7 @@ export async function measureAsync<T>(
 }
 
 /**
- * Create a performance observer for tracking Web Vitals
+ * Create a performance observer for tracking Web Vitals (client-side only)
  */
 export function observeWebVitals(): void {
   if (typeof window === 'undefined') return;
@@ -192,18 +157,9 @@ export function observeWebVitals(): void {
     const lcpObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       const lastEntry = entries[entries.length - 1];
-      
       console.debug('[Performance] LCP:', lastEntry.startTime.toFixed(2), 'ms');
-      
-      performanceMonitor.trackRequest({
-        endpoint: '/projects/web-vitals/lcp',
-        method: 'METRIC',
-        statusCode: 200,
-        duration: lastEntry.startTime,
-        timestamp: Date.now(),
-      }).catch(() => {});
     });
-    
+
     lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
   } catch (error) {
     // PerformanceObserver not supported
@@ -217,17 +173,9 @@ export function observeWebVitals(): void {
       entries.forEach((entry: any) => {
         const fid = entry.processingStart - entry.startTime;
         console.debug('[Performance] FID:', fid.toFixed(2), 'ms');
-        
-        performanceMonitor.trackRequest({
-          endpoint: '/projects/web-vitals/fid',
-          method: 'METRIC',
-          statusCode: 200,
-          duration: fid,
-          timestamp: Date.now(),
-        }).catch(() => {});
       });
     });
-    
+
     fidObserver.observe({ entryTypes: ['first-input'] });
   } catch (error) {
     // PerformanceObserver not supported
@@ -244,18 +192,9 @@ export function observeWebVitals(): void {
           clsValue += entry.value;
         }
       });
-      
       console.debug('[Performance] CLS:', clsValue.toFixed(4));
-      
-      performanceMonitor.trackRequest({
-        endpoint: '/projects/web-vitals/cls',
-        method: 'METRIC',
-        statusCode: 200,
-        duration: clsValue * 1000, // Convert to ms for consistency
-        timestamp: Date.now(),
-      }).catch(() => {});
     });
-    
+
     clsObserver.observe({ entryTypes: ['layout-shift'] });
   } catch (error) {
     // PerformanceObserver not supported

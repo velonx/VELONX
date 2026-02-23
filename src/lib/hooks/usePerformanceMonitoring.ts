@@ -3,10 +3,10 @@
  * Feature: project-page-ui-improvements
  * 
  * Custom hook for tracking component performance and Web Vitals
+ * Client-side only - does not use server-side performance monitor service
  */
 
 import { useEffect, useRef } from 'react';
-import { performanceMonitor } from '@/lib/services/performance-monitor.service';
 import { observeWebVitals } from '@/lib/utils/project-page/performance';
 
 /**
@@ -29,25 +29,18 @@ export function usePerformanceMonitoring(componentName: string) {
     return () => {
       const duration = performance.now() - startTime;
 
-      // Track component render time
-      performanceMonitor
-        .trackRequest({
-          endpoint: `/projects/component/${componentName}`,
-          method: 'RENDER',
-          statusCode: 200,
-          duration,
-          timestamp: Date.now(),
-        })
-        .catch((err) => {
-          // Silently fail - don't disrupt user experience
-          console.debug('[Performance] Failed to track metric:', err);
-        });
-
-      // Log slow renders in development
-      if (process.env.NODE_ENV === 'development' && duration > 100) {
-        console.warn(
-          `[Performance] Slow render: ${componentName} took ${duration.toFixed(2)}ms (render #${renderCountRef.current})`
+      // Log performance metrics (client-side only)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(
+          `[Performance] ${componentName} render #${renderCountRef.current}: ${duration.toFixed(2)}ms`
         );
+        
+        // Warn on slow renders
+        if (duration > 100) {
+          console.warn(
+            `[Performance] Slow render: ${componentName} took ${duration.toFixed(2)}ms`
+          );
+        }
       }
     };
   }, [componentName]);
@@ -57,20 +50,17 @@ export function usePerformanceMonitoring(componentName: string) {
     if (renderCountRef.current === 1 && mountTimeRef.current > 0) {
       const timeToFirstRender = performance.now() - mountTimeRef.current;
 
-      performanceMonitor
-        .trackRequest({
-          endpoint: `/projects/component/${componentName}/mount`,
-          method: 'MOUNT',
-          statusCode: 200,
-          duration: timeToFirstRender,
-          timestamp: Date.now(),
-        })
-        .catch(() => {});
-
-      if (process.env.NODE_ENV === 'development' && timeToFirstRender > 200) {
-        console.warn(
-          `[Performance] Slow mount: ${componentName} took ${timeToFirstRender.toFixed(2)}ms to mount`
+      // Log mount performance (client-side only)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(
+          `[Performance] ${componentName} mounted in ${timeToFirstRender.toFixed(2)}ms`
         );
+        
+        if (timeToFirstRender > 200) {
+          console.warn(
+            `[Performance] Slow mount: ${componentName} took ${timeToFirstRender.toFixed(2)}ms`
+          );
+        }
       }
     }
   }, [componentName]);
@@ -95,6 +85,7 @@ export function useWebVitals() {
 /**
  * Hook to track operation performance
  * Returns a function to measure and track async operations
+ * Client-side logging only
  */
 export function useOperationTracking() {
   const trackOperation = async <T,>(
@@ -108,21 +99,10 @@ export function useOperationTracking() {
       const result = await operation();
       const duration = performance.now() - startTime;
 
-      // Track successful operation
-      await performanceMonitor
-        .trackRequest({
-          endpoint: `/projects/operation/${operationName}`,
-          method: 'OPERATION',
-          statusCode: 200,
-          duration,
-          timestamp: Date.now(),
-        })
-        .catch(() => {});
-
-      // Log slow operations
-      if (duration > threshold) {
+      // Log operation performance (client-side only)
+      if (process.env.NODE_ENV === 'development' && duration > threshold) {
         console.debug(
-          `[Performance] Slow operation: ${operationName} took ${duration.toFixed(2)}ms (threshold: ${threshold}ms)`
+          `[Performance] Operation ${operationName}: ${duration.toFixed(2)}ms (threshold: ${threshold}ms)`
         );
       }
 
@@ -130,16 +110,12 @@ export function useOperationTracking() {
     } catch (error) {
       const duration = performance.now() - startTime;
 
-      // Track failed operation
-      await performanceMonitor
-        .trackRequest({
-          endpoint: `/projects/operation/${operationName}`,
-          method: 'OPERATION',
-          statusCode: 500,
-          duration,
-          timestamp: Date.now(),
-        })
-        .catch(() => {});
+      // Log failed operation
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(
+          `[Performance] Failed operation ${operationName}: ${duration.toFixed(2)}ms`
+        );
+      }
 
       throw error;
     }
@@ -151,6 +127,7 @@ export function useOperationTracking() {
 /**
  * Hook to track user interactions
  * Returns a function to measure and track user interaction timing
+ * Client-side logging only
  */
 export function useInteractionTracking() {
   const trackInteraction = (
@@ -163,36 +140,21 @@ export function useInteractionTracking() {
       callback();
       const duration = performance.now() - startTime;
 
-      // Track interaction timing
-      performanceMonitor
-        .trackRequest({
-          endpoint: `/projects/interaction/${interactionName}`,
-          method: 'INTERACTION',
-          statusCode: 200,
-          duration,
-          timestamp: Date.now(),
-        })
-        .catch(() => {});
-
-      // Log slow interactions
-      if (duration > 50) {
+      // Log interaction timing (client-side only)
+      if (process.env.NODE_ENV === 'development' && duration > 50) {
         console.debug(
-          `[Performance] Slow interaction: ${interactionName} took ${duration.toFixed(2)}ms`
+          `[Performance] Interaction ${interactionName}: ${duration.toFixed(2)}ms`
         );
       }
     } catch (error) {
       const duration = performance.now() - startTime;
 
-      // Track failed interaction
-      performanceMonitor
-        .trackRequest({
-          endpoint: `/projects/interaction/${interactionName}`,
-          method: 'INTERACTION',
-          statusCode: 500,
-          duration,
-          timestamp: Date.now(),
-        })
-        .catch(() => {});
+      // Log failed interaction
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(
+          `[Performance] Failed interaction ${interactionName}: ${duration.toFixed(2)}ms`
+        );
+      }
 
       throw error;
     }

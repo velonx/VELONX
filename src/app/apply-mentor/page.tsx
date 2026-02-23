@@ -55,10 +55,18 @@ export default function ApplyMentorPage() {
     setLoading(true);
 
     try {
+      // Get CSRF token for the POST request
+      const { getCSRFToken } = await import('@/lib/utils/csrf');
+      const csrfToken = await getCSRFToken();
+
       // Create a user request for mentor application
       const response = await fetch('/api/user-requests', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        credentials: 'include',
         body: JSON.stringify({
           type: 'MENTOR_APPLICATION',
           reason: JSON.stringify({
@@ -200,7 +208,7 @@ export default function ApplyMentorPage() {
                     <GraduationCap className="w-5 h-5 text-[#219EBC]" />
                     Personal Information
                   </h3>
-                  
+
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-sm font-bold text-foreground">
@@ -238,7 +246,7 @@ export default function ApplyMentorPage() {
                     <Briefcase className="w-5 h-5 text-[#219EBC]" />
                     Professional Background
                   </h3>
-                  
+
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="company" className="text-sm font-bold text-foreground">

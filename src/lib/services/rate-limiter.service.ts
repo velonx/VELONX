@@ -5,7 +5,7 @@
  */
 
 import { Redis } from '@upstash/redis'
-import { redisManager } from '@/lib/redis'
+import { getRedisClient } from '@/lib/redis'
 
 export interface RateLimitConfig {
   windowMs: number // Time window in milliseconds
@@ -38,7 +38,7 @@ export class RateLimiter {
   }
 
   constructor(config: RateLimitConfig) {
-    this.redis = redisManager.getClient()
+    this.redis = getRedisClient()
     this.config = {
       keyPrefix: 'ratelimit',
       ...config
@@ -60,23 +60,23 @@ export class RateLimiter {
     try {
       // Remove expired entries
       await this.redis.zremrangebyscore(key, 0, windowStart)
-      
+
       // Add current request
       const requestId = `${now}:${Math.random()}`
       await this.redis.zadd(key, { score: now, member: requestId })
-      
+
       // Count requests in current window
       const requestCount = await this.redis.zcard(key)
-      
+
       // Set expiration
       const expirationSeconds = Math.ceil(this.config.windowMs / 1000)
       await this.redis.expire(key, expirationSeconds)
-      
+
       // Calculate remaining requests
       const remaining = Math.max(0, this.config.maxRequests - requestCount)
       const allowed = requestCount <= this.config.maxRequests
       const resetAt = new Date(now + this.config.windowMs)
-      
+
       // Calculate retry after if blocked
       let retryAfter: number | undefined
       if (!allowed) {
@@ -97,7 +97,7 @@ export class RateLimiter {
           retryAfter = Math.ceil(this.config.windowMs / 1000)
         }
       }
-      
+
       return {
         allowed,
         remaining,
@@ -107,7 +107,7 @@ export class RateLimiter {
     } catch (error) {
       console.error('[RateLimiter] Error checking limit:', error)
       console.warn('[RateLimiter] Failing open due to Redis error')
-      
+
       // Fail open: allow request if Redis is unavailable
       return {
         allowed: true,
@@ -129,7 +129,7 @@ export class RateLimiter {
         // Reset all endpoints for this identifier
         const pattern = `${this.config.keyPrefix}:${identifier}:*`
         const keys = await this.redis.keys(pattern)
-        
+
         if (keys.length > 0) {
           await this.redis.del(...keys)
         }

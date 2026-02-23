@@ -107,9 +107,9 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
     isLoading: true,
     error: null,
   });
-  
+
   const [isManagingRequest, setIsManagingRequest] = useState(false);
-  
+
   const isMountedRef = useRef(true);
 
   /**
@@ -117,12 +117,12 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
    */
   const fetchMembers = useCallback(async () => {
     if (!groupId || !isMountedRef.current) return;
-    
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
       const response = await fetch(`/api/community/groups/${groupId}/members`);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -131,11 +131,11 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
           errorData.error?.message || 'Failed to fetch group members'
         );
       }
-      
+
       const data = await response.json();
-      
+
       if (!isMountedRef.current) return;
-      
+
       setState(prev => ({
         ...prev,
         members: data.data || [],
@@ -144,13 +144,13 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
       }));
     } catch (err) {
       console.error('[useGroupMembers] Fetch error:', err);
-      
+
       if (!isMountedRef.current) return;
-      
-      const error = err instanceof ApiClientError 
-        ? err 
+
+      const error = err instanceof ApiClientError
+        ? err
         : new ApiClientError(500, 'NETWORK_ERROR', getErrorMessage(err));
-      
+
       setState(prev => ({
         ...prev,
         members: [],
@@ -168,13 +168,13 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
 
     try {
       const response = await fetch(`/api/community/groups/${groupId}/requests`);
-      
+
       if (!response.ok) {
         // If 403, user is not a moderator - silently skip
         if (response.status === 403) {
           return;
         }
-        
+
         const errorData = await response.json();
         throw new ApiClientError(
           response.status,
@@ -182,11 +182,11 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
           errorData.error?.message || 'Failed to fetch join requests'
         );
       }
-      
+
       const data = await response.json();
-      
+
       if (!isMountedRef.current) return;
-      
+
       setState(prev => ({
         ...prev,
         joinRequests: data.data || [],
@@ -199,20 +199,17 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
 
   /**
    * Fetch members on mount and when groupId changes
+   * Also handles isMountedRef lifecycle to support React 18 Strict Mode
    */
   useEffect(() => {
+    isMountedRef.current = true;
     fetchMembers();
     fetchJoinRequests();
-  }, [fetchMembers, fetchJoinRequests]);
-  
-  /**
-   * Cleanup on unmount
-   */
-  useEffect(() => {
+
     return () => {
       isMountedRef.current = false;
     };
-  }, []);
+  }, [fetchMembers, fetchJoinRequests]);
 
   /**
    * Refetch function for manual refresh
@@ -221,7 +218,7 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
     await fetchMembers();
     await fetchJoinRequests();
   }, [fetchMembers, fetchJoinRequests]);
-  
+
   /**
    * Approve a join request
    */
@@ -232,7 +229,7 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
       const response = await fetch(`/api/community/groups/requests/${requestId}/approve`, {
         method: 'POST',
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -241,7 +238,7 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
           errorData.error?.message || 'Failed to approve request'
         );
       }
-      
+
       // Optimistically remove from join requests
       if (isMountedRef.current) {
         setState(prev => ({
@@ -249,10 +246,10 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
           joinRequests: prev.joinRequests.filter(req => req.id !== requestId),
         }));
       }
-      
+
       // Refetch members to include the newly approved member
       await fetchMembers();
-      
+
       toast.success('Join request approved successfully');
     } catch (err) {
       console.error('[useGroupMembers] Approve error:', err);
@@ -262,7 +259,7 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
       setIsManagingRequest(false);
     }
   }, [fetchMembers]);
-  
+
   /**
    * Reject a join request
    */
@@ -273,7 +270,7 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
       const response = await fetch(`/api/community/groups/requests/${requestId}/reject`, {
         method: 'POST',
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -282,7 +279,7 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
           errorData.error?.message || 'Failed to reject request'
         );
       }
-      
+
       // Optimistically remove from join requests
       if (isMountedRef.current) {
         setState(prev => ({
@@ -290,7 +287,7 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
           joinRequests: prev.joinRequests.filter(req => req.id !== requestId),
         }));
       }
-      
+
       toast.success('Join request rejected');
     } catch (err) {
       console.error('[useGroupMembers] Reject error:', err);

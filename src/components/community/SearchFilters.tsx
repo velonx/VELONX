@@ -12,7 +12,7 @@ import {
 /**
  * Search Filter Type
  */
-export type SearchFilterType = 'all' | 'rooms' | 'groups' | 'posts' | 'users';
+export type SearchFilterType = 'all' | 'groups' | 'posts' | 'users';
 
 /**
  * Search Filters Props Interface
@@ -21,7 +21,6 @@ export interface SearchFiltersProps {
   activeFilter: SearchFilterType;
   onFilterChange: (filter: SearchFilterType) => void;
   counts?: {
-    rooms: number;
     groups: number;
     posts: number;
     users: number;
@@ -37,12 +36,11 @@ const FILTERS: Array<{
   label: string;
   icon: React.ComponentType<{ className?: string }>;
 }> = [
-  { type: 'all', label: 'All', icon: FileTextIcon },
-  { type: 'rooms', label: 'Rooms', icon: MessageSquareIcon },
-  { type: 'groups', label: 'Groups', icon: UsersIcon },
-  { type: 'posts', label: 'Posts', icon: FileTextIcon },
-  { type: 'users', label: 'Users', icon: UserIcon },
-];
+    { type: 'all', label: 'All', icon: FileTextIcon },
+    { type: 'groups', label: 'Groups', icon: UsersIcon },
+    { type: 'posts', label: 'Posts', icon: FileTextIcon },
+    { type: 'users', label: 'Users', icon: UserIcon },
+  ];
 
 /**
  * SearchFilters Component
@@ -84,7 +82,7 @@ export function SearchFilters({
    */
   const getTotalCount = (): number | undefined => {
     if (!counts) return undefined;
-    return counts.rooms + counts.groups + counts.posts + counts.users;
+    return counts.groups + counts.posts + counts.users;
   };
 
   return (

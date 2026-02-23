@@ -22,7 +22,7 @@ class UpstashRedisManager {
     lastCheck: new Date()
   }
 
-  private constructor() {}
+  private constructor() { }
 
   /**
    * Get singleton instance
@@ -56,14 +56,14 @@ class UpstashRedisManager {
         url: upstashUrl,
         token: upstashToken,
       })
-      
+
       // Test connection
       await this.client.ping()
       console.log('[Redis] Connected to Upstash successfully!')
-      
+
       // Start health check monitoring
       this.startHealthCheck()
-      
+
     } catch (error) {
       console.error('[Redis] Connection failed:', error)
       throw error
@@ -145,7 +145,7 @@ class UpstashRedisManager {
    */
   public async reconnect(): Promise<void> {
     console.log('[Redis] Manual reconnection triggered')
-    
+
     if (this.client) {
       await this.disconnect()
     }
@@ -172,7 +172,33 @@ export const redisManager = UpstashRedisManager.getInstance()
 
 // Export convenience functions
 export const getRedisClient = (): Redis => {
-  return redisManager.getClient()
+  try {
+    return redisManager.getClient()
+  } catch {
+    // Attempt lazy initialization for Upstash (stateless HTTP client)
+    const upstashUrl = process.env.UPSTASH_REDIS_REST_URL
+    const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN
+
+    if (upstashUrl && upstashToken) {
+      // Synchronously create the client since Upstash REST is stateless
+      console.log('[Redis] Lazy-initializing Upstash Redis client...')
+      
+      // Create a new client instance immediately
+      const client = new Redis({ url: upstashUrl, token: upstashToken })
+      
+      // Trigger background initialization with health checks
+      redisManager.initialize().catch((err) =>
+        console.error('[Redis] Background initialization failed:', err)
+      )
+      
+      // Return the client for immediate use
+      return client
+    }
+
+    // If no credentials, log a warning and throw
+    console.error('[Redis] Redis credentials not found in environment variables')
+    throw new Error('Redis client not initialized and credentials not available.')
+  }
 }
 
 export const getRedisHealth = (): RedisHealthStatus => {

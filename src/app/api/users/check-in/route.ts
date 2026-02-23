@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { updateLoginStreak, getUserStreak } from "@/lib/utils/streak";
 import { handleError } from "@/lib/utils/errors";
+import { validateCSRFToken } from "@/lib/middleware/csrf.middleware";
 
 /**
  * GET /api/users/check-in
@@ -38,8 +39,14 @@ export async function GET() {
  * Record daily login and update streak
  * Authenticated users only
  */
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    // Validate CSRF token
+    const csrfValidation = await validateCSRFToken(request);
+    if (csrfValidation instanceof NextResponse) {
+      return csrfValidation;
+    }
+
     // Check authentication
     const sessionOrResponse = await requireAuth();
     if (sessionOrResponse instanceof NextResponse) {

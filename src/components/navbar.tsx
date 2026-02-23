@@ -32,7 +32,6 @@ const navLinks = [
 
 const communityLinks = [
     { href: "/community/feed", label: "Feed", icon: Rss },
-    { href: "/community/rooms", label: "Rooms", icon: MessageSquare },
     { href: "/community/groups", label: "Groups", icon: Users },
 ];
 
@@ -83,7 +82,7 @@ export function Navbar() {
                             {link.label}
                         </Link>
                     ))}
-                    
+
                     {/* Community Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -235,7 +234,7 @@ export function Navbar() {
                                             {link.label}
                                         </Link>
                                     ))}
-                                    
+
                                     {/* Community Section */}
                                     <div className="mt-2 border-t border-border pt-2">
                                         <div className="px-6 py-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">

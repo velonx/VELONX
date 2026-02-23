@@ -2,6 +2,7 @@
 
 import { formatDistanceToNow } from '@/lib/utils/date-helpers';
 import type { PostComment } from '@/lib/hooks/usePostComments';
+import { AvatarImage } from '@/components/responsive-image';
 
 /**
  * Comment Item Props Interface
@@ -30,12 +31,12 @@ export function CommentItem({ comment }: CommentItemProps) {
   return (
     <div className="flex gap-3">
       {/* Author Avatar */}
-      <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+      <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
         {comment.author.image ? (
-          <img
+          <AvatarImage
             src={comment.author.image}
             alt={comment.author.name || 'User'}
-            className="size-8 rounded-full object-cover"
+            size={32}
           />
         ) : (
           <span className="text-xs font-medium text-primary">

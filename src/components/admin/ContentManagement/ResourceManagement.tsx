@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { BookOpen, Edit, Trash2, XCircle, Download, Eye, Plus } from "lucide-react";
 import toast from "react-hot-toast";
+import { getCSRFToken } from "@/lib/utils/csrf";
 
 interface Resource {
   id: string;
@@ -65,8 +66,14 @@ export default function ResourceManagement() {
 
     setDeletingResourceId(id);
     try {
+      const csrfToken = await getCSRFToken();
+
       const response = await fetch(`/api/resources/${id}`, {
         method: 'DELETE',
+        headers: {
+          'x-csrf-token': csrfToken,
+        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -259,12 +266,17 @@ export default function ResourceManagement() {
                   imageUrl: (formData.get('imageUrl') as string) || undefined,
                 };
 
+                const csrfToken = await getCSRFToken();
                 const apiUrl = editingResource ? `/api/resources/${editingResource.id}` : '/api/resources';
                 const method = editingResource ? 'PATCH' : 'POST';
 
                 const response = await fetch(apiUrl, {
                   method,
-                  headers: { 'Content-Type': 'application/json' },
+                  headers: { 
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken,
+                  },
+                  credentials: 'include',
                   body: JSON.stringify(resourceData),
                 });
 
@@ -443,10 +455,15 @@ export default function ResourceManagement() {
                           reader.onloadend = async () => {
                             try {
                               const base64Image = reader.result as string;
+                              const csrfToken = await getCSRFToken();
                               
                               const response = await fetch('/api/upload', {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: { 
+                                  'Content-Type': 'application/json',
+                                  'x-csrf-token': csrfToken,
+                                },
+                                credentials: 'include',
                                 body: JSON.stringify({ 
                                   image: base64Image,
                                   folder: 'velonx/resources'

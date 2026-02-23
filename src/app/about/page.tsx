@@ -5,9 +5,6 @@ import { Rocket, Target, Users, Shield, Zap, Sparkles, Heart, Lightbulb } from "
 import { Card, CardContent } from "@/components/ui/card";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 
-// Enable ISR with revalidation every 24 hours
-export const revalidate = 86400;
-
 export default function AboutPage() {
     const stats = [
         { label: "Active Members", value: "5000+", icon: Users },
@@ -41,7 +38,7 @@ export default function AboutPage() {
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
             <section className="py-20 bg-background overflow-hidden relative">
-                
+
                 <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#FFB703]/5 rounded-full blur-3xl" />
 
                 <div className="container mx-auto px-4 relative z-10 text-center">

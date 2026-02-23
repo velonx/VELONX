@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ApiClientError } from '@/lib/api/client';
+import { getCSRFToken } from '@/lib/utils/csrf';
 import type { CommunityPostData } from '@/lib/types/community.types';
 import toast from 'react-hot-toast';
 
@@ -114,11 +115,11 @@ export function useCommunityPosts(
     isLoading: true,
     error: null,
   });
-  
+
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const isMountedRef = useRef(true);
   const cursorRef = useRef<string | null>(null);
 
@@ -127,7 +128,7 @@ export function useCommunityPosts(
    */
   const fetchPosts = useCallback(async (cursor?: string | null) => {
     if (!isMountedRef.current) return;
-    
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
@@ -136,9 +137,9 @@ export function useCommunityPosts(
       if (authorId) params.append('authorId', authorId);
       params.append('limit', limit.toString());
       if (cursor) params.append('cursor', cursor);
-      
+
       const response = await fetch(`/api/community/posts?${params.toString()}`);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -147,14 +148,14 @@ export function useCommunityPosts(
           errorData.error?.message || 'Failed to fetch posts'
         );
       }
-      
+
       const data = await response.json();
-      
+
       if (!isMountedRef.current) return;
-      
+
       const newPosts = data.data || [];
       const nextCursor = data.pagination?.cursor || null;
-      
+
       setState(prev => ({
         ...prev,
         posts: cursor ? [...prev.posts, ...newPosts] : newPosts,
@@ -162,17 +163,17 @@ export function useCommunityPosts(
         isLoading: false,
         error: null,
       }));
-      
+
       cursorRef.current = nextCursor;
     } catch (err) {
       console.error('[useCommunityPosts] Fetch error:', err);
-      
+
       if (!isMountedRef.current) return;
-      
-      const error = err instanceof ApiClientError 
-        ? err 
+
+      const error = err instanceof ApiClientError
+        ? err
         : new ApiClientError(500, 'NETWORK_ERROR', getErrorMessage(err));
-      
+
       setState(prev => ({
         ...prev,
         isLoading: false,
@@ -183,20 +184,17 @@ export function useCommunityPosts(
 
   /**
    * Fetch posts on mount and when groupId changes
+   * Also handles isMountedRef lifecycle to support React 18 Strict Mode
    */
   useEffect(() => {
+    isMountedRef.current = true;
     cursorRef.current = null;
     fetchPosts();
-  }, [fetchPosts]);
-  
-  /**
-   * Cleanup on unmount
-   */
-  useEffect(() => {
+
     return () => {
       isMountedRef.current = false;
     };
-  }, []);
+  }, [fetchPosts]);
 
   /**
    * Refetch function for manual refresh
@@ -205,7 +203,7 @@ export function useCommunityPosts(
     cursorRef.current = null;
     await fetchPosts();
   }, [fetchPosts]);
-  
+
   /**
    * Load more posts (pagination)
    */
@@ -213,7 +211,7 @@ export function useCommunityPosts(
     if (!state.hasMore || state.isLoading) return;
     await fetchPosts(cursorRef.current);
   }, [state.hasMore, state.isLoading, fetchPosts]);
-  
+
   /**
    * Create a new post with optimistic update
    */
@@ -222,7 +220,7 @@ export function useCommunityPosts(
       toast.error('Post content cannot be empty');
       return null;
     }
-    
+
     setIsCreating(true);
 
     // Create optimistic post
@@ -253,14 +251,17 @@ export function useCommunityPosts(
     }
 
     try {
+      const csrfToken = await getCSRFToken();
       const response = await fetch('/api/community/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
         },
+        credentials: 'include',
         body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -269,10 +270,10 @@ export function useCommunityPosts(
           errorData.error?.message || 'Failed to create post'
         );
       }
-      
+
       const result = await response.json();
       const newPost = result.data;
-      
+
       // Replace optimistic post with real post
       if (isMountedRef.current) {
         setState(prev => ({
@@ -282,12 +283,12 @@ export function useCommunityPosts(
           ),
         }));
       }
-      
+
       toast.success('Post created successfully');
       return newPost;
     } catch (err) {
       console.error('[useCommunityPosts] Create error:', err);
-      
+
       // Remove optimistic post on error
       if (isMountedRef.current) {
         setState(prev => ({
@@ -295,14 +296,14 @@ export function useCommunityPosts(
           posts: prev.posts.filter(post => post.id !== optimisticPost.id),
         }));
       }
-      
+
       toast.error(getErrorMessage(err));
       return null;
     } finally {
       setIsCreating(false);
     }
   }, []);
-  
+
   /**
    * Edit a post
    */
@@ -311,12 +312,12 @@ export function useCommunityPosts(
       toast.error('Post content cannot be empty');
       return;
     }
-    
+
     setIsEditing(true);
 
     // Store original post for rollback
     const originalPost = state.posts.find(post => post.id === postId);
-    
+
     // Optimistically update post
     if (isMountedRef.current) {
       setState(prev => ({
@@ -330,14 +331,17 @@ export function useCommunityPosts(
     }
 
     try {
+      const csrfToken = await getCSRFToken();
       const response = await fetch(`/api/community/posts/${postId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
         },
+        credentials: 'include',
         body: JSON.stringify({ content: content.trim() }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -346,10 +350,10 @@ export function useCommunityPosts(
           errorData.error?.message || 'Failed to edit post'
         );
       }
-      
+
       const result = await response.json();
       const updatedPost = result.data;
-      
+
       // Update with server response
       if (isMountedRef.current) {
         setState(prev => ({
@@ -359,11 +363,11 @@ export function useCommunityPosts(
           ),
         }));
       }
-      
+
       toast.success('Post updated');
     } catch (err) {
       console.error('[useCommunityPosts] Edit error:', err);
-      
+
       // Rollback on error
       if (originalPost && isMountedRef.current) {
         setState(prev => ({
@@ -373,14 +377,14 @@ export function useCommunityPosts(
           ),
         }));
       }
-      
+
       toast.error(getErrorMessage(err));
       throw err;
     } finally {
       setIsEditing(false);
     }
   }, [state.posts]);
-  
+
   /**
    * Delete a post
    */
@@ -389,7 +393,7 @@ export function useCommunityPosts(
 
     // Store original post for rollback
     const originalPost = state.posts.find(post => post.id === postId);
-    
+
     // Optimistically remove post
     if (isMountedRef.current) {
       setState(prev => ({
@@ -399,10 +403,15 @@ export function useCommunityPosts(
     }
 
     try {
+      const csrfToken = await getCSRFToken();
       const response = await fetch(`/api/community/posts/${postId}`, {
         method: 'DELETE',
+        headers: {
+          'x-csrf-token': csrfToken,
+        },
+        credentials: 'include',
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -411,11 +420,11 @@ export function useCommunityPosts(
           errorData.error?.message || 'Failed to delete post'
         );
       }
-      
+
       toast.success('Post deleted');
     } catch (err) {
       console.error('[useCommunityPosts] Delete error:', err);
-      
+
       // Rollback on error
       if (originalPost && isMountedRef.current) {
         setState(prev => ({
@@ -423,7 +432,7 @@ export function useCommunityPosts(
           posts: [originalPost, ...prev.posts],
         }));
       }
-      
+
       toast.error(getErrorMessage(err));
       throw err;
     } finally {

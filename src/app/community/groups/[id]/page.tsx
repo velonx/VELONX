@@ -8,23 +8,25 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Users, 
-  Lock, 
-  Globe, 
-  UserPlus, 
+import {
+  Users,
+  Lock,
+  Globe,
+  UserPlus,
   LogOut,
   Settings,
   Shield,
   Clock,
   FileText
 } from "lucide-react";
-import { GroupFeed } from "@/components/community/GroupFeed";
-import { GroupMembers } from "@/components/community/GroupMembers";
-import { GroupSettings } from "@/components/community/GroupSettings";
-import { JoinRequestList } from "@/components/community/JoinRequestList";
+import GroupFeed from "@/components/community/GroupFeed";
+import GroupMembers from "@/components/community/GroupMembers";
+import GroupSettings from "@/components/community/GroupSettings";
+import JoinRequestList from "@/components/community/JoinRequestList";
+import { PostComposer } from "@/components/community/PostComposer";
 import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
 import { useGroupMembers } from "@/lib/hooks/useGroupMembers";
+import { useCommunityPosts, type CreatePostData } from "@/lib/hooks/useCommunityPosts";
 import toast from "react-hot-toast";
 
 export default function GroupDetailPage() {
@@ -36,16 +38,20 @@ export default function GroupDetailPage() {
   const [isJoining, setIsJoining] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
   const [activeTab, setActiveTab] = useState("feed");
+  const [showComposer, setShowComposer] = useState(false);
 
   // Fetch group details
-  const { groups, loading, joinGroup, requestJoinGroup, leaveGroup, refetch } = useCommunityGroups();
+  const { groups, isLoading: loading, joinGroup, requestJoinGroup, leaveGroup, refetch, memberGroupIds } = useCommunityGroups();
   const group = groups?.find(g => g.id === groupId);
 
   // Fetch group members
-  const { members, loading: membersLoading } = useGroupMembers(groupId);
+  const { members, isLoading: membersLoading, joinRequests, approveRequest, rejectRequest } = useGroupMembers(groupId);
 
-  // Check if user is a member or owner
-  const isMember = members?.some(m => m.id === session?.user?.id);
+  // Fetch group posts
+  const { posts, isLoading: postsLoading, createPost, isCreating, loadMore, hasMore, refetch: refetchPosts } = useCommunityPosts({ groupId });
+
+  // Check if user is a member or owner — use both members list and memberGroupIds for reliability
+  const isMember = members?.some(m => m.userId === session?.user?.id) || memberGroupIds?.includes(groupId);
   const isOwner = group?.ownerId === session?.user?.id;
   const isModerator = isOwner; // Simplified - should check moderators table
 
@@ -173,7 +179,7 @@ export default function GroupDetailPage() {
 
             <div className="flex items-center gap-2">
               {!isMember ? (
-                <Button 
+                <Button
                   onClick={handleJoinGroup}
                   disabled={isJoining}
                   className="gap-2"
@@ -184,7 +190,7 @@ export default function GroupDetailPage() {
               ) : (
                 <>
                   {!isOwner && (
-                    <Button 
+                    <Button
                       variant="outline"
                       onClick={handleLeaveGroup}
                       disabled={isLeaving}
@@ -230,28 +236,61 @@ export default function GroupDetailPage() {
               </TabsList>
 
               <TabsContent value="feed">
-                <GroupFeed groupId={groupId} />
+                {showComposer && (
+                  <div className="mb-6">
+                    <PostComposer
+                      onSubmit={async (data: CreatePostData) => {
+                        await createPost({
+                          ...data,
+                          groupId,
+                          visibility: 'GROUP',
+                        });
+                        setShowComposer(false);
+                        refetchPosts();
+                      }}
+                      groupId={groupId}
+                      visibility="GROUP"
+                      placeholder={`Share something with ${group.name}...`}
+                      isSubmitting={isCreating}
+                    />
+                  </div>
+                )}
+                <GroupFeed
+                  posts={posts}
+                  isMember={isMember}
+                  isLoading={postsLoading}
+                  hasMore={hasMore}
+                  onLoadMore={loadMore}
+                  onCreatePost={() => setShowComposer(!showComposer)}
+                />
               </TabsContent>
 
               <TabsContent value="members">
-                <GroupMembers 
-                  groupId={groupId}
+                <GroupMembers
                   members={members || []}
-                  loading={membersLoading}
-                  isModerator={isModerator}
+                  isLoading={membersLoading}
+                  ownerId={group?.ownerId}
                 />
               </TabsContent>
 
               {isModerator && (
                 <>
                   <TabsContent value="requests">
-                    <JoinRequestList groupId={groupId} />
+                    <JoinRequestList
+                      requests={joinRequests || []}
+                      isLoading={membersLoading}
+                      onApprove={approveRequest}
+                      onReject={rejectRequest}
+                    />
                   </TabsContent>
 
                   <TabsContent value="settings">
-                    <GroupSettings 
+                    <GroupSettings
                       group={group}
-                      onUpdate={() => refetch()}
+                      members={members || []}
+                      moderatorIds={[]}
+                      onUpdateGroup={async () => { await refetch(); }}
+                      isOwner={isOwner}
                     />
                   </TabsContent>
                 </>
@@ -265,7 +304,7 @@ export default function GroupDetailPage() {
                   {group.isPrivate ? "Private Group" : "Join to participate"}
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  {group.isPrivate 
+                  {group.isPrivate
                     ? "This is a private group. Request to join to view posts and participate."
                     : "Join this group to view posts and participate in discussions."
                   }

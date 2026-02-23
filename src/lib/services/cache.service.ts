@@ -30,11 +30,19 @@ export class CacheService {
 
   /**
    * Initialize the cache service with Redis client
+   * Returns true if client is available, false otherwise
    */
-  private initializeClient(): void {
+  private initializeClient(): boolean {
     if (!this.client) {
-      this.client = getRedisClient()
+      try {
+        this.client = getRedisClient()
+      } catch (error) {
+        // Redis not initialized yet — gracefully degrade (cache miss)
+        console.warn('[Cache] Redis not available, operating without cache:', (error as Error).message)
+        return false
+      }
     }
+    return true
   }
 
   /**
@@ -42,12 +50,12 @@ export class CacheService {
    */
   async get<T>(key: string): Promise<T | null> {
     const startTime = Date.now()
-    
+
     try {
-      this.initializeClient()
+      if (!this.initializeClient()) return null
       const value = await this.client!.get<T>(key)
       const duration = Date.now() - startTime
-      
+
       // Track cache operation
       await performanceMonitor.trackCacheOperation({
         operation: 'get',
@@ -56,11 +64,11 @@ export class CacheService {
         duration,
         timestamp: startTime,
       })
-      
+
       return value
     } catch (error) {
       const duration = Date.now() - startTime
-      
+
       // Track failed operation
       await performanceMonitor.trackCacheOperation({
         operation: 'get',
@@ -69,7 +77,7 @@ export class CacheService {
         duration,
         timestamp: startTime,
       })
-      
+
       console.error(`[Cache] Error getting key ${key}:`, error)
       return null
     }
@@ -80,14 +88,14 @@ export class CacheService {
    */
   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
     const startTime = Date.now()
-    
+
     try {
-      this.initializeClient()
+      if (!this.initializeClient()) return
       const expirationTime = ttl || this.config.defaultTTL
 
       await this.client!.set(key, value, { ex: expirationTime })
       const duration = Date.now() - startTime
-      
+
       // Track cache operation
       await performanceMonitor.trackCacheOperation({
         operation: 'set',
@@ -98,7 +106,7 @@ export class CacheService {
       })
     } catch (error) {
       const duration = Date.now() - startTime
-      
+
       // Track failed operation
       await performanceMonitor.trackCacheOperation({
         operation: 'set',
@@ -107,7 +115,7 @@ export class CacheService {
         duration,
         timestamp: startTime,
       })
-      
+
       console.error(`[Cache] Error setting key ${key}:`, error)
       throw error
     }
@@ -118,18 +126,18 @@ export class CacheService {
    */
   async invalidate(pattern: string): Promise<void> {
     const startTime = Date.now()
-    
+
     try {
-      this.initializeClient()
+      if (!this.initializeClient()) return
       const keys = await this.client!.keys(pattern)
-      
+
       if (keys.length > 0) {
         await this.client!.del(...keys)
         console.log(`[Cache] Invalidated ${keys.length} keys matching pattern: ${pattern}`)
       }
-      
+
       const duration = Date.now() - startTime
-      
+
       // Track cache operation
       await performanceMonitor.trackCacheOperation({
         operation: 'invalidate',
@@ -140,7 +148,7 @@ export class CacheService {
       })
     } catch (error) {
       const duration = Date.now() - startTime
-      
+
       // Track failed operation
       await performanceMonitor.trackCacheOperation({
         operation: 'invalidate',
@@ -149,7 +157,7 @@ export class CacheService {
         duration,
         timestamp: startTime,
       })
-      
+
       console.error(`[Cache] Error invalidating pattern ${pattern}:`, error)
       throw error
     }
@@ -166,17 +174,17 @@ export class CacheService {
     try {
       // Try to get from cache first
       const cachedValue = await this.get<T>(key)
-      
+
       if (cachedValue !== null) {
         return cachedValue
       }
 
       // Cache miss - fetch data
       const value = await fetcher()
-      
+
       // Store in cache
       await this.set(key, value, ttl)
-      
+
       return value
     } catch (error) {
       console.error(`[Cache] Error in getOrSet for key ${key}:`, error)
@@ -190,12 +198,12 @@ export class CacheService {
    */
   async delete(key: string): Promise<void> {
     const startTime = Date.now()
-    
+
     try {
-      this.initializeClient()
+      if (!this.initializeClient()) return
       await this.client!.del(key)
       const duration = Date.now() - startTime
-      
+
       // Track cache operation
       await performanceMonitor.trackCacheOperation({
         operation: 'delete',
@@ -206,7 +214,7 @@ export class CacheService {
       })
     } catch (error) {
       const duration = Date.now() - startTime
-      
+
       // Track failed operation
       await performanceMonitor.trackCacheOperation({
         operation: 'delete',
@@ -215,7 +223,7 @@ export class CacheService {
         duration,
         timestamp: startTime,
       })
-      
+
       console.error(`[Cache] Error deleting key ${key}:`, error)
       throw error
     }
@@ -226,7 +234,7 @@ export class CacheService {
    */
   async exists(key: string): Promise<boolean> {
     try {
-      this.initializeClient()
+      if (!this.initializeClient()) return false
       const result = await this.client!.exists(key)
       return result === 1
     } catch (error) {
@@ -240,7 +248,7 @@ export class CacheService {
    */
   async getTTL(key: string): Promise<number> {
     try {
-      this.initializeClient()
+      if (!this.initializeClient()) return -2
       return await this.client!.ttl(key)
     } catch (error) {
       console.error(`[Cache] Error getting TTL for key ${key}:`, error)
@@ -253,7 +261,7 @@ export class CacheService {
    */
   async clear(): Promise<void> {
     try {
-      this.initializeClient()
+      if (!this.initializeClient()) return
       const keys = await this.client!.keys('*')
       if (keys.length > 0) {
         await this.client!.del(...keys)
@@ -275,7 +283,7 @@ export const CacheKeys = {
     stats: (userId: string) => `user:${userId}:stats`,
     all: (userId: string) => `user:${userId}:*`,
   },
-  
+
   resource: {
     details: (resourceId: string) => `resource:${resourceId}:details`,
     list: (page: number, category?: string, type?: string, search?: string) => {
@@ -284,41 +292,41 @@ export const CacheKeys = {
     },
     all: () => `resource:*`,
   },
-  
+
   course: {
     details: (courseId: string) => `course:${courseId}:details`,
     list: (page: number) => `course:list:${page}`,
     all: () => `course:*`,
   },
-  
+
   leaderboard: {
     top: (limit: number) => `leaderboard:top:${limit}`,
     all: () => `leaderboard:*`,
   },
-  
+
   blog: {
     post: (postId: string) => `blog:${postId}:post`,
     list: (page: number) => `blog:list:${page}`,
     all: () => `blog:*`,
   },
-  
+
   event: {
     details: (eventId: string) => `event:${eventId}:details`,
     list: (page: number) => `event:list:${page}`,
     all: () => `event:*`,
   },
-  
+
   project: {
     details: (projectId: string) => `project:${projectId}:details`,
     list: (page: number) => `project:list:${page}`,
     all: () => `project:*`,
   },
-  
+
   feed: {
-    user: (userId: string, filter: string, cursor: string, limit: number) => 
+    user: (userId: string, filter: string, cursor: string, limit: number) =>
       `feed:${userId}:${filter}:${cursor}:${limit}`,
     userAll: (userId: string) => `feed:${userId}:*`,
-    group: (groupId: string, cursor: string, limit: number) => 
+    group: (groupId: string, cursor: string, limit: number) =>
       `feed:group:${groupId}:${cursor}:${limit}`,
     groupAll: (groupId: string) => `feed:group:${groupId}:*`,
     trending: (limit: number) => `feed:trending:${limit}`,

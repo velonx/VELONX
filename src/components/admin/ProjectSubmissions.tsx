@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, CheckCircle2, XCircle, Users, Code, Target } from "lucide-react";
 import toast from "react-hot-toast";
+import { getCSRFToken } from "@/lib/utils/csrf";
 
 interface ProjectSubmission {
   id: string;
@@ -48,9 +49,16 @@ export default function ProjectSubmissions() {
   const handleApprove = async (requestId: string, projectTitle: string) => {
     setProcessing(requestId);
     try {
+      // Get CSRF token
+      const csrfToken = await getCSRFToken();
+
       const response = await fetch('/api/admin/projects/approve', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        credentials: 'include',
         body: JSON.stringify({ requestId }),
       });
 
@@ -76,9 +84,16 @@ export default function ProjectSubmissions() {
 
     setProcessing(requestId);
     try {
+      // Get CSRF token
+      const csrfToken = await getCSRFToken();
+
       const response = await fetch(`/api/admin/requests/${requestId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        credentials: 'include',
         body: JSON.stringify({ action: 'reject', reason: 'Project submission rejected by admin' }),
       });
 

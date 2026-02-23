@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Video, Briefcase, GraduationCap, Plus, Edit, Trash2, CheckCircle, XCircle, Calendar, Clock, Mail, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { getCSRFToken } from "@/lib/utils/csrf";
 
 export default function CareerManagement() {
     const [activeTab, setActiveTab] = useState("mock-interviews");
@@ -90,9 +91,16 @@ export default function CareerManagement() {
         try {
             const requirements = opportunityForm.requirements.split('\n').filter(r => r.trim());
             
+            // Get CSRF token
+            const csrfToken = await getCSRFToken();
+            
             const response = await fetch('/api/opportunities', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken,
+                },
+                credentials: 'include',
                 body: JSON.stringify({
                     ...opportunityForm,
                     requirements,
@@ -124,9 +132,16 @@ export default function CareerManagement() {
         try {
             const requirements = opportunityForm.requirements.split('\n').filter(r => r.trim());
             
+            // Get CSRF token
+            const csrfToken = await getCSRFToken();
+            
             const response = await fetch(`/api/opportunities/${editingOpportunity.id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken,
+                },
+                credentials: 'include',
                 body: JSON.stringify({
                     ...opportunityForm,
                     requirements,
@@ -155,8 +170,15 @@ export default function CareerManagement() {
         if (!confirm("Are you sure you want to delete this opportunity?")) return;
 
         try {
+            // Get CSRF token
+            const csrfToken = await getCSRFToken();
+
             const response = await fetch(`/api/opportunities/${id}`, {
                 method: 'DELETE',
+                headers: {
+                    'x-csrf-token': csrfToken,
+                },
+                credentials: 'include',
             });
 
             if (response.ok) {
@@ -176,9 +198,16 @@ export default function CareerManagement() {
 
         setLoading(true);
         try {
+            // Get CSRF token
+            const csrfToken = await getCSRFToken();
+
             const response = await fetch(`/api/mock-interviews/${selectedInterview.id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken,
+                },
+                credentials: 'include',
                 body: JSON.stringify(interviewUpdateForm),
             });
 

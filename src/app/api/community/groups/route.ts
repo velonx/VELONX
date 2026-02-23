@@ -122,6 +122,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     return sessionOrResponse;
   }
 
+  const session = sessionOrResponse;
+  const userId = session.user.id!;
+
   // Parse query parameters
   const searchParams = request.nextUrl.searchParams;
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -130,10 +133,10 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   // Calculate skip for pagination
   const skip = (page - 1) * pageSize;
 
-  // Get groups from database with pagination
+  // Get groups from database with pagination, plus user's membership info
   const { prisma } = await import("@/lib/prisma");
-  
-  const [groups, total] = await Promise.all([
+
+  const [groups, total, userMemberships, userPendingRequests] = await Promise.all([
     prisma.communityGroup.findMany({
       skip,
       take: pageSize,
@@ -155,6 +158,16 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       orderBy: { createdAt: "desc" },
     }),
     prisma.communityGroup.count(),
+    // Get groups the user is a member of
+    prisma.groupMember.findMany({
+      where: { userId },
+      select: { groupId: true },
+    }),
+    // Get groups the user has pending join requests for
+    prisma.groupJoinRequest.findMany({
+      where: { userId, status: "PENDING" },
+      select: { groupId: true },
+    }),
   ]);
 
   // Format response with member and post counts
@@ -169,6 +182,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     {
       success: true,
       data: formattedGroups,
+      memberGroupIds: userMemberships.map((m: { groupId: string }) => m.groupId),
+      pendingRequestGroupIds: userPendingRequests.map((r: { groupId: string }) => r.groupId),
       pagination: {
         page,
         pageSize,

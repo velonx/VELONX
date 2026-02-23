@@ -47,6 +47,9 @@ const ResourceManagement = dynamic(() => import("@/components/admin/ContentManag
 const MentorApplications = dynamic(() => import("@/components/admin/MentorManagement").then(mod => ({ default: mod.MentorApplications })), {
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
 });
+const EventManagement = dynamic(() => import("@/components/admin/EventManagement"), {
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+});
 
 
 export default function AdminDashboard() {
@@ -237,19 +240,7 @@ export default function AdminDashboard() {
                     </TabsContent>
 
                     <TabsContent value="events" className="space-y-12">
-                        <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
-                            <CardHeader className="p-12 border-b border-gray-50">
-                                <h3 className="text-3xl font-black text-[#023047] mb-2">Events Management</h3>
-                                <p className="text-muted-foreground">Event management features coming soon</p>
-                            </CardHeader>
-                            <CardContent className="p-12">
-                                <div className="text-center py-20">
-                                    <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                    <p className="text-muted-foreground text-lg font-bold">Events Management Coming Soon</p>
-                                    <p className="text-muted-foreground text-sm mt-2">Create and manage events here</p>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <EventManagement />
                     </TabsContent>
 
                     <TabsContent value="blog">

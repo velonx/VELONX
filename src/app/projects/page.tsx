@@ -38,7 +38,6 @@ import {
     loadFilterPreference,
     saveFilterPreference,
 } from "@/lib/utils/session-storage";
-import { performanceMonitor } from "@/lib/services/performance-monitor.service";
 import { usePerformanceMonitoring, useWebVitals } from "@/lib/hooks/usePerformanceMonitoring";
 
 function ProjectsPageContent() {
@@ -221,9 +220,16 @@ function ProjectsPageContent() {
         setJoiningProjects(prev => new Set(prev).add(projectId));
 
         try {
+            const { getCSRFToken } = await import('@/lib/utils/csrf');
+            const csrfToken = await getCSRFToken();
+
             const response = await fetch(`/api/projects/${projectId}/join-requests`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken,
+                },
+                credentials: 'include',
             });
 
             const data = await response.json();
@@ -235,43 +241,22 @@ function ProjectsPageContent() {
                 await refetchRunning();
                 await refetchCompleted();
 
-                // Track successful join request
+                // Track successful join request (client-side)
                 const duration = performance.now() - requestStartTime;
-                performanceMonitor.trackRequest({
-                    endpoint: `/api/projects/${projectId}/join-requests`,
-                    method: 'POST',
-                    statusCode: 200,
-                    duration,
-                    timestamp: Date.now(),
-                    userId: session.user.id,
-                }).catch(err => console.debug('[Performance] Failed to track metric:', err));
+                console.debug(`[Performance] Join request completed in ${duration.toFixed(2)}ms`);
             } else {
                 toast.error(data.error?.message || 'Failed to send join request');
 
-                // Track failed join request
+                // Track failed join request (client-side)
                 const duration = performance.now() - requestStartTime;
-                performanceMonitor.trackRequest({
-                    endpoint: `/api/projects/${projectId}/join-requests`,
-                    method: 'POST',
-                    statusCode: response.status,
-                    duration,
-                    timestamp: Date.now(),
-                    userId: session.user.id,
-                }).catch(err => console.debug('[Performance] Failed to track metric:', err));
+                console.debug(`[Performance] Join request failed in ${duration.toFixed(2)}ms`);
             }
         } catch (error: any) {
             toast.error('Failed to send join request');
 
-            // Track error
+            // Track error (client-side)
             const duration = performance.now() - requestStartTime;
-            performanceMonitor.trackRequest({
-                endpoint: `/api/projects/${projectId}/join-requests`,
-                method: 'POST',
-                statusCode: 500,
-                duration,
-                timestamp: Date.now(),
-                userId: session?.user?.id,
-            }).catch(err => console.debug('[Performance] Failed to track metric:', err));
+            console.debug(`[Performance] Join request error in ${duration.toFixed(2)}ms`);
         } finally {
             setJoiningProjects(prev => {
                 const next = new Set(prev);
