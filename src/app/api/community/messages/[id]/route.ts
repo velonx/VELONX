@@ -55,8 +55,10 @@ const editMessageSchema = z.object({
  */
 export const PATCH = withErrorHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
+  const { id: messageId } = await params;
+
   // Require authentication
   const sessionOrResponse = await requireAuth();
   if (sessionOrResponse instanceof NextResponse) {
@@ -65,7 +67,6 @@ export const PATCH = withErrorHandler(async (
 
   const session = sessionOrResponse;
   const userId = session.user.id!;
-  const messageId = params.id;
 
   // Parse and validate request body
   const body = await request.json();
@@ -117,8 +118,10 @@ export const PATCH = withErrorHandler(async (
  */
 export const DELETE = withErrorHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
+  const { id: messageId } = await params;
+
   // Require authentication
   const sessionOrResponse = await requireAuth();
   if (sessionOrResponse instanceof NextResponse) {
@@ -127,7 +130,6 @@ export const DELETE = withErrorHandler(async (
 
   const session = sessionOrResponse;
   const userId = session.user.id!;
-  const messageId = params.id;
 
   // Delete message via service
   await chatService.deleteMessage(messageId, userId);

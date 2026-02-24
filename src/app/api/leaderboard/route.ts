@@ -19,22 +19,21 @@ const leaderboardQuerySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     // Parse and validate query parameters
     const queryParams = leaderboardQuerySchema.parse({
-      page: searchParams.get("page"),
-      pageSize: searchParams.get("pageSize"),
-      role: searchParams.get("role"),
-      timeframe: searchParams.get("timeframe"),
+      page: searchParams.get("page") ?? undefined,
+      pageSize: searchParams.get("pageSize") ?? undefined,
+      role: (searchParams.get("role") as "STUDENT" | "ADMIN" | null) ?? undefined,
+      timeframe: (searchParams.get("timeframe") as "all" | "month" | "week" | null) ?? undefined,
     });
-    
+
     const result = await leaderboardService.getLeaderboard(queryParams);
-    
+
     return NextResponse.json(
       {
         success: true,
-        data: result.leaderboard,
-        pagination: result.pagination,
+        data: result,
       },
       { status: 200 }
     );

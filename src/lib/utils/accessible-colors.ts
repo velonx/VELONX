@@ -18,47 +18,47 @@ export const accessibleBadgeColors = {
     background: 'bg-blue-600/90', // Darker, more opaque for better contrast
     text: 'text-white', // White text on blue background (high contrast)
     border: 'border-blue-500/50',
-    icon: 'text-white',
+    iconColor: 'text-white',
   },
-  
+
   // Orange badges - for "Starting Soon" indicators
   orange: {
     background: 'bg-orange-600/90', // Darker, more opaque
     text: 'text-white', // White text on orange background
     border: 'border-orange-500/50',
-    icon: 'text-white',
+    iconColor: 'text-white',
   },
-  
+
   // Red badges - for "Almost Full" indicators
   red: {
     background: 'bg-red-600/90', // Darker, more opaque
     text: 'text-white', // White text on red background
     border: 'border-red-500/50',
-    icon: 'text-white',
+    iconColor: 'text-white',
   },
-  
+
   // Green badges - for "Registered" status
   green: {
     background: 'bg-green-600',
     text: 'text-white',
     border: 'border-green-500',
-    icon: 'text-white',
+    iconColor: 'text-white',
   },
-  
+
   // Cyan badges - for general info
   cyan: {
     background: 'bg-cyan-600/90',
     text: 'text-white',
     border: 'border-cyan-500/50',
-    icon: 'text-white',
+    iconColor: 'text-white',
   },
-  
+
   // White/Light badges - for event type on gradient backgrounds
   light: {
     background: 'bg-white/30', // Increased opacity
     text: 'text-white', // White text with backdrop blur
     border: 'border-white/20',
-    icon: 'text-white',
+    iconColor: 'text-white',
   },
 } as const;
 
@@ -69,16 +69,16 @@ export const accessibleBadgeColors = {
 export const accessibleTextColors = {
   // Primary text - highest contrast
   primary: 'text-white', // 21:1 contrast ratio
-  
+
   // Secondary text - still high contrast
   secondary: 'text-gray-200', // ~14:1 contrast ratio
-  
+
   // Muted text - meets WCAG AA (was text-gray-400, now improved)
   muted: 'text-gray-300', // ~8:1 contrast ratio (improved from gray-400)
-  
+
   // Subtle text - minimum WCAG AA compliance
   subtle: 'text-gray-400', // ~4.5:1 contrast ratio (use sparingly)
-  
+
   // Accent colors with sufficient contrast
   accent: {
     cyan: 'text-cyan-300', // Lighter cyan for better contrast
@@ -100,21 +100,21 @@ export const accessibleButtonColors = {
     text: 'text-white',
     hover: 'hover:from-blue-700 hover:to-violet-700',
   },
-  
+
   // Secondary action buttons
   secondary: {
     background: 'bg-gray-700',
     text: 'text-white',
     hover: 'hover:bg-gray-600',
   },
-  
+
   // Success buttons (registered state)
   success: {
     background: 'bg-green-600',
     text: 'text-white',
     hover: 'hover:bg-green-700',
   },
-  
+
   // Outline buttons
   outline: {
     background: 'bg-transparent',
@@ -122,7 +122,7 @@ export const accessibleButtonColors = {
     border: 'border-2 border-white/20',
     hover: 'hover:border-cyan-500 hover:text-cyan-300',
   },
-  
+
   // Disabled state
   disabled: {
     background: 'bg-gray-700',

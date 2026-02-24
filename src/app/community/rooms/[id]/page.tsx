@@ -7,20 +7,21 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  ArrowLeft, 
-  Users, 
-  Lock, 
-  Globe, 
-  UserPlus, 
+import {
+  ArrowLeft,
+  Users,
+  Lock,
+  Globe,
+  UserPlus,
   LogOut,
   Settings,
   Shield
 } from "lucide-react";
-import { RoomChat } from "@/components/community/RoomChat";
-import { OnlineMembersList } from "@/components/community/OnlineMembersList";
+import RoomChat from "@/components/community/RoomChat";
+import OnlineMembersList from "@/components/community/OnlineMembersList";
 import { useDiscussionRooms } from "@/lib/hooks/useDiscussionRooms";
 import { useRoomMembers } from "@/lib/hooks/useRoomMembers";
+import { useChatMessages } from "@/lib/hooks/useChatMessages";
 import toast from "react-hot-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -34,22 +35,31 @@ export default function RoomDetailPage() {
   const [isLeaving, setIsLeaving] = useState(false);
 
   // Fetch room details
-  const { rooms, loading, joinRoom, leaveRoom, refetch } = useDiscussionRooms();
+  const { rooms, isLoading, joinRoom, leaveRoom, refetch } = useDiscussionRooms();
   const room = rooms?.find(r => r.id === roomId);
 
   // Fetch room members
-  const { members, onlineMembers, loading: membersLoading } = useRoomMembers(roomId);
+  const { members, onlineMembers, isLoading: membersLoading } = useRoomMembers(roomId);
+
+  // Fetch chat messages
+  const {
+    messages,
+    sendMessage,
+    isLoading: messagesLoading,
+    loadMore: loadMoreMessages,
+    hasMore: hasMoreMessages
+  } = useChatMessages(roomId);
 
   // Check if user is a member
   const isMember = members?.some(m => m.id === session?.user?.id);
   const isModerator = room?.creatorId === session?.user?.id; // Simplified - should check moderators table
 
   useEffect(() => {
-    if (!loading && !room) {
+    if (!isLoading && !room) {
       toast.error("Room not found");
       router.push("/community/rooms");
     }
-  }, [room, loading, router]);
+  }, [room, isLoading, router]);
 
   const handleJoinRoom = async () => {
     if (!session) {
@@ -83,7 +93,7 @@ export default function RoomDetailPage() {
     }
   };
 
-  if (loading || !room) {
+  if (isLoading || !room) {
     return (
       <div className="min-h-screen pt-24 bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -156,14 +166,14 @@ export default function RoomDetailPage() {
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <span>{onlineMembers?.length || 0} online</span>
+                  <span>{onlineMembers?.size || 0} online</span>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               {!isMember ? (
-                <Button 
+                <Button
                   onClick={handleJoinRoom}
                   disabled={isJoining}
                   className="gap-2"
@@ -179,7 +189,7 @@ export default function RoomDetailPage() {
                       Settings
                     </Button>
                   )}
-                  <Button 
+                  <Button
                     variant="outline"
                     onClick={handleLeaveRoom}
                     disabled={isLeaving}
@@ -202,7 +212,15 @@ export default function RoomDetailPage() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               {/* Chat Area */}
               <div className="lg:col-span-3">
-                <RoomChat roomId={roomId} />
+                <RoomChat
+                  roomId={roomId}
+                  messages={messages}
+                  currentUserId={session?.user?.id || ""}
+                  onSendMessage={sendMessage}
+                  isLoading={messagesLoading}
+                  hasMore={hasMoreMessages}
+                  onLoadMore={loadMoreMessages}
+                />
               </div>
 
               {/* Sidebar - Members */}
@@ -215,22 +233,30 @@ export default function RoomDetailPage() {
                     <Tabs defaultValue="online" className="w-full">
                       <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="online">
-                          Online ({onlineMembers?.length || 0})
+                          Online ({onlineMembers?.size || 0})
                         </TabsTrigger>
                         <TabsTrigger value="all">
                           All ({members?.length || 0})
                         </TabsTrigger>
                       </TabsList>
                       <TabsContent value="online" className="mt-4">
-                        <OnlineMembersList 
-                          members={onlineMembers || []}
-                          loading={membersLoading}
+                        <OnlineMembersList
+                          members={(members || []).map(m => ({
+                            id: m.userId,
+                            name: m.user.name || "Unknown",
+                            image: m.user.image || undefined,
+                            isOnline: onlineMembers.has(m.userId)
+                          })).filter(m => m.isOnline)}
                         />
                       </TabsContent>
                       <TabsContent value="all" className="mt-4">
-                        <OnlineMembersList 
-                          members={members || []}
-                          loading={membersLoading}
+                        <OnlineMembersList
+                          members={(members || []).map(m => ({
+                            id: m.userId,
+                            name: m.user.name || "Unknown",
+                            image: m.user.image || undefined,
+                            isOnline: onlineMembers.has(m.userId)
+                          }))}
                         />
                       </TabsContent>
                     </Tabs>

@@ -1,0 +1,101 @@
+"use client";
+
+import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { FlipText } from "@/components/ui/flip-text";
+import "./TelescopeHero.css";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export const TelescopeHero = () => {
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!sectionRef.current || !contentRef.current) return;
+
+        // Simple reveal animation on scroll
+        gsap.to(contentRef.current, {
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top center",
+                end: "bottom center",
+                scrub: 1,
+            },
+            opacity: 1,
+            y: 0,
+            duration: 1,
+        });
+
+        return () => {
+            ScrollTrigger.getAll().forEach((t) => t.kill());
+        };
+    }, []);
+
+    return (
+        <section ref={sectionRef} className="hero-section relative overflow-hidden flex items-center justify-center min-h-screen">
+            {/* Stable Background */}
+            <div className="absolute inset-0 z-0 bg-background" />
+
+            {/* Subtle Gradient Overlay */}
+            <div className="absolute inset-0 z-1 opacity-30 bg-gradient-to-b from-transparent via-background/50 to-background" />
+
+            {/* Content Layer */}
+            <div
+                ref={contentRef}
+                className="relative z-10 w-full max-w-6xl mx-auto px-4 text-center opacity-0 translate-y-20"
+            >
+                <div className="inline-block mb-6">
+                    <span className="text-foreground/80 text-xs sm:text-sm font-bold uppercase tracking-[0.2em] px-4 py-2 bg-foreground/5 backdrop-blur-sm rounded-full border border-foreground/10">
+                        Welcome to Velonx
+                    </span>
+                </div>
+
+                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-[1.1] text-foreground mb-8" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700 }}>
+                    Empowering the Next Generation of{" "}
+                    <div className="block mt-2">
+                        <FlipText
+                            words={["Innovators", "Developers", "Creators", "Builders", "Leaders"]}
+                            className="text-primary inline-block"
+                            duration={2500}
+                        />
+                    </div>
+                </h1>
+
+                <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-12" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>
+                    Join a thriving community where students and tech enthusiasts transform their potential into impact. Connect with expert mentors, build real projects, and launch your dream career.
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link href="/auth/signup" className="w-full sm:w-auto">
+                        <button
+                            className="w-full sm:w-auto touch-target bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full px-10 py-5 text-lg flex items-center justify-center gap-2 transition-all shadow-xl hover:scale-105 active:scale-95"
+                            style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 600 }}
+                        >
+                            Start Your Journey <ArrowRight className="w-5 h-5" />
+                        </button>
+                    </Link>
+
+                    <Link href="/community" className="w-full sm:w-auto">
+                        <button
+                            className="w-full sm:w-auto touch-target bg-transparent hover:bg-foreground/5 text-foreground font-semibold rounded-full px-10 py-5 text-lg flex items-center justify-center gap-2 transition-all border border-foreground/20"
+                            style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 600 }}
+                        >
+                            Explore Community
+                        </button>
+                    </Link>
+                </div>
+            </div>
+
+            {/* Scroll Indicator */}
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 animate-bounce text-muted-foreground/50">
+                <div className="w-6 h-10 border-2 border-current rounded-full flex justify-center p-1">
+                    <div className="w-1.5 h-1.5 bg-current rounded-full" />
+                </div>
+            </div>
+        </section>
+    );
+};

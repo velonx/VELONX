@@ -39,15 +39,15 @@ const editPostSchema = z.object({
  */
 export const GET = withErrorHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
+  const { id: postId } = await params;
+
   // Require authentication
   const sessionOrResponse = await requireAuth();
   if (sessionOrResponse instanceof NextResponse) {
     return sessionOrResponse;
   }
-
-  const postId = params.id;
 
   // Get post from database
   const { prisma } = await import("@/lib/prisma");
@@ -156,8 +156,10 @@ export const GET = withErrorHandler(async (
  */
 export const PATCH = withErrorHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
+  const { id: postId } = await params;
+
   // Require authentication
   const sessionOrResponse = await requireAuth();
   if (sessionOrResponse instanceof NextResponse) {
@@ -166,7 +168,6 @@ export const PATCH = withErrorHandler(async (
 
   const session = sessionOrResponse;
   const userId = session.user.id!;
-  const postId = params.id;
 
   // Parse and validate request body
   const body = await request.json();
@@ -222,8 +223,10 @@ export const PATCH = withErrorHandler(async (
  */
 export const DELETE = withErrorHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
+  const { id: postId } = await params;
+
   // Require authentication
   const sessionOrResponse = await requireAuth();
   if (sessionOrResponse instanceof NextResponse) {
@@ -232,7 +235,6 @@ export const DELETE = withErrorHandler(async (
 
   const session = sessionOrResponse;
   const userId = session.user.id!;
-  const postId = params.id;
 
   // Get post details before deletion to know which caches to invalidate
   const { prisma } = await import("@/lib/prisma");

@@ -2,6 +2,7 @@
 
 @plugin "tailwindcss-animate";
 
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -124,6 +125,7 @@
 .font-outfit {
     font-family: var(--font-outfit);
 }
+
 
 /* Premium Mesh Gradient Background */
 .mesh-gradient-bg {

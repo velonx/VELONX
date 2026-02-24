@@ -9,6 +9,7 @@ import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { OrganizationSchema } from "@/components/structured-data";
 import { FlipText } from "@/components/ui/flip-text";
 import { Carousel3 } from "@/components/Carousel3";
+import { TelescopeHero } from "@/components/TelescopeHero";
 import "./tech-background.css";
 
 export default function Home() {
@@ -31,65 +32,8 @@ export default function Home() {
             {/* Floating Navbar */}
             <FloatingNavDemo />
 
-            {/* Hero Section */}
-            <section className="relative min-h-[80vh] md:min-h-screen flex items-center pt-16 sm:pt-20 md:pt-24 pb-12 sm:pb-16 md:pb-20 overflow-hidden">
-                {/* Hero Background Image */}
-                <div className="absolute inset-0 z-0">
-                    {/* Background Image */}
-                    <div
-                        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                        style={{
-                            backgroundImage: "url('/images/community-illustration.jpg')",
-                        }}
-                    />
-                </div>
-
-                <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10">
-                    <div className="flex items-center justify-center">
-                        <ScrollReveal>
-                            <div className="space-y-3 sm:space-y-4 md:space-y-5 text-center max-w-4xl bg-white/70 backdrop-blur-md rounded-3xl px-6 sm:px-10 md:px-14 py-8 sm:py-10 md:py-12 shadow-xl">
-                                {/* Small Label */}
-                                <div className="inline-block">
-                                    <span className="text-gray-800 text-xs sm:text-sm font-bold uppercase tracking-[0.1em] px-3 sm:px-4 py-1.5 sm:py-2 bg-black/5 backdrop-blur-sm rounded-full border border-black/15">
-                                        Welcome to Velonx
-                                    </span>
-                                </div>
-
-                                {/* Main Headline - Responsive sizing with animated text */}
-                                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight leading-[1.2] text-black" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700 }}>
-                                    Empowering the Next Generation of{" "}
-                                    <FlipText
-                                        words={["Innovators", "Developers", "Creators", "Builders", "Leaders"]}
-                                        className="text-black"
-                                        duration={2500}
-                                    />
-                                </h1>
-
-                                {/* Subtext - Responsive sizing */}
-                                <p className="text-gray-800 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>
-                                    Join a thriving community where students and tech enthusiasts transform their potential into impact. Connect with expert mentors, build real projects, and launch your dream career.
-                                </p>
-
-                                {/* Buttons - Touch-friendly sizing */}
-                                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 pt-2 justify-center">
-                                    <Link href="/auth/signup" className="w-full sm:w-auto">
-                                        <button
-                                            onClick={handleJoinClick}
-                                            className="w-full sm:w-auto touch-target bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-full px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0f2c59]/30"
-                                            style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 600 }}
-                                            aria-label="Start your journey with Velonx"
-                                        >
-                                            Start Your Journey <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                                        </button>
-                                    </Link>
-                                </div>
-                            </div>
-                        </ScrollReveal>
-
-
-                    </div>
-                </div>
-            </section>
+            {/* Telescope Hero Section */}
+            <TelescopeHero />
 
             {/* Why Velonx Section */}
             <ScrollReveal>

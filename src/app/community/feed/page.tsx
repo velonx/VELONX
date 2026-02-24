@@ -12,6 +12,7 @@ import { FeedFilter } from "@/components/community/FeedFilter";
 import { PostComposer } from "@/components/community/PostComposer";
 import { TrendingPosts } from "@/components/community/TrendingPosts";
 import { useFeed } from "@/lib/hooks/useFeed";
+import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import toast from "react-hot-toast";
 
 export default function FeedPage() {
@@ -20,13 +21,17 @@ export default function FeedPage() {
   const [filter, setFilter] = useState<"ALL" | "FOLLOWING" | "GROUPS">("ALL");
   const [showComposer, setShowComposer] = useState(false);
 
-  // Fetch feed with current filter
-  const { posts, loading, hasMore, loadMore, refetch } = useFeed({ filter });
+  const { createPost, isCreating } = useCommunityPosts();
+  const { refetch } = useFeed();
 
-  const handlePostCreated = () => {
-    setShowComposer(false);
-    refetch();
-    toast.success("Post created successfully!");
+  const handlePostCreated = async (data: any) => {
+    try {
+      await createPost(data);
+      setShowComposer(false);
+      refetch();
+    } catch (error) {
+      // Error handled by hook
+    }
   };
 
   if (!session) {
@@ -80,13 +85,13 @@ export default function FeedPage() {
       <section className="relative py-16 bg-background overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
-            <h1 
+            <h1
               className="text-4xl md:text-6xl text-foreground"
               style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
             >
               Your Feed
             </h1>
-            <p 
+            <p
               className="text-muted-foreground text-xl max-w-2xl mx-auto"
               style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
             >
@@ -106,7 +111,7 @@ export default function FeedPage() {
             <div className="lg:col-span-2 space-y-6">
               {/* Post Composer */}
               {!showComposer ? (
-                <Card 
+                <Card
                   className="cursor-pointer hover:shadow-lg transition-all"
                   onClick={() => setShowComposer(true)}
                 >
@@ -122,31 +127,22 @@ export default function FeedPage() {
                   </CardContent>
                 </Card>
               ) : (
-                <PostComposer 
-                  onPostCreated={handlePostCreated}
-                  onCancel={() => setShowComposer(false)}
+                <PostComposer
+                  onSubmit={handlePostCreated}
+                  isSubmitting={isCreating}
                 />
               )}
 
               {/* Feed Filter */}
-              <FeedFilter 
+              <FeedFilter
                 currentFilter={filter}
                 onFilterChange={setFilter}
               />
 
               {/* Feed */}
-              <Feed 
-                posts={posts}
-                loading={loading}
-                hasMore={hasMore}
-                onLoadMore={loadMore}
-                emptyMessage={
-                  filter === "FOLLOWING" 
-                    ? "Follow users to see their posts here"
-                    : filter === "GROUPS"
-                    ? "Join groups to see their posts here"
-                    : "No posts yet. Start following users or join groups!"
-                }
+              <Feed
+                filter={filter}
+                currentUserId={session.user?.id}
               />
             </div>
 

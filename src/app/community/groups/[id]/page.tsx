@@ -8,23 +8,24 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Users, 
-  Lock, 
-  Globe, 
-  UserPlus, 
+import {
+  Users,
+  Lock,
+  Globe,
+  UserPlus,
   LogOut,
   Settings,
   Shield,
   Clock,
   FileText
 } from "lucide-react";
-import { GroupFeed } from "@/components/community/GroupFeed";
-import { GroupMembers } from "@/components/community/GroupMembers";
-import { GroupSettings } from "@/components/community/GroupSettings";
-import { JoinRequestList } from "@/components/community/JoinRequestList";
+import GroupFeed from "@/components/community/GroupFeed";
+import GroupMembers from "@/components/community/GroupMembers";
+import GroupSettings from "@/components/community/GroupSettings";
+import JoinRequestList from "@/components/community/JoinRequestList";
 import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
 import { useGroupMembers } from "@/lib/hooks/useGroupMembers";
+import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import toast from "react-hot-toast";
 
 export default function GroupDetailPage() {
@@ -38,11 +39,26 @@ export default function GroupDetailPage() {
   const [activeTab, setActiveTab] = useState("feed");
 
   // Fetch group details
-  const { groups, loading, joinGroup, requestJoinGroup, leaveGroup, refetch } = useCommunityGroups();
+  const { groups, isLoading, joinGroup, requestJoinGroup, leaveGroup, refetch } = useCommunityGroups();
   const group = groups?.find(g => g.id === groupId);
 
-  // Fetch group members
-  const { members, loading: membersLoading } = useGroupMembers(groupId);
+  // Fetch group posts
+  const {
+    posts,
+    isLoading: postsLoading,
+    loadMore,
+    hasMore,
+    createPost: createGroupPost
+  } = useCommunityPosts({ groupId });
+
+  // Fetch group members and requests
+  const {
+    members,
+    joinRequests,
+    isLoading: membersLoading,
+    approveRequest,
+    rejectRequest
+  } = useGroupMembers(groupId);
 
   // Check if user is a member or owner
   const isMember = members?.some(m => m.id === session?.user?.id);
@@ -50,11 +66,11 @@ export default function GroupDetailPage() {
   const isModerator = isOwner; // Simplified - should check moderators table
 
   useEffect(() => {
-    if (!loading && !group) {
+    if (!isLoading && !group) {
       toast.error("Group not found");
       router.push("/community/groups");
     }
-  }, [group, loading, router]);
+  }, [group, isLoading, router]);
 
   const handleJoinGroup = async () => {
     if (!session) {
@@ -93,7 +109,7 @@ export default function GroupDetailPage() {
     }
   };
 
-  if (loading || !group) {
+  if (isLoading || !group) {
     return (
       <div className="min-h-screen pt-24 bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -173,7 +189,7 @@ export default function GroupDetailPage() {
 
             <div className="flex items-center gap-2">
               {!isMember ? (
-                <Button 
+                <Button
                   onClick={handleJoinGroup}
                   disabled={isJoining}
                   className="gap-2"
@@ -184,7 +200,7 @@ export default function GroupDetailPage() {
               ) : (
                 <>
                   {!isOwner && (
-                    <Button 
+                    <Button
                       variant="outline"
                       onClick={handleLeaveGroup}
                       disabled={isLeaving}
@@ -230,28 +246,40 @@ export default function GroupDetailPage() {
               </TabsList>
 
               <TabsContent value="feed">
-                <GroupFeed groupId={groupId} />
+                <GroupFeed
+                  posts={posts}
+                  isLoading={postsLoading}
+                  hasMore={hasMore}
+                  onLoadMore={loadMore}
+                  isMember={isMember}
+                />
               </TabsContent>
 
               <TabsContent value="members">
-                <GroupMembers 
-                  groupId={groupId}
+                <GroupMembers
                   members={members || []}
-                  loading={membersLoading}
-                  isModerator={isModerator}
+                  isLoading={membersLoading}
+                  ownerId={group?.ownerId}
                 />
               </TabsContent>
 
               {isModerator && (
                 <>
                   <TabsContent value="requests">
-                    <JoinRequestList groupId={groupId} />
+                    <JoinRequestList
+                      requests={joinRequests || []}
+                      isLoading={membersLoading}
+                      onApprove={approveRequest}
+                      onReject={rejectRequest}
+                    />
                   </TabsContent>
 
                   <TabsContent value="settings">
-                    <GroupSettings 
+                    <GroupSettings
                       group={group}
-                      onUpdate={() => refetch()}
+                      members={members || []}
+                      moderatorIds={[]}
+                      isOwner={isOwner}
                     />
                   </TabsContent>
                 </>
@@ -265,7 +293,7 @@ export default function GroupDetailPage() {
                   {group.isPrivate ? "Private Group" : "Join to participate"}
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  {group.isPrivate 
+                  {group.isPrivate
                     ? "This is a private group. Request to join to view posts and participate."
                     : "Join this group to view posts and participate in discussions."
                   }

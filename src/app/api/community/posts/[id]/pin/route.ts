@@ -34,8 +34,10 @@ import { postService } from "@/lib/services/post.service";
  */
 export const POST = withErrorHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
+  const { id: postId } = await params;
+
   // Require authentication
   const sessionOrResponse = await requireAuth();
   if (sessionOrResponse instanceof NextResponse) {
@@ -44,7 +46,6 @@ export const POST = withErrorHandler(async (
 
   const session = sessionOrResponse;
   const userId = session.user.id!;
-  const postId = params.id;
 
   // Pin post via service
   await postService.pinPost(postId, userId);
@@ -89,8 +90,10 @@ export const POST = withErrorHandler(async (
  */
 export const DELETE = withErrorHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
+  const { id: postId } = await params;
+
   // Require authentication
   const sessionOrResponse = await requireAuth();
   if (sessionOrResponse instanceof NextResponse) {
@@ -99,7 +102,6 @@ export const DELETE = withErrorHandler(async (
 
   const session = sessionOrResponse;
   const userId = session.user.id!;
-  const postId = params.id;
 
   // Unpin post via service
   await postService.unpinPost(postId, userId);

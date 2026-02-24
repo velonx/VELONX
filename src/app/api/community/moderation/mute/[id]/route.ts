@@ -31,7 +31,9 @@ import { moderationService } from "@/lib/services/moderation.service";
  *         description: Mute record not found
  */
 export const DELETE = withErrorHandler(
-  async (request: NextRequest, { params }: { params: { id: string } }) => {
+  async (request: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+    const { id: muteId } = await params;
+
     // Require authentication
     const sessionOrResponse = await requireAuth();
     if (sessionOrResponse instanceof NextResponse) {
@@ -40,8 +42,6 @@ export const DELETE = withErrorHandler(
 
     const session = sessionOrResponse;
     const moderatorId = session.user.id!;
-
-    const muteId = params.id;
 
     // Unmute user via service (service will verify moderator permissions)
     await moderationService.unmuteUser(muteId, moderatorId);

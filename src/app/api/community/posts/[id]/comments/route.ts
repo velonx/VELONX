@@ -53,8 +53,10 @@ const createCommentSchema = z.object({
  */
 export const POST = withErrorHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
+  const { id: postId } = await params;
+
   // Require authentication
   const sessionOrResponse = await requireAuth();
   if (sessionOrResponse instanceof NextResponse) {
@@ -63,7 +65,6 @@ export const POST = withErrorHandler(async (
 
   const session = sessionOrResponse;
   const userId = session.user.id!;
-  const postId = params.id;
 
   // Parse and validate request body
   const body = await request.json();
@@ -121,15 +122,15 @@ export const POST = withErrorHandler(async (
  */
 export const GET = withErrorHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
+  const { id: postId } = await params;
+
   // Require authentication
   const sessionOrResponse = await requireAuth();
   if (sessionOrResponse instanceof NextResponse) {
     return sessionOrResponse;
   }
-
-  const postId = params.id;
 
   // Parse query parameters
   const searchParams = request.nextUrl.searchParams;
