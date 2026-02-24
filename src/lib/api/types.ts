@@ -149,6 +149,9 @@ export interface Mentor {
   rating: number;
   totalSessions: number;
   available: boolean;
+  linkedinUrl?: string | null;
+  githubUrl?: string | null;
+  twitterUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }

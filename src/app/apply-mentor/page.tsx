@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Loader2, CheckCircle2, Sparkles, Briefcase, GraduationCap, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle2, Sparkles, Briefcase, GraduationCap, Link as LinkIcon, Github, Twitter } from "lucide-react";
 import toast from "react-hot-toast";
+import { isValidGitHubUrl, isValidTwitterUrl, isValidLinkedInUrl } from "@/lib/validations/mentor";
 
 export default function ApplyMentorPage() {
   const { data: session, status } = useSession();
@@ -23,9 +24,16 @@ export default function ApplyMentorPage() {
     expertise: [] as string[],
     bio: '',
     linkedinUrl: '',
+    githubUrl: '',
+    twitterUrl: '',
     yearsOfExperience: '',
   });
   const [expertiseInput, setExpertiseInput] = useState('');
+  const [validationErrors, setValidationErrors] = useState({
+    linkedinUrl: '',
+    githubUrl: '',
+    twitterUrl: '',
+  });
 
   const handleAddExpertise = () => {
     if (expertiseInput.trim() && formData.expertise.length < 10) {
@@ -44,11 +52,55 @@ export default function ApplyMentorPage() {
     });
   };
 
+  const validateUrl = (field: 'linkedinUrl' | 'githubUrl' | 'twitterUrl', value: string) => {
+    if (!value) {
+      // Empty is valid for optional fields
+      setValidationErrors(prev => ({ ...prev, [field]: '' }));
+      return true;
+    }
+
+    let isValid = false;
+    let errorMessage = '';
+
+    switch (field) {
+      case 'linkedinUrl':
+        isValid = isValidLinkedInUrl(value);
+        errorMessage = 'Please enter a valid LinkedIn URL (e.g., https://linkedin.com/in/username)';
+        break;
+      case 'githubUrl':
+        isValid = isValidGitHubUrl(value);
+        errorMessage = 'Please enter a valid GitHub URL (e.g., https://github.com/username)';
+        break;
+      case 'twitterUrl':
+        isValid = isValidTwitterUrl(value);
+        errorMessage = 'Please enter a valid Twitter URL (e.g., https://twitter.com/username or https://x.com/username)';
+        break;
+    }
+
+    setValidationErrors(prev => ({ ...prev, [field]: isValid ? '' : errorMessage }));
+    return isValid;
+  };
+
+  const handleUrlChange = (field: 'linkedinUrl' | 'githubUrl' | 'twitterUrl', value: string) => {
+    setFormData({ ...formData, [field]: value });
+    validateUrl(field, value);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (formData.expertise.length === 0) {
       toast.error('Please add at least one area of expertise');
+      return;
+    }
+
+    // Validate all URL fields before submission
+    const linkedinValid = validateUrl('linkedinUrl', formData.linkedinUrl);
+    const githubValid = validateUrl('githubUrl', formData.githubUrl);
+    const twitterValid = validateUrl('twitterUrl', formData.twitterUrl);
+
+    if (!linkedinValid || !githubValid || !twitterValid) {
+      toast.error('Please fix the URL validation errors before submitting');
       return;
     }
 
@@ -75,7 +127,9 @@ export default function ApplyMentorPage() {
             company: formData.company,
             expertise: formData.expertise,
             bio: formData.bio,
-            linkedinUrl: formData.linkedinUrl,
+            linkedinUrl: formData.linkedinUrl || null,
+            githubUrl: formData.githubUrl || null,
+            twitterUrl: formData.twitterUrl || null,
             yearsOfExperience: formData.yearsOfExperience,
           }),
         }),
@@ -287,10 +341,51 @@ export default function ApplyMentorPage() {
                       id="linkedin"
                       type="url"
                       value={formData.linkedinUrl}
-                      onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
+                      onChange={(e) => handleUrlChange('linkedinUrl', e.target.value)}
                       placeholder="https://linkedin.com/in/yourprofile"
-                      className="h-12 bg-gray-50 border-0 rounded-xl"
+                      className={`h-12 bg-gray-50 border-0 rounded-xl ${validationErrors.linkedinUrl ? 'ring-2 ring-red-500' : ''}`}
                     />
+                    {validationErrors.linkedinUrl && (
+                      <p className="text-xs text-red-600 mt-1">{validationErrors.linkedinUrl}</p>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="github" className="text-sm font-bold text-foreground flex items-center gap-2">
+                        <Github className="w-4 h-4" />
+                        GitHub Profile (Optional)
+                      </Label>
+                      <Input
+                        id="github"
+                        type="url"
+                        value={formData.githubUrl}
+                        onChange={(e) => handleUrlChange('githubUrl', e.target.value)}
+                        placeholder="https://github.com/username"
+                        className={`h-12 bg-gray-50 border-0 rounded-xl ${validationErrors.githubUrl ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                      {validationErrors.githubUrl && (
+                        <p className="text-xs text-red-600 mt-1">{validationErrors.githubUrl}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="twitter" className="text-sm font-bold text-foreground flex items-center gap-2">
+                        <Twitter className="w-4 h-4" />
+                        Twitter Profile (Optional)
+                      </Label>
+                      <Input
+                        id="twitter"
+                        type="url"
+                        value={formData.twitterUrl}
+                        onChange={(e) => handleUrlChange('twitterUrl', e.target.value)}
+                        placeholder="https://twitter.com/username"
+                        className={`h-12 bg-gray-50 border-0 rounded-xl ${validationErrors.twitterUrl ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                      {validationErrors.twitterUrl && (
+                        <p className="text-xs text-red-600 mt-1">{validationErrors.twitterUrl}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
 

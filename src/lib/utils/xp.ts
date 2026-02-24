@@ -31,6 +31,9 @@ export const XP_REWARDS = {
   RESOURCE_VISIT: 10,
   RESOURCE_CONTRIBUTION: 30, // Contributing a new resource
   STREAK_BONUS: 20, // Daily login streak bonus
+  REFERRAL_SIGNUP: 25, // Referral signup milestone
+  REFERRAL_PROFILE_COMPLETE: 50, // Referral profile completion milestone
+  REFERRAL_FIRST_ACTIVITY: 75, // Referral first activity milestone
 };
 
 /**

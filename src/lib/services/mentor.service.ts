@@ -91,6 +91,9 @@ export class MentorService {
     rating?: number;
     totalSessions?: number;
     available?: boolean;
+    linkedinUrl?: string | null;
+    githubUrl?: string | null;
+    twitterUrl?: string | null;
   }) {
     const mentor = await prisma.mentor.create({
       data: {
@@ -103,6 +106,9 @@ export class MentorService {
         rating: data.rating ?? 0,
         totalSessions: data.totalSessions ?? 0,
         available: data.available ?? true,
+        linkedinUrl: data.linkedinUrl,
+        githubUrl: data.githubUrl,
+        twitterUrl: data.twitterUrl,
       },
     });
     
@@ -124,6 +130,9 @@ export class MentorService {
       rating?: number;
       totalSessions?: number;
       available?: boolean;
+      linkedinUrl?: string | null;
+      githubUrl?: string | null;
+      twitterUrl?: string | null;
     }
   ) {
     // Check if mentor exists
@@ -147,6 +156,9 @@ export class MentorService {
     if (data.rating !== undefined) updateData.rating = data.rating;
     if (data.totalSessions !== undefined) updateData.totalSessions = data.totalSessions;
     if (data.available !== undefined) updateData.available = data.available;
+    if (data.linkedinUrl !== undefined) updateData.linkedinUrl = data.linkedinUrl;
+    if (data.githubUrl !== undefined) updateData.githubUrl = data.githubUrl;
+    if (data.twitterUrl !== undefined) updateData.twitterUrl = data.twitterUrl;
     
     const mentor = await prisma.mentor.update({
       where: { id },

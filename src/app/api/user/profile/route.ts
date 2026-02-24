@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
 import { partialProfileUpdateSchema } from "@/lib/validations/profile";
 import { prisma } from "@/lib/prisma";
+import { checkAndAwardProfileCompletion } from "@/lib/services/referral.service";
 
 /**
  * Sanitize text input to prevent XSS attacks
@@ -277,7 +278,7 @@ export async function PATCH(request: NextRequest) {
 
     // Return updated user data with session update flag
     // The client will use this to trigger a session refresh
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         data: updatedUser,
@@ -289,6 +290,13 @@ export async function PATCH(request: NextRequest) {
       },
       { status: 200 }
     );
+
+    // Check and award profile completion milestone (async, don't block response)
+    checkAndAwardProfileCompletion(userId).catch((error) => {
+      console.error('Failed to check profile completion milestone:', error);
+    });
+
+    return response;
   } catch (error) {
     console.error("Unexpected error in PATCH /api/user/profile:", error);
     return handleError(error);

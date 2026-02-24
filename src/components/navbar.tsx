@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Menu, LogOut, LayoutDashboard, Settings, MessageSquare, Users, Rss, ChevronDown } from "lucide-react";
+import { Menu, LogOut, LayoutDashboard, Settings, MessageSquare, Users, Rss, ChevronDown, Share2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { UnreadCountBadge } from "@/components/unread-count-badge";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -151,6 +151,12 @@ export function Navbar() {
                                         <Link href={dashboardLink} className="flex items-center gap-3 font-bold">
                                             <LayoutDashboard className="w-4 h-4" />
                                             My Dashboard
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-blue-50 focus:text-[#219EBC]">
+                                        <Link href="/referrals" className="flex items-center gap-3 font-bold">
+                                            <Share2 className="w-4 h-4" />
+                                            Referrals
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-blue-50 focus:text-[#219EBC]">

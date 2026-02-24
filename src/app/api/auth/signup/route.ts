@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { handleError } from "@/lib/utils/errors";
+import { generateReferralCode, validateReferralCode, createReferralRelationship } from "@/lib/services/referral.service";
 
 // Signup validation schema
 const signupSchema = z.object({
@@ -10,6 +11,7 @@ const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(["STUDENT", "ADMIN"]).optional().default("STUDENT"),
+  referralCode: z.string().optional(),
 });
 
 /**
@@ -44,6 +46,18 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
+    // Generate unique referral code for new user
+    const referralCode = await generateReferralCode();
+
+    // Validate referral code if provided
+    let referrerId: string | undefined;
+    if (validatedData.referralCode) {
+      const validation = await validateReferralCode(validatedData.referralCode);
+      if (validation.valid && validation.referrerId) {
+        referrerId = validation.referrerId;
+      }
+    }
+
     // Create user
     const user = await prisma.user.create({
       data: {
@@ -51,6 +65,7 @@ export async function POST(request: NextRequest) {
         email: validatedData.email,
         password: hashedPassword,
         role: validatedData.role, // Use provided role or default to STUDENT
+        referralCode, // Assign generated referral code
       },
       select: {
         id: true,
@@ -60,6 +75,16 @@ export async function POST(request: NextRequest) {
         createdAt: true,
       },
     });
+
+    // Create referral relationship if valid referral code was provided
+    if (referrerId && referrerId !== user.id) {
+      try {
+        await createReferralRelationship(referrerId, user.id);
+      } catch (error) {
+        // Log error but don't fail registration
+        console.error('Failed to create referral relationship:', error);
+      }
+    }
 
     return NextResponse.json(
       {
