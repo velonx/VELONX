@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { FollowButton } from './FollowButton';
 import { UserIcon } from 'lucide-react';
 import Link from 'next/link';
+import { AvatarImage } from '@/components/responsive-image';
 
 /**
  * User Interface
@@ -88,10 +89,10 @@ export function UserCard({
           >
             <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
               {user.image ? (
-                <img
+                <AvatarImage
                   src={user.image}
                   alt={displayName}
-                  className="size-12 object-cover"
+                  size={48}
                 />
               ) : (
                 <UserIcon className="size-6 text-primary" />

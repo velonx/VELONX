@@ -4,13 +4,7 @@
  * Uses Upstash Redis to track failed login attempts
  */
 
-import { Redis } from '@upstash/redis'
-
-// Initialize Upstash Redis client
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-})
+import { getRedisClient } from '@/lib/redis'
 
 /**
  * Brute force protection configuration
@@ -18,16 +12,16 @@ const redis = new Redis({
 const BRUTE_FORCE_CONFIG = {
   // Maximum failed attempts before lockout
   maxAttempts: 5,
-  
+
   // Base delay in milliseconds (starts at 1 second)
   baseDelay: 1000,
-  
+
   // Maximum delay in milliseconds (caps at 5 minutes)
   maxDelay: 5 * 60 * 1000,
-  
+
   // Time window for tracking attempts (15 minutes)
   windowMs: 15 * 60 * 1000,
-  
+
   // Lockout duration after max attempts (30 minutes)
   lockoutDuration: 30 * 60 * 1000,
 }
@@ -74,13 +68,14 @@ export class BruteForceProtection {
    */
   static async checkAttempt(identifier: string): Promise<BruteForceCheckResult> {
     try {
+      const redis = getRedisClient()
       // Check if account is locked out
       const lockoutKey = this.getLockoutKey(identifier)
       const lockoutUntil = await redis.get<string>(lockoutKey)
-      
+
       if (lockoutUntil) {
         const lockedUntilDate = new Date(parseInt(lockoutUntil))
-        
+
         if (lockedUntilDate > new Date()) {
           return {
             allowed: false,
@@ -95,12 +90,12 @@ export class BruteForceProtection {
           await redis.del(this.getAttemptsKey(identifier))
         }
       }
-      
+
       // Get current attempt count
       const attemptsKey = this.getAttemptsKey(identifier)
       const attemptsStr = await redis.get<string>(attemptsKey)
       const attempts = attemptsStr ? parseInt(attemptsStr) : 0
-      
+
       // Check if max attempts reached
       if (attempts >= BRUTE_FORCE_CONFIG.maxAttempts) {
         // Lock the account
@@ -110,7 +105,7 @@ export class BruteForceProtection {
           lockedUntilDate.getTime().toString(),
           { px: BRUTE_FORCE_CONFIG.lockoutDuration }
         )
-        
+
         return {
           allowed: false,
           attemptsRemaining: 0,
@@ -119,10 +114,10 @@ export class BruteForceProtection {
           message: `Too many failed attempts. Account locked for ${BRUTE_FORCE_CONFIG.lockoutDuration / 60000} minutes.`,
         }
       }
-      
+
       // Calculate delay for this attempt
       const delayMs = attempts > 0 ? this.calculateDelay(attempts) : 0
-      
+
       return {
         allowed: true,
         attemptsRemaining: BRUTE_FORCE_CONFIG.maxAttempts - attempts,
@@ -130,7 +125,7 @@ export class BruteForceProtection {
       }
     } catch (error) {
       console.error('[Brute Force Protection] Error checking attempt:', error)
-      
+
       // Fail open: allow attempt if Redis is unavailable
       return {
         allowed: true,
@@ -145,16 +140,17 @@ export class BruteForceProtection {
    */
   static async recordFailedAttempt(identifier: string): Promise<void> {
     try {
+      const redis = getRedisClient()
       const attemptsKey = this.getAttemptsKey(identifier)
-      
+
       // Increment attempt count
       const attempts = await redis.incr(attemptsKey)
-      
+
       // Set expiry on first attempt (Upstash uses seconds for expire)
       if (attempts === 1) {
         await redis.expire(attemptsKey, Math.floor(BRUTE_FORCE_CONFIG.windowMs / 1000))
       }
-      
+
       console.log(`[Brute Force Protection] Failed attempt recorded for ${identifier}. Total attempts: ${attempts}`)
     } catch (error) {
       console.error('[Brute Force Protection] Error recording failed attempt:', error)
@@ -166,13 +162,14 @@ export class BruteForceProtection {
    */
   static async recordSuccessfulAttempt(identifier: string): Promise<void> {
     try {
+      const redis = getRedisClient()
       const attemptsKey = this.getAttemptsKey(identifier)
       const lockoutKey = this.getLockoutKey(identifier)
-      
+
       // Clear attempts and lockout
       await redis.del(attemptsKey)
       await redis.del(lockoutKey)
-      
+
       console.log(`[Brute Force Protection] Successful attempt recorded for ${identifier}. Counters cleared.`)
     } catch (error) {
       console.error('[Brute Force Protection] Error recording successful attempt:', error)
@@ -184,12 +181,13 @@ export class BruteForceProtection {
    */
   static async unlockAccount(identifier: string): Promise<void> {
     try {
+      const redis = getRedisClient()
       const attemptsKey = this.getAttemptsKey(identifier)
       const lockoutKey = this.getLockoutKey(identifier)
-      
+
       await redis.del(attemptsKey)
       await redis.del(lockoutKey)
-      
+
       console.log(`[Brute Force Protection] Account unlocked: ${identifier}`)
     } catch (error) {
       console.error('[Brute Force Protection] Error unlocking account:', error)
@@ -207,18 +205,19 @@ export class BruteForceProtection {
     attemptsRemaining: number
   }> {
     try {
+      const redis = getRedisClient()
       const attemptsKey = this.getAttemptsKey(identifier)
       const lockoutKey = this.getLockoutKey(identifier)
-      
+
       const [attemptsStr, lockoutStr] = await Promise.all([
         redis.get<string>(attemptsKey),
         redis.get<string>(lockoutKey),
       ])
-      
+
       const attempts = attemptsStr ? parseInt(attemptsStr) : 0
       const lockedUntil = lockoutStr ? new Date(parseInt(lockoutStr)) : undefined
       const isLocked = lockedUntil ? lockedUntil > new Date() : false
-      
+
       return {
         attempts,
         isLocked,
@@ -227,7 +226,7 @@ export class BruteForceProtection {
       }
     } catch (error) {
       console.error('[Brute Force Protection] Error getting status:', error)
-      
+
       return {
         attempts: 0,
         isLocked: false,

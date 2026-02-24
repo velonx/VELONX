@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,23 +20,24 @@ import {
 
 export default function GroupsPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [privacyFilter, setPrivacyFilter] = useState<"all" | "public" | "private">("all");
-  
+
   // Fetch groups with filters
-  const { groups, isLoading, refetch, createGroup } = useCommunityGroups();
+  const { groups, isLoading, refetch, createGroup, joinGroup, requestJoinGroup, memberGroupIds, pendingRequestGroupIds } = useCommunityGroups();
 
   // Filter groups based on search and privacy
   const filteredGroups = groups?.filter((group) => {
-    const matchesSearch = !searchQuery.trim() || 
+    const matchesSearch = !searchQuery.trim() ||
       group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       group.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesPrivacy = privacyFilter === "all" ||
       (privacyFilter === "public" && !group.isPrivate) ||
       (privacyFilter === "private" && group.isPrivate);
-    
+
     return matchesSearch && matchesPrivacy;
   }) || [];
 
@@ -71,13 +73,13 @@ export default function GroupsPage() {
       <section className="relative py-16 bg-background overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
-            <h1 
+            <h1
               className="text-4xl md:text-6xl text-foreground"
               style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
             >
               Community Groups
             </h1>
-            <p 
+            <p
               className="text-muted-foreground text-xl max-w-2xl mx-auto"
               style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
             >
@@ -134,7 +136,7 @@ export default function GroupsPage() {
                   <SelectItem value="private">Private Only</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               {(searchQuery || privacyFilter !== "all") && (
                 <Badge variant="secondary" className="gap-2">
                   {filteredGroups.length} {filteredGroups.length === 1 ? 'group' : 'groups'}
@@ -144,7 +146,7 @@ export default function GroupsPage() {
 
             {/* Create Group Button */}
             {session && (
-              <Button 
+              <Button
                 onClick={() => setShowCreateDialog(true)}
                 className="gap-2"
               >
@@ -161,9 +163,20 @@ export default function GroupsPage() {
       {/* Groups List */}
       <section className="py-12 bg-background">
         <div className="container mx-auto px-4">
-          <GroupList 
+          <GroupList
             groups={filteredGroups}
             isLoading={isLoading}
+            memberGroupIds={memberGroupIds}
+            pendingRequestGroupIds={pendingRequestGroupIds}
+            onJoinGroup={async (groupId) => {
+              await joinGroup(groupId);
+              refetch();
+            }}
+            onRequestJoinGroup={async (groupId) => {
+              await requestJoinGroup(groupId);
+            }}
+            onViewDetails={(group) => router.push(`/community/groups/${group.id}`)}
+            onCreateGroup={() => setShowCreateDialog(true)}
           />
         </div>
       </section>

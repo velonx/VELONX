@@ -11,6 +11,8 @@ import toast from 'react-hot-toast';
  */
 export interface UseCommunityGroupsState {
   groups: CommunityGroupData[];
+  memberGroupIds: string[];
+  pendingRequestGroupIds: string[];
   isLoading: boolean;
   error: ApiClientError | null;
 }
@@ -93,13 +95,15 @@ function getErrorMessage(err: unknown): string {
 export function useCommunityGroups(): UseCommunityGroupsReturn {
   const [state, setState] = useState<UseCommunityGroupsState>({
     groups: [],
+    memberGroupIds: [],
+    pendingRequestGroupIds: [],
     isLoading: true,
     error: null,
   });
-  
+
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
-  
+
   const isMountedRef = useRef(true);
 
   /**
@@ -107,12 +111,12 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
    */
   const fetchGroups = useCallback(async () => {
     if (!isMountedRef.current) return;
-    
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
       const response = await fetch('/api/community/groups');
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -121,27 +125,31 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
           errorData.error?.message || 'Failed to fetch groups'
         );
       }
-      
+
       const data = await response.json();
-      
+
       if (!isMountedRef.current) return;
-      
+
       setState({
         groups: data.data || [],
+        memberGroupIds: data.memberGroupIds || [],
+        pendingRequestGroupIds: data.pendingRequestGroupIds || [],
         isLoading: false,
         error: null,
       });
     } catch (err) {
       console.error('[useCommunityGroups] Fetch error:', err);
-      
+
       if (!isMountedRef.current) return;
-      
-      const error = err instanceof ApiClientError 
-        ? err 
+
+      const error = err instanceof ApiClientError
+        ? err
         : new ApiClientError(500, 'NETWORK_ERROR', getErrorMessage(err));
-      
+
       setState({
         groups: [],
+        memberGroupIds: [],
+        pendingRequestGroupIds: [],
         isLoading: false,
         error,
       });
@@ -150,19 +158,16 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
 
   /**
    * Fetch groups on mount
+   * Also handles isMountedRef lifecycle to support React 18 Strict Mode
    */
   useEffect(() => {
+    isMountedRef.current = true;
     fetchGroups();
-  }, [fetchGroups]);
-  
-  /**
-   * Cleanup on unmount
-   */
-  useEffect(() => {
+
     return () => {
       isMountedRef.current = false;
     };
-  }, []);
+  }, [fetchGroups]);
 
   /**
    * Refetch function for manual refresh
@@ -170,7 +175,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
   const refetch = useCallback(async () => {
     await fetchGroups();
   }, [fetchGroups]);
-  
+
   /**
    * Create a new community group
    */
@@ -180,7 +185,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     try {
       // Get CSRF token
       const csrfToken = await getCSRFToken();
-      
+
       const response = await fetch('/api/community/groups', {
         method: 'POST',
         headers: {
@@ -190,7 +195,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
         credentials: 'include',
         body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -199,10 +204,10 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
           errorData.error?.message || 'Failed to create group'
         );
       }
-      
+
       const result = await response.json();
       const newGroup = result.data;
-      
+
       // Optimistically add to local state
       if (isMountedRef.current) {
         setState(prev => ({
@@ -210,7 +215,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
           groups: [newGroup, ...prev.groups],
         }));
       }
-      
+
       toast.success(`Group "${data.name}" created successfully`);
       return newGroup;
     } catch (err) {
@@ -221,7 +226,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
       setIsCreating(false);
     }
   }, []);
-  
+
   /**
    * Join a public community group
    */
@@ -231,7 +236,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     try {
       // Get CSRF token
       const csrfToken = await getCSRFToken();
-      
+
       const response = await fetch(`/api/community/groups/${groupId}/join`, {
         method: 'POST',
         headers: {
@@ -239,16 +244,25 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
         },
         credentials: 'include',
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
+        
+        // Handle duplicate membership gracefully
+        if (response.status === 400 && errorData.error?.message?.includes('already a member')) {
+          toast.success("You're already a member of this group");
+          // Refresh groups to sync state
+          await fetchGroups();
+          return;
+        }
+        
         throw new ApiClientError(
           response.status,
           errorData.error?.code || 'JOIN_ERROR',
           errorData.error?.message || 'Failed to join group'
         );
       }
-      
+
       // Optimistically update member count
       if (isMountedRef.current) {
         setState(prev => ({
@@ -260,7 +274,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
           ),
         }));
       }
-      
+
       toast.success('Joined group successfully');
     } catch (err) {
       console.error('[useCommunityGroups] Join error:', err);
@@ -269,8 +283,8 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     } finally {
       setIsJoining(false);
     }
-  }, []);
-  
+  }, [fetchGroups]);
+
   /**
    * Request to join a private community group
    */
@@ -280,7 +294,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     try {
       // Get CSRF token
       const csrfToken = await getCSRFToken();
-      
+
       const response = await fetch(`/api/community/groups/${groupId}/request`, {
         method: 'POST',
         headers: {
@@ -288,7 +302,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
         },
         credentials: 'include',
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -297,7 +311,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
           errorData.error?.message || 'Failed to request group membership'
         );
       }
-      
+
       toast.success('Join request sent successfully. Awaiting moderator approval.');
     } catch (err) {
       console.error('[useCommunityGroups] Request error:', err);
@@ -307,7 +321,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
       setIsJoining(false);
     }
   }, []);
-  
+
   /**
    * Leave a community group
    */
@@ -317,7 +331,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     try {
       // Get CSRF token
       const csrfToken = await getCSRFToken();
-      
+
       const response = await fetch(`/api/community/groups/${groupId}/leave`, {
         method: 'POST',
         headers: {
@@ -325,7 +339,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
         },
         credentials: 'include',
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -334,7 +348,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
           errorData.error?.message || 'Failed to leave group'
         );
       }
-      
+
       // Optimistically update member count
       if (isMountedRef.current) {
         setState(prev => ({
@@ -346,7 +360,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
           ),
         }));
       }
-      
+
       toast.success('Left group successfully');
     } catch (err) {
       console.error('[useCommunityGroups] Leave error:', err);

@@ -9,6 +9,7 @@ import { FollowersList } from './FollowersList';
 import { FollowingList } from './FollowingList';
 import { UserIcon, MailIcon, CalendarIcon } from 'lucide-react';
 import { formatDistanceToNow } from '@/lib/utils/date-helpers';
+import { AvatarImage } from '@/components/responsive-image';
 
 /**
  * User Profile Data Interface
@@ -94,10 +95,12 @@ export function UserProfileHeader({
             <div className="shrink-0">
               <div className="size-24 sm:size-32 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                 {user.image ? (
-                  <img
+                  <AvatarImage
                     src={user.image}
                     alt={displayName}
-                    className="size-full object-cover"
+                    size={128}
+                    className="sm:w-32 sm:h-32 w-24 h-24"
+                    priority={true}
                   />
                 ) : (
                   <UserIcon className="size-12 sm:size-16 text-primary" />

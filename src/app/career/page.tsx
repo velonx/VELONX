@@ -17,7 +17,7 @@ export default function CareerPage() {
     const [internships, setInternships] = useState<any[]>([]);
     const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
-    
+
     const [mockFormData, setMockFormData] = useState({
         email: "",
         preferredDate: "",
@@ -40,7 +40,7 @@ export default function CareerPage() {
         try {
             const response = await fetch(`/api/opportunities?type=${type}`);
             const data = await response.json();
-            
+
             if (data.success) {
                 if (type === "INTERNSHIP") {
                     setInternships(data.data);
@@ -58,11 +58,18 @@ export default function CareerPage() {
     const handleMockSchedule = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        
+
         try {
+            const { getCSRFToken } = await import('@/lib/utils/csrf');
+            const csrfToken = await getCSRFToken();
+
             const response = await fetch('/api/mock-interviews', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken,
+                },
+                credentials: 'include',
                 body: JSON.stringify(mockFormData),
             });
 
@@ -118,7 +125,7 @@ export default function CareerPage() {
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
             <section className="relative py-16 bg-background overflow-hidden">
-                
+
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto">
                         <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6 mx-auto" style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -196,41 +203,41 @@ export default function CareerPage() {
                                         <CardContent className="space-y-5">
                                             <div className="space-y-2">
                                                 <Label className="text-foreground">Email Address *</Label>
-                                                <Input 
-                                                    type="email" 
+                                                <Input
+                                                    type="email"
                                                     placeholder="your.email@example.com"
                                                     value={mockFormData.email}
                                                     onChange={(e) => setMockFormData({ ...mockFormData, email: e.target.value })}
-                                                    className="bg-gray-50 border-border text-foreground" 
-                                                    required 
+                                                    className="bg-gray-50 border-border text-foreground"
+                                                    required
                                                 />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
                                                     <Label className="text-foreground">Preferred Date *</Label>
-                                                    <Input 
-                                                        type="date" 
+                                                    <Input
+                                                        type="date"
                                                         value={mockFormData.preferredDate}
                                                         onChange={(e) => setMockFormData({ ...mockFormData, preferredDate: e.target.value })}
                                                         min={new Date().toISOString().split('T')[0]}
-                                                        className="bg-gray-50 border-border text-foreground" 
-                                                        required 
+                                                        className="bg-gray-50 border-border text-foreground"
+                                                        required
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label className="text-foreground">Time Slot *</Label>
-                                                    <Input 
-                                                        type="time" 
+                                                    <Input
+                                                        type="time"
                                                         value={mockFormData.preferredTime}
                                                         onChange={(e) => setMockFormData({ ...mockFormData, preferredTime: e.target.value })}
-                                                        className="bg-gray-50 border-border text-foreground" 
-                                                        required 
+                                                        className="bg-gray-50 border-border text-foreground"
+                                                        required
                                                     />
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
                                                 <Label className="text-foreground">Interview Type *</Label>
-                                                <select 
+                                                <select
                                                     value={mockFormData.interviewType}
                                                     onChange={(e) => setMockFormData({ ...mockFormData, interviewType: e.target.value })}
                                                     className="w-full flex h-10 rounded-md border border-border bg-gray-50 px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#219EBC] text-foreground"
@@ -247,13 +254,13 @@ export default function CareerPage() {
                                                 <div className="flex gap-4">
                                                     {["INTERN", "JUNIOR", "SENIOR"].map((level) => (
                                                         <label key={level} className="flex-1">
-                                                            <input 
-                                                                type="radio" 
-                                                                name="level" 
+                                                            <input
+                                                                type="radio"
+                                                                name="level"
                                                                 value={level}
                                                                 checked={mockFormData.experienceLevel === level}
                                                                 onChange={(e) => setMockFormData({ ...mockFormData, experienceLevel: e.target.value })}
-                                                                className="hidden peer" 
+                                                                className="hidden peer"
                                                             />
                                                             <div className="text-center py-2 border rounded-lg cursor-pointer border-border peer-checked:border-[#219EBC] peer-checked:bg-blue-50 peer-checked:text-[#219EBC] text-muted-foreground">
                                                                 {level.charAt(0) + level.slice(1).toLowerCase()}
@@ -320,7 +327,7 @@ export default function CareerPage() {
                                                 </div>
                                             </CardContent>
                                             <CardFooter>
-                                                <Button 
+                                                <Button
                                                     onClick={() => handleApply(internship.applyUrl, internship.title)}
                                                     className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-full"
                                                 >
@@ -380,7 +387,7 @@ export default function CareerPage() {
                                                 </div>
                                             </CardContent>
                                             <CardFooter>
-                                                <Button 
+                                                <Button
                                                     onClick={() => handleApply(job.applyUrl, job.title)}
                                                     className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-full"
                                                 >

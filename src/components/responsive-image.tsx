@@ -158,11 +158,15 @@ export function AvatarImage({
   alt,
   size = 40,
   className = "",
+  priority = false,
+  loading = "lazy",
 }: {
   src: string;
   alt: string;
   size?: number;
   className?: string;
+  priority?: boolean;
+  loading?: "lazy" | "eager";
 }) {
   return (
     <ResponsiveImage
@@ -174,6 +178,8 @@ export function AvatarImage({
       quality={80}
       sizes={`${size}px`}
       objectFit="cover"
+      priority={priority}
+      loading={loading}
     />
   );
 }
@@ -214,11 +220,15 @@ export function CardImage({
   alt,
   aspectRatio = "16/9",
   className = "",
+  priority = false,
+  loading = "lazy",
 }: {
   src: string;
   alt: string;
   aspectRatio?: "16/9" | "4/3" | "1/1" | "3/2";
   className?: string;
+  priority?: boolean;
+  loading?: "lazy" | "eager";
 }) {
   const aspectRatioMap = {
     "16/9": "aspect-[16/9]",
@@ -236,6 +246,8 @@ export function CardImage({
         quality={75}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         objectFit="cover"
+        priority={priority}
+        loading={loading}
       />
     </div>
   );

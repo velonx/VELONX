@@ -2,13 +2,12 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ApiClientError } from '@/lib/api/client';
-import type { DiscussionRoomData, CommunityGroupData, CommunityPostData } from '@/lib/types/community.types';
+import type { CommunityGroupData, CommunityPostData } from '@/lib/types/community.types';
 
 /**
  * Search Results Interface
  */
 export interface SearchResults {
-  rooms: DiscussionRoomData[];
   groups: CommunityGroupData[];
   posts: CommunityPostData[];
   users: Array<{
@@ -60,7 +59,7 @@ function debounce<T extends (...args: any[]) => any>(
   wait: number
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
-  
+
   return (...args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
@@ -91,7 +90,6 @@ function debounce<T extends (...args: any[]) => any>(
 export function useSearch(): UseSearchReturn {
   const [state, setState] = useState<UseSearchState>({
     results: {
-      rooms: [],
       groups: [],
       posts: [],
       users: [],
@@ -99,7 +97,7 @@ export function useSearch(): UseSearchReturn {
     isSearching: false,
     error: null,
   });
-  
+
   const isMountedRef = useRef(true);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -122,7 +120,6 @@ export function useSearch(): UseSearchReturn {
     if (!query.trim()) {
       setState({
         results: {
-          rooms: [],
           groups: [],
           posts: [],
           users: [],
@@ -132,27 +129,27 @@ export function useSearch(): UseSearchReturn {
       });
       return;
     }
-    
+
     // Abort previous request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
-    
+
     // Create new abort controller
     abortControllerRef.current = new AbortController();
-    
+
     if (!isMountedRef.current) return;
-    
+
     setState(prev => ({ ...prev, isSearching: true, error: null }));
 
     try {
       const params = new URLSearchParams();
       params.append('q', query.trim());
-      
+
       const response = await fetch(`/api/community/search?${params.toString()}`, {
         signal: abortControllerRef.current.signal,
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -161,14 +158,13 @@ export function useSearch(): UseSearchReturn {
           errorData.error?.message || 'Failed to search'
         );
       }
-      
+
       const data = await response.json();
-      
+
       if (!isMountedRef.current) return;
-      
+
       setState({
         results: data.data || {
-          rooms: [],
           groups: [],
           posts: [],
           users: [],
@@ -181,15 +177,15 @@ export function useSearch(): UseSearchReturn {
       if (err instanceof Error && err.name === 'AbortError') {
         return;
       }
-      
+
       console.error('[useSearch] Search error:', err);
-      
+
       if (!isMountedRef.current) return;
-      
-      const error = err instanceof ApiClientError 
-        ? err 
+
+      const error = err instanceof ApiClientError
+        ? err
         : new ApiClientError(500, 'NETWORK_ERROR', getErrorMessage(err));
-      
+
       setState(prev => ({
         ...prev,
         isSearching: false,
@@ -213,14 +209,13 @@ export function useSearch(): UseSearchReturn {
   const search = useCallback(async (query: string) => {
     debouncedSearch(query);
   }, [debouncedSearch]);
-  
+
   /**
    * Clear search results
    */
   const clearResults = useCallback(() => {
     setState({
       results: {
-        rooms: [],
         groups: [],
         posts: [],
         users: [],

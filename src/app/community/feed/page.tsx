@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { secureFetch } from "@/lib/utils/csrf";
 import { TrendingUp, Users, MessageSquare } from "lucide-react";
 import { Feed } from "@/components/community/Feed";
 import { FeedFilter } from "@/components/community/FeedFilter";
@@ -24,10 +25,11 @@ export default function FeedPage() {
   const { createPost, isCreating } = useCommunityPosts();
   const { refetch } = useFeed();
 
-  const handlePostCreated = async (data: any) => {
+  const handleCreatePost = async (data: any) => {
     try {
       await createPost(data);
       setShowComposer(false);
+      toast.success("Post created successfully!");
       refetch();
     } catch (error) {
       // Error handled by hook
@@ -128,7 +130,7 @@ export default function FeedPage() {
                 </Card>
               ) : (
                 <PostComposer
-                  onSubmit={handlePostCreated}
+                  onSubmit={handleCreatePost}
                   isSubmitting={isCreating}
                 />
               )}
@@ -160,16 +162,16 @@ export default function FeedPage() {
               {/* Quick Links */}
               <Card>
                 <CardContent className="py-6 space-y-3">
-                  <Link href="/community/rooms">
-                    <Button variant="ghost" className="w-full justify-start gap-2">
-                      <MessageSquare className="w-4 h-4" />
-                      Browse Discussion Rooms
-                    </Button>
-                  </Link>
                   <Link href="/community/groups">
                     <Button variant="ghost" className="w-full justify-start gap-2">
                       <Users className="w-4 h-4" />
-                      Discover Groups
+                      Browse Groups
+                    </Button>
+                  </Link>
+                  <Link href="/community/search">
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <Users className="w-4 h-4" />
+                      Search Community
                     </Button>
                   </Link>
                 </CardContent>

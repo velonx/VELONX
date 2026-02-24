@@ -4,6 +4,7 @@
  */
 
 import { alertService } from '@/lib/services/alert.service'
+import { ErrorLogger, type ErrorSeverity } from '@/lib/services/error-logger.service'
 
 /**
  * Performance thresholds
@@ -13,6 +14,7 @@ export const PERFORMANCE_THRESHOLDS = {
   SLOW_QUERY: 1000, // 1 second
   HIGH_ERROR_RATE: 5, // 5%
   LOW_CACHE_HIT_RATE: 50, // 50%
+  BUNDLE_SIZE_REGRESSION: 10, // 10% increase
 }
 
 /**
@@ -23,6 +25,7 @@ export enum PerformanceAlertType {
   SLOW_QUERY = 'slow_query',
   HIGH_ERROR_RATE = 'high_error_rate',
   LOW_CACHE_HIT_RATE = 'low_cache_hit_rate',
+  BUNDLE_SIZE_REGRESSION = 'bundle_size_regression',
 }
 
 /**
@@ -146,6 +149,32 @@ export class PerformanceAlertService {
   }
 
   /**
+   * Alert on bundle size regression
+   */
+  async alertBundleSizeRegression(
+    bundleType: string,
+    currentSize: number,
+    previousSize: number,
+    percentageChange: number
+  ): Promise<void> {
+    const alert: PerformanceAlert = {
+      type: PerformanceAlertType.BUNDLE_SIZE_REGRESSION,
+      severity: percentageChange > 20 ? 'critical' : 'warning',
+      message: `Bundle size regression detected: ${bundleType} bundle increased by ${percentageChange.toFixed(2)}%`,
+      metadata: {
+        bundleType,
+        currentSize,
+        previousSize,
+        percentageChange,
+        threshold: PERFORMANCE_THRESHOLDS.BUNDLE_SIZE_REGRESSION,
+      },
+      timestamp: new Date(),
+    }
+    
+    await this.sendAlert(alert)
+  }
+
+  /**
    * Send performance alert
    */
   private async sendAlert(alert: PerformanceAlert): Promise<void> {
@@ -157,14 +186,17 @@ export class PerformanceAlertService {
         console.warn(`[Performance Alert] ${alert.message}`, alert.metadata)
       }
       
-      // Send alert through alert service for critical issues
+      // Send alert through error logger for critical issues
       if (alert.severity === 'critical') {
-        await alertService.sendAlert({
-          subject: `Performance Alert: ${alert.type}`,
-          message: alert.message,
-          severity: 'high',
-          metadata: alert.metadata,
-        })
+        ErrorLogger.log(
+          `PERFORMANCE_${alert.type.toUpperCase()}`,
+          alert.message,
+          undefined,
+          {
+            severity: 'critical',
+            context: alert.metadata,
+          }
+        )
       }
     } catch (error) {
       console.error('[Performance Alert] Error sending alert:', error)

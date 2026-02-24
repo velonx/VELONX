@@ -63,12 +63,18 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const userId = session.user.id!;
 
   // Parse and validate query parameters
+  // Only include params that have actual values so Zod defaults apply correctly
   const searchParams = request.nextUrl.searchParams;
-  const queryParams = {
-    cursor: searchParams.get("cursor") || undefined,
-    limit: searchParams.get("limit") || undefined,
-    filter: searchParams.get("filter") || "ALL",
-  };
+  const queryParams: Record<string, string> = {};
+
+  const cursor = searchParams.get("cursor");
+  if (cursor) queryParams.cursor = cursor;
+
+  const limit = searchParams.get("limit");
+  if (limit) queryParams.limit = limit;
+
+  const filter = searchParams.get("filter");
+  if (filter) queryParams.filter = filter;
 
   const validatedQuery = feedQuerySchema.parse(queryParams);
 
@@ -82,7 +88,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   // Try to get from cache first (cache-aside pattern)
   const cachedFeed = await cacheService.get(cacheKey);
-  
+
   if (cachedFeed) {
     return NextResponse.json(cachedFeed, { status: 200 });
   }

@@ -1,15 +1,8 @@
 /**
  * Community Components
- * Feature: community-discussion-rooms
  * 
  * Exports all community-related components for easy importing.
  */
-
-// Discussion Rooms
-export { default as RoomCard } from './RoomCard';
-export { default as RoomList } from './RoomList';
-export { RoomCardSkeleton, RoomCardSkeletonLoader } from './RoomCardSkeleton';
-export { default as CreateRoomDialog } from './CreateRoomDialog';
 
 // Community Groups
 export { default as GroupCard } from './GroupCard';
@@ -22,7 +15,6 @@ export { default as GroupSettings } from './GroupSettings';
 export { default as GroupFeed } from './GroupFeed';
 
 // Chat Interface
-export { default as RoomChat } from './RoomChat';
 export { default as ChatMessage } from './ChatMessage';
 export { default as ChatInput } from './ChatInput';
 export { default as TypingIndicator } from './TypingIndicator';

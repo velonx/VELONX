@@ -7,6 +7,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ImageIcon, LinkIcon, XIcon, Loader2Icon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { CreatePostData } from '@/lib/hooks/useCommunityPosts';
+import { secureFetch } from '@/lib/utils/csrf';
+import { CardImage } from '@/components/responsive-image';
 
 /**
  * Post Composer Props Interface
@@ -52,7 +54,7 @@ export function PostComposer({
   const [linkUrls, setLinkUrls] = useState<string[]>([]);
   const [linkInput, setLinkInput] = useState('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -96,11 +98,11 @@ export function PostComposer({
       });
 
       const base64Images = await Promise.all(uploadPromises);
-      
+
       // Upload to Cloudinary via API
       const uploadedUrls: string[] = [];
       for (const base64 of base64Images) {
-        const response = await fetch('/api/user/profile/upload', {
+        const response = await secureFetch('/api/user/profile/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image: base64, folder: 'community-posts' }),
@@ -139,7 +141,7 @@ export function PostComposer({
    */
   const addLink = useCallback(() => {
     const trimmedLink = linkInput.trim();
-    
+
     if (!trimmedLink) return;
 
     if (linkUrls.length >= MAX_LINKS) {
@@ -171,7 +173,7 @@ export function PostComposer({
     e.preventDefault();
 
     const trimmedContent = content.trim();
-    
+
     if (!trimmedContent) {
       toast.error('Post content cannot be empty');
       textareaRef.current?.focus();
@@ -225,9 +227,8 @@ export function PostComposer({
             />
             <div
               id="char-counter"
-              className={`text-xs text-right ${
-                isOverLimit ? 'text-destructive' : 'text-muted-foreground'
-              }`}
+              className={`text-xs text-right ${isOverLimit ? 'text-destructive' : 'text-muted-foreground'
+                }`}
               aria-live="polite"
             >
               {remainingChars} characters remaining
@@ -238,11 +239,12 @@ export function PostComposer({
           {imageUrls.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
               {imageUrls.map((url, index) => (
-                <div key={index} className="relative group aspect-square">
-                  <img
+                <div key={index} className="relative group">
+                  <CardImage
                     src={url}
                     alt={`Upload ${index + 1}`}
-                    className="w-full h-full object-cover rounded-md border"
+                    aspectRatio="1/1"
+                    loading="eager"
                   />
                   <button
                     type="button"

@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { SearchFilters, type SearchFilterType } from './SearchFilters';
 import { UserCard } from './UserCard';
-import RoomCard from './RoomCard';
 import GroupCard from './GroupCard';
 import { PostCard } from './PostCard';
 import { LoaderIcon, SearchIcon } from 'lucide-react';
@@ -62,22 +61,19 @@ export function SearchResults({
    */
   const getFilteredResults = () => {
     switch (activeFilter) {
-      case 'rooms':
-        return { rooms: results.rooms, groups: [], posts: [], users: [] };
       case 'groups':
-        return { rooms: [], groups: results.groups, posts: [], users: [] };
+        return { groups: results.groups, posts: [], users: [] };
       case 'posts':
-        return { rooms: [], groups: [], posts: results.posts, users: [] };
+        return { groups: [], posts: results.posts, users: [] };
       case 'users':
-        return { rooms: [], groups: [], posts: [], users: results.users };
+        return { groups: [], posts: [], users: results.users };
       default:
-        return results;
+        return { groups: results.groups, posts: results.posts, users: results.users };
     }
   };
 
   const filteredResults = getFilteredResults();
   const hasResults =
-    filteredResults.rooms.length > 0 ||
     filteredResults.groups.length > 0 ||
     filteredResults.posts.length > 0 ||
     filteredResults.users.length > 0;
@@ -87,12 +83,11 @@ export function SearchResults({
    */
   const getAllItems = () => {
     const items: Array<{ type: string; id: string }> = [];
-    
-    filteredResults.rooms.forEach((room) => items.push({ type: 'room', id: room.id }));
+
     filteredResults.groups.forEach((group) => items.push({ type: 'group', id: group.id }));
     filteredResults.posts.forEach((post) => items.push({ type: 'post', id: post.id }));
     filteredResults.users.forEach((user) => items.push({ type: 'user', id: user.id }));
-    
+
     return items;
   };
 
@@ -150,7 +145,6 @@ export function SearchResults({
         activeFilter={activeFilter}
         onFilterChange={setActiveFilter}
         counts={{
-          rooms: results.rooms.length,
           groups: results.groups.length,
           posts: results.posts.length,
           users: results.users.length,
@@ -172,7 +166,7 @@ export function SearchResults({
           <div className="text-center py-12">
             <SearchIcon className="size-12 mx-auto text-muted-foreground mb-3" />
             <p className="text-sm text-muted-foreground">
-              Enter a search query to find rooms, groups, posts, and users
+              Enter a search query to find groups, posts, and users
             </p>
           </div>
         ) : !hasResults ? (
@@ -187,23 +181,6 @@ export function SearchResults({
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Rooms */}
-            {filteredResults.rooms.length > 0 && (
-              <section aria-labelledby="rooms-heading">
-                <h2 id="rooms-heading" className="text-lg font-semibold mb-3">
-                  Rooms ({filteredResults.rooms.length})
-                </h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredResults.rooms.map((room) => (
-                    <RoomCard
-                      key={room.id}
-                      room={room}
-                      onViewDetails={() => onResultClick?.('room', room.id)}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
 
             {/* Groups */}
             {filteredResults.groups.length > 0 && (

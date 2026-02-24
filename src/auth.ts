@@ -6,7 +6,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import type { UserRole } from "@prisma/client"
-import { BruteForceProtection, createBruteForceIdentifier } from "@/lib/services/brute-force-protection.service"
+import { BruteForceProtection, createBruteForceIdentifier, type BruteForceCheckResult } from "@/lib/services/brute-force-protection.service"
 
 // Extend the session type to include custom properties
 declare module "next-auth" {
@@ -19,7 +19,7 @@ declare module "next-auth" {
             role?: UserRole
         }
     }
-    
+
     interface User {
         role?: UserRole
     }
@@ -61,35 +61,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     return null;
                 }
 
-                // Create identifier for brute force protection
-                // Note: In a real implementation, we'd get the IP from the request
-                // For now, we'll use email as the identifier
                 const identifier = createBruteForceIdentifier(
                     credentials.email as string,
-                    'unknown' // IP would be extracted from request in middleware
+                    'unknown'
                 );
 
-                // Check brute force protection
-                const bruteForceCheck = await BruteForceProtection.checkAttempt(identifier);
-                
-                if (!bruteForceCheck.allowed) {
-                    console.log("🚫 Brute force protection triggered:", bruteForceCheck.message);
-                    
-                    // Return null to indicate failed authentication
-                    // The error message will be shown to the user
-                    throw new Error(bruteForceCheck.message || 'Too many failed attempts');
-                }
+                // Run brute force check with a 2s timeout so slow Redis doesn't block login
+                // Also start the DB lookup in parallel
+                const bruteForcePromise = Promise.race([
+                    BruteForceProtection.checkAttempt(identifier),
+                    new Promise<BruteForceCheckResult>((resolve) =>
+                        setTimeout(() => resolve({
+                            allowed: true,
+                            attemptsRemaining: 5,
+                            delayMs: 0,
+                        }), 2000)
+                    ),
+                ]);
 
-                // Apply progressive delay if there were previous failed attempts
-                if (bruteForceCheck.delayMs > 0) {
-                    console.log(`⏱️ Applying ${bruteForceCheck.delayMs}ms delay due to previous failed attempts`);
-                    await BruteForceProtection.applyDelay(bruteForceCheck.delayMs);
-                }
-
-                // Find user in database
-                const user = await prisma.user.findUnique({
+                const userPromise = prisma.user.findUnique({
                     where: { email: credentials.email as string },
                 });
+
+                const [bruteForceCheck, user] = await Promise.all([
+                    bruteForcePromise,
+                    userPromise,
+                ]);
+
+                if (!bruteForceCheck.allowed) {
+                    console.log("🚫 Brute force protection triggered:", bruteForceCheck.message);
+                    throw new Error(bruteForceCheck.message || 'Too many failed attempts');
+                }
 
                 console.log("👤 User found:", user ? {
                     email: user.email,
@@ -99,10 +101,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 if (!user || !user.password) {
                     console.log("❌ User not found or no password");
-                    
-                    // Record failed attempt
-                    await BruteForceProtection.recordFailedAttempt(identifier);
-                    
+                    // Fire-and-forget: don't block login response
+                    BruteForceProtection.recordFailedAttempt(identifier).catch(() => { });
                     return null;
                 }
 
@@ -116,27 +116,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 if (!isValid) {
                     console.log("❌ Invalid password");
-                    
-                    // Record failed attempt
-                    await BruteForceProtection.recordFailedAttempt(identifier);
-                    
+                    // Fire-and-forget: don't block login response
+                    BruteForceProtection.recordFailedAttempt(identifier).catch(() => { });
                     return null;
                 }
 
-                // Verify role if provided (optional check for admin login)
+                // Verify role if provided
                 if (credentials.role && credentials.role === "admin" && user.role !== "ADMIN") {
                     console.log("❌ Role mismatch - requested:", credentials.role, "user role:", user.role);
-                    
-                    // Record failed attempt
-                    await BruteForceProtection.recordFailedAttempt(identifier);
-                    
+                    BruteForceProtection.recordFailedAttempt(identifier).catch(() => { });
                     return null;
                 }
 
                 console.log("✅ Authorization successful!");
 
-                // Record successful attempt (clears failed attempts counter)
-                await BruteForceProtection.recordSuccessfulAttempt(identifier);
+                // Fire-and-forget: don't block login response
+                BruteForceProtection.recordSuccessfulAttempt(identifier).catch(() => { });
 
                 return {
                     id: user.id,
@@ -162,12 +157,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.id = user.id;
                 token.role = user.role || "STUDENT";
             }
-            
+
             // Fetch latest user data on session update
             if (trigger === "update" && token.sub) {
                 const dbUser = await prisma.user.findUnique({
                     where: { id: token.sub },
-                    select: { 
+                    select: {
                         role: true,
                         name: true,
                         image: true,
@@ -179,7 +174,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     token.picture = dbUser.image;
                 }
             }
-            
+
             return token;
         },
         async session({ session, token }) {
@@ -195,7 +190,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // After sign in, redirect based on role
             if (url.startsWith(baseUrl)) return url;
             if (url.startsWith("/")) return `${baseUrl}${url}`;
-            
+
             // Default redirect - will be overridden by callback in signup/login
             return `${baseUrl}/dashboard/student`;
         },

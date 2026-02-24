@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar, Clock, Loader2, CheckCircle2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { getCSRFToken } from "@/lib/utils/csrf";
 
 interface BookingDialogProps {
   open: boolean;
@@ -47,9 +48,15 @@ export default function BookingDialog({ open, onOpenChange, mentor, onSuccess }:
         return;
       }
 
+      const csrfToken = await getCSRFToken();
+
       const response = await fetch('/api/mentor-sessions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        credentials: 'include',
         body: JSON.stringify({
           mentorId: mentor.id,
           title: formData.title,

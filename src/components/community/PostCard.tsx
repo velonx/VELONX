@@ -16,6 +16,7 @@ import { formatDistanceToNow } from '@/lib/utils/date-helpers';
 import type { CommunityPostData } from '@/lib/types/community.types';
 import { PostReactions } from './PostReactions';
 import { CommentSection } from './CommentSection';
+import { AvatarImage, CardImage } from '@/components/responsive-image';
 
 /**
  * Post Card Props Interface
@@ -127,12 +128,12 @@ export function PostCard({
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
             {/* Author Avatar */}
-            <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
               {post.authorImage ? (
-                <img
+                <AvatarImage
                   src={post.authorImage}
                   alt={post.authorName}
-                  className="size-10 rounded-full object-cover"
+                  size={40}
                 />
               ) : (
                 <span className="text-sm font-medium text-primary">
@@ -158,8 +159,8 @@ export function PostCard({
                 )}
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <time dateTime={post.createdAt.toISOString()}>
-                  {formatDistanceToNow(post.createdAt, { addSuffix: true })}
+                <time dateTime={new Date(post.createdAt).toISOString()}>
+                  {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
                 </time>
                 {post.visibility !== 'PUBLIC' && (
                   <>
@@ -264,24 +265,24 @@ export function PostCard({
         {/* Images */}
         {post.imageUrls.length > 0 && (
           <div
-            className={`grid gap-2 ${
-              post.imageUrls.length === 1
+            className={`grid gap-2 ${post.imageUrls.length === 1
                 ? 'grid-cols-1'
                 : post.imageUrls.length === 2
-                ? 'grid-cols-2'
-                : 'grid-cols-2 sm:grid-cols-3'
-            }`}
+                  ? 'grid-cols-2'
+                  : 'grid-cols-2 sm:grid-cols-3'
+              }`}
           >
             {post.imageUrls.map((url, index) => (
               <div
                 key={index}
-                className="relative aspect-square overflow-hidden rounded-md border"
+                className="cursor-pointer"
+                onClick={() => window.open(url, '_blank')}
               >
-                <img
+                <CardImage
                   src={url}
                   alt={`Post image ${index + 1}`}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
-                  onClick={() => window.open(url, '_blank')}
+                  aspectRatio="1/1"
+                  className="hover:scale-105 transition-transform"
                 />
               </div>
             ))}

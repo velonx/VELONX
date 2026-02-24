@@ -221,26 +221,22 @@ export function ProjectModal({
         />
 
         <DialogHeader className="pt-2">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 space-y-2">
-              <DialogTitle id={titleId} className="text-2xl font-bold">
-                {project.title}
-              </DialogTitle>
-              <DialogDescription id={descriptionId} className="sr-only">
-                {project.description}
-              </DialogDescription>
-              <div className="flex items-center gap-2 flex-wrap">
-                {project.category && (
-                  <CategoryBadge category={project.category} size="sm" />
-                )}
-                <Badge className={cn('text-xs border', statusConfig.className)}>
-                  {statusConfig.label}
-                </Badge>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Calendar className="h-3 w-3" aria-hidden="true" />
-                  <span>Created {formatDate(project.createdAt)}</span>
-                </div>
-              </div>
+          <DialogTitle id={titleId} className="text-2xl font-bold">
+            {project.title}
+          </DialogTitle>
+          <DialogDescription id={descriptionId} className="sr-only">
+            Full project details for {project.title}
+          </DialogDescription>
+          <div className="flex items-center gap-2 flex-wrap">
+            {project.category && (
+              <CategoryBadge category={project.category} size="sm" />
+            )}
+            <Badge className={cn('text-xs border', statusConfig.className)}>
+              {statusConfig.label}
+            </Badge>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Calendar className="h-3 w-3" aria-hidden="true" />
+              <span>Created {formatDate(project.createdAt)}</span>
             </div>
           </div>
         </DialogHeader>

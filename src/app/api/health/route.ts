@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { redisManager } from '@/lib/redis'
-import { checkConnectionHealth } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { initializeServices } from '@/lib/init'
 
 /**
@@ -9,7 +9,7 @@ import { initializeServices } from '@/lib/init'
  * 
  * Returns the health status of critical services:
  * - Redis connection
- * - Database connection with pool monitoring
+ * - Database connection
  * - Application version and uptime
  * - System resources
  * 
@@ -42,7 +42,7 @@ import { initializeServices } from '@/lib/init'
  */
 export async function GET() {
   const startTime = Date.now()
-  
+
   // Ensure services are initialized
   await initializeServices().catch(() => {
     // Ignore initialization errors - we'll report them in health check
@@ -50,16 +50,16 @@ export async function GET() {
 
   try {
     const checks = {
-      redis: { 
-        healthy: false, 
-        latency: null as number | null, 
+      redis: {
+        healthy: false,
+        latency: null as number | null,
         error: null as string | null,
         status: 'unknown' as 'connected' | 'disconnected' | 'unknown'
       },
-      database: { 
-        healthy: false, 
-        lastCheck: null as string | null, 
-        message: null as string | null, 
+      database: {
+        healthy: false,
+        lastCheck: null as string | null,
+        message: null as string | null,
         error: null as string | null,
         poolStatus: null as any
       },
@@ -94,18 +94,17 @@ export async function GET() {
       }
     }
 
-    // Check Database health with enhanced monitoring
+    // Check Database health with a simple ping
     try {
-      const dbHealth = await checkConnectionHealth()
+      const dbStart = Date.now()
+      await prisma.$runCommandRaw({ ping: 1 })
+      const dbLatency = Date.now() - dbStart
       checks.database = {
-        healthy: dbHealth.isHealthy,
-        lastCheck: dbHealth.lastCheck.toISOString(),
-        message: dbHealth.message,
+        healthy: true,
+        lastCheck: new Date().toISOString(),
+        message: `Connected (${dbLatency}ms)`,
         error: null,
-        poolStatus: {
-          active: dbHealth.activeConnections || 0,
-          idle: dbHealth.idleConnections || 0
-        }
+        poolStatus: null
       }
     } catch (error) {
       checks.database = {
@@ -120,10 +119,10 @@ export async function GET() {
     // Determine overall health status
     const allHealthy = checks.redis.healthy && checks.database.healthy
     const someHealthy = checks.redis.healthy || checks.database.healthy
-    
+
     let status: 'healthy' | 'degraded' | 'unhealthy'
     let statusCode: number
-    
+
     if (allHealthy) {
       status = 'healthy'
       statusCode = 200
@@ -141,7 +140,7 @@ export async function GET() {
       status,
       checks,
       responseTime: `${responseTime}ms`
-    }, { 
+    }, {
       status: statusCode,
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -152,13 +151,13 @@ export async function GET() {
 
   } catch (error) {
     const responseTime = Date.now() - startTime
-    
+
     return NextResponse.json({
       status: 'error',
       error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString(),
       responseTime: `${responseTime}ms`
-    }, { 
+    }, {
       status: 500,
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',

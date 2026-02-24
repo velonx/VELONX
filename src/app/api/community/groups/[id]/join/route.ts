@@ -42,15 +42,29 @@ export const POST = withErrorHandler(
     const userId = session.user.id!;
     const { id: groupId } = await params;
 
-    // Join group via service
-    await communityGroupService.joinGroup(groupId, userId);
+    try {
+      // Join group via service
+      await communityGroupService.joinGroup(groupId, userId);
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Successfully joined the group",
-      },
-      { status: 200 }
-    );
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Successfully joined the group",
+        },
+        { status: 200 }
+      );
+    } catch (error: any) {
+      // Handle duplicate membership gracefully
+      if (error.message?.includes('already a member')) {
+        return NextResponse.json(
+          {
+            success: true,
+            message: "You're already a member of this group",
+          },
+          { status: 200 }
+        );
+      }
+      throw error;
+    }
   }
 );

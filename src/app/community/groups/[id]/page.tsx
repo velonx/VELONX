@@ -23,9 +23,10 @@ import GroupFeed from "@/components/community/GroupFeed";
 import GroupMembers from "@/components/community/GroupMembers";
 import GroupSettings from "@/components/community/GroupSettings";
 import JoinRequestList from "@/components/community/JoinRequestList";
+import { PostComposer } from "@/components/community/PostComposer";
 import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
 import { useGroupMembers } from "@/lib/hooks/useGroupMembers";
-import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
+import { useCommunityPosts, type CreatePostData } from "@/lib/hooks/useCommunityPosts";
 import toast from "react-hot-toast";
 
 export default function GroupDetailPage() {
@@ -37,19 +38,11 @@ export default function GroupDetailPage() {
   const [isJoining, setIsJoining] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
   const [activeTab, setActiveTab] = useState("feed");
+  const [showComposer, setShowComposer] = useState(false);
 
   // Fetch group details
-  const { groups, isLoading, joinGroup, requestJoinGroup, leaveGroup, refetch } = useCommunityGroups();
+  const { groups, isLoading, joinGroup, requestJoinGroup, leaveGroup, refetch, memberGroupIds } = useCommunityGroups();
   const group = groups?.find(g => g.id === groupId);
-
-  // Fetch group posts
-  const {
-    posts,
-    isLoading: postsLoading,
-    loadMore,
-    hasMore,
-    createPost: createGroupPost
-  } = useCommunityPosts({ groupId });
 
   // Fetch group members and requests
   const {
@@ -60,8 +53,11 @@ export default function GroupDetailPage() {
     rejectRequest
   } = useGroupMembers(groupId);
 
-  // Check if user is a member or owner
-  const isMember = members?.some(m => m.id === session?.user?.id);
+  // Fetch group posts
+  const { posts, isLoading: postsLoading, createPost, isCreating, loadMore, hasMore, refetch: refetchPosts } = useCommunityPosts({ groupId });
+
+  // Check if user is a member or owner — use both members list and memberGroupIds for reliability
+  const isMember = members?.some(m => m.userId === session?.user?.id) || memberGroupIds?.includes(groupId);
   const isOwner = group?.ownerId === session?.user?.id;
   const isModerator = isOwner; // Simplified - should check moderators table
 
@@ -246,12 +242,32 @@ export default function GroupDetailPage() {
               </TabsList>
 
               <TabsContent value="feed">
+                {showComposer && (
+                  <div className="mb-6">
+                    <PostComposer
+                      onSubmit={async (data: CreatePostData) => {
+                        await createPost({
+                          ...data,
+                          groupId,
+                          visibility: 'GROUP',
+                        });
+                        setShowComposer(false);
+                        refetchPosts();
+                      }}
+                      groupId={groupId}
+                      visibility="GROUP"
+                      placeholder={`Share something with ${group.name}...`}
+                      isSubmitting={isCreating}
+                    />
+                  </div>
+                )}
                 <GroupFeed
                   posts={posts}
+                  isMember={isMember}
                   isLoading={postsLoading}
                   hasMore={hasMore}
                   onLoadMore={loadMore}
-                  isMember={isMember}
+                  onCreatePost={() => setShowComposer(!showComposer)}
                 />
               </TabsContent>
 
@@ -279,6 +295,7 @@ export default function GroupDetailPage() {
                       group={group}
                       members={members || []}
                       moderatorIds={[]}
+                      onUpdateGroup={async () => { await refetch(); }}
                       isOwner={isOwner}
                     />
                   </TabsContent>

@@ -116,7 +116,7 @@ export default function GroupMembers({
   const sortedMembers = [...members].sort((a, b) => {
     const roleA = getMemberRole(a.userId);
     const roleB = getMemberRole(b.userId);
-    
+
     const roleOrder = { owner: 0, moderator: 1, member: 2 };
     return roleOrder[roleA] - roleOrder[roleB];
   });
@@ -148,16 +148,16 @@ export default function GroupMembers({
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
               >
                 <Avatar className="w-10 h-10">
-                  <AvatarImage src={member.user.image || undefined} alt={member.user.name || "User"} />
+                  <AvatarImage src={member.user?.image || undefined} alt={member.user?.name || "User"} />
                   <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
-                    {getInitials(member.user.name)}
+                    {getInitials(member.user?.name ?? null)}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-medium text-foreground truncate">
-                      {member.user.name || "Anonymous User"}
+                      {member.user?.name || "Anonymous User"}
                     </p>
                     {getRoleBadge(role)}
                   </div>

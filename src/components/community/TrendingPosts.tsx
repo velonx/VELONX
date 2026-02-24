@@ -46,13 +46,16 @@ export function TrendingPosts({ limit = 5, className }: TrendingPostsProps) {
 
       try {
         const response = await fetch(`/api/community/feed/trending?limit=${limit}`);
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch trending posts');
         }
 
         const data = await response.json();
-        setPosts(data.data || []);
+        // API returns FeedItemData[] with { type, post } wrapper — unwrap to get CommunityPostData[]
+        const feedItems = data.data || [];
+        const unwrappedPosts = feedItems.map((item: any) => item.post || item);
+        setPosts(unwrappedPosts);
       } catch (err) {
         console.error('[TrendingPosts] Fetch error:', err);
         setError(err instanceof Error ? err.message : 'Failed to load trending posts');
@@ -67,7 +70,8 @@ export function TrendingPosts({ limit = 5, className }: TrendingPostsProps) {
   /**
    * Truncate text to specified length
    */
-  const truncateText = (text: string, maxLength: number) => {
+  const truncateText = (text: string | undefined | null, maxLength: number) => {
+    if (!text) return '';
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength).trim() + '...';
   };
@@ -97,7 +101,7 @@ export function TrendingPosts({ limit = 5, className }: TrendingPostsProps) {
           <div className="space-y-4">
             {posts.map((post, index) => (
               <div
-                key={post.id}
+                key={post.id || `trending-${index}`}
                 className="group cursor-pointer"
                 onClick={() => {
                   // Navigate to post detail (implement based on routing)
@@ -115,13 +119,17 @@ export function TrendingPosts({ limit = 5, className }: TrendingPostsProps) {
                     <p className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors">
                       {truncateText(post.content, 100)}
                     </p>
-                    
+
                     <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                      <span className="truncate">{post.authorName}</span>
+                      <span className="truncate">{post.authorName || 'Anonymous'}</span>
                       <span>•</span>
-                      <time dateTime={post.createdAt.toISOString()}>
-                        {formatDistanceToNow(post.createdAt, { addSuffix: true })}
-                      </time>
+                      {post.createdAt ? (
+                        <time dateTime={new Date(post.createdAt).toISOString()}>
+                          {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                        </time>
+                      ) : (
+                        <span>recently</span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">

@@ -75,9 +75,9 @@ export function useFeed(limit: number = 20): UseFeedReturn {
     isLoading: true,
     error: null,
   });
-  
+
   const [filter, setFilter] = useState<FeedFilter>('ALL');
-  
+
   const isMountedRef = useRef(true);
   const cursorRef = useRef<string | null>(null);
 
@@ -86,7 +86,7 @@ export function useFeed(limit: number = 20): UseFeedReturn {
    */
   const fetchFeed = useCallback(async (cursor?: string | null) => {
     if (!isMountedRef.current) return;
-    
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
@@ -94,9 +94,9 @@ export function useFeed(limit: number = 20): UseFeedReturn {
       params.append('filter', filter);
       params.append('limit', limit.toString());
       if (cursor) params.append('cursor', cursor);
-      
+
       const response = await fetch(`/api/community/feed?${params.toString()}`);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -105,32 +105,44 @@ export function useFeed(limit: number = 20): UseFeedReturn {
           errorData.error?.message || 'Failed to fetch feed'
         );
       }
-      
+
       const data = await response.json();
-      
+
       if (!isMountedRef.current) return;
-      
+
       const newItems = data.data || [];
-      const nextCursor = data.pagination?.cursor || null;
-      
-      setState(prev => ({
-        ...prev,
-        items: cursor ? [...prev.items, ...newItems] : newItems,
-        hasMore: !!nextCursor,
-        isLoading: false,
-        error: null,
-      }));
-      
+      const nextCursor = data.pagination?.nextCursor || null;
+      const apiHasMore = data.pagination?.hasMore ?? (newItems.length === limit);
+
+      setState(prev => {
+        const combinedItems = cursor ? [...prev.items, ...newItems] : newItems;
+        // Deduplicate by post.id to prevent React key warnings
+        const seen = new Set<string>();
+        const uniqueItems = combinedItems.filter((item: FeedItemData) => {
+          if (seen.has(item.post.id)) return false;
+          seen.add(item.post.id);
+          return true;
+        });
+
+        return {
+          ...prev,
+          items: uniqueItems,
+          hasMore: apiHasMore,
+          isLoading: false,
+          error: null,
+        };
+      });
+
       cursorRef.current = nextCursor;
     } catch (err) {
       console.error('[useFeed] Fetch error:', err);
-      
+
       if (!isMountedRef.current) return;
-      
-      const error = err instanceof ApiClientError 
-        ? err 
+
+      const error = err instanceof ApiClientError
+        ? err
         : new ApiClientError(500, 'NETWORK_ERROR', getErrorMessage(err));
-      
+
       setState(prev => ({
         ...prev,
         isLoading: false,
@@ -141,20 +153,17 @@ export function useFeed(limit: number = 20): UseFeedReturn {
 
   /**
    * Fetch feed on mount and when filter changes
+   * Also handles isMountedRef lifecycle to support React 18 Strict Mode
    */
   useEffect(() => {
+    isMountedRef.current = true;
     cursorRef.current = null;
     fetchFeed();
-  }, [fetchFeed]);
-  
-  /**
-   * Cleanup on unmount
-   */
-  useEffect(() => {
+
     return () => {
       isMountedRef.current = false;
     };
-  }, []);
+  }, [fetchFeed]);
 
   /**
    * Refetch function for manual refresh
@@ -163,7 +172,7 @@ export function useFeed(limit: number = 20): UseFeedReturn {
     cursorRef.current = null;
     await fetchFeed();
   }, [fetchFeed]);
-  
+
   /**
    * Load more feed items (infinite scroll)
    */

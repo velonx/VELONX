@@ -6,10 +6,17 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 
 const nextConfig: NextConfig = {
+  // Enable compression for all text-based assets
+  compress: true,
+
+  // Enable React strict mode
+  reactStrictMode: true,
+
+  // Image optimization configuration
   images: {
-    // Enable image optimization
+    // Enable modern image formats (AVIF and WebP)
     formats: ['image/avif', 'image/webp'],
-    // Configure remote image domains if needed
+    // Configure remote image domains
     remotePatterns: [
       {
         protocol: 'https',
@@ -21,21 +28,32 @@ const nextConfig: NextConfig = {
       },
     ],
     // Device sizes for responsive images
-    deviceSizes: [320, 420, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    deviceSizes: [320, 420, 640, 750, 828, 1080, 1200, 1920],
     // Image sizes for different breakpoints
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Minimize layout shift
+    // Set appropriate cache TTL (60 seconds)
     minimumCacheTTL: 60,
   },
-  // Enable compression
-  compress: true,
+
+  // Compiler optimizations
+  compiler: {
+    // Remove console logs in production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
   // Experimental features for optimization
   experimental: {
     // Enable optimized package imports
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-icons'],
   },
-  // Production source maps (disabled for smaller bundles)
+
+  // Disable production source maps for smaller bundles
   productionBrowserSourceMaps: false,
+
+  // Turbopack configuration (Next.js 16+ uses Turbopack by default)
+  turbopack: {
+    // Empty config to acknowledge Turbopack usage
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);

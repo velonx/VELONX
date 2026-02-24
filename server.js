@@ -30,7 +30,7 @@ app.prepare().then(async () => {
 
   // Initialize WebSocket server (dynamic import for ES modules)
   try {
-    const { initializeWebSocketServer } = await import('./src/lib/websocket/server.ts')
+    const { getWebSocketServer } = await import('./src/lib/websocket/server.ts')
     const { initializePubSub } = await import('./src/lib/websocket/pubsub.ts')
     const { initializeRedis } = await import('./src/lib/redis.ts')
 
@@ -42,9 +42,9 @@ app.prepare().then(async () => {
     await initializePubSub()
     console.log('[Server] Redis Pub/Sub initialized')
 
-    // Initialize WebSocket server
-    const wss = initializeWebSocketServer(server)
-    console.log('[Server] WebSocket server initialized')
+    // Get WebSocket server singleton (initializes on first call, reuses on subsequent calls)
+    const wss = getWebSocketServer(server)
+    console.log('[Server] WebSocket server ready')
 
     // Graceful shutdown
     process.on('SIGTERM', async () => {

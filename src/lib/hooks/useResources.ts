@@ -195,11 +195,13 @@ export function useResources(filters: ResourceFilters = {}): UseResourcesReturn 
     } catch (err) {
       const error = createResourceError(err);
       
-      // Log error for debugging
+      // Log error for debugging with explicit property access
       console.error('[useResources] Fetch error:', {
         message: error.message,
+        userMessage: error.userMessage,
         statusCode: error.statusCode,
         code: error.code,
+        canRetry: error.canRetry,
         filters,
       });
       

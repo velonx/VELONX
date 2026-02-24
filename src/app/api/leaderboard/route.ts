@@ -21,12 +21,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     // Parse and validate query parameters
-    const queryParams = leaderboardQuerySchema.parse({
-      page: searchParams.get("page") ?? undefined,
-      pageSize: searchParams.get("pageSize") ?? undefined,
-      role: (searchParams.get("role") as "STUDENT" | "ADMIN" | null) ?? undefined,
-      timeframe: (searchParams.get("timeframe") as "all" | "month" | "week" | null) ?? undefined,
-    });
+    // Only include params that have actual values so Zod defaults apply correctly
+    const queryParamsRaw: Record<string, string> = {};
+    const page = searchParams.get("page");
+    if (page) queryParamsRaw.page = page;
+    const pageSize = searchParams.get("pageSize");
+    if (pageSize) queryParamsRaw.pageSize = pageSize;
+    const role = searchParams.get("role");
+    if (role) queryParamsRaw.role = role;
+    const timeframe = searchParams.get("timeframe");
+    if (timeframe) queryParamsRaw.timeframe = timeframe;
+
+    const queryParams = leaderboardQuerySchema.parse(queryParamsRaw);
 
     const result = await leaderboardService.getLeaderboard(queryParams);
 
@@ -34,6 +40,11 @@ export async function GET(request: NextRequest) {
       {
         success: true,
         data: result,
+        pagination: {
+          page: queryParams.page,
+          pageSize: queryParams.pageSize,
+          total: (result as any).length || 0,
+        },
       },
       { status: 200 }
     );

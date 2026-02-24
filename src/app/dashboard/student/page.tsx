@@ -29,10 +29,8 @@ import { FollowersList } from "@/components/community/FollowersList";
 import { FollowingList } from "@/components/community/FollowingList";
 import { PostCard } from "@/components/community/PostCard";
 import { GroupCard } from "@/components/community/GroupCard";
-import { RoomCard } from "@/components/community/RoomCard";
 import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
-import { useDiscussionRooms } from "@/lib/hooks/useDiscussionRooms";
 
 // Overview Components
 import WelcomeSection from "@/components/dashboard/student/Overview/WelcomeSection";
@@ -87,19 +85,19 @@ export default function StudentDashboard() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState("Dashboard");
     const [searchQuery, setSearchQuery] = useState("");
-    
+
     // Cast session user to extended type
     const user = session?.user as ExtendedUser | undefined;
-    
+
     // Memoize the start date to prevent re-fetching on every render
     const [startDate] = useState(() => new Date().toISOString());
 
     // Fetch real data from API
-    const { data: projects, loading: projectsLoading } = useProjects({ 
+    const { data: projects, loading: projectsLoading } = useProjects({
         pageSize: 3,
         status: 'IN_PROGRESS'
     });
-    const { data: meetings, loading: meetingsLoading } = useMeetings({ 
+    const { data: meetings, loading: meetingsLoading } = useMeetings({
         pageSize: 10,
         startDate: startDate
     });
@@ -115,17 +113,15 @@ export default function StudentDashboard() {
     const [showFollowingDialog, setShowFollowingDialog] = useState(false);
 
     // Fetch user's community posts
-    const { posts, isLoading: postsLoading } = useCommunityPosts({ 
-        authorId: session?.user?.id 
+    const { posts, isLoading: postsLoading } = useCommunityPosts({
+        authorId: session?.user?.id
     });
 
     // Fetch user's groups
     const { groups, isLoading: groupsLoading } = useCommunityGroups();
     const userGroups = groups?.filter(g => g.ownerId === session?.user?.id) || [];
 
-    // Fetch user's rooms
-    const { rooms, isLoading: roomsLoading } = useDiscussionRooms();
-    const userRooms = rooms?.filter(r => r.creatorId === session?.user?.id) || [];
+
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -136,7 +132,7 @@ export default function StudentDashboard() {
     // Fetch mentor sessions - memoized with useCallback
     const fetchMentorSessions = useCallback(async () => {
         if (!session?.user?.id) return;
-        
+
         setLoadingSessions(true);
         try {
             const response = await fetch('/api/mentor-sessions?viewAs=student&pageSize=10');
@@ -207,7 +203,7 @@ export default function StudentDashboard() {
     const timeline = meetings?.reduce((acc: any[], meeting) => {
         const date = new Date(meeting.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const time = new Date(meeting.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-        
+
         const existingDate = acc.find(item => item.date === date);
         const meetingItem = {
             time,
@@ -224,7 +220,7 @@ export default function StudentDashboard() {
                 items: [meetingItem]
             });
         }
-        
+
         return acc;
     }, []) || [];
 
@@ -271,65 +267,65 @@ export default function StudentDashboard() {
                 {activeTab === "Dashboard" && (
                     <>
                         {/* Header */}
-                        <WelcomeSection 
+                        <WelcomeSection
                             userName={session.user?.name?.split(" ")[0] || "Student"}
                             searchQuery={searchQuery}
                             onSearchChange={setSearchQuery}
                         />
 
-                {/* Project Cards */}
-                <ProgressSummary 
-                    projects={projectsDisplay}
-                    searchQuery={searchQuery}
-                />
+                        {/* Project Cards */}
+                        <ProgressSummary
+                            projects={projectsDisplay}
+                            searchQuery={searchQuery}
+                        />
 
-                {/* Mentor Sessions Section */}
-                <section className="mb-12">
-                    <FindMentors sessionCount={mentorSessions.length} />
-                    
-                    {loadingSessions ? (
-                        <div className="text-center py-12">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
-                            <p className="text-muted-foreground">Loading sessions...</p>
-                        </div>
-                    ) : mentorSessions.length === 0 ? (
-                        <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
-                            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-xl font-bold text-foreground mb-2">No Sessions Yet</h3>
-                            <p className="text-muted-foreground mb-6">
-                                Book your first mentorship session to get started
-                            </p>
-                            <Button
-                                onClick={() => router.push('/mentors')}
-                                className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
-                            >
-                                Browse Mentors
-                            </Button>
-                        </Card>
-                    ) : (
-                        <div className="grid gap-6">
-                            <UpcomingSessions 
-                                sessions={mentorSessions}
-                                loading={loadingSessions}
-                                onCancel={handleCancelSession}
-                                onReview={handleReviewSession}
-                            />
-                            <SessionHistory 
-                                sessions={mentorSessions}
-                                onCancel={handleCancelSession}
-                                onReview={handleReviewSession}
-                            />
-                        </div>
-                    )}
-                </section>
+                        {/* Mentor Sessions Section */}
+                        <section className="mb-12">
+                            <FindMentors sessionCount={mentorSessions.length} />
 
-                {/* Project Join Requests Section */}
-                {session?.user?.id && (
-                    <JoinRequests userId={session.user.id} />
-                )}
+                            {loadingSessions ? (
+                                <div className="text-center py-12">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                                    <p className="text-muted-foreground">Loading sessions...</p>
+                                </div>
+                            ) : mentorSessions.length === 0 ? (
+                                <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
+                                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold text-foreground mb-2">No Sessions Yet</h3>
+                                    <p className="text-muted-foreground mb-6">
+                                        Book your first mentorship session to get started
+                                    </p>
+                                    <Button
+                                        onClick={() => router.push('/mentors')}
+                                        className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                                    >
+                                        Browse Mentors
+                                    </Button>
+                                </Card>
+                            ) : (
+                                <div className="grid gap-6">
+                                    <UpcomingSessions
+                                        sessions={mentorSessions}
+                                        loading={loadingSessions}
+                                        onCancel={handleCancelSession}
+                                        onReview={handleReviewSession}
+                                    />
+                                    <SessionHistory
+                                        sessions={mentorSessions}
+                                        onCancel={handleCancelSession}
+                                        onReview={handleReviewSession}
+                                    />
+                                </div>
+                            )}
+                        </section>
 
-                {/* Statistics Section - Full Width */}
-                <QuickActions userStats={userStats || {}} />
+                        {/* Project Join Requests Section */}
+                        {session?.user?.id && (
+                            <JoinRequests userId={session.user.id} />
+                        )}
+
+                        {/* Statistics Section - Full Width */}
+                        <QuickActions userStats={userStats || {}} />
                     </>
                 )}
 
@@ -393,9 +389,9 @@ export default function StudentDashboard() {
                                 </div>
                                 <div className="bg-background/20 rounded-xl p-2">
                                     <div className="h-3 bg-background/30 rounded-full overflow-hidden">
-                                        <div 
+                                        <div
                                             className="h-full bg-background rounded-full transition-all duration-500"
-                                            style={{ 
+                                            style={{
                                                 width: `${(() => {
                                                     const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
                                                     const currentLevel = user?.level || 1;
@@ -405,7 +401,7 @@ export default function StudentDashboard() {
                                                     const nextThreshold = thresholds[currentLevel];
                                                     const progress = ((currentXP - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
                                                     return Math.min(100, Math.max(0, progress));
-                                                })()}%` 
+                                                })()}%`
                                             }}
                                         />
                                     </div>
@@ -512,7 +508,7 @@ export default function StudentDashboard() {
                                 <Users className="w-8 h-8 text-[#219EBC]" />
                                 My Community Profile
                             </h1>
-                            <p className="text-muted-foreground font-medium tracking-tight">Your posts, followers, groups, and discussion rooms</p>
+                            <p className="text-muted-foreground font-medium tracking-tight">Your posts, followers, and groups</p>
                         </header>
 
                         {/* Community Stats */}
@@ -535,15 +531,7 @@ export default function StudentDashboard() {
                                 <p className="text-3xl font-black text-[#023047] mb-1">{userGroups.length}</p>
                                 <p className="text-sm text-muted-foreground font-bold">Groups Joined</p>
                             </Card>
-                            <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                                        <Target className="w-5 h-5 text-purple-600" />
-                                    </div>
-                                </div>
-                                <p className="text-3xl font-black text-[#023047] mb-1">{userRooms.length}</p>
-                                <p className="text-sm text-muted-foreground font-bold">Rooms Joined</p>
-                            </Card>
+
                             <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
@@ -635,45 +623,7 @@ export default function StudentDashboard() {
                             )}
                         </section>
 
-                        {/* Rooms Section */}
-                        <section>
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-2xl font-black text-[#023047]">My Discussion Rooms</h3>
-                                <Button
-                                    onClick={() => router.push('/community/rooms')}
-                                    variant="outline"
-                                    className="rounded-xl"
-                                >
-                                    Browse Rooms
-                                </Button>
-                            </div>
-                            {roomsLoading ? (
-                                <div className="text-center py-12">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
-                                    <p className="text-muted-foreground">Loading rooms...</p>
-                                </div>
-                            ) : userRooms.length > 0 ? (
-                                <div className="grid grid-cols-3 gap-4">
-                                    {userRooms.slice(0, 3).map((room) => (
-                                        <RoomCard key={room.id} room={room} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
-                                    <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-foreground mb-2">No Rooms Yet</h3>
-                                    <p className="text-muted-foreground mb-6">
-                                        Join a discussion room to chat in real-time
-                                    </p>
-                                    <Button
-                                        onClick={() => router.push('/community/rooms')}
-                                        className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
-                                    >
-                                        Explore Rooms
-                                    </Button>
-                                </Card>
-                            )}
-                        </section>
+
                     </>
                 )}
 
@@ -741,14 +691,14 @@ export default function StudentDashboard() {
             )}
 
             {/* Followers Dialog */}
-            <FollowersList 
+            <FollowersList
                 userId={session?.user?.id || ''}
                 isOpen={showFollowersDialog}
                 onClose={() => setShowFollowersDialog(false)}
             />
 
             {/* Following Dialog */}
-            <FollowingList 
+            <FollowingList
                 userId={session?.user?.id || ''}
                 isOpen={showFollowingDialog}
                 onClose={() => setShowFollowingDialog(false)}
