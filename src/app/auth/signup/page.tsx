@@ -1,19 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import SplineScene from "@/components/SplineScene";
-import { ArrowRight, Sparkles, Rocket, Users, Trophy, Code, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Sparkles, Rocket, Users, Trophy, Code, Mail, Lock, User, Eye, EyeOff, Gift } from "lucide-react";
 import { authApi } from "@/lib/api/client";
 
 export default function SignupPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -24,7 +25,20 @@ export default function SignupPage() {
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [referralCode, setReferralCode] = useState("");
+    const [referralCodeError, setReferralCodeError] = useState<string | null>(null);
+    const [referralCodeValidating, setReferralCodeValidating] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+    // Extract and pre-fill referral code from URL on mount
+    useEffect(() => {
+        const refParam = searchParams.get('ref');
+        if (refParam) {
+            setReferralCode(refParam);
+            // Validate the pre-filled code
+            validateReferralCodeAsync(refParam);
+        }
+    }, [searchParams]);
 
     // Reset robot state when user types after error
     const handleFieldChange = (setter: (value: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +46,61 @@ export default function SignupPage() {
         if (robotState === "error") {
             setRobotState("idle");
             setError(null);
+        }
+    };
+
+    // Validate referral code asynchronously
+    const validateReferralCodeAsync = async (code: string) => {
+        if (!code || code.trim() === "") {
+            setReferralCodeError(null);
+            return;
+        }
+
+        setReferralCodeValidating(true);
+        setReferralCodeError(null);
+
+        try {
+            const response = await fetch('/api/referral/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code: code.trim() }),
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.data.valid) {
+                setReferralCodeError(null);
+            } else {
+                setReferralCodeError("Invalid referral code. You can still register without one.");
+            }
+        } catch (err) {
+            console.error("Referral code validation error:", err);
+            setReferralCodeError("Unable to validate referral code. You can still register.");
+        } finally {
+            setReferralCodeValidating(false);
+        }
+    };
+
+    // Handle referral code change with debounced validation
+    const handleReferralCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setReferralCode(value);
+        
+        if (robotState === "error") {
+            setRobotState("idle");
+            setError(null);
+        }
+
+        // Clear previous error when user types
+        setReferralCodeError(null);
+    };
+
+    // Validate on blur
+    const handleReferralCodeBlur = () => {
+        if (referralCode.trim()) {
+            validateReferralCodeAsync(referralCode.trim());
         }
     };
 
@@ -58,12 +127,20 @@ export default function SignupPage() {
             // Create student account only (admins are seeded in database)
             const fullName = `${firstName} ${lastName}`.trim();
             
-            await authApi.signup({
+            // Include referral code if provided (even if invalid - backend will handle)
+            const signupData: any = {
                 name: fullName,
                 email: email,
                 password: password,
                 role: "STUDENT", // Only students can sign up
-            });
+            };
+
+            // Add referral code if provided
+            if (referralCode.trim()) {
+                signupData.referralCode = referralCode.trim();
+            }
+
+            await authApi.signup(signupData);
 
             // Then, sign in with the new credentials
             const result = await signIn("credentials", {
@@ -265,6 +342,41 @@ export default function SignupPage() {
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
                             </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                Referral Code <span className="text-muted-foreground font-normal">(Optional)</span>
+                            </Label>
+                            <div className="relative">
+                                <Gift className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                                <Input
+                                    type="text"
+                                    placeholder="Enter referral code"
+                                    value={referralCode}
+                                    onChange={handleReferralCodeChange}
+                                    onBlur={handleReferralCodeBlur}
+                                    className={`pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all ${
+                                        referralCodeError ? 'border-yellow-500' : ''
+                                    }`}
+                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                                />
+                                {referralCodeValidating && (
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                        <div className="w-5 h-5 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                )}
+                            </div>
+                            {referralCodeError && (
+                                <p className="text-xs text-yellow-600 mt-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                    {referralCodeError}
+                                </p>
+                            )}
+                            {referralCode && !referralCodeError && !referralCodeValidating && (
+                                <p className="text-xs text-green-600 mt-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                    ✓ Valid referral code
+                                </p>
+                            )}
                         </div>
 
                         <div className="flex items-start space-x-3 pt-2">

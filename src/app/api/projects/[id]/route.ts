@@ -4,6 +4,7 @@ import { requireAuth, requireAdmin } from "@/lib/middleware/auth.middleware";
 import { handleError, AuthorizationError } from "@/lib/utils/errors";
 import { updateProjectSchema } from "@/lib/validations/project";
 import { awardXP, XP_REWARDS } from "@/lib/utils/xp";
+import { checkAndAwardFirstActivity } from "@/lib/services/referral.service";
 
 /**
  * GET /api/projects/[id]
@@ -76,6 +77,11 @@ export async function PATCH(
         console.error('Failed to award XP for project completion:', error);
         // Don't fail the project update if XP award fails
       }
+
+      // Check and award first activity milestone (async, don't block response)
+      checkAndAwardFirstActivity(project.ownerId, 'project_completion').catch((error) => {
+        console.error('Failed to check first activity milestone:', error);
+      });
     }
 
     return NextResponse.json(

@@ -319,6 +319,12 @@ export class MentorSessionService {
             console.error('Failed to award XP for mentor session completion:', error);
             // Don't fail the update if XP award fails
           }
+
+          // Check and award first activity milestone (async, don't block response)
+          const { checkAndAwardFirstActivity } = await import('@/lib/services/referral.service');
+          checkAndAwardFirstActivity(session.studentId, 'mentor_session').catch((error) => {
+            console.error('Failed to check first activity milestone:', error);
+          });
           
           // Notify student to leave a review
           await notificationService.createMentorSessionCompletedNotification({

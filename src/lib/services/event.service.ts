@@ -405,6 +405,12 @@ export class EventService {
       console.error('Failed to award XP for event registration:', error);
       // Don't fail the registration if XP award fails
     }
+
+    // Check and award first activity milestone (async, don't block response)
+    const { checkAndAwardFirstActivity } = await import('@/lib/services/referral.service');
+    checkAndAwardFirstActivity(userId, 'event_registration').catch((error) => {
+      console.error('Failed to check first activity milestone:', error);
+    });
     
     // Create notification for user about event registration
     try {

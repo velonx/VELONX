@@ -142,7 +142,7 @@ model User {
   
   // Gamification fields
   xpMultiplier      Float     @default(1.0)
-  referralCode      String?
+  referralCode      String?   @unique
   referredBy        String?   @db.ObjectId
   referralCount     Int       @default(0)
   lastStreakUpdate  DateTime?
@@ -167,6 +167,10 @@ model User {
   badges           UserBadge[]
   achievements     Achievement[]
   xpTransactions   XPTransaction[]
+  
+  // Referral relations
+  referralsMade    ReferralRelationship[] @relation("ReferralsMade")
+  referredByUser   ReferralRelationship[] @relation("ReferredBy")
   
   // Community relations
   roomsCreated        DiscussionRoom[]    @relation("RoomCreator")
@@ -442,6 +446,8 @@ model Mentor {
   totalSessions Int             @default(0)
   available     Boolean         @default(true)
   linkedinUrl   String?
+  githubUrl     String?         // GitHub profile URL
+  twitterUrl    String?         // Twitter profile URL
   hourlyRate    Float?          // Optional pricing
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -1052,4 +1058,30 @@ model ModerationLog {
   @@index([moderatorId, createdAt])
   @@index([type, createdAt])
   @@map("moderation_logs")
+}
+
+// ============================================
+// REFERRAL XP SYSTEM MODELS
+// ============================================
+
+// Referral Relationship Model
+model ReferralRelationship {
+  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
+  referrerId                String   @db.ObjectId
+  refereeId                 String   @db.ObjectId
+  signupCompletedAt         DateTime @default(now())
+  profileCompletedAt        DateTime?
+  firstActivityCompletedAt  DateTime?
+  firstActivityType         String?
+  totalXPAwarded            Int      @default(25)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+  
+  referrer User @relation("ReferralsMade", fields: [referrerId], references: [id])
+  referee  User @relation("ReferredBy", fields: [refereeId], references: [id])
+  
+  @@unique([referrerId, refereeId])
+  @@index([referrerId])
+  @@index([refereeId])
+  @@map("referral_relationships")
 }

@@ -128,6 +128,12 @@ export class CommunityGroupService {
       },
     });
 
+    // Check and award first activity milestone (async, don't block response)
+    const { checkAndAwardFirstActivity } = await import('@/lib/services/referral.service');
+    checkAndAwardFirstActivity(userId, 'group_join').catch((error) => {
+      console.error('Failed to check first activity milestone:', error);
+    });
+
     // Broadcast user joined event to group
     await this.broadcastUserJoined(groupId, userId, user.name || "Unknown", user.image || undefined);
   }
