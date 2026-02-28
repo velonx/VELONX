@@ -11,6 +11,7 @@ import { FlipText } from "@/components/ui/flip-text";
 import { Carousel3 } from "@/components/Carousel3";
 import { TelescopeHero } from "@/components/TelescopeHero";
 import { ParallaxGallery } from "@/components/ParallaxGallery";
+
 import "./tech-background.css";
 
 export default function Home() {
@@ -36,12 +37,12 @@ export default function Home() {
             {/* Telescope Hero Section */}
             <TelescopeHero />
 
-            {/* Why Velonx Section */}
+            {/* Why Velonx Section - Staggered Fade-In */}
             <ScrollReveal>
                 <section className="relative py-16 sm:py-20 md:py-24 lg:py-28 bg-background">
                     <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
                             {[
                                 {
                                     icon: <Users className="w-10 h-10 sm:w-12 sm:h-12" />,
@@ -72,42 +73,33 @@ export default function Home() {
                                     <div
                                         className="bg-card rounded-[20px] sm:rounded-[25px] md:rounded-[30px] p-6 sm:p-8 md:p-10 lg:p-12 text-center border border-border hover:shadow-2xl hover:-translate-y-2 sm:hover:-translate-y-4 transition-all duration-500 group relative overflow-hidden"
                                     >
-                                        {/* Animated gradient background on hover */}
-                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-br from-transparent via-transparent to-transparent" style={{ background: `linear-gradient(135deg, transparent 0%, ${feature.color}10 100%)` }} />
-
                                         {/* Top accent bar */}
-                                        <div className="absolute top-0 left-0 w-full h-1.5 transition-all" style={{ background: feature.color }} />
+                                        <div className="absolute top-0 left-0 w-full h-1.5" style={{ background: feature.color }} />
 
-                                        {/* Icon container with enhanced styling */}
-                                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl mx-auto mb-6 sm:mb-8 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-lg group-hover:shadow-2xl" style={{ background: `linear-gradient(135deg, ${feature.color}20, ${feature.color}10)`, color: feature.color }}>
+                                        {/* Icon */}
+                                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl mx-auto mb-6 sm:mb-8 flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-lg" style={{ background: `linear-gradient(135deg, ${feature.color}20, ${feature.color}10)`, color: feature.color }}>
                                             {feature.icon}
-                                            {/* Glow effect */}
-                                            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ boxShadow: `0 0 30px ${feature.color}40` }} />
                                         </div>
 
-                                        <h3 className="relative text-foreground text-3xl sm:text-4xl md:text-5xl mb-4 sm:mb-6" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 600 }}>
+                                        <h3 className="text-foreground text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
                                             {feature.title}
                                         </h3>
 
-                                        <p className="relative text-muted-foreground text-sm sm:text-base leading-relaxed mb-6 sm:mb-8" style={{ fontFamily: "'Indie Flower', cursive" }}>
+                                        <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-6 sm:mb-8">
                                             {feature.desc}
                                         </p>
 
                                         <Link
                                             href={feature.link}
-                                            className="relative inline-flex items-center gap-2 font-semibold text-sm px-6 py-2.5 rounded-full transition-all duration-300 hover:gap-3 group/link"
+                                            className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-2.5 rounded-full transition-all duration-300 hover:gap-3"
                                             style={{
-                                                fontFamily: "'Indie Flower', cursive",
                                                 background: `${feature.color}15`,
                                                 color: feature.color,
                                                 border: `1.5px solid ${feature.color}30`
                                             }}
                                         >
                                             {feature.linkText}
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover/link:translate-x-1">
-                                                <path d="M5 12h14" />
-                                                <path d="m12 5 7 7-7 7" />
-                                            </svg>
+                                            <ArrowRight className="w-4 h-4" />
                                         </Link>
                                     </div>
                                 </ScrollReveal>
@@ -117,9 +109,10 @@ export default function Home() {
                 </section>
             </ScrollReveal>
 
-            {/* Community Showcase — Horizontal Parallax Gallery */}
-            <div className="w-full py-12 bg-background overflow-hidden">
-                <ParallaxGallery
+
+            {/* Community Showcase Section - Carousel */}
+            <div className="w-full py-16 sm:py-20 md:py-24 lg:py-28 bg-gradient-to-b from-background via-[#1a1a2e] to-background overflow-hidden">
+                <Carousel3
                     title="Community Showcase"
                     description="Discover amazing projects built by our talented community members"
                     slides={[
@@ -170,17 +163,17 @@ export default function Home() {
 
                     <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10 text-center">
                         <div className="max-w-3xl mx-auto">
-                            <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 sm:mb-5 md:mb-6 text-white leading-tight" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 600 }}>
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 sm:mb-5 md:mb-6 text-white leading-tight font-bold">
                                 Ready to Launch Your Career?
                             </h2>
-                            <p className="text-gray-400 mb-8 sm:mb-10 md:mb-12 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 300 }}>
+                            <p className="text-gray-400 mb-8 sm:mb-10 md:mb-12 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
                                 Join thousands of students transforming their skills into real-world experience. Start building your future today.
                             </p>
                             <Link href="/auth/signup" className="inline-block w-full sm:w-auto">
                                 <button
                                     onClick={handleJoinClick}
                                     className="w-full sm:w-auto touch-target bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-full px-8 sm:px-10 py-3 sm:py-4 text-sm sm:text-base transition-all shadow-xl hover:shadow-2xl hover:scale-105"
-                                    style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 600 }}
+                                    style={{ fontWeight: 600 }}
                                     aria-label="Get started with Velonx for free"
                                 >
                                     Get Started for Free

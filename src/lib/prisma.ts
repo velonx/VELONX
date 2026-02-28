@@ -58,7 +58,7 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
  */
 function validateDatabaseUrl(): void {
   const databaseUrl = process.env.DATABASE_URL;
-  
+
   if (!databaseUrl) {
     throw new Error(
       '[Prisma] DATABASE_URL environment variable is not set. ' +
@@ -67,10 +67,10 @@ function validateDatabaseUrl(): void {
   }
 
   // Basic format validation for MongoDB connection strings
-  const isValidFormat = 
-    databaseUrl.startsWith('mongodb://') || 
+  const isValidFormat =
+    databaseUrl.startsWith('mongodb://') ||
     databaseUrl.startsWith('mongodb+srv://');
-  
+
   if (!isValidFormat) {
     throw new Error(
       '[Prisma] DATABASE_URL must be a valid MongoDB connection string ' +
@@ -87,7 +87,7 @@ function validateDatabaseUrl(): void {
 export async function initializePrisma(): Promise<void> {
   // Validate connection string before attempting to connect
   validateDatabaseUrl();
-  
+
   try {
     await prisma.$connect();
     console.log('[Prisma] Database connection established successfully');

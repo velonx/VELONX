@@ -3537,3 +3537,46 @@ body {
         margin: -140px 0 30px 0;
     }
 }
+
+/* ==========================================
+   STACKED LOGOS - Simple Staggered Fade-In
+   ========================================== */
+.stacked-logos {
+    --logo-width: 200px;
+    --mouse-x: 0px;
+    --mouse-y: 0px;
+}
+
+.stacked-logos:hover .stacked-logos__glow {
+    opacity: 1;
+}
+
+.stacked-logos:hover .stacked-logos__border-glow {
+    opacity: 1;
+}
+
+.stacked-logos__cell {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: stacked-cell-appear 0.7s ease-out forwards;
+    animation-delay: calc(var(--index, 0) * 0.2s);
+}
+
+@keyframes stacked-cell-appear {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stacked-logos__logo {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stacked-logos__cell {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
