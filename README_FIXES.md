@@ -9,7 +9,7 @@
 ## ✅ What I Fixed
 
 ### Fixed Files:
-- ✅ `.env.local` - Updated cloud name to `dypbafujn`
+- ✅ `.env.local` - Updated cloud name to actual value
 - ✅ `.env` - Removed quotes from environment variables
 - ✅ `src/lib/services/admin.service.ts` - Filter invalid user IDs before query
 - ✅ `src/lib/cloudinary.ts` - Added debug logging
@@ -39,7 +39,7 @@ npm run dev
 ### You'll See This in Logs:
 ```
 🔍 Cloudinary Environment Variables: {
-  cloud_name: 'dypbafujn',
+  cloud_name: 'your_cloud_name',
   api_key: '✅ SET',
   api_secret: '✅ SET'
 }
@@ -60,9 +60,9 @@ npm run dev
 ## 📝 Environment Variables (Confirmed Working)
 
 ```env
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dypbafujn
-CLOUDINARY_API_KEY=833744899632659
-CLOUDINARY_API_SECRET=AIUmvtgVQoStVEa5JkWFUUtK5mA
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 ## 🎉 That's It!

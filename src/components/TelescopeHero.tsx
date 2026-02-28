@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { FlipText } from "@/components/ui/flip-text";
+import { useTheme } from "@/components/theme-provider";
 import "./TelescopeHero.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -13,6 +14,7 @@ gsap.registerPlugin(ScrollTrigger);
 export const TelescopeHero = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const { theme } = useTheme();
 
     useEffect(() => {
         if (!sectionRef.current || !contentRef.current) return;
@@ -37,11 +39,29 @@ export const TelescopeHero = () => {
 
     return (
         <section ref={sectionRef} className="hero-section relative overflow-hidden flex items-center justify-center min-h-screen">
-            {/* Stable Background */}
+            {/* Base background colour fallback */}
             <div className="absolute inset-0 z-0 bg-background" />
 
+            {/* Light-theme hero image */}
+            <img
+                src="/hero-light.jpeg"
+                alt=""
+                aria-hidden="true"
+                className="hero-bg-image"
+                style={{ opacity: theme === "light" ? 1 : 0 }}
+            />
+
+            {/* Dark-theme hero image */}
+            <img
+                src="/hero-dark.jpeg"
+                alt=""
+                aria-hidden="true"
+                className="hero-bg-image"
+                style={{ opacity: theme === "dark" ? 1 : 0 }}
+            />
+
             {/* Subtle Gradient Overlay */}
-            <div className="absolute inset-0 z-1 opacity-30 bg-gradient-to-b from-transparent via-background/50 to-background" />
+            <div className="absolute inset-0 z-[2] opacity-40 bg-gradient-to-b from-transparent via-background/50 to-background" />
 
             {/* Content Layer */}
             <div

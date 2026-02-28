@@ -45,9 +45,9 @@ This will verify:
 ### 3. Check Environment Variables
 Ensure these are set in `VELONX/.env`:
 ```env
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dypbafujn
-CLOUDINARY_API_KEY=833744899632659
-CLOUDINARY_API_SECRET=AIUmvtgVQoStVEa5JkWFUUtK5mA
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 ### 4. Verify Authentication
