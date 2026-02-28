@@ -15,6 +15,8 @@ export const createEventSchema = z.object({
   imageUrl: z.string().url("Invalid image URL").optional().nullable().transform((val) => val ?? undefined),
   maxSeats: z.number().int("Max seats must be an integer").positive("Max seats must be positive"),
   status: z.enum(["UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"]).default("UPCOMING"),
+  registrationDeadline: z.string().datetime("Invalid registration deadline format, must be ISO 8601").optional().nullable().transform((val) => val ?? undefined),
+  registrationManuallyClosedAt: z.string().datetime("Invalid manual closure date format, must be ISO 8601").optional().nullable().transform((val) => val ?? undefined),
 }).refine(
   (data) => {
     // Validate that date is in the future
@@ -39,6 +41,20 @@ export const createEventSchema = z.object({
     message: "End date must be after start date",
     path: ["endDate"],
   }
+).refine(
+  (data) => {
+    // Validate that registrationDeadline is before event date if provided
+    if (data.registrationDeadline) {
+      const eventDate = new Date(data.date);
+      const deadline = new Date(data.registrationDeadline);
+      return deadline < eventDate;
+    }
+    return true;
+  },
+  {
+    message: "Registration deadline must be before event start date",
+    path: ["registrationDeadline"],
+  }
 );
 
 /**
@@ -54,7 +70,23 @@ export const updateEventSchema = z.object({
   imageUrl: z.string().url("Invalid image URL").optional().nullable().transform((val) => val ?? undefined),
   maxSeats: z.number().int("Max seats must be an integer").positive("Max seats must be positive").optional(),
   status: z.enum(["UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"]).optional(),
-});
+  registrationDeadline: z.string().datetime("Invalid registration deadline format, must be ISO 8601").optional().nullable().transform((val) => val ?? undefined),
+  registrationManuallyClosedAt: z.string().datetime("Invalid manual closure date format, must be ISO 8601").optional().nullable().transform((val) => val ?? undefined),
+}).refine(
+  (data) => {
+    // Validate that registrationDeadline is before event date if both are provided
+    if (data.registrationDeadline && data.date) {
+      const eventDate = new Date(data.date);
+      const deadline = new Date(data.registrationDeadline);
+      return deadline < eventDate;
+    }
+    return true;
+  },
+  {
+    message: "Registration deadline must be before event start date",
+    path: ["registrationDeadline"],
+  }
+);
 
 /**
  * Schema for event query parameters (filtering)

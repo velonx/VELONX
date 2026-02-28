@@ -8,13 +8,18 @@ import {
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { VisuallyHidden } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 export const FloatingNav = ({
   navItems,
   className,
   rightContent,
+  mobileRightContent,
+  mobileAvatar,
 }: {
   navItems: {
     name: string;
@@ -23,6 +28,8 @@ export const FloatingNav = ({
   }[];
   className?: string;
   rightContent?: React.ReactNode;
+  mobileRightContent?: React.ReactNode;
+  mobileAvatar?: React.ReactNode;
 }) => {
   const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(false);
@@ -80,20 +87,22 @@ export const FloatingNav = ({
           duration: 0.2,
         }}
         className={cn(
-          "flex max-w-fit fixed top-6 inset-x-0 mx-auto",
+          "flex fixed top-2 md:top-6 inset-x-0",
+          "mx-2 md:mx-auto md:max-w-fit",
           "border border-border rounded-full",
           "bg-card/95 backdrop-blur-xl shadow-lg",
-          "z-[5000] pr-3 pl-6 py-2.5",
-          "items-center justify-center space-x-1",
+          "z-[5000] pr-2 pl-3 md:pr-3 md:pl-6 py-2",
+          "items-center justify-between md:justify-center md:space-x-1",
+          "max-w-[calc(100vw-16px)] md:max-w-fit",
           className
         )}
       >
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center mr-2 pr-3 border-r border-border"
+          className="flex items-center mr-1 pr-2 md:pr-3 md:mr-2 md:border-r border-border shrink-0"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#219EBC] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-lg tracking-tight">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#219EBC] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-sm md:text-lg tracking-tight">
             Velonx
           </span>
         </Link>
@@ -118,48 +127,58 @@ export const FloatingNav = ({
           ))}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden flex items-center justify-center w-9 h-9 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-        >
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-
-        {/* Theme Toggle & Right Content */}
+        {/* Theme Toggle & Right Content - Desktop */}
         <div className="hidden md:flex items-center pl-2 ml-1 border-l border-border space-x-2">
           <ThemeToggle />
           {rightContent && rightContent}
         </div>
 
-        {/* Mobile Menu - shown on mobile when hamburger is clicked */}
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="absolute top-full left-0 right-0 mt-2 mx-4 p-4 bg-card border border-border rounded-2xl shadow-xl md:hidden"
-          >
-            <div className="flex flex-col space-y-2">
-              {navItems.map((navItem: any, idx: number) => (
-                <Link
-                  key={`mobile-link=${idx}`}
-                  href={navItem.link}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                >
-                  {navItem.icon}
-                  <span className="text-sm font-medium">{navItem.name}</span>
+        {/* Mobile Menu Trigger */}
+        <div className="flex md:hidden items-center gap-2 pl-2 ml-1 border-l border-border shrink-0">
+          <ThemeToggle />
+          {mobileAvatar && mobileAvatar}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:bg-muted rounded-full w-8 h-8"
+                aria-label="Open navigation menu"
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="bg-card border-l border-border w-[300px]">
+              <VisuallyHidden>
+                <SheetTitle>Navigation Menu</SheetTitle>
+              </VisuallyHidden>
+              <div className="flex flex-col gap-8 mt-10">
+                <Link href="/" onClick={() => setMobileMenuOpen(false)} className="px-4">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#219EBC] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-3xl tracking-tight">
+                    Velonx
+                  </span>
                 </Link>
-              ))}
-              <div className="flex items-center justify-between px-4 py-3 border-t border-border mt-2 pt-4">
-                <ThemeToggle />
-                {rightContent && <div className="ml-auto">{rightContent}</div>}
+                <nav className="flex flex-col gap-2">
+                  {navItems.map((navItem: any, idx: number) => (
+                    <Link
+                      key={`mobile-link=${idx}`}
+                      href={navItem.link}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="px-6 py-3 text-lg font-black text-muted-foreground hover:text-accent hover:bg-muted rounded-2xl transition-all uppercase tracking-wide"
+                    >
+                      {navItem.name}
+                    </Link>
+                  ))}
+                </nav>
+                {mobileRightContent && (
+                  <div className="mt-auto p-4">
+                    {mobileRightContent}
+                  </div>
+                )}
               </div>
-            </div>
-          </motion.div>
-        )}
+            </SheetContent>
+          </Sheet>
+        </div>
       </motion.div>
     </AnimatePresence>
   );

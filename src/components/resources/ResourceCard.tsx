@@ -1,9 +1,10 @@
 /**
  * ResourceCard Component
- * Feature: resources-page-ui-improvements
+ * Feature: resources-page-ui-improvements, resource-pdf-upload
  * 
  * Displays individual resource information in a card layout with image,
  * title, description, category, type badge, and access count.
+ * Supports PDF resources with view and download functionality.
  * 
  * Requirements:
  * - 4.1: Display title, description, category, type, and image
@@ -14,6 +15,16 @@
  * - 9.1: Track resource visits with API call
  * - 9.3: Non-blocking navigation on tracking failure
  * - 9.4: Display access count as popularity indicator
+ * 
+ * PDF Upload Feature Requirements:
+ * - 4.1: Display PDF indicator icon when pdfUrl exists
+ * - 4.2: Display PDF file name
+ * - 4.3: Show appropriate UI based on available access methods
+ * - 4.4: Display URL only, PDF only, or both
+ * - 4.5: Format and display file size
+ * - 5.1: Provide view PDF button that opens in new tab
+ * - 5.2: Provide download PDF button
+ * - 5.3: Track visits for PDF access
  */
 
 'use client';
@@ -34,7 +45,10 @@ import {
   GraduationCap,
   Book,
   Wrench,
-  FileText
+  FileText,
+  FileDown,
+  ExternalLink,
+  Download
 } from 'lucide-react';
 
 export interface ResourceCardProps {
@@ -124,10 +138,24 @@ function formatAccessCount(count: number): string {
 }
 
 /**
+ * Format file size for display
+ */
+function formatFileSize(bytes: number): string {
+  if (bytes >= 1048576) {
+    return `${(bytes / 1048576).toFixed(1)} MB`;
+  }
+  if (bytes >= 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${bytes} B`;
+}
+
+/**
  * ResourceCard Component
  * 
  * Displays a resource summary with image, title, description, and metadata.
  * Handles visit tracking on click and navigates to resource URL.
+ * Supports PDF resources with view and download options.
  * Memoized to prevent unnecessary re-renders.
  */
 const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
@@ -142,33 +170,102 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
   const truncatedDescription = truncateDescription(resource.description);
   const formattedAccessCount = formatAccessCount(resource.accessCount);
 
+  // Determine available access methods
+  const hasURL = Boolean(resource.url);
+  const hasPDF = Boolean(resource.pdfUrl);
+  const formattedFileSize = resource.pdfFileSize ? formatFileSize(resource.pdfFileSize) : null;
+
   /**
-   * Handle card click - track visit and navigate to resource URL
+   * Handle URL click - track visit and navigate to resource URL
    * Requirements: 9.1, 9.3
    */
-  const handleClick = async () => {
-    if (isVisiting) return;
+  const handleURLClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isVisiting || !resource.url) return;
 
     setIsVisiting(true);
 
     try {
       // Track visit asynchronously (non-blocking)
-      // This call will not throw errors - they are logged internally
       await trackResourceVisit(resource.id);
     } catch (error) {
-      // Extra safety: log error but don't block navigation
       console.error('Failed to track resource visit:', error);
     } finally {
-      // Navigate to resource URL regardless of tracking success
       window.open(resource.url, '_blank', 'noopener,noreferrer');
       setIsVisiting(false);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleClick();
+  /**
+   * Handle PDF view - track visit and open PDF in new tab
+   * Uses authenticated proxy route to ensure secure access
+   */
+  const handlePDFView = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isVisiting || !resource.pdfPublicId) return;
+
+    setIsVisiting(true);
+
+    try {
+      await trackResourceVisit(resource.id);
+      
+      // Get signed URL from proxy route
+      const response = await fetch(`/api/resources/pdf/${encodeURIComponent(resource.pdfPublicId)}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to access PDF');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.data?.url) {
+        window.open(data.data.url, '_blank', 'noopener,noreferrer');
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      console.error('Failed to access PDF:', error);
+      alert('Failed to access PDF. Please try again or contact support.');
+    } finally {
+      setIsVisiting(false);
+    }
+  };
+
+  /**
+   * Handle PDF download
+   * Uses authenticated proxy route to ensure secure access
+   */
+  const handlePDFDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!resource.pdfPublicId || !resource.pdfFileName) return;
+
+    try {
+      await trackResourceVisit(resource.id);
+      
+      // Get signed URL from proxy route
+      const response = await fetch(`/api/resources/pdf/${encodeURIComponent(resource.pdfPublicId)}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to access PDF');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.data?.url) {
+        // Create a temporary anchor element to trigger download
+        const link = document.createElement('a');
+        link.href = data.data.url;
+        link.download = resource.pdfFileName;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      console.error('Failed to download PDF:', error);
+      alert('Failed to download PDF. Please try again or contact support.');
     }
   };
 
@@ -179,16 +276,13 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
   return (
     <Card
       className={cn(
-        'relative overflow-hidden cursor-pointer transition-all duration-300',
+        'relative overflow-hidden transition-all duration-300',
         'hover:shadow-xl hover:-translate-y-1',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
         'flex flex-col h-full bg-card border border-border rounded-2xl'
       )}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label={`View resource: ${resource.title}`}
+      role="article"
+      aria-label={`Resource: ${resource.title}`}
     >
       {/* Image Section */}
       <div className="relative w-full h-48 bg-muted overflow-hidden">
@@ -209,6 +303,16 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
             <span className="ml-1.5 font-semibold">{type}</span>
           </Badge>
         </div>
+
+        {/* PDF Indicator Badge */}
+        {hasPDF && (
+          <div className="absolute top-3 left-3">
+            <Badge className="text-xs border backdrop-blur-md shadow-lg bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20">
+              <FileDown className="h-3 w-3" aria-hidden="true" />
+              <span className="ml-1.5 font-semibold">PDF</span>
+            </Badge>
+          </div>
+        )}
       </div>
 
       {/* Content Section */}
@@ -222,6 +326,77 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
         <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed flex-1">
           {truncatedDescription}
         </p>
+
+        {/* PDF Information */}
+        {hasPDF && resource.pdfFileName && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <FileText className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+            <span className="truncate" title={resource.pdfFileName}>
+              {resource.pdfFileName}
+            </span>
+            {formattedFileSize && (
+              <span className="text-xs text-muted-foreground/70">
+                ({formattedFileSize})
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Access Buttons */}
+        <div className="flex flex-col gap-2">
+          {/* URL Access Button */}
+          {hasURL && (
+            <button
+              onClick={handleURLClick}
+              disabled={isVisiting}
+              className={cn(
+                'flex items-center justify-center gap-2 px-4 py-2 rounded-lg',
+                'bg-primary text-primary-foreground font-medium text-sm',
+                'hover:bg-primary/90 transition-colors',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+                'disabled:opacity-50 disabled:cursor-not-allowed'
+              )}
+              aria-label="Visit resource URL"
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              <span>Visit Resource</span>
+            </button>
+          )}
+
+          {/* PDF Access Buttons */}
+          {hasPDF && (
+            <div className="flex gap-2">
+              <button
+                onClick={handlePDFView}
+                disabled={isVisiting}
+                className={cn(
+                  'flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg',
+                  'bg-secondary text-secondary-foreground font-medium text-sm',
+                  'hover:bg-secondary/80 transition-colors',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2',
+                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                )}
+                aria-label="View PDF"
+              >
+                <Eye className="h-4 w-4" aria-hidden="true" />
+                <span>View PDF</span>
+              </button>
+              <button
+                onClick={handlePDFDownload}
+                className={cn(
+                  'flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg',
+                  'bg-secondary text-secondary-foreground font-medium text-sm',
+                  'hover:bg-secondary/80 transition-colors',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2'
+                )}
+                aria-label="Download PDF"
+              >
+                <Download className="h-4 w-4" aria-hidden="true" />
+                <span>Download</span>
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Footer: Category and Access Count */}
         <footer className="flex items-center justify-between gap-2 pt-2 border-t border-border">
@@ -249,7 +424,9 @@ export const ResourceCard = React.memo(ResourceCardComponent, (prevProps, nextPr
   return (
     prevProps.resource.id === nextProps.resource.id &&
     prevProps.resource.updatedAt === nextProps.resource.updatedAt &&
-    prevProps.resource.accessCount === nextProps.resource.accessCount
+    prevProps.resource.accessCount === nextProps.resource.accessCount &&
+    prevProps.resource.pdfUrl === nextProps.resource.pdfUrl &&
+    prevProps.resource.pdfFileName === nextProps.resource.pdfFileName
   );
 });
 

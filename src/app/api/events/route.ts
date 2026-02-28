@@ -3,12 +3,16 @@ import { eventService } from "@/lib/services/event.service";
 import { requireAuth, requireAdmin } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations/event";
+import { computeRegistrationStatus } from "@/lib/utils/event-helpers";
+import type { Event } from "@/lib/api/types";
 
 /**
  * GET /api/events
  * List events with pagination and filtering
  * Public endpoint (no authentication required)
  * If user is authenticated, includes registration status
+ * Feature: event-registration-closed
+ * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5
  */
 export async function GET(request: NextRequest) {
   try {
@@ -35,37 +39,73 @@ export async function GET(request: NextRequest) {
       endDate: searchParams.get("endDate"),
     });
     
-    const result = await eventService.listEvents(queryParams);
+    // Get availability filter parameter
+    const availability = searchParams.get("availability");
     
-    // If user is authenticated, check registration status for each event
-    let eventsWithRegistrationStatus = result.events;
-    if (userId) {
-      const { prisma } = await import("@/lib/prisma");
-      
-      eventsWithRegistrationStatus = await Promise.all(
-        result.events.map(async (event) => {
-          const isRegistered = await prisma.eventAttendee.findUnique({
+    const result = await eventService.listEvents(queryParams);
+    const { prisma } = await import("@/lib/prisma");
+    
+    // Compute registration status for each event and check user registration
+    const eventsWithStatus = await Promise.all(
+      result.events.map(async (event) => {
+        // Compute registration status
+        const attendeeCount = event._count?.attendees || 0;
+        const statusInfo = computeRegistrationStatus(event as any, attendeeCount);
+        
+        // Check if user is registered (if authenticated)
+        let isUserRegistered = false;
+        if (userId) {
+          const registration = await prisma.eventAttendee.findUnique({
             where: {
               eventId_userId: {
                 eventId: event.id,
-                userId: userId!,
+                userId: userId,
               },
             },
           });
-          
-          return {
-            ...event,
-            isUserRegistered: !!isRegistered,
-          };
-        })
+          isUserRegistered = !!registration;
+        }
+        
+        return {
+          ...event,
+          isRegistrationClosed: !statusInfo.isOpen,
+          registrationClosureReason: statusInfo.reason,
+          isUserRegistered,
+        } as Event;
+      })
+    );
+    
+    // Apply availability filter if requested
+    // Requirement 8.2: Exclude closed events when availability=available
+    // Requirement 8.5: Include user's registered events regardless of status
+    let filteredEvents = eventsWithStatus;
+    if (availability === 'available') {
+      filteredEvents = eventsWithStatus.filter(event => 
+        !event.isRegistrationClosed || event.isUserRegistered
       );
     }
+    
+    // Calculate filter counts
+    // Requirement 8.4: Return availableCount and totalCount
+    const availableCount = eventsWithStatus.filter(event => !event.isRegistrationClosed).length;
+    const totalCount = eventsWithStatus.length;
     
     return NextResponse.json(
       {
         success: true,
-        data: eventsWithRegistrationStatus,
-        pagination: result.pagination,
+        data: {
+          events: filteredEvents,
+          pagination: {
+            page: result.pagination.page,
+            pageSize: result.pagination.pageSize,
+            total: result.pagination.totalCount,
+            totalPages: result.pagination.totalPages,
+          },
+          filters: {
+            availableCount,
+            totalCount,
+          },
+        },
       },
       { status: 200 }
     );

@@ -46,7 +46,7 @@ describe('EventsFilterPanel', () => {
   it('calls onTypeToggle when event type checkbox is clicked', () => {
     render(<EventsFilterPanel {...mockProps} />);
 
-    const workshopCheckbox = screen.getByLabelText('Filter by Workshop');
+    const workshopCheckbox = screen.getByLabelText('Filter by Workshop events');
     fireEvent.click(workshopCheckbox);
 
     expect(mockProps.onTypeToggle).toHaveBeenCalledWith('WORKSHOP');
@@ -60,9 +60,9 @@ describe('EventsFilterPanel', () => {
 
     render(<EventsFilterPanel {...props} />);
 
-    const workshopCheckbox = screen.getByLabelText('Filter by Workshop');
-    const hackathonCheckbox = screen.getByLabelText('Filter by Hackathon');
-    const networkingCheckbox = screen.getByLabelText('Filter by Networking');
+    const workshopCheckbox = screen.getByLabelText('Filter by Workshop events');
+    const hackathonCheckbox = screen.getByLabelText('Filter by Hackathon events');
+    const networkingCheckbox = screen.getByLabelText('Filter by Networking events');
 
     // Radix UI Checkbox uses data-state attribute instead of checked property
     expect(workshopCheckbox).toHaveAttribute('data-state', 'checked');
@@ -90,25 +90,22 @@ describe('EventsFilterPanel', () => {
     expect(callArg).toHaveProperty('end');
   });
 
-  it('displays all availability options', () => {
+  it('displays availability filter checkbox', () => {
     render(<EventsFilterPanel {...mockProps} />);
 
-    expect(screen.getByText('All Events')).toBeInTheDocument();
-    expect(screen.getByText('Available')).toBeInTheDocument();
-    expect(screen.getByText('Almost Full')).toBeInTheDocument();
-    expect(screen.getByText('Full')).toBeInTheDocument();
+    expect(screen.getByText('Show only available events')).toBeInTheDocument();
   });
 
-  it('calls onAvailabilityChange when availability option is clicked', () => {
+  it('calls onAvailabilityChange when availability checkbox is toggled', () => {
     render(<EventsFilterPanel {...mockProps} />);
 
-    const availableButton = screen.getByText('Available');
-    fireEvent.click(availableButton);
+    const availabilityCheckbox = screen.getByLabelText('Show only available events');
+    fireEvent.click(availabilityCheckbox);
 
     expect(mockProps.onAvailabilityChange).toHaveBeenCalledWith('available');
   });
 
-  it('highlights selected availability option', () => {
+  it('shows availability checkbox as checked when availability is "available"', () => {
     const props = {
       ...mockProps,
       availability: 'available' as EventAvailability,
@@ -116,8 +113,20 @@ describe('EventsFilterPanel', () => {
 
     render(<EventsFilterPanel {...props} />);
 
-    const availableButton = screen.getByText('Available').closest('button');
-    expect(availableButton).toHaveAttribute('aria-pressed', 'true');
+    const availabilityCheckbox = screen.getByLabelText('Show only available events');
+    expect(availabilityCheckbox).toHaveAttribute('data-state', 'checked');
+  });
+
+  it('displays event counts when provided', () => {
+    const props = {
+      ...mockProps,
+      availableCount: 15,
+      totalCount: 25,
+    };
+
+    render(<EventsFilterPanel {...props} />);
+
+    expect(screen.getByText('15 of 25 events available')).toBeInTheDocument();
   });
 
   it('calls onMyEventsToggle when My Events button is clicked', () => {
@@ -138,7 +147,7 @@ describe('EventsFilterPanel', () => {
     render(<EventsFilterPanel {...props} />);
 
     const myEventsButton = screen.getByText('Show only my registered events').closest('button');
-    expect(myEventsButton).toHaveAttribute('aria-pressed', 'true');
+    expect(myEventsButton).toHaveAttribute('aria-checked', 'true');
   });
 
   it('shows Clear All button when filters are active', () => {
@@ -228,10 +237,10 @@ describe('EventsFilterPanel', () => {
   it('has proper ARIA labels for accessibility', () => {
     render(<EventsFilterPanel {...mockProps} />);
 
-    expect(screen.getByLabelText('Filter by Workshop')).toBeInTheDocument();
-    expect(screen.getByLabelText('Filter by Hackathon')).toBeInTheDocument();
-    expect(screen.getByLabelText('Filter by Networking')).toBeInTheDocument();
-    expect(screen.getByLabelText('Filter by Webinar')).toBeInTheDocument();
+    expect(screen.getByLabelText('Filter by Workshop events')).toBeInTheDocument();
+    expect(screen.getByLabelText('Filter by Hackathon events')).toBeInTheDocument();
+    expect(screen.getByLabelText('Filter by Networking events')).toBeInTheDocument();
+    expect(screen.getByLabelText('Filter by Webinar events')).toBeInTheDocument();
   });
 
   it('applies correct styling classes', () => {

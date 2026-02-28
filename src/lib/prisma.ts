@@ -54,6 +54,50 @@ export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 /**
+ * Validate DATABASE_URL environment variable
+ */
+function validateDatabaseUrl(): void {
+  const databaseUrl = process.env.DATABASE_URL;
+  
+  if (!databaseUrl) {
+    throw new Error(
+      '[Prisma] DATABASE_URL environment variable is not set. ' +
+      'Please ensure your .env file contains a valid MongoDB connection string.'
+    );
+  }
+
+  // Basic format validation for MongoDB connection strings
+  const isValidFormat = 
+    databaseUrl.startsWith('mongodb://') || 
+    databaseUrl.startsWith('mongodb+srv://');
+  
+  if (!isValidFormat) {
+    throw new Error(
+      '[Prisma] DATABASE_URL must be a valid MongoDB connection string ' +
+      '(starting with mongodb:// or mongodb+srv://). ' +
+      `Current value starts with: ${databaseUrl.substring(0, 20)}...`
+    );
+  }
+}
+
+/**
+ * Initialize Prisma connection explicitly
+ * Should be called during server startup with proper error handling
+ */
+export async function initializePrisma(): Promise<void> {
+  // Validate connection string before attempting to connect
+  validateDatabaseUrl();
+  
+  try {
+    await prisma.$connect();
+    console.log('[Prisma] Database connection established successfully');
+  } catch (error) {
+    console.error('[Prisma] Failed to connect to database:', error);
+    throw error;
+  }
+}
+
+/**
  * Graceful shutdown handler
  */
 export async function disconnectPrisma(): Promise<void> {
@@ -65,9 +109,5 @@ export async function disconnectPrisma(): Promise<void> {
   }
 }
 
-// Initialize connection on startup
-if (typeof window === 'undefined') {
-  prisma.$connect().catch((error) => {
-    console.error('[Prisma] Failed to connect on startup:', error);
-  });
-}
+// NOTE: Eager connection removed - connection is now initialized explicitly in server.js
+// This prevents connection attempts before proper error handling is in place

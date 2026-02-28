@@ -27,12 +27,16 @@ import {
   Sparkles,
   User,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  XCircle,
+  Ban,
+  UserX
 } from "lucide-react";
 import { Event } from "@/lib/api/types";
 import { eventsApi } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 import { CalendarExportMenu } from "./CalendarExportMenu";
+import { computeRegistrationStatus, getRegistrationButtonText } from "@/lib/utils/event-helpers";
 
 interface EventDetailsModalProps {
   event: Event | null;
@@ -82,9 +86,28 @@ export default function EventDetailsModal({
   const [isLoadingAttendees, setIsLoadingAttendees] = useState(false);
   const [showAllAttendees, setShowAllAttendees] = useState(false);
   const [attendeesError, setAttendeesError] = useState<string | null>(null);
+  const [statusAnnouncement, setStatusAnnouncement] = useState<string>('');
 
   const isAdmin = userRole === 'ADMIN';
   const INITIAL_ATTENDEES_DISPLAY = 12;
+
+  // Update ARIA live region announcement when registration status changes
+  useEffect(() => {
+    if (isOpen && event) {
+      const attendeeCount = event._count?.attendees || 0;
+      const status = computeRegistrationStatus(event, attendeeCount);
+      
+      if (isRegistered) {
+        setStatusAnnouncement('You are registered for this event.');
+      } else if (!status.isOpen) {
+        setStatusAnnouncement(`Registration closed. ${status.message}`);
+      } else {
+        setStatusAnnouncement(`Registration is open. ${status.message}`);
+      }
+    } else {
+      setStatusAnnouncement('');
+    }
+  }, [isOpen, event, isRegistered]);
 
   // Fetch attendees when modal opens (admin only)
    
@@ -125,6 +148,10 @@ export default function EventDetailsModal({
   const isFull = attendeeCount >= event.maxSeats;
   const isAlmostFull = attendeePercentage >= 80;
   const spotsLeft = event.maxSeats - attendeeCount;
+
+  // Compute registration status
+  const registrationStatus = computeRegistrationStatus(event, attendeeCount);
+  const buttonText = getRegistrationButtonText(isRegistered, registrationStatus);
 
   // Calculate time-based properties
   const eventDate = new Date(event.date);
@@ -180,6 +207,24 @@ export default function EventDetailsModal({
 
   const platformInfo = getPlatformInfo();
 
+  // Get closure reason icon
+  const getClosureIcon = () => {
+    if (!registrationStatus.reason) return null;
+    
+    switch (registrationStatus.reason) {
+      case 'capacity':
+        return Users;
+      case 'deadline':
+        return Clock;
+      case 'manual':
+        return Ban;
+      default:
+        return XCircle;
+    }
+  };
+
+  const ClosureIcon = getClosureIcon();
+
   // Get event type color
   const getTypeColor = () => {
     switch (event.type) {
@@ -221,6 +266,16 @@ export default function EventDetailsModal({
         )}
         showCloseButton={false}
       >
+        {/* ARIA Live Region for Screen Reader Announcements */}
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        >
+          {statusAnnouncement}
+        </div>
+
         {/* Header with Image or Gradient Background */}
         <div className={cn(
           "relative",
@@ -386,6 +441,62 @@ export default function EventDetailsModal({
                 </div>
               </div>
             </div>
+
+            {/* Registration Status Section - When Closed (Requirements 5.1-5.5, 12.3, 12.5) */}
+            {!registrationStatus.isOpen && (
+              <div className="p-3.5 sm:p-5 bg-red-500/10 border-2 border-red-500/30 rounded-xl">
+                <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                  {ClosureIcon && (
+                    <div className="p-2.5 sm:p-3 bg-red-500/20 rounded-lg flex-shrink-0">
+                      <ClosureIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0 w-full">
+                    <h3 className="text-base sm:text-lg font-bold text-red-400 mb-2 flex items-center gap-2">
+                      Registration Closed
+                    </h3>
+                    <p className="text-sm sm:text-base text-gray-200 leading-relaxed">
+                      {registrationStatus.message}
+                    </p>
+                    
+                    {/* Additional context based on closure reason - Mobile optimized (Requirement 12.3, 12.5) */}
+                    {registrationStatus.reason === 'capacity' && (
+                      <div className="mt-3 p-2.5 sm:p-3 bg-white/5 rounded-lg border border-white/10">
+                        <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                          This event has reached maximum capacity of {event.maxSeats} attendees.
+                          {registrationStatus.canReopen && " Registration may reopen if spots become available."}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {registrationStatus.reason === 'deadline' && event.registrationDeadline && (
+                      <div className="mt-3 p-2.5 sm:p-3 bg-white/5 rounded-lg border border-white/10">
+                        <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                          Registration deadline:{' '}
+                          <span className="font-semibold text-white block sm:inline mt-1 sm:mt-0">
+                            {new Date(event.registrationDeadline).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: 'numeric',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </p>
+                      </div>
+                    )}
+                    
+                    {registrationStatus.reason === 'manual' && (
+                      <div className="mt-3 p-2.5 sm:p-3 bg-white/5 rounded-lg border border-white/10">
+                        <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                          Registration temporarily closed by organizer. Check back later or contact organizer for info.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <Separator className="bg-white/10" />
 
@@ -573,23 +684,24 @@ export default function EventDetailsModal({
           </div>
         </ScrollArea>
 
-        {/* Footer - Action Buttons - responsive layout with larger touch targets */}
+        {/* Footer - Action Buttons - responsive layout with touch-friendly targets (Requirement 12.4) */}
         <div className="p-4 sm:p-6 bg-[#0a0f1a] border-t border-white/10 flex flex-col gap-2.5 sm:gap-3">
-          {/* Calendar Export Button - full width on mobile */}
+          {/* Calendar Export Button - full width on mobile with min 44px height */}
           <CalendarExportMenu
             event={event}
             isRegistered={isRegistered}
             variant="outline"
             size="default"
-            className="w-full h-12 sm:h-12 border-2 border-white/10 hover:border-[#219EBC] text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
+            className="w-full min-h-[44px] h-12 sm:h-12 border-2 border-white/10 hover:border-[#219EBC] text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
           />
 
-          {/* Register/Unregister Button - full width on mobile with larger touch target */}
+          {/* Register/Unregister Button - full width on mobile with min 44px height */}
           {isRegistered ? (
             <Button
               onClick={() => onUnregister?.(event.id)}
               disabled={isLoading}
-              className="w-full h-12 sm:h-12 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
+              className="w-full min-h-[44px] h-12 sm:h-12 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
+              aria-label="You are registered for this event. Click to unregister."
             >
               <CheckCircle2 className="w-5 h-5" />
               {isLoading ? 'Processing...' : 'Registered'}
@@ -597,15 +709,22 @@ export default function EventDetailsModal({
           ) : (
             <Button
               onClick={() => onRegister?.(event.id)}
-              disabled={isFull || isLoading}
+              disabled={!registrationStatus.isOpen || isLoading}
               className={cn(
-                "w-full h-12 sm:h-12 font-bold rounded-xl flex items-center justify-center gap-2 transition-all",
-                isFull || isLoading
+                "w-full min-h-[44px] h-12 sm:h-12 font-bold rounded-xl flex items-center justify-center gap-2 transition-all",
+                !registrationStatus.isOpen || isLoading
                   ? "bg-gray-600 cursor-not-allowed opacity-50"
                   : "bg-gradient-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-600/20"
               )}
+              aria-label={
+                !registrationStatus.isOpen
+                  ? `Registration closed: ${registrationStatus.message}`
+                  : 'Register for this event'
+              }
+              aria-disabled={!registrationStatus.isOpen || isLoading}
+              title={!registrationStatus.isOpen ? registrationStatus.message : undefined}
             >
-              {isLoading ? 'Processing...' : isFull ? 'Event Full' : 'Register Now'}
+              {isLoading ? 'Processing...' : buttonText}
             </Button>
           )}
         </div>

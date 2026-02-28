@@ -25,7 +25,7 @@ async function main() {
     console.log('✅ Student user created successfully!');
     console.log('');
     console.log('🔐 Credentials:');
-    console.log('   Email: student@velonx.com);
+    console.log('   Email: student@velonx.com');
     console.log('   Password: password123');
     console.log('   Role: STUDENT');
     console.log('   ID:', student.id);
@@ -46,4 +46,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-'

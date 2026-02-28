@@ -3,6 +3,15 @@ import { projectService } from "@/lib/services/project.service";
 import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
 import { createProjectSchema, projectQuerySchema } from "@/lib/validations/project";
+import { cacheService, CacheKeys, CacheTTL } from "@/lib/services/cache.service";
+import { createInMemoryRateLimiter } from "@/lib/services/in-memory-rate-limiter.service";
+import { getClientIp } from "@/lib/middleware/rate-limit.middleware";
+
+// Rate limiter: 100 requests per IP per minute
+const projectsRateLimiter = createInMemoryRateLimiter({
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 100,
+});
 
 /**
  * @swagger
@@ -87,9 +96,43 @@ import { createProjectSchema, projectQuerySchema } from "@/lib/validations/proje
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       429:
+ *         description: Rate limit exceeded - Too many requests
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 export async function GET(request: NextRequest) {
   try {
+    // Apply rate limiting: 100 requests per IP per minute
+    const clientIp = getClientIp(request);
+    const rateLimitResult = await projectsRateLimiter.checkRateLimit(
+      clientIp,
+      "/api/projects"
+    );
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "RATE_LIMIT_EXCEEDED",
+            message: "Too many requests. Please try again later.",
+          },
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": rateLimitResult.retryAfter?.toString() || "60",
+            "X-RateLimit-Limit": "100",
+            "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
+            "X-RateLimit-Reset": rateLimitResult.resetAt.toISOString(),
+          },
+        }
+      );
+    }
+
     const session = await requireAuth();
     if (session instanceof NextResponse) return session;
 
@@ -106,6 +149,38 @@ export async function GET(request: NextRequest) {
       difficulty: searchParams.get("difficulty") || undefined,
     });
 
+    // Use caching for COMPLETED status queries
+    if (queryParams.status === 'COMPLETED') {
+      // Generate cache key from query parameters
+      const cacheKey = CacheKeys.project.completed({
+        page: queryParams.page,
+        pageSize: queryParams.pageSize,
+        techStack: queryParams.techStack,
+        category: queryParams.category,
+        difficulty: queryParams.difficulty,
+        memberId: queryParams.memberId,
+      });
+
+      // Try to get from cache, or fetch and cache if not found
+      const result = await cacheService.getOrSet(
+        cacheKey,
+        async () => {
+          return await projectService.listProjects(queryParams);
+        },
+        CacheTTL.PROJECT_COMPLETED
+      );
+
+      return NextResponse.json(
+        {
+          success: true,
+          data: result.projects,
+          pagination: result.pagination,
+        },
+        { status: 200 }
+      );
+    }
+
+    // For non-completed projects, fetch without caching
     const result = await projectService.listProjects(queryParams);
 
     return NextResponse.json(

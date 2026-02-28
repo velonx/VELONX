@@ -171,10 +171,66 @@ function usePaginatedApiResource<T>(
 
 // Events hooks
 export function useEvents(filters?: EventFilters) {
-  return usePaginatedApiResource<Event>(
-    () => eventsApi.list(filters),
-    [JSON.stringify(filters)]
-  );
+  const [data, setData] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiClientError | null>(null);
+  const [pagination, setPagination] = useState<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await eventsApi.list(filters);
+        if (!cancelled) {
+          // Handle nested response structure: { success, data: { events, pagination, filters } }
+          const responseData = response.data as any;
+          const events = Array.isArray(responseData.events) ? responseData.events : 
+                        Array.isArray(responseData) ? responseData : [];
+          setData(events);
+          setPagination(responseData.pagination || response.pagination);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof ApiClientError ? err : new ApiClientError(500, 'UNKNOWN_ERROR', 'An error occurred'));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(filters)]);
+
+  const refetch = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await eventsApi.list(filters);
+      // Handle nested response structure: { success, data: { events, pagination, filters } }
+      const responseData = response.data as any;
+      const events = Array.isArray(responseData.events) ? responseData.events : 
+                    Array.isArray(responseData) ? responseData : [];
+      setData(events);
+      setPagination(responseData.pagination || response.pagination);
+    } catch (err) {
+      setError(err instanceof ApiClientError ? err : new ApiClientError(500, 'UNKNOWN_ERROR', 'An error occurred'));
+    } finally {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(filters)]);
+
+  return { data, loading, error, pagination, refetch };
 }
 
 export function useEvent(id: string) {

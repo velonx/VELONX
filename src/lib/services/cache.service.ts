@@ -319,6 +319,24 @@ export const CacheKeys = {
   project: {
     details: (projectId: string) => `project:${projectId}:details`,
     list: (page: number) => `project:list:${page}`,
+    completed: (params: {
+      page?: number;
+      pageSize?: number;
+      techStack?: string;
+      category?: string;
+      difficulty?: string;
+      memberId?: string;
+    }) => {
+      const parts = ['project:completed'];
+      if (params.page) parts.push(`page:${params.page}`);
+      if (params.pageSize) parts.push(`size:${params.pageSize}`);
+      if (params.techStack) parts.push(`tech:${params.techStack}`);
+      if (params.category) parts.push(`cat:${params.category}`);
+      if (params.difficulty) parts.push(`diff:${params.difficulty}`);
+      if (params.memberId) parts.push(`member:${params.memberId}`);
+      return parts.join(':');
+    },
+    allCompleted: () => `project:completed:*`,
     all: () => `project:*`,
   },
 
@@ -353,6 +371,7 @@ export const CacheTTL = {
   EVENT_LIST: 300,
   PROJECT_DETAILS: 300,
   PROJECT_LIST: 300,
+  PROJECT_COMPLETED: 300,     // 5 minutes for completed projects cache
   FEED: 300,              // 5 minutes for feed cache
   FEED_TRENDING: 300,     // 5 minutes for trending feed
 }

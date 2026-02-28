@@ -8,6 +8,12 @@ import { NotFoundError } from "@/lib/utils/errors";
 export class ProjectService {
   /**
    * List projects with pagination and filtering
+   * 
+   * Performance optimizations:
+   * - Uses Prisma `select` instead of `include` to fetch only required fields
+   * - Implements eager loading for owner and members relationships
+   * - Reduces payload size by selecting specific fields
+   * - Optimized for Hall of Fame queries (COMPLETED status)
    */
   async listProjects(params: {
     page?: number;
@@ -59,10 +65,35 @@ export class ProjectService {
       ];
     }
 
+    // Determine sort order based on status
+    // For COMPLETED projects, sort by completedAt (most recent first)
+    // For other statuses, sort by createdAt (most recent first)
+    const orderBy = status === "COMPLETED" 
+      ? { completedAt: "desc" as const }
+      : { createdAt: "desc" as const };
+
     const [projects, totalCount] = await Promise.all([
       prisma.project.findMany({
         where,
-        include: {
+        select: {
+          // Project fields
+          id: true,
+          title: true,
+          description: true,
+          techStack: true,
+          status: true,
+          category: true,
+          difficulty: true,
+          imageUrl: true,
+          githubUrl: true,
+          liveUrl: true,
+          outcomes: true,
+          completedAt: true,
+          completedBy: true,
+          createdAt: true,
+          updatedAt: true,
+          ownerId: true,
+          // Eager load owner with only required fields
           owner: {
             select: {
               id: true,
@@ -71,8 +102,12 @@ export class ProjectService {
               email: true,
             },
           },
+          // Eager load members with only required fields
           members: {
-            include: {
+            select: {
+              id: true,
+              role: true,
+              joinedAt: true,
               user: {
                 select: {
                   id: true,
@@ -83,6 +118,7 @@ export class ProjectService {
               },
             },
           },
+          // Count members for team size
           _count: {
             select: {
               members: true,
@@ -91,7 +127,7 @@ export class ProjectService {
         },
         skip: (page - 1) * pageSize,
         take: pageSize,
-        orderBy: { createdAt: "desc" },
+        orderBy,
       }),
       prisma.project.count({ where }),
     ]);
@@ -113,7 +149,25 @@ export class ProjectService {
   async getProjectById(id: string) {
     const project = await prisma.project.findUnique({
       where: { id },
-      include: {
+      select: {
+        // Project fields
+        id: true,
+        title: true,
+        description: true,
+        techStack: true,
+        status: true,
+        category: true,
+        difficulty: true,
+        imageUrl: true,
+        githubUrl: true,
+        liveUrl: true,
+        outcomes: true,
+        completedAt: true,
+        completedBy: true,
+        createdAt: true,
+        updatedAt: true,
+        ownerId: true,
+        // Eager load owner with only required fields
         owner: {
           select: {
             id: true,
@@ -122,8 +176,12 @@ export class ProjectService {
             email: true,
           },
         },
+        // Eager load members with only required fields
         members: {
-          include: {
+          select: {
+            id: true,
+            role: true,
+            joinedAt: true,
             user: {
               select: {
                 id: true,
@@ -134,6 +192,7 @@ export class ProjectService {
             },
           },
         },
+        // Count members for team size
         _count: {
           select: {
             members: true,
@@ -179,7 +238,25 @@ export class ProjectService {
         outcomes: data.outcomes,
         ownerId: data.ownerId,
       },
-      include: {
+      select: {
+        // Project fields
+        id: true,
+        title: true,
+        description: true,
+        techStack: true,
+        status: true,
+        category: true,
+        difficulty: true,
+        imageUrl: true,
+        githubUrl: true,
+        liveUrl: true,
+        outcomes: true,
+        completedAt: true,
+        completedBy: true,
+        createdAt: true,
+        updatedAt: true,
+        ownerId: true,
+        // Eager load owner with only required fields
         owner: {
           select: {
             id: true,
@@ -188,8 +265,12 @@ export class ProjectService {
             email: true,
           },
         },
+        // Eager load members with only required fields
         members: {
-          include: {
+          select: {
+            id: true,
+            role: true,
+            joinedAt: true,
             user: {
               select: {
                 id: true,
@@ -241,7 +322,25 @@ export class ProjectService {
         ...(data.liveUrl !== undefined && { liveUrl: data.liveUrl }),
         ...(data.outcomes !== undefined && { outcomes: data.outcomes }),
       },
-      include: {
+      select: {
+        // Project fields
+        id: true,
+        title: true,
+        description: true,
+        techStack: true,
+        status: true,
+        category: true,
+        difficulty: true,
+        imageUrl: true,
+        githubUrl: true,
+        liveUrl: true,
+        outcomes: true,
+        completedAt: true,
+        completedBy: true,
+        createdAt: true,
+        updatedAt: true,
+        ownerId: true,
+        // Eager load owner with only required fields
         owner: {
           select: {
             id: true,
@@ -250,8 +349,12 @@ export class ProjectService {
             email: true,
           },
         },
+        // Eager load members with only required fields
         members: {
-          include: {
+          select: {
+            id: true,
+            role: true,
+            joinedAt: true,
             user: {
               select: {
                 id: true,
@@ -309,7 +412,10 @@ export class ProjectService {
         userId,
         role,
       },
-      include: {
+      select: {
+        id: true,
+        role: true,
+        joinedAt: true,
         user: {
           select: {
             id: true,

@@ -92,6 +92,16 @@ export interface ProjectsGridProps {
   currentUserId?: string;
   
   /**
+   * Handler for project completion
+   */
+  onComplete?: (projectId: string, projectTitle: string) => void;
+  
+  /**
+   * Project ID currently being completed
+   */
+  completingProjectId?: string | null;
+  
+  /**
    * Additional CSS classes
    */
   className?: string;
@@ -116,6 +126,8 @@ const ProjectsGridComponent = ({
   onProjectClick,
   joiningProjects = new Set(),
   currentUserId,
+  onComplete,
+  completingProjectId,
   className,
 }: ProjectsGridProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -166,6 +178,7 @@ const ProjectsGridComponent = ({
         {projects.map((project) => {
           const joinStatus = joinRequestStatuses.get(project.id) || 'none';
           const isJoining = joiningProjects.has(project.id);
+          const isCompleting = completingProjectId === project.id;
 
           return (
             <div key={project.id} className="w-full">
@@ -176,6 +189,8 @@ const ProjectsGridComponent = ({
                 onClick={onProjectClick}
                 isJoining={isJoining}
                 currentUserId={currentUserId}
+                onComplete={onComplete}
+                isCompleting={isCompleting}
               />
             </div>
           );

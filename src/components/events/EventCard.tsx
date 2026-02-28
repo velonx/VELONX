@@ -18,6 +18,13 @@ import { Event } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { CalendarExportMenu } from "./CalendarExportMenu";
 import Image from "next/image";
+import { computeRegistrationStatus, getRegistrationButtonText } from "@/lib/utils/event-helpers";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface EventCardProps {
   event: Event;
@@ -59,6 +66,11 @@ export default function EventCard({
   const attendeePercentage = (attendeeCount / event.maxSeats) * 100;
   const isFull = attendeeCount >= event.maxSeats;
   const isAlmostFull = attendeePercentage >= 80;
+
+  // Compute registration status using utility function
+  const registrationStatus = computeRegistrationStatus(event, attendeeCount);
+  const isRegistrationClosed = !registrationStatus.isOpen;
+  const buttonText = getRegistrationButtonText(isRegistered, registrationStatus);
 
   // Calculate time-based properties
   const eventDate = new Date(event.date);
@@ -149,10 +161,13 @@ export default function EventCard({
         "backdrop-blur-sm",
         // Mobile optimizations: reduce scale on hover for touch devices
         "active:scale-[0.98] touch-manipulation",
+        // Reduced visual emphasis when closed (Requirement 4.4)
+        isRegistrationClosed && "opacity-90",
         className
       )}
       role="article"
-      aria-label={`Event: ${event.title}`}
+      aria-label={`Event: ${event.title}. ${registrationStatus.message}`}
+      aria-describedby={`event-status-${event.id}`}
     >
       {/* Top Section - Image or Gradient Header with optimized image */}
       <div className={`relative h-24 sm:h-32 ${!event.imageUrl ? `bg-gradient-to-br ${getTypeColor()}` : 'bg-card'} flex items-center justify-center overflow-hidden`}>
@@ -177,20 +192,41 @@ export default function EventCard({
         )}
 
         {/* Urgency Badges - WCAG AA Compliant Colors */}
-        <div className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 flex flex-col gap-1 sm:gap-1.5 z-10" role="status" aria-live="polite">
+        <div className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 flex flex-col gap-1 sm:gap-1.5 z-10 max-w-[calc(100%-3rem)]" role="status" aria-live="polite">
+          {/* Registration Closed Badge - Requirements 4.1, 4.2, 4.3, 12.1, 12.2 */}
+          {isRegistrationClosed && (
+            <Badge 
+              className={cn(
+                "text-white border-0 uppercase font-bold tracking-widest backdrop-blur-md flex items-center shadow-lg whitespace-nowrap",
+                // Mobile-optimized sizing - ensure visibility at 320px (Requirement 12.1, 12.2)
+                "text-[9px] px-1.5 py-0.5 gap-0.5",
+                "sm:text-[10px] sm:px-2 sm:py-0.5 sm:gap-1",
+                // Visual distinction by closure reason (Requirement 4.3)
+                registrationStatus.reason === 'capacity' && "bg-red-700/90",
+                registrationStatus.reason === 'deadline' && "bg-amber-700/90",
+                registrationStatus.reason === 'manual' && "bg-gray-700/90"
+              )}
+              aria-label={`Registration closed: ${registrationStatus.message}`}
+            >
+              <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" aria-hidden="true" /> 
+              {registrationStatus.reason === 'capacity' && 'Full'}
+              {registrationStatus.reason === 'deadline' && 'Closed'}
+              {registrationStatus.reason === 'manual' && 'Closed'}
+            </Badge>
+          )}
           {isNew && (
-            <Badge className="bg-blue-600/90 text-white border-0 uppercase text-[8px] sm:text-[9px] font-bold tracking-widest px-1.5 sm:px-2 py-0.5 backdrop-blur-md flex items-center gap-0.5 sm:gap-1 shadow-lg" aria-label="New event">
-              <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5" aria-hidden="true" /> New
+            <Badge className="bg-blue-600/90 text-white border-0 uppercase text-[9px] sm:text-[10px] font-bold tracking-widest px-1.5 sm:px-2 py-0.5 backdrop-blur-md flex items-center gap-0.5 sm:gap-1 shadow-lg whitespace-nowrap" aria-label="New event">
+              <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" aria-hidden="true" /> New
             </Badge>
           )}
-          {isStartingSoon && !isFull && (
-            <Badge className="bg-orange-600/90 text-white border-0 uppercase text-[8px] sm:text-[9px] font-bold tracking-widest px-1.5 sm:px-2 py-0.5 backdrop-blur-md flex items-center gap-0.5 sm:gap-1 shadow-lg" aria-label="Event starting soon">
-              <AlertCircle className="w-2 h-2 sm:w-2.5 sm:h-2.5" aria-hidden="true" /> Starting Soon
+          {isStartingSoon && !isFull && !isRegistrationClosed && (
+            <Badge className="bg-orange-600/90 text-white border-0 uppercase text-[9px] sm:text-[10px] font-bold tracking-widest px-1.5 sm:px-2 py-0.5 backdrop-blur-md flex items-center gap-0.5 sm:gap-1 shadow-lg whitespace-nowrap" aria-label="Event starting soon">
+              <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" aria-hidden="true" /> Starting Soon
             </Badge>
           )}
-          {isAlmostFull && !isFull && (
-            <Badge className="bg-red-600/90 text-white border-0 uppercase text-[8px] sm:text-[9px] font-bold tracking-widest px-1.5 sm:px-2 py-0.5 backdrop-blur-md flex items-center gap-0.5 sm:gap-1 shadow-lg" aria-label="Event almost full">
-              <AlertCircle className="w-2 h-2 sm:w-2.5 sm:h-2.5" aria-hidden="true" /> Almost Full
+          {isAlmostFull && !isFull && !isRegistrationClosed && (
+            <Badge className="bg-red-600/90 text-white border-0 uppercase text-[9px] sm:text-[10px] font-bold tracking-widest px-1.5 sm:px-2 py-0.5 backdrop-blur-md flex items-center gap-0.5 sm:gap-1 shadow-lg whitespace-nowrap" aria-label="Event almost full">
+              <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" aria-hidden="true" /> Almost Full
             </Badge>
           )}
         </div>
@@ -290,56 +326,74 @@ export default function EventCard({
         </div>
       </CardHeader>
 
-      {/* Footer - Action Buttons with touch-friendly sizing */}
+      {/* Hidden status description for screen readers - Requirements 4.5, 11.1, 11.2, 11.3, 11.5 */}
+      <div id={`event-status-${event.id}`} className="sr-only">
+        {isRegistrationClosed 
+          ? `Registration is closed. ${registrationStatus.message}` 
+          : `Registration is open. ${registrationStatus.message}`}
+      </div>
+
+      {/* Footer - Action Buttons with touch-friendly sizing (Requirement 12.1, 12.4) */}
       <CardFooter className="p-3 sm:p-4 pt-0 flex flex-col gap-2">
-        {/* Primary Actions Row - Touch targets minimum 44px */}
+        {/* Primary Actions Row - Touch targets minimum 44px (Requirement 12.4) */}
         <div className="flex gap-2">
-          {/* View Details Button - Touch-friendly */}
+          {/* View Details Button - Touch-friendly (min 44x44px) */}
           {onViewDetails && (
             <Button
               onClick={() => onViewDetails(event)}
               variant="outline"
-              className="flex-1 h-9 sm:h-10 border border-border hover:border-primary hover:bg-primary/5 text-foreground hover:text-primary font-semibold rounded-lg transition-all touch-manipulation active:scale-95 text-xs sm:text-sm"
+              className="flex-1 min-h-[44px] h-11 sm:h-10 border border-border hover:border-primary hover:bg-primary/5 text-foreground hover:text-primary font-semibold rounded-lg transition-all touch-manipulation active:scale-95 text-xs sm:text-sm"
               aria-label={`View details for ${event.title}`}
             >
               View Details
             </Button>
           )}
 
-          {/* Register/Unregister Button - Touch-friendly */}
+          {/* Register/Unregister Button - Touch-friendly (min 44x44px) */}
           {isRegistered ? (
             <Button
               onClick={() => onUnregister?.(event.id)}
-              className="flex-1 h-9 sm:h-10 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 transition-all touch-manipulation active:scale-95 text-xs sm:text-sm"
+              className="flex-1 min-h-[44px] h-11 sm:h-10 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 transition-all touch-manipulation active:scale-95 text-xs sm:text-sm"
               aria-label={`You are registered for ${event.title}. Click to unregister`}
             >
               <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" aria-hidden="true" /> Registered
             </Button>
           ) : (
-            <Button
-              onClick={() => onRegister?.(event.id)}
-              disabled={isFull}
-              className={cn(
-                "flex-1 h-9 sm:h-10 font-bold rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 transition-all touch-manipulation text-xs sm:text-sm",
-                isFull
-                  ? "bg-gray-600 cursor-not-allowed opacity-50"
-                  : "bg-gradient-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-95 shadow-lg shadow-blue-600/20"
-              )}
-              aria-label={isFull ? `${event.title} is full` : `Register for ${event.title}`}
-              aria-disabled={isFull}
-            >
-              {isFull ? 'Event Full' : 'Register Now'} <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" aria-hidden="true" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => !isRegistrationClosed && onRegister?.(event.id)}
+                    disabled={isRegistrationClosed}
+                    className={cn(
+                      "flex-1 min-h-[44px] h-11 sm:h-10 font-bold rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 transition-all touch-manipulation text-xs sm:text-sm",
+                      isRegistrationClosed
+                        ? "bg-gray-600 cursor-not-allowed opacity-50"
+                        : "bg-gradient-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-95 shadow-lg shadow-blue-600/20"
+                    )}
+                    aria-label={isRegistrationClosed ? `${event.title}: ${registrationStatus.message}` : `Register for ${event.title}`}
+                    aria-disabled={isRegistrationClosed}
+                  >
+                    {buttonText} <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" aria-hidden="true" />
+                  </Button>
+                </TooltipTrigger>
+                {isRegistrationClosed && (
+                  <TooltipContent>
+                    <p>{registrationStatus.message}</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
 
-        {/* Calendar Export Button - Touch-friendly */}
+        {/* Calendar Export Button - Touch-friendly (min 44x44px) */}
         <CalendarExportMenu
           event={event}
           isRegistered={isRegistered}
           variant="outline"
           size="default"
-          className="w-full h-8 sm:h-9 border border-border hover:border-primary hover:bg-primary/5 text-foreground hover:text-primary font-semibold rounded-lg transition-all touch-manipulation active:scale-95 text-xs sm:text-sm"
+          className="w-full min-h-[44px] h-10 sm:h-9 border border-border hover:border-primary hover:bg-primary/5 text-foreground hover:text-primary font-semibold rounded-lg transition-all touch-manipulation active:scale-95 text-xs sm:text-sm"
         />
       </CardFooter>
     </Card>

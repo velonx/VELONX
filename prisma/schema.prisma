@@ -8,7 +8,7 @@ generator client {
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
-  
+
   // Connection pool configuration
   // These settings help manage connections efficiently and prevent exhaustion
   relationMode = "prisma"
@@ -51,22 +51,22 @@ enum NotificationType {
   AWARD
   EVENT
   WARNING
-  COMMENT           // Community: Someone commented on user's post
-  REACTION          // Community: Someone reacted to user's post
-  MENTION           // Community: User was mentioned in a post or message
-  JOIN_REQUEST_APPROVED  // Community: Join request to private group was approved
-  MODERATOR_ASSIGNED     // Community: User was assigned as moderator
+  COMMENT // Community: Someone commented on user's post
+  REACTION // Community: Someone reacted to user's post
+  MENTION // Community: User was mentioned in a post or message
+  JOIN_REQUEST_APPROVED // Community: Join request to private group was approved
+  MODERATOR_ASSIGNED // Community: User was assigned as moderator
 }
 
 // Gamification Enums
 enum BadgeCategory {
-  PROJECT       // Project-related achievements
-  EVENT         // Event participation
-  MENTOR        // Mentorship milestones
-  COMMUNITY     // Community contributions
-  STREAK        // Login/activity streaks
-  MILESTONE     // General milestones
-  SPECIAL       // Limited time/special events
+  PROJECT // Project-related achievements
+  EVENT // Event participation
+  MENTOR // Mentorship milestones
+  COMMUNITY // Community contributions
+  STREAK // Login/activity streaks
+  MILESTONE // General milestones
+  SPECIAL // Limited time/special events
 }
 
 enum BadgeRarity {
@@ -97,6 +97,7 @@ enum XPSource {
   BADGE_UNLOCK
   DAILY_LOGIN
   CHALLENGE_COMPLETION
+  PROJECT_COMPLETION
   MANUAL
 }
 
@@ -114,7 +115,7 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
-  password      String?   // For credential-based auth
+  password      String? // For credential-based auth
   role          UserRole  @default(STUDENT)
   bio           String?
   xp            Int       @default(0)
@@ -124,74 +125,74 @@ model User {
   lastLoginDate DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
+
   // Email notification preferences
-  emailNotifications    Boolean   @default(true)
-  eventReminders        Boolean   @default(true)
-  mentorNotifications   Boolean   @default(true)
-  projectNotifications  Boolean   @default(true)
-  weeklyDigest          Boolean   @default(true)
-  unsubscribeToken      String?
-  
+  emailNotifications   Boolean @default(true)
+  eventReminders       Boolean @default(true)
+  mentorNotifications  Boolean @default(true)
+  projectNotifications Boolean @default(true)
+  weeklyDigest         Boolean @default(true)
+  unsubscribeToken     String?
+
   // Community notification preferences
-  communityComments     Boolean   @default(true)
-  communityReactions    Boolean   @default(true)
-  communityMentions     Boolean   @default(true)
-  communityGroupUpdates Boolean   @default(true)
-  communityModeration   Boolean   @default(true)
-  
+  communityComments     Boolean @default(true)
+  communityReactions    Boolean @default(true)
+  communityMentions     Boolean @default(true)
+  communityGroupUpdates Boolean @default(true)
+  communityModeration   Boolean @default(true)
+
   // Gamification fields
-  xpMultiplier      Float     @default(1.0)
-  referralCode      String?   @unique
-  referredBy        String?   @db.ObjectId
-  referralCount     Int       @default(0)
-  lastStreakUpdate  DateTime?
-  
+  xpMultiplier     Float     @default(1.0)
+  referralCode     String?   @unique
+  referredBy       String?   @db.ObjectId
+  referralCount    Int       @default(0)
+  lastStreakUpdate DateTime?
+
   // Relations
   accounts         Account[]
   sessions         Session[]
-  eventsCreated    Event[]   @relation("EventCreator")
+  eventsCreated    Event[]           @relation("EventCreator")
   eventsAttending  EventAttendee[]
-  projectsOwned    Project[] @relation("ProjectOwner")
+  projectsOwned    Project[]         @relation("ProjectOwner")
   projectMembers   ProjectMember[]
   blogPosts        BlogPost[]
-  meetingsCreated  Meeting[] @relation("MeetingCreator")
+  meetingsCreated  Meeting[]         @relation("MeetingCreator")
   meetingAttendees MeetingAttendee[]
   userRequests     UserRequest[]
-  mentorSessions   MentorSession[] @relation("StudentSessions")
-  mentorReviews    MentorReview[]  @relation("StudentReviews")
+  mentorSessions   MentorSession[]   @relation("StudentSessions")
+  mentorReviews    MentorReview[]    @relation("StudentReviews")
   notifications    Notification[]
   resourceVisits   ResourceVisit[]
-  
+
   // Gamification relations
-  badges           UserBadge[]
-  achievements     Achievement[]
-  xpTransactions   XPTransaction[]
-  
+  badges         UserBadge[]
+  achievements   Achievement[]
+  xpTransactions XPTransaction[]
+
   // Referral relations
-  referralsMade    ReferralRelationship[] @relation("ReferralsMade")
-  referredByUser   ReferralRelationship[] @relation("ReferredBy")
-  
+  referralsMade  ReferralRelationship[] @relation("ReferralsMade")
+  referredByUser ReferralRelationship[] @relation("ReferredBy")
+
   // Community relations
-  roomsCreated        DiscussionRoom[]    @relation("RoomCreator")
-  roomMemberships     RoomMember[]        @relation("RoomMemberships")
-  roomModerations     RoomModerator[]     @relation("RoomModerations")
-  groupsOwned         CommunityGroup[]    @relation("GroupOwner")
-  groupMemberships    GroupMember[]       @relation("GroupMemberships")
-  groupModerations    GroupModerator[]    @relation("GroupModerations")
-  groupJoinRequests   GroupJoinRequest[]  @relation("GroupJoinRequests")
-  chatMessages        ChatMessage[]       @relation("AuthoredMessages")
-  communityPosts      CommunityPost[]     @relation("AuthoredPosts")
-  postReactions       PostReaction[]      @relation("PostReactions")
-  postComments        PostComment[]       @relation("PostComments")
-  following           Follow[]            @relation("Following")
-  followers           Follow[]            @relation("Followers")
-  mutedUsers          UserMute[]          @relation("MutedUsers")
-  mutedByModerator    UserMute[]          @relation("MutedByModerator")
-  blocking            UserBlock[]         @relation("Blocking")
-  blockedBy           UserBlock[]         @relation("BlockedBy")
-  moderatorActions    ModerationLog[]     @relation("ModeratorActions")
-  
+  roomsCreated      DiscussionRoom[]   @relation("RoomCreator")
+  roomMemberships   RoomMember[]       @relation("RoomMemberships")
+  roomModerations   RoomModerator[]    @relation("RoomModerations")
+  groupsOwned       CommunityGroup[]   @relation("GroupOwner")
+  groupMemberships  GroupMember[]      @relation("GroupMemberships")
+  groupModerations  GroupModerator[]   @relation("GroupModerations")
+  groupJoinRequests GroupJoinRequest[] @relation("GroupJoinRequests")
+  chatMessages      ChatMessage[]      @relation("AuthoredMessages")
+  communityPosts    CommunityPost[]    @relation("AuthoredPosts")
+  postReactions     PostReaction[]     @relation("PostReactions")
+  postComments      PostComment[]      @relation("PostComments")
+  following         Follow[]           @relation("Following")
+  followers         Follow[]           @relation("Followers")
+  mutedUsers        UserMute[]         @relation("MutedUsers")
+  mutedByModerator  UserMute[]         @relation("MutedByModerator")
+  blocking          UserBlock[]        @relation("Blocking")
+  blockedBy         UserBlock[]        @relation("BlockedBy")
+  moderatorActions  ModerationLog[]    @relation("ModeratorActions")
+
   @@map("users")
 }
 
@@ -221,7 +222,7 @@ model Session {
   sessionToken String   @unique
   userId       String   @db.ObjectId
   expires      DateTime
-  
+
   user User @relation(fields: [userId], references: [id])
 
   @@map("sessions")
@@ -246,24 +247,24 @@ model Badge {
   category    BadgeCategory
   xpReward    Int
   rarity      BadgeRarity   @default(COMMON)
-  criteria    String        // JSON string describing unlock criteria
+  criteria    String // JSON string describing unlock criteria
   createdAt   DateTime      @default(now())
-  
-  userBadges  UserBadge[]
-  
+
+  userBadges UserBadge[]
+
   @@map("badges")
 }
 
 model UserBadge {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
-  badgeId    String   @db.ObjectId
-  earnedAt   DateTime @default(now())
-  progress   Int      @default(0) // For progressive badges
-  
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badge      Badge    @relation(fields: [badgeId], references: [id])
-  
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String   @db.ObjectId
+  badgeId  String   @db.ObjectId
+  earnedAt DateTime @default(now())
+  progress Int      @default(0) // For progressive badges
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id])
+
   @@unique([userId, badgeId])
   @@map("user_badges")
 }
@@ -276,25 +277,25 @@ model Achievement {
   description String
   xpEarned    Int
   timestamp   DateTime        @default(now())
-  metadata    String?         // JSON for additional data
-  
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  metadata    String? // JSON for additional data
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("achievements")
 }
 
 model XPTransaction {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String    @db.ObjectId
-  amount      Int       // Can be positive or negative
-  multiplier  Float     @default(1.0)
-  reason      String
-  source      XPSource
-  metadata    String?   // JSON for additional context
-  timestamp   DateTime  @default(now())
-  
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  amount     Int // Can be positive or negative
+  multiplier Float    @default(1.0)
+  reason     String
+  source     XPSource
+  metadata   String? // JSON for additional context
+  timestamp  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("xp_transactions")
 }
 
@@ -303,13 +304,12 @@ model LeaderboardSnapshot {
   period    LeaderboardPeriod
   startDate DateTime
   endDate   DateTime
-  data      String            // JSON array of user rankings
+  data      String // JSON array of user rankings
   createdAt DateTime          @default(now())
-  
+
   @@unique([period, startDate])
   @@map("leaderboard_snapshots")
 }
-
 
 // Event Enums
 enum EventType {
@@ -347,11 +347,20 @@ model Event {
   creatorId   String      @db.ObjectId
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  
+
+  // Registration closure fields
+  registrationDeadline         DateTime? // Optional deadline for registration
+  registrationManuallyClosedAt DateTime? // Timestamp when admin manually closed registration
+
   // Relations
-  creator     User            @relation("EventCreator", fields: [creatorId], references: [id])
-  attendees   EventAttendee[]
-  
+  creator   User            @relation("EventCreator", fields: [creatorId], references: [id])
+  attendees EventAttendee[]
+
+  // Performance indexes for registration closure queries
+  @@index([registrationDeadline])
+  @@index([registrationManuallyClosedAt])
+  @@index([date, registrationDeadline])
+  @@index([status, registrationDeadline])
   @@map("events")
 }
 
@@ -362,12 +371,50 @@ model EventAttendee {
   userId    String         @db.ObjectId
   status    AttendeeStatus @default(REGISTERED)
   createdAt DateTime       @default(now())
-  
+
   event Event @relation(fields: [eventId], references: [id])
   user  User  @relation(fields: [userId], references: [id])
-  
+
   @@unique([eventId, userId])
+  @@index([eventId, status])
+  @@index([userId])
   @@map("event_attendees")
+}
+
+// Event Registration Closure Analytics Model
+// Tracks when and why event registrations close
+// Requirements: 10.1, 10.2, 10.5
+model EventRegistrationClosure {
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId                String   @db.ObjectId
+  closureTimestamp       DateTime @default(now())
+  closureReason          String // 'capacity', 'deadline', 'manual'
+  attendeeCountAtClosure Int // Number of attendees when closure occurred
+  timeToClosureMs        Int? // Milliseconds from event creation to closure
+  createdAt              DateTime @default(now())
+
+  @@index([eventId])
+  @@index([closureReason])
+  @@index([closureTimestamp])
+  @@map("event_registration_closures")
+}
+
+// Failed Registration Attempt Log Model
+// Tracks registration attempts after closure for analytics
+// Requirements: 7.4, 10.3
+model FailedRegistrationAttempt {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId          String   @db.ObjectId
+  userId           String   @db.ObjectId
+  attemptTimestamp DateTime @default(now())
+  closureReason    String // 'capacity', 'deadline', 'manual'
+  errorCode        String // 'REGISTRATION_CLOSED_CAPACITY', etc.
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([attemptTimestamp])
+  @@index([closureReason])
+  @@map("failed_registration_attempts")
 }
 
 // Project Enums
@@ -408,13 +455,21 @@ model Project {
   liveUrl     String?
   outcomes    String?
   ownerId     String            @db.ObjectId
+  
+  // Project completion fields
+  completedAt DateTime?         // Timestamp when project was completed
+  completedBy String?  @db.ObjectId // User ID who marked it complete
+  
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
-  
+
   // Relations
   owner   User            @relation("ProjectOwner", fields: [ownerId], references: [id])
   members ProjectMember[]
-  
+
+  // Indexes for Hall of Fame queries and dashboard filtering
+  @@index([status, completedAt])
+  @@index([ownerId, status])
   @@map("projects")
 }
 
@@ -425,37 +480,37 @@ model ProjectMember {
   userId    String   @db.ObjectId
   role      String?
   joinedAt  DateTime @default(now())
-  
+
   project Project @relation(fields: [projectId], references: [id])
   user    User    @relation(fields: [userId], references: [id])
-  
+
   @@unique([projectId, userId])
   @@map("project_members")
 }
 
 // Mentor Model
 model Mentor {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  email         String          @unique
+  email         String   @unique
   expertise     String[]
   company       String
   bio           String
   imageUrl      String?
-  rating        Float           @default(0)
-  totalSessions Int             @default(0)
-  available     Boolean         @default(true)
+  rating        Float    @default(0)
+  totalSessions Int      @default(0)
+  available     Boolean  @default(true)
   linkedinUrl   String?
-  githubUrl     String?         // GitHub profile URL
-  twitterUrl    String?         // Twitter profile URL
-  hourlyRate    Float?          // Optional pricing
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  
+  githubUrl     String? // GitHub profile URL
+  twitterUrl    String? // Twitter profile URL
+  hourlyRate    Float? // Optional pricing
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
   // Relations
-  sessions      MentorSession[]
-  reviews       MentorReview[]
-  
+  sessions MentorSession[]
+  reviews  MentorReview[]
+
   @@map("mentors")
 }
 
@@ -476,18 +531,18 @@ model MentorSession {
   title       String
   description String?
   date        DateTime
-  duration    Int           // in minutes
+  duration    Int // in minutes
   meetingLink String?
   status      SessionStatus @default(PENDING)
-  notes       String?       // Session notes
+  notes       String? // Session notes
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  
+
   // Relations
   mentor  Mentor        @relation(fields: [mentorId], references: [id])
   student User          @relation("StudentSessions", fields: [studentId], references: [id])
   review  MentorReview?
-  
+
   @@map("mentor_sessions")
 }
 
@@ -497,15 +552,15 @@ model MentorReview {
   sessionId String   @unique @db.ObjectId
   mentorId  String   @db.ObjectId
   studentId String   @db.ObjectId
-  rating    Int      // 1-5 stars
+  rating    Int // 1-5 stars
   comment   String?
   createdAt DateTime @default(now())
-  
+
   // Relations
   session MentorSession @relation(fields: [sessionId], references: [id])
   mentor  Mentor        @relation(fields: [mentorId], references: [id])
   student User          @relation("StudentReviews", fields: [studentId], references: [id])
-  
+
   @@map("mentor_reviews")
 }
 
@@ -537,15 +592,23 @@ model Resource {
   description String
   category    ResourceCategory
   type        ResourceType
-  url         String
+  url         String?          // Changed from required to optional
   imageUrl    String?
   accessCount Int              @default(0)
+  
+  // PDF fields
+  pdfUrl          String?      // Cloudinary secure URL
+  pdfPublicId     String?      // Cloudinary public ID for deletion
+  pdfFileName     String?      // Original file name
+  pdfFileSize     Int?         // File size in bytes
+  pdfUploadedAt   DateTime?    // Upload timestamp
+  
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
-  
+
   // Relations
-  visits      ResourceVisit[]
-  
+  visits ResourceVisit[]
+
   @@map("resources")
 }
 
@@ -556,11 +619,11 @@ model ResourceVisit {
   resourceId String   @db.ObjectId
   visitedAt  DateTime @default(now())
   xpAwarded  Boolean  @default(false)
-  
+
   // Relations
   user     User     @relation(fields: [userId], references: [id])
   resource Resource @relation(fields: [resourceId], references: [id])
-  
+
   @@unique([userId, resourceId])
   @@index([userId])
   @@index([resourceId])
@@ -586,10 +649,10 @@ model BlogPost {
   publishedAt DateTime?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  
+
   // Relations
   author User @relation(fields: [authorId], references: [id])
-  
+
   @@map("blog_posts")
 }
 
@@ -603,21 +666,21 @@ enum MeetingAttendeeStatus {
 
 // Meeting Model
 model Meeting {
-  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String?
   date        DateTime
-  duration    Int               // in minutes
+  duration    Int // in minutes
   platform    String
   meetingLink String?
-  creatorId   String            @db.ObjectId
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  
+  creatorId   String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   // Relations
   creator   User              @relation("MeetingCreator", fields: [creatorId], references: [id])
   attendees MeetingAttendee[]
-  
+
   @@map("meetings")
 }
 
@@ -628,10 +691,10 @@ model MeetingAttendee {
   userId    String                @db.ObjectId
   status    MeetingAttendeeStatus @default(INVITED)
   createdAt DateTime              @default(now())
-  
+
   meeting Meeting @relation(fields: [meetingId], references: [id])
   user    User    @relation(fields: [userId], references: [id])
-  
+
   @@unique([meetingId, userId])
   @@map("meeting_attendees")
 }
@@ -661,10 +724,10 @@ model UserRequest {
   reviewedAt DateTime?
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
-  
+
   // Relations
   user User @relation(fields: [userId], references: [id])
-  
+
   @@map("user_requests")
 }
 
@@ -676,14 +739,14 @@ model Notification {
   description String
   type        NotificationType @default(INFO)
   read        Boolean          @default(false)
-  actionUrl   String?          // Optional URL for clickable notifications
-  metadata    Json?            // Optional additional data
+  actionUrl   String? // Optional URL for clickable notifications
+  metadata    Json? // Optional additional data
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
-  
+
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId, createdAt])
   @@index([userId, read])
   @@map("notifications")
@@ -729,7 +792,7 @@ model MockInterview {
   reviewedAt      DateTime?
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
-  
+
   @@map("mock_interviews")
 }
 
@@ -755,14 +818,14 @@ model Opportunity {
   requirements String[]
   location     String
   salary       String?
-  duration     String?           // For internships
+  duration     String? // For internships
   applyUrl     String
   imageUrl     String?
   status       OpportunityStatus @default(ACTIVE)
-  postedBy     String            // Admin ID
+  postedBy     String // Admin ID
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
-  
+
   @@map("opportunities")
 }
 
@@ -771,13 +834,13 @@ model AuditLog {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   timestamp DateTime @default(now())
   userId    String?  @db.ObjectId
-  action    String   // e.g., "LOGIN", "LOGOUT", "CREATE_PROJECT", "DELETE_USER"
-  resource  String   // e.g., "USER", "PROJECT", "BLOG_POST"
+  action    String // e.g., "LOGIN", "LOGOUT", "CREATE_PROJECT", "DELETE_USER"
+  resource  String // e.g., "USER", "PROJECT", "BLOG_POST"
   ipAddress String
   userAgent String
-  result    String   // "success" or "failure"
-  metadata  Json?    // Additional context data
-  
+  result    String // "success" or "failure"
+  metadata  Json? // Additional context data
+
   @@index([userId, timestamp])
   @@index([action, timestamp])
   @@index([timestamp])
@@ -799,25 +862,25 @@ model DiscussionRoom {
   imageUrl    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
-  creator     User              @relation("RoomCreator", fields: [creatorId], references: [id])
-  members     RoomMember[]
-  messages    ChatMessage[]
-  moderators  RoomModerator[]
-  
+
+  creator    User            @relation("RoomCreator", fields: [creatorId], references: [id])
+  members    RoomMember[]
+  messages   ChatMessage[]
+  moderators RoomModerator[]
+
   @@map("discussion_rooms")
 }
 
 // Room Member Junction
 model RoomMember {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  roomId    String   @db.ObjectId
-  userId    String   @db.ObjectId
-  joinedAt  DateTime @default(now())
-  
-  room      DiscussionRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user      User           @relation("RoomMemberships", fields: [userId], references: [id], onDelete: Cascade)
-  
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId   String   @db.ObjectId
+  userId   String   @db.ObjectId
+  joinedAt DateTime @default(now())
+
+  room DiscussionRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User           @relation("RoomMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([roomId, userId])
   @@index([userId])
   @@index([roomId])
@@ -826,14 +889,14 @@ model RoomMember {
 
 // Room Moderator Junction
 model RoomModerator {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  roomId    String   @db.ObjectId
-  userId    String   @db.ObjectId
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId     String   @db.ObjectId
+  userId     String   @db.ObjectId
   assignedAt DateTime @default(now())
-  
-  room      DiscussionRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user      User           @relation("RoomModerations", fields: [userId], references: [id], onDelete: Cascade)
-  
+
+  room DiscussionRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User           @relation("RoomModerations", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([roomId, userId])
   @@map("room_moderators")
 }
@@ -849,11 +912,11 @@ model ChatMessage {
   isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  room      DiscussionRoom? @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  group     CommunityGroup? @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  author    User            @relation("AuthoredMessages", fields: [authorId], references: [id], onDelete: Cascade)
-  
+
+  room   DiscussionRoom? @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  group  CommunityGroup? @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  author User            @relation("AuthoredMessages", fields: [authorId], references: [id], onDelete: Cascade)
+
   @@index([roomId, createdAt])
   @@index([groupId, createdAt])
   @@index([authorId])
@@ -870,27 +933,27 @@ model CommunityGroup {
   imageUrl    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
-  owner       User              @relation("GroupOwner", fields: [ownerId], references: [id])
-  members     GroupMember[]
-  posts       CommunityPost[]
-  messages    ChatMessage[]
-  moderators  GroupModerator[]
+
+  owner        User               @relation("GroupOwner", fields: [ownerId], references: [id])
+  members      GroupMember[]
+  posts        CommunityPost[]
+  messages     ChatMessage[]
+  moderators   GroupModerator[]
   joinRequests GroupJoinRequest[]
-  
+
   @@map("community_groups")
 }
 
 // Group Member Junction
 model GroupMember {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  groupId   String   @db.ObjectId
-  userId    String   @db.ObjectId
-  joinedAt  DateTime @default(now())
-  
-  group     CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user      User           @relation("GroupMemberships", fields: [userId], references: [id], onDelete: Cascade)
-  
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  groupId  String   @db.ObjectId
+  userId   String   @db.ObjectId
+  joinedAt DateTime @default(now())
+
+  group CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User           @relation("GroupMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([groupId, userId])
   @@index([userId])
   @@index([groupId])
@@ -899,30 +962,30 @@ model GroupMember {
 
 // Group Moderator Junction
 model GroupModerator {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  groupId   String   @db.ObjectId
-  userId    String   @db.ObjectId
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  groupId    String   @db.ObjectId
+  userId     String   @db.ObjectId
   assignedAt DateTime @default(now())
-  
-  group     CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user      User           @relation("GroupModerations", fields: [userId], references: [id], onDelete: Cascade)
-  
+
+  group CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User           @relation("GroupModerations", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([groupId, userId])
   @@map("group_moderators")
 }
 
 // Group Join Request Model
 model GroupJoinRequest {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  groupId   String   @db.ObjectId
-  userId    String   @db.ObjectId
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  groupId   String        @db.ObjectId
+  userId    String        @db.ObjectId
   status    RequestStatus @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  group     CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user      User           @relation("GroupJoinRequests", fields: [userId], references: [id], onDelete: Cascade)
-  
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  group CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User           @relation("GroupJoinRequests", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([groupId, userId])
   @@index([userId])
   @@index([groupId, status])
@@ -931,23 +994,23 @@ model GroupJoinRequest {
 
 // Community Post Model
 model CommunityPost {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
-  content     String
-  authorId    String         @db.ObjectId
-  groupId     String?        @db.ObjectId
-  visibility  PostVisibility @default(PUBLIC)
-  imageUrls   String[]
-  linkUrls    String[]
-  isEdited    Boolean        @default(false)
-  isPinned    Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  
-  author      User              @relation("AuthoredPosts", fields: [authorId], references: [id], onDelete: Cascade)
-  group       CommunityGroup?   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  reactions   PostReaction[]
-  comments    PostComment[]
-  
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  authorId   String         @db.ObjectId
+  groupId    String?        @db.ObjectId
+  visibility PostVisibility @default(PUBLIC)
+  imageUrls  String[]
+  linkUrls   String[]
+  isEdited   Boolean        @default(false)
+  isPinned   Boolean        @default(false)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  author    User            @relation("AuthoredPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  group     CommunityGroup? @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  reactions PostReaction[]
+  comments  PostComment[]
+
   @@index([authorId, createdAt])
   @@index([groupId, createdAt])
   @@index([visibility, createdAt])
@@ -964,10 +1027,10 @@ model PostReaction {
   userId    String       @db.ObjectId
   type      ReactionType
   createdAt DateTime     @default(now())
-  
-  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User          @relation("PostReactions", fields: [userId], references: [id], onDelete: Cascade)
-  
+
+  post CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User          @relation("PostReactions", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([postId, userId])
   @@index([postId])
   @@index([userId])
@@ -982,10 +1045,10 @@ model PostComment {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author    User          @relation("PostComments", fields: [authorId], references: [id], onDelete: Cascade)
-  
+
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User          @relation("PostComments", fields: [authorId], references: [id], onDelete: Cascade)
+
   @@index([postId, createdAt])
   @@index([authorId])
   @@map("post_comments")
@@ -997,10 +1060,10 @@ model Follow {
   followerId  String   @db.ObjectId
   followingId String   @db.ObjectId
   createdAt   DateTime @default(now())
-  
-  follower    User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
-  following   User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
-  
+
+  follower  User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
   @@unique([followerId, followingId])
   @@index([followerId])
   @@index([followingId])
@@ -1017,10 +1080,10 @@ model UserMute {
   reason    String?
   expiresAt DateTime
   createdAt DateTime @default(now())
-  
+
   user      User @relation("MutedUsers", fields: [userId], references: [id], onDelete: Cascade)
   moderator User @relation("MutedByModerator", fields: [mutedBy], references: [id], onDelete: Cascade)
-  
+
   @@index([userId, expiresAt])
   @@index([roomId])
   @@index([groupId])
@@ -1033,10 +1096,10 @@ model UserBlock {
   blockerId String   @db.ObjectId
   blockedId String   @db.ObjectId
   createdAt DateTime @default(now())
-  
-  blocker   User @relation("Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
-  blocked   User @relation("BlockedBy", fields: [blockedId], references: [id], onDelete: Cascade)
-  
+
+  blocker User @relation("Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("BlockedBy", fields: [blockedId], references: [id], onDelete: Cascade)
+
   @@unique([blockerId, blockedId])
   @@index([blockerId])
   @@index([blockedId])
@@ -1047,14 +1110,14 @@ model UserBlock {
 model ModerationLog {
   id          String         @id @default(auto()) @map("_id") @db.ObjectId
   moderatorId String         @db.ObjectId
-  targetId    String         // ID of affected user/content
+  targetId    String // ID of affected user/content
   type        ModerationType
   reason      String?
   metadata    Json?
   createdAt   DateTime       @default(now())
-  
-  moderator   User @relation("ModeratorActions", fields: [moderatorId], references: [id])
-  
+
+  moderator User @relation("ModeratorActions", fields: [moderatorId], references: [id])
+
   @@index([moderatorId, createdAt])
   @@index([type, createdAt])
   @@map("moderation_logs")
@@ -1066,20 +1129,20 @@ model ModerationLog {
 
 // Referral Relationship Model
 model ReferralRelationship {
-  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
-  referrerId                String   @db.ObjectId
-  refereeId                 String   @db.ObjectId
-  signupCompletedAt         DateTime @default(now())
-  profileCompletedAt        DateTime?
-  firstActivityCompletedAt  DateTime?
-  firstActivityType         String?
-  totalXPAwarded            Int      @default(25)
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
-  
+  id                       String    @id @default(auto()) @map("_id") @db.ObjectId
+  referrerId               String    @db.ObjectId
+  refereeId                String    @db.ObjectId
+  signupCompletedAt        DateTime  @default(now())
+  profileCompletedAt       DateTime?
+  firstActivityCompletedAt DateTime?
+  firstActivityType        String?
+  totalXPAwarded           Int       @default(25)
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
   referrer User @relation("ReferralsMade", fields: [referrerId], references: [id])
   referee  User @relation("ReferredBy", fields: [refereeId], references: [id])
-  
+
   @@unique([referrerId, refereeId])
   @@index([referrerId])
   @@index([refereeId])

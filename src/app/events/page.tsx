@@ -207,12 +207,13 @@ export default function EventsPage() {
 
     // Helper function to check if user is registered for an event
     const isUserRegistered = (eventId: string) => {
-        const event = upcomingEvents?.find(e => e.id === eventId);
+        if (!Array.isArray(upcomingEvents)) return false;
+        const event = upcomingEvents.find(e => e.id === eventId);
         return (event as any)?.isUserRegistered || false;
     };
 
     // Filter events based on search query
-    const filteredEvents = upcomingEvents?.filter(event => {
+    const filteredEvents = Array.isArray(upcomingEvents) ? upcomingEvents.filter(event => {
         if (!searchQuery.trim()) return true;
         const query = searchQuery.toLowerCase();
         return (
@@ -220,7 +221,7 @@ export default function EventsPage() {
             event.description?.toLowerCase().includes(query) ||
             (event as any).category?.toLowerCase().includes(query)
         );
-    }) || [];
+    }) : [];
 
     return (
         <div className="min-h-screen pt-16 md:pt-24 bg-background">

@@ -1,6 +1,6 @@
 /**
  * CSRF Token API Endpoint
- * Provides CSRF tokens to clients for form submissions and API requests
+ * Provides CSRF tokens to authenticated clients
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -8,24 +8,31 @@ import { getCSRFToken } from '@/lib/middleware/csrf.middleware'
 
 /**
  * GET /api/csrf
- * Returns a CSRF token for the client to use in subsequent requests
+ * Returns a CSRF token for the current session
  */
 export async function GET(request: NextRequest) {
   try {
-    const token = getCSRFToken(request)
+    // Generate or retrieve CSRF token
+    const csrfToken = getCSRFToken(request)
     
+    // Create response with token
     const response = NextResponse.json(
       {
         success: true,
         data: {
-          csrfToken: token,
+          csrfToken,
         },
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
     )
     
-    // Set the token in a cookie
-    response.cookies.set('csrf-token', token, {
+    // Set CSRF token in cookie
+    response.cookies.set('csrf-token', csrfToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -41,11 +48,16 @@ export async function GET(request: NextRequest) {
       {
         success: false,
         error: {
-          code: 'CSRF_TOKEN_GENERATION_FAILED',
+          code: 'CSRF_TOKEN_ERROR',
           message: 'Failed to generate CSRF token',
         },
       },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
     )
   }
 }

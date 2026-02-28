@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { secureFetch } from "@/lib/utils/csrf";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +53,7 @@ export default function BlogManagement() {
     }
 
     try {
-      const response = await fetch(`/api/blog/${id}`, {
+      const response = await secureFetch(`/api/blog/${id}`, {
         method: 'DELETE',
       });
 
@@ -99,7 +100,7 @@ export default function BlogManagement() {
               <h3 className="text-3xl font-black text-[#023047] mb-2">Manage Blog Posts</h3>
               <p className="text-gray-400">View, edit, and delete existing blog posts</p>
             </div>
-            <Button 
+            <Button
               onClick={handleNewPost}
               className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
             >
@@ -123,14 +124,14 @@ export default function BlogManagement() {
           ) : (
             <div className="space-y-4">
               {blogs.map((blog) => (
-                <div 
-                  key={blog.id} 
+                <div
+                  key={blog.id}
                   className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-all"
                 >
                   <div className="flex items-start gap-6">
                     {blog.imageUrl && (
-                      <img 
-                        src={blog.imageUrl} 
+                      <img
+                        src={blog.imageUrl}
                         alt={blog.title}
                         className="w-24 h-24 rounded-xl object-cover"
                       />
@@ -200,7 +201,7 @@ export default function BlogManagement() {
               e.preventDefault();
               const form = e.currentTarget;
               const formData = new FormData(form);
-              
+
               try {
                 const tags = (formData.get('tags') as string)
                   .split(',')
@@ -222,7 +223,7 @@ export default function BlogManagement() {
                 const url = editingBlog ? `/api/blog/${editingBlog.id}` : '/api/blog';
                 const method = editingBlog ? 'PATCH' : 'POST';
 
-                const response = await fetch(url, {
+                const response = await secureFetch(url, {
                   method,
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(blogData),
@@ -265,31 +266,31 @@ export default function BlogManagement() {
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Title</label>
-                  <Input 
-                    name="title" 
-                    required 
-                    placeholder="Enter title..." 
+                  <Input
+                    name="title"
+                    required
+                    placeholder="Enter title..."
                     className="h-14 bg-gray-50 border-0 rounded-2xl"
                     defaultValue={editingBlog?.title || ''}
                   />
                 </div>
                 <div className="space-y-3">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Tags</label>
-                  <Input 
-                    name="tags" 
-                    placeholder="e.g., Technology, AI, Development" 
+                  <Input
+                    name="tags"
+                    placeholder="e.g., Technology, AI, Development"
                     className="h-14 bg-gray-50 border-0 rounded-2xl"
                     defaultValue={editingBlog?.tags?.join(', ') || ''}
                   />
                   <p className="text-xs text-gray-400 ml-1">Separate tags with commas</p>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Status</label>
-                <select 
-                  name="status" 
-                  required 
+                <select
+                  name="status"
+                  required
                   className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
                   defaultValue={editingBlog?.status || 'PUBLISHED'}
                 >
@@ -303,9 +304,9 @@ export default function BlogManagement() {
                 <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
                   {blogImagePreview && (
                     <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
-                      <img 
-                        src={blogImagePreview} 
-                        alt="Blog cover preview" 
+                      <img
+                        src={blogImagePreview}
+                        alt="Blog cover preview"
                         className="w-full h-full object-cover"
                         onError={() => {
                           setBlogImagePreview(null);
@@ -321,11 +322,11 @@ export default function BlogManagement() {
                       </button>
                     </div>
                   )}
-                  
+
                   <div className="space-y-2">
-                    <Input 
-                      name="imageUrl" 
-                      placeholder="Paste image URL here..." 
+                    <Input
+                      name="imageUrl"
+                      placeholder="Paste image URL here..."
                       className="h-12 bg-white border border-gray-200 rounded-xl"
                       defaultValue={editingBlog?.imageUrl || ''}
                       onChange={(e) => {
@@ -336,7 +337,7 @@ export default function BlogManagement() {
                       }}
                     />
                     <p className="text-xs text-gray-400 ml-1">
-                      Get free images from: 
+                      Get free images from:
                       <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Unsplash</a>,
                       <a href="https://pexels.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Pexels</a>, or
                       <a href="https://pixabay.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Pixabay</a>
@@ -359,18 +360,18 @@ export default function BlogManagement() {
                             reader.onloadend = async () => {
                               try {
                                 const base64Image = reader.result as string;
-                                
-                                const response = await fetch('/api/upload', {
+
+                                const response = await secureFetch('/api/upload', {
                                   method: 'POST',
                                   headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ 
+                                  body: JSON.stringify({
                                     image: base64Image,
                                     folder: 'velonx/blog'
                                   }),
                                 });
 
                                 const data = await response.json();
-                                
+
                                 if (data.success) {
                                   setBlogImagePreview(data.data.url);
                                   const imageUrlInput = document.querySelector('input[name="imageUrl"]') as HTMLInputElement;
@@ -417,10 +418,10 @@ export default function BlogManagement() {
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Article Content</label>
-                <textarea 
+                <textarea
                   name="content"
                   required
-                  className="w-full bg-gray-50 border-0 rounded-[32px] p-8 min-h-[300px] outline-none focus:ring-2 focus:ring-[#219EBC] transition-all" 
+                  className="w-full bg-gray-50 border-0 rounded-[32px] p-8 min-h-[300px] outline-none focus:ring-2 focus:ring-[#219EBC] transition-all"
                   placeholder="Write something inspiring..."
                   defaultValue={editingBlog?.content || ''}
                 ></textarea>

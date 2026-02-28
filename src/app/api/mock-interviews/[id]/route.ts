@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { MockInterviewService } from "@/lib/services/career.service";
+import { mockInterviewService } from "@/lib/services/mock-interview.service";
 import { updateMockInterviewSchema } from "@/lib/validations/career";
+import { interviewApprovalSchema } from "@/lib/validations/mock-interview";
 import { ZodError } from "zod";
+import { handleError } from "@/lib/utils/errors";
 
 // GET - Get single mock interview
 export async function GET(
@@ -56,7 +59,7 @@ export async function GET(
   }
 }
 
-// PATCH - Update mock interview (admin only)
+// PATCH - Update mock interview or approve/reject it (admin only for approval)
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -64,15 +67,76 @@ export async function PATCH(
   try {
     const session = await auth();
     
-    if (!session?.user?.id || session.user.role !== "ADMIN") {
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: { code: "UNAUTHORIZED", message: "Please sign in" } },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+    const body = await req.json();
+    
+    // Check if this is an approval/rejection action
+    if (body.action === 'approve' || body.action === 'reject') {
+      // Validate admin role for approval/rejection
+      if (session.user.role !== "ADMIN") {
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: "FORBIDDEN",
+              message: "Only admins can approve or reject mock interviews",
+            },
+          },
+          { status: 403 }
+        );
+      }
+      
+      // Validate approval schema
+      const validatedData = interviewApprovalSchema.parse(body);
+      
+      let mockInterview;
+      
+      if (validatedData.action === 'approve') {
+        // Approve interview
+        mockInterview = await mockInterviewService.approve(id, session.user.id);
+        
+        return NextResponse.json(
+          {
+            success: true,
+            data: mockInterview,
+            message: "Mock interview approved successfully",
+          },
+          { status: 200 }
+        );
+      } else {
+        // Reject interview with feedback
+        mockInterview = await mockInterviewService.reject(
+          id,
+          session.user.id,
+          validatedData.feedback!
+        );
+        
+        return NextResponse.json(
+          {
+            success: true,
+            data: mockInterview,
+            message: "Mock interview rejected successfully",
+          },
+          { status: 200 }
+        );
+      }
+    }
+    
+    // Regular update flow (existing functionality)
+    if (session.user.role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: { code: "FORBIDDEN", message: "Admin access required" } },
         { status: 403 }
       );
     }
 
-    const { id } = await params;
-    const body = await req.json();
     const validatedData = updateMockInterviewSchema.parse(body);
 
     const mockInterview = await MockInterviewService.update(
@@ -87,31 +151,7 @@ export async function PATCH(
       message: "Mock interview updated successfully",
     });
   } catch (error) {
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: "VALIDATION_ERROR",
-            message: "Invalid input data",
-            details: error.issues,
-          },
-        },
-        { status: 400 }
-      );
-    }
-
-    console.error("Mock interview update error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "INTERNAL_ERROR",
-          message: "Failed to update mock interview",
-        },
-      },
-      { status: 500 }
-    );
+    return handleError(error);
   }
 }
 

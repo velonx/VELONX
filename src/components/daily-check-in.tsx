@@ -58,23 +58,23 @@ export function DailyCheckIn() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Current Streak</span>
           </div>
-          <Badge variant="secondary" className="text-lg font-bold">
-            {currentStreak} {currentStreak === 1 ? 'day' : 'days'}
+          <Badge variant="secondary" className="text-base sm:text-lg font-bold px-3 py-1">
+            <span className="tabular-nums">{currentStreak}</span> {currentStreak === 1 ? 'day' : 'days'}
           </Badge>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
           <div className="flex items-center gap-2">
             <Trophy className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Longest Streak</span>
           </div>
-          <Badge variant="outline" className="text-lg font-bold">
-            {longestStreak} {longestStreak === 1 ? 'day' : 'days'}
+          <Badge variant="outline" className="text-base sm:text-lg font-bold px-3 py-1">
+            <span className="tabular-nums">{longestStreak}</span> {longestStreak === 1 ? 'day' : 'days'}
           </Badge>
         </div>
 

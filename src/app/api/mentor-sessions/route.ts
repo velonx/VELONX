@@ -97,6 +97,24 @@ export async function GET(request: NextRequest) {
       status: searchParams.get("status"),
     });
     
+    // Check if admin is requesting pending sessions
+    if (queryParams.status === 'PENDING' && session.user.role === 'ADMIN') {
+      // Admin requesting pending sessions for approval
+      const result = await mentorSessionService.getPendingSessions({
+        page: queryParams.page,
+        pageSize: queryParams.pageSize,
+      });
+      
+      return NextResponse.json(
+        {
+          success: true,
+          data: result.sessions,
+          pagination: result.pagination,
+        },
+        { status: 200 }
+      );
+    }
+    
     // Determine if user is viewing as student or checking mentor sessions
     const viewAs = searchParams.get("viewAs") || "student";
     

@@ -40,6 +40,17 @@ export interface NotificationListResponse {
 }
 
 /**
+ * Data for project completion notification
+ */
+export interface ProjectCompletionNotificationData {
+  projectId: string;
+  projectTitle: string;
+  completedAt: Date;
+  xpAwarded: number;
+  isOwner: boolean;
+}
+
+/**
  * Notification service layer for managing notification operations
  */
 export class NotificationService {
@@ -304,6 +315,110 @@ export class NotificationService {
       metadata: {
         sessionId: sessionData.sessionId,
         eventType: 'session_confirmed',
+      },
+    });
+  }
+  
+  /**
+   * Create notification when a mentor session is approved by admin
+   * Notifies the student about the approval
+   */
+  async createMentorSessionApprovedNotification(sessionData: {
+    sessionId: string;
+    studentId: string;
+    mentorName: string;
+    topic: string;
+    scheduledAt: Date;
+  }) {
+    const formattedDate = new Date(sessionData.scheduledAt).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+
+    return this.createNotification({
+      userId: sessionData.studentId,
+      title: 'Mentor Session Approved',
+      description: `Your mentor session "${sessionData.topic}" with ${sessionData.mentorName} on ${formattedDate} has been approved!`,
+      type: NotificationType.SUCCESS,
+      actionUrl: `/dashboard/student?tab=sessions`,
+      metadata: {
+        sessionId: sessionData.sessionId,
+        eventType: 'session_approved',
+      },
+    });
+  }
+  
+  /**
+   * Create notification when a mentor session is rejected by admin
+   * Notifies the student about the rejection with reason
+   */
+  async createMentorSessionRejectedNotification(sessionData: {
+    sessionId: string;
+    studentId: string;
+    reason: string;
+  }) {
+    return this.createNotification({
+      userId: sessionData.studentId,
+      title: 'Mentor Session Request Not Approved',
+      description: `Your mentor session request was not approved. Reason: ${sessionData.reason}`,
+      type: NotificationType.WARNING,
+      actionUrl: `/mentors`,
+      metadata: {
+        sessionId: sessionData.sessionId,
+        eventType: 'session_rejected',
+        reason: sessionData.reason,
+      },
+    });
+  }
+  
+  /**
+   * Create notification when a mock interview is approved by admin
+   * Notifies the student about the approval
+   */
+  async createMockInterviewApprovedNotification(interviewData: {
+    interviewId: string;
+    userId: string;
+    interviewType: string;
+    experienceLevel: string;
+    preferredDate: Date;
+  }) {
+    const formattedDate = new Date(interviewData.preferredDate).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+
+    return this.createNotification({
+      userId: interviewData.userId,
+      title: 'Mock Interview Request Approved',
+      description: `Your ${interviewData.interviewType} mock interview request for ${interviewData.experienceLevel} level on ${formattedDate} has been approved!`,
+      type: NotificationType.SUCCESS,
+      actionUrl: `/dashboard/student?tab=interviews`,
+      metadata: {
+        interviewId: interviewData.interviewId,
+        eventType: 'interview_approved',
+      },
+    });
+  }
+  
+  /**
+   * Create notification when a mock interview is rejected by admin
+   * Notifies the student about the rejection with feedback
+   */
+  async createMockInterviewRejectedNotification(interviewData: {
+    interviewId: string;
+    userId: string;
+    feedback: string;
+  }) {
+    return this.createNotification({
+      userId: interviewData.userId,
+      title: 'Mock Interview Request Not Approved',
+      description: `Your mock interview request was not approved. Feedback: ${interviewData.feedback}`,
+      type: NotificationType.WARNING,
+      actionUrl: `/career`,
+      metadata: {
+        interviewId: interviewData.interviewId,
+        eventType: 'interview_rejected',
+        feedback: interviewData.feedback,
       },
     });
   }
@@ -1102,6 +1217,159 @@ export class NotificationService {
       metadata: {
         groupId: messageData.groupId,
         eventType: 'group_message',
+      },
+    });
+  }
+
+  // ============================================================================
+  // Project Completion Notification Helpers
+  // ============================================================================
+
+  /**
+   * Create notification when a project is marked as completed
+   * Notifies team members about project completion with XP award and Hall of Fame link
+   * Validates: Requirements 7.1, 7.2, 7.3
+   */
+  async createProjectCompletionNotification(
+    userId: string,
+    data: ProjectCompletionNotificationData
+  ) {
+    const formattedDate = new Date(data.completedAt).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+
+    const roleText = data.isOwner ? 'as the project owner' : 'as a team member';
+    const description = `The project "${data.projectTitle}" has been completed! You earned ${data.xpAwarded} XP ${roleText}. Check out the project in the Hall of Fame!`;
+
+    return this.createNotification({
+      userId,
+      title: 'Project Completed! 🎉',
+      description,
+      type: NotificationType.AWARD,
+      actionUrl: `/projects?status=completed`,
+      metadata: {
+        projectId: data.projectId,
+        projectTitle: data.projectTitle,
+        completedAt: data.completedAt.toISOString(),
+        xpAwarded: data.xpAwarded,
+        isOwner: data.isOwner,
+        eventType: 'project_completion',
+      },
+    });
+  }
+
+  // ============================================================================
+  // Event Registration Closure Notification Helpers
+  // ============================================================================
+
+  /**
+   * Check if user has enabled event reminder notifications
+   * Returns true if preference is enabled or if user doesn't exist (fail-safe)
+   * Validates: Requirements 9.4
+   */
+  private async checkEventReminderPreference(userId: string): Promise<boolean> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { eventReminders: true },
+      });
+
+      if (!user) {
+        return true; // Default to sending if user not found
+      }
+
+      return user.eventReminders;
+    } catch (error) {
+      console.error('[Notification] Error checking event reminder preference:', error);
+      return true; // Default to sending if check fails
+    }
+  }
+
+  /**
+   * Create notification when event registration closes
+   * Notifies the event creator with closure reason and timestamp
+   * Respects user's eventReminders notification preference
+   * Implements deduplication with 5-minute window
+   * 
+   * Validates: Requirements 9.1, 9.2, 9.4, 9.5
+   */
+  async createEventRegistrationClosedNotification(closureData: {
+    eventId: string;
+    eventTitle: string;
+    creatorId: string;
+    closureReason: 'capacity' | 'deadline' | 'manual';
+    closureTimestamp: Date;
+    attendeeCount?: number;
+    maxSeats?: number;
+  }) {
+    // Check notification preference (Requirement 9.4)
+    const preferencesEnabled = await this.checkEventReminderPreference(closureData.creatorId);
+
+    if (!preferencesEnabled) {
+      return null; // User has disabled event reminder notifications
+    }
+
+    // Check for duplicate notifications within 5-minute window (Requirement 9.5)
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const recentNotification = await prisma.notification.findFirst({
+      where: {
+        userId: closureData.creatorId,
+        type: NotificationType.EVENT,
+        createdAt: {
+          gte: fiveMinutesAgo,
+        },
+        metadata: {
+          path: ['eventId'],
+          equals: closureData.eventId,
+        },
+        title: 'Event Registration Closed',
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (recentNotification) {
+      console.log(`[Notification] Skipping duplicate closure notification for event ${closureData.eventId} (last sent ${recentNotification.createdAt})`);
+      return null; // Skip duplicate notification
+    }
+
+    // Format closure timestamp (Requirement 9.2)
+    const formattedTimestamp = closureData.closureTimestamp.toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+
+    // Build description based on closure reason (Requirement 9.1, 9.2)
+    let description: string;
+    switch (closureData.closureReason) {
+      case 'capacity':
+        description = `Registration for "${closureData.eventTitle}" has closed because the event reached full capacity (${closureData.attendeeCount}/${closureData.maxSeats} registered) at ${formattedTimestamp}.`;
+        break;
+      case 'deadline':
+        description = `Registration for "${closureData.eventTitle}" has closed because the registration deadline was reached at ${formattedTimestamp}.`;
+        break;
+      case 'manual':
+        description = `Registration for "${closureData.eventTitle}" was manually closed at ${formattedTimestamp}.`;
+        break;
+      default:
+        description = `Registration for "${closureData.eventTitle}" has closed at ${formattedTimestamp}.`;
+    }
+
+    return this.createNotification({
+      userId: closureData.creatorId,
+      title: 'Event Registration Closed',
+      description,
+      type: NotificationType.EVENT,
+      actionUrl: `/events`,
+      metadata: {
+        eventId: closureData.eventId,
+        closureReason: closureData.closureReason,
+        closureTimestamp: closureData.closureTimestamp.toISOString(),
+        attendeeCount: closureData.attendeeCount,
+        maxSeats: closureData.maxSeats,
+        eventType: 'registration_closed',
       },
     });
   }

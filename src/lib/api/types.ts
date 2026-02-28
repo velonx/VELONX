@@ -63,6 +63,17 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   isUserRegistered?: boolean;
+  
+  // Registration closure fields (feature: event-registration-closed)
+  // Requirements: 1.1, 3.4
+  registrationDeadline?: string;
+  registrationManuallyClosedAt?: string;
+  
+  // Computed fields (from API)
+  // Requirements: 1.1, 3.4
+  isRegistrationClosed: boolean;
+  registrationClosureReason?: 'capacity' | 'deadline' | 'manual';
+  
   creator?: {
     id: string;
     name: string | null;
@@ -100,6 +111,8 @@ export interface Project {
   liveUrl: string | null;
   outcomes: string | null;
   ownerId: string;
+  completedAt?: string | null;
+  completedBy?: string | null;
   createdAt: string;
   updatedAt: string;
   joinRequests?: Array<{
@@ -162,9 +175,17 @@ export interface Resource {
   description: string;
   category: 'PROGRAMMING' | 'DESIGN' | 'BUSINESS' | 'DATA_SCIENCE' | 'DEVOPS' | 'MOBILE' | 'WEB' | 'OTHER';
   type: 'ARTICLE' | 'VIDEO' | 'COURSE' | 'BOOK' | 'TOOL' | 'DOCUMENTATION';
-  url: string;
+  url?: string;
   imageUrl: string | null;
   accessCount: number;
+  
+  // PDF fields
+  pdfUrl?: string;
+  pdfPublicId?: string;
+  pdfFileName?: string;
+  pdfFileSize?: number;
+  pdfUploadedAt?: string;
+  
   createdAt: string;
   updatedAt: string;
 }
@@ -343,4 +364,47 @@ export interface UserRequestFilters extends PaginationParams {
 export interface NotificationFilters extends PaginationParams {
   read?: boolean;
   type?: 'INFO' | 'SUCCESS' | 'AWARD' | 'EVENT' | 'WARNING';
+}
+
+// Event Registration Response Types
+// Feature: event-registration-closed
+// Requirements: 7.1, 8.4
+
+/**
+ * Response type for event registration attempts
+ * Includes detailed error information for closed registrations
+ */
+export interface RegisterEventResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    attendeeId: string;
+    event: Event;
+  };
+  error?: {
+    code: string;
+    message: string;
+    reason?: 'capacity' | 'deadline' | 'manual';
+  };
+}
+
+/**
+ * Response type for events query with filter counts
+ * Includes availability statistics for filtering
+ */
+export interface EventsQueryResponse {
+  success: boolean;
+  data: {
+    events: Event[];
+    pagination: {
+      page: number;
+      pageSize: number;
+      total: number;
+      totalPages: number;
+    };
+    filters: {
+      availableCount: number; // Count of events with open registration
+      totalCount: number;
+    };
+  };
 }

@@ -224,8 +224,8 @@ export function ProjectModal({
           <DialogTitle id={titleId} className="text-2xl font-bold">
             {project.title}
           </DialogTitle>
-          <DialogDescription id={descriptionId} className="sr-only">
-            Full project details for {project.title}
+          <DialogDescription id={descriptionId}>
+            <span className="sr-only">Full project details for {project.title}</span>
           </DialogDescription>
           <div className="flex items-center gap-2 flex-wrap">
             {project.category && (

@@ -3,6 +3,9 @@
  * Enables real-time communication for community features
  */
 
+// Load environment variables from .env file
+require('dotenv').config()
+
 const { createServer } = require('http')
 const { parse } = require('url')
 const next = require('next')
@@ -16,6 +19,17 @@ const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
 app.prepare().then(async () => {
+  // Initialize Prisma database connection first
+  try {
+    const { initializePrisma } = await import('./src/lib/prisma.ts')
+    await initializePrisma()
+    console.log('[Server] Database initialized')
+  } catch (error) {
+    console.error('[Server] Failed to initialize database:', error)
+    console.error('[Server] Please check your DATABASE_URL environment variable')
+    process.exit(1)
+  }
+
   // Create HTTP server
   const server = createServer(async (req, res) => {
     try {
@@ -33,6 +47,7 @@ app.prepare().then(async () => {
     const { getWebSocketServer } = await import('./src/lib/websocket/server.ts')
     const { initializePubSub } = await import('./src/lib/websocket/pubsub.ts')
     const { initializeRedis } = await import('./src/lib/redis.ts')
+    const { disconnectPrisma } = await import('./src/lib/prisma.ts')
 
     // Initialize Redis first
     await initializeRedis()
@@ -55,6 +70,9 @@ app.prepare().then(async () => {
         console.log('[Server] WebSocket server closed')
       })
 
+      // Disconnect Prisma
+      await disconnectPrisma()
+
       // Close HTTP server
       server.close(() => {
         console.log('[Server] HTTP server closed')
@@ -69,6 +87,9 @@ app.prepare().then(async () => {
       wss.close(() => {
         console.log('[Server] WebSocket server closed')
       })
+
+      // Disconnect Prisma
+      await disconnectPrisma()
 
       // Close HTTP server
       server.close(() => {

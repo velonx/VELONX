@@ -113,9 +113,13 @@ export class ResourceService {
     description: string;
     category: string;
     type: string;
-    url: string;
+    url?: string;
     imageUrl?: string;
     accessCount?: number;
+    pdfUrl?: string;
+    pdfPublicId?: string;
+    pdfFileName?: string;
+    pdfFileSize?: number;
   }) {
     const resource = await prisma.resource.create({
       data: {
@@ -126,6 +130,11 @@ export class ResourceService {
         url: data.url,
         imageUrl: data.imageUrl,
         accessCount: data.accessCount ?? 0,
+        pdfUrl: data.pdfUrl,
+        pdfPublicId: data.pdfPublicId,
+        pdfFileName: data.pdfFileName,
+        pdfFileSize: data.pdfFileSize,
+        pdfUploadedAt: data.pdfUrl ? new Date() : undefined,
       },
     });
     
@@ -148,6 +157,10 @@ export class ResourceService {
       url?: string;
       imageUrl?: string;
       accessCount?: number;
+      pdfUrl?: string;
+      pdfPublicId?: string;
+      pdfFileName?: string;
+      pdfFileSize?: number;
     }
   ) {
     // Check if resource exists
@@ -170,6 +183,17 @@ export class ResourceService {
     if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
     if (data.accessCount !== undefined) updateData.accessCount = data.accessCount;
     
+    // Handle PDF metadata updates
+    if (data.pdfUrl !== undefined) updateData.pdfUrl = data.pdfUrl;
+    if (data.pdfPublicId !== undefined) updateData.pdfPublicId = data.pdfPublicId;
+    if (data.pdfFileName !== undefined) updateData.pdfFileName = data.pdfFileName;
+    if (data.pdfFileSize !== undefined) updateData.pdfFileSize = data.pdfFileSize;
+    
+    // Set pdfUploadedAt when new PDF is uploaded
+    if (data.pdfUrl && !existingResource.pdfUrl) {
+      updateData.pdfUploadedAt = new Date();
+    }
+    
     const resource = await prisma.resource.update({
       where: { id },
       data: updateData,
@@ -178,7 +202,7 @@ export class ResourceService {
     // Invalidate resource cache after update
     await cacheService.invalidate(CacheKeys.resource.all());
     
-    return resource;
+    return { resource, oldPdfPublicId: existingResource.pdfPublicId };
   }
   
   /**

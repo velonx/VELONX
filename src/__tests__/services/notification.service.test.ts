@@ -504,4 +504,132 @@ describe('NotificationService', () => {
       )
     })
   })
+
+  describe('createProjectCompletionNotification', () => {
+    const completionDate = new Date('2024-03-15T10:30:00Z')
+
+    beforeEach(() => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: 'user1' } as any)
+      vi.mocked(prisma.notification.create).mockResolvedValue({
+        id: 'n1',
+        userId: 'user1',
+        title: 'Project Completed! 🎉',
+        description: 'Test description',
+        type: NotificationType.AWARD,
+        read: false,
+        createdAt: new Date(),
+      } as any)
+    })
+
+    it('should create project completion notification for owner', async () => {
+      await service.createProjectCompletionNotification('user1', {
+        projectId: 'proj1',
+        projectTitle: 'My Awesome Project',
+        completedAt: completionDate,
+        xpAwarded: 100,
+        isOwner: true,
+      })
+
+      expect(prisma.notification.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            userId: 'user1',
+            title: 'Project Completed! 🎉',
+            type: NotificationType.AWARD,
+            actionUrl: '/projects?status=completed',
+            metadata: expect.objectContaining({
+              projectId: 'proj1',
+              projectTitle: 'My Awesome Project',
+              xpAwarded: 100,
+              isOwner: true,
+              eventType: 'project_completion',
+            }),
+          }),
+        })
+      )
+
+      const createCall = vi.mocked(prisma.notification.create).mock.calls[0][0]
+      expect(createCall.data.description).toContain('My Awesome Project')
+      expect(createCall.data.description).toContain('100 XP')
+      expect(createCall.data.description).toContain('as the project owner')
+      expect(createCall.data.description).toContain('Hall of Fame')
+    })
+
+    it('should create project completion notification for member', async () => {
+      await service.createProjectCompletionNotification('user2', {
+        projectId: 'proj1',
+        projectTitle: 'Team Project',
+        completedAt: completionDate,
+        xpAwarded: 75,
+        isOwner: false,
+      })
+
+      expect(prisma.notification.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            userId: 'user2',
+            title: 'Project Completed! 🎉',
+            type: NotificationType.AWARD,
+            metadata: expect.objectContaining({
+              xpAwarded: 75,
+              isOwner: false,
+            }),
+          }),
+        })
+      )
+
+      const createCall = vi.mocked(prisma.notification.create).mock.calls[0][0]
+      expect(createCall.data.description).toContain('75 XP')
+      expect(createCall.data.description).toContain('as a team member')
+    })
+
+    it('should include all required data in notification', async () => {
+      await service.createProjectCompletionNotification('user1', {
+        projectId: 'proj1',
+        projectTitle: 'Test Project',
+        completedAt: completionDate,
+        xpAwarded: 100,
+        isOwner: true,
+      })
+
+      const createCall = vi.mocked(prisma.notification.create).mock.calls[0][0]
+      
+      // Verify title includes project title
+      expect(createCall.data.description).toContain('Test Project')
+      
+      // Verify XP awarded is included
+      expect(createCall.data.description).toContain('100 XP')
+      
+      // Verify Hall of Fame link is mentioned
+      expect(createCall.data.description).toContain('Hall of Fame')
+      
+      // Verify metadata includes all required fields
+      expect(createCall.data.metadata).toMatchObject({
+        projectId: 'proj1',
+        projectTitle: 'Test Project',
+        completedAt: completionDate.toISOString(),
+        xpAwarded: 100,
+        isOwner: true,
+        eventType: 'project_completion',
+      })
+      
+      // Verify action URL points to Hall of Fame
+      expect(createCall.data.actionUrl).toBe('/projects?status=completed')
+    })
+
+    it('should format completion timestamp correctly', async () => {
+      await service.createProjectCompletionNotification('user1', {
+        projectId: 'proj1',
+        projectTitle: 'Test Project',
+        completedAt: completionDate,
+        xpAwarded: 100,
+        isOwner: true,
+      })
+
+      const createCall = vi.mocked(prisma.notification.create).mock.calls[0][0]
+      
+      // Verify the metadata contains ISO timestamp
+      expect(createCall.data.metadata.completedAt).toBe(completionDate.toISOString())
+    })
+  })
 })

@@ -169,6 +169,7 @@ export class XPService {
             BADGE_UNLOCK: 'Unlocked a badge',
             DAILY_LOGIN: 'Daily login',
             CHALLENGE_COMPLETION: 'Completed a challenge',
+            PROJECT_COMPLETION: 'Completed a project',
             MANUAL: 'Manual XP adjustment',
         };
 
@@ -328,6 +329,35 @@ export class XPService {
         const result = await this.addXP(userId, 10, 'DAILY_LOGIN');
         return result.xpAdded;
     }
+
+    /**
+     * Awards XP for project completion
+     * @param userId - User ID to award XP to
+     * @param projectId - Project ID
+     * @param projectTitle - Project title
+     * @param amount - Base XP amount (100 for owner, 75 for members)
+     * @param isOwner - Whether the user is the project owner
+     * @returns XP award result with success status, XP added, and level up info
+     */
+    static async awardProjectCompletionXP(
+        userId: string,
+        projectId: string,
+        projectTitle: string,
+        amount: number,
+        isOwner: boolean
+    ): Promise<{ success: boolean; xpAdded: number; newLevel?: number; leveledUp: boolean }> {
+        return this.addXP(
+            userId,
+            amount,
+            'PROJECT_COMPLETION',
+            {
+                projectId,
+                projectTitle,
+                role: isOwner ? 'owner' : 'member'
+            }
+        );
+    }
+
 
     /**
      * Get leaderboard by XP

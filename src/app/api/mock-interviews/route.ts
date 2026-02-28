@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { MockInterviewService } from "@/lib/services/career.service";
+import { mockInterviewService } from "@/lib/services/mock-interview.service";
 import { mockInterviewSchema } from "@/lib/validations/career";
+import { prisma } from "@/lib/prisma";
 import { ZodError } from "zod";
+import { handleError } from "@/lib/utils/errors";
 
 // POST - Create mock interview application
 export async function POST(req: NextRequest) {
@@ -68,13 +71,43 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get("status") || undefined;
+    const statusParam = searchParams.get("status");
 
     let mockInterviews;
 
     if (session.user.role === "ADMIN") {
-      // Admin can see all applications
-      mockInterviews = await MockInterviewService.getAll({ status });
+      // Admin can see all applications with optional status filter
+      if (statusParam === 'PENDING') {
+        // Use new service for pending interviews with user details
+        const interviews = await mockInterviewService.getAll({ status: 'PENDING' });
+        
+        // Fetch user details for each interview
+        const interviewsWithUsers = await Promise.all(
+          interviews.map(async (interview) => {
+            const user = await prisma.user.findUnique({
+              where: { id: interview.userId },
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            });
+            
+            return {
+              ...interview,
+              user,
+            };
+          })
+        );
+        
+        return NextResponse.json({
+          success: true,
+          data: interviewsWithUsers,
+        });
+      }
+      
+      // Fallback to old service for other statuses
+      mockInterviews = await MockInterviewService.getAll({ status: statusParam || undefined });
     } else {
       // Students can only see their own applications
       mockInterviews = await MockInterviewService.getByUserId(session.user.id);
@@ -85,16 +118,6 @@ export async function GET(req: NextRequest) {
       data: mockInterviews,
     });
   } catch (error) {
-    console.error("Mock interview fetch error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "INTERNAL_ERROR",
-          message: "Failed to fetch mock interviews",
-        },
-      },
-      { status: 500 }
-    );
+    return handleError(error);
   }
 }

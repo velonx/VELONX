@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export const createSessionSchema = z.object({
   mentorId: z.string().min(1, "Mentor ID is required"),
-  title: z.string().min(3, "Title must be at least 3 characters").max(200, "Title must not exceed 200 characters"),
+  title: z.string().min(5, "Title must be at least 5 characters").max(200, "Title must not exceed 200 characters"),
   description: z.string().optional(),
   date: z.string().datetime("Invalid date format, must be ISO 8601"),
   duration: z.number().int().positive("Duration must be a positive integer").min(15, "Minimum duration is 15 minutes").max(180, "Maximum duration is 180 minutes"),
@@ -19,6 +19,19 @@ export const createSessionSchema = z.object({
   {
     message: "Session date must be in the future",
     path: ["date"],
+  }
+);
+
+export const sessionApprovalSchema = z.object({
+  action: z.enum(['approve', 'reject'], {
+    errorMap: () => ({ message: "Action must be either 'approve' or 'reject'" }),
+  }),
+  reason: z.string().optional(),
+}).refine(
+  (data) => data.action !== 'reject' || (data.reason && data.reason.trim().length >= 10),
+  {
+    message: "Rejection reason must be at least 10 characters",
+    path: ["reason"],
   }
 );
 
@@ -46,3 +59,4 @@ export type CreateSessionInput = z.infer<typeof createSessionSchema>;
 export type UpdateSessionInput = z.infer<typeof updateSessionSchema>;
 export type SessionQueryInput = z.infer<typeof sessionQuerySchema>;
 export type SubmitReviewInput = z.infer<typeof submitReviewSchema>;
+export type SessionApprovalInput = z.infer<typeof sessionApprovalSchema>;

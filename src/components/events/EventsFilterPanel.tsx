@@ -30,6 +30,8 @@ interface EventsFilterPanelProps {
   onMyEventsToggle: (enabled: boolean) => void;
   onClearAll: () => void;
   activeFilterCount: number;
+  availableCount?: number;
+  totalCount?: number;
 }
 
 const EVENT_TYPE_OPTIONS: { value: EventType; label: string; icon: string }[] = [
@@ -69,13 +71,6 @@ const DATE_RANGE_PRESETS: { label: string; getValue: () => DateRange }[] = [
   },
 ];
 
-const AVAILABILITY_OPTIONS: { value: EventAvailability; label: string; description: string }[] = [
-  { value: 'all', label: 'All Events', description: 'Show all events' },
-  { value: 'available', label: 'Available', description: 'Spots available' },
-  { value: 'almost-full', label: 'Almost Full', description: '>80% capacity' },
-  { value: 'full', label: 'Full', description: 'No spots left' },
-];
-
 export const EventsFilterPanel: React.FC<EventsFilterPanelProps> = ({
   selectedTypes,
   dateRange,
@@ -87,6 +82,8 @@ export const EventsFilterPanel: React.FC<EventsFilterPanelProps> = ({
   onMyEventsToggle,
   onClearAll,
   activeFilterCount,
+  availableCount,
+  totalCount,
 }) => {
   const hasActiveFilters = activeFilterCount > 0;
 
@@ -98,6 +95,13 @@ export const EventsFilterPanel: React.FC<EventsFilterPanelProps> = ({
       dateRange.end?.toDateString() === presetRange.end?.toDateString()
     );
   };
+
+  // Handle availability filter toggle
+  const handleAvailabilityToggle = (checked: boolean) => {
+    onAvailabilityChange(checked ? 'available' : 'all');
+  };
+
+  const showOnlyAvailable = availability === 'available';
 
   return (
     <div 
@@ -238,34 +242,31 @@ export const EventsFilterPanel: React.FC<EventsFilterPanelProps> = ({
           <Users className="w-4 h-4 text-gray-500" aria-hidden="true" />
           <h4 id="availability-heading" className="text-gray-100 text-xs font-bold uppercase tracking-wider">Availability</h4>
         </div>
-        <div className="space-y-2" role="radiogroup" aria-labelledby="availability-heading">
-          {AVAILABILITY_OPTIONS.map((option) => {
-            const isActive = availability === option.value;
-            return (
-              <button
-                key={option.value}
-                onClick={() => onAvailabilityChange(option.value)}
-                className={`
-                  w-full flex items-start gap-3 px-3 py-2 rounded-lg transition-all border text-left
-                  ${isActive
-                    ? 'bg-[#1e293b] border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10'
-                    : 'bg-transparent border-white/5 text-gray-400 hover:bg-white/5 hover:border-white/10'
-                  }
-                `}
-                role="radio"
-                aria-checked={isActive}
-                aria-label={`Filter by ${option.label}: ${option.description}`}
-              >
-                <div className="flex-1">
-                  <div className="text-sm font-medium">{option.label}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{option.description}</div>
+        <div className="space-y-3">
+          <div className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors">
+            <Checkbox
+              id="availability-filter"
+              checked={showOnlyAvailable}
+              onCheckedChange={handleAvailabilityToggle}
+              aria-label="Show only available events"
+              aria-describedby="availability-filter-desc"
+              className="border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
+            />
+            <label
+              htmlFor="availability-filter"
+              className="text-sm cursor-pointer flex-1 text-gray-300 hover:text-white transition-colors"
+            >
+              <div className="font-medium">Show only available events</div>
+              {availableCount !== undefined && totalCount !== undefined && (
+                <div className="text-xs text-gray-500 mt-0.5">
+                  {availableCount} of {totalCount} events available
                 </div>
-                {isActive && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)] mt-1.5" aria-hidden="true" />
-                )}
-              </button>
-            );
-          })}
+              )}
+            </label>
+            <span id="availability-filter-desc" className="sr-only">
+              {showOnlyAvailable ? 'Showing only events with open registration' : 'Showing all events'}
+            </span>
+          </div>
         </div>
       </div>
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +18,10 @@ import {
     Trophy,
     TrendingUp,
     Award,
-    Target
+    Target,
+    FolderOpen,
+    CheckCircle2,
+    Loader2
 } from "lucide-react";
 import { useProjects, useMeetings, useUserStats } from "@/lib/api/hooks";
 import { DailyCheckIn } from "@/components/daily-check-in";
@@ -41,6 +44,8 @@ import QuickActions from "@/components/dashboard/student/Overview/QuickActions";
 import FindMentors from "@/components/dashboard/student/Mentorship/FindMentors";
 import UpcomingSessions from "@/components/dashboard/student/Mentorship/UpcomingSessions";
 import SessionHistory from "@/components/dashboard/student/Mentorship/SessionHistory";
+import StudentConfirmedSessions from "@/components/dashboard/student/StudentConfirmedSessions";
+import StudentApprovedInterviews from "@/components/dashboard/student/StudentApprovedInterviews";
 
 // Project Components
 import JoinRequests from "@/components/dashboard/student/Projects/JoinRequests";
@@ -83,8 +88,10 @@ interface ExtendedUser {
 export default function StudentDashboard() {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [activeTab, setActiveTab] = useState("Dashboard");
     const [searchQuery, setSearchQuery] = useState("");
+    const [projectStatusFilter, setProjectStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
 
     // Cast session user to extended type
     const user = session?.user as ExtendedUser | undefined;
@@ -92,11 +99,27 @@ export default function StudentDashboard() {
     // Memoize the start date to prevent re-fetching on every render
     const [startDate] = useState(() => new Date().toISOString());
 
+    // Initialize project status filter from URL
+    useEffect(() => {
+        const statusParam = searchParams.get('projectStatus');
+        if (statusParam === 'IN_PROGRESS' || statusParam === 'COMPLETED' || statusParam === 'ALL') {
+            setProjectStatusFilter(statusParam);
+        }
+    }, [searchParams]);
+
+    // Fetch projects based on status filter
+    const projectFilters = projectStatusFilter === 'ALL' 
+        ? { pageSize: 100 } 
+        : { pageSize: 100, status: projectStatusFilter as 'IN_PROGRESS' | 'COMPLETED' };
+
     // Fetch real data from API
-    const { data: projects, loading: projectsLoading } = useProjects({
-        pageSize: 3,
-        status: 'IN_PROGRESS'
-    });
+    const { data: projects, loading: projectsLoading } = useProjects(projectFilters);
+    
+    // Fetch all projects for counts
+    const { data: allProjects } = useProjects({ pageSize: 100 });
+    const { data: inProgressProjects } = useProjects({ pageSize: 100, status: 'IN_PROGRESS' });
+    const { data: completedProjects } = useProjects({ pageSize: 100, status: 'COMPLETED' });
+
     const { data: meetings, loading: meetingsLoading } = useMeetings({
         pageSize: 10,
         startDate: startDate
@@ -172,6 +195,22 @@ export default function StudentDashboard() {
         fetchMentorSessions(); // Refresh to show review
     };
 
+    // Handle project status filter change
+    const handleProjectStatusChange = (status: 'ALL' | 'IN_PROGRESS' | 'COMPLETED') => {
+        setProjectStatusFilter(status);
+        // Update URL query params
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('projectStatus', status);
+        router.push(`?${params.toString()}`, { scroll: false });
+    };
+
+    // Calculate project counts
+    const projectCounts = {
+        all: allProjects?.length || 0,
+        inProgress: inProgressProjects?.length || 0,
+        completed: completedProjects?.length || 0
+    };
+
     if (status === "loading" || projectsLoading || meetingsLoading || statsLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
@@ -190,13 +229,16 @@ export default function StudentDashboard() {
     ];
 
     // Map real projects to display format
-    const projectsDisplay = projects?.slice(0, 3).map((project, i) => ({
+    const projectsDisplay = projects?.map((project, i) => ({
+        id: project.id,
         title: project.title,
         tasks: project._count?.members || 0,
         progress: project.status === 'COMPLETED' ? 100 : project.status === 'IN_PROGRESS' ? 50 : 25,
-        color: i === 0 ? "bg-[#5E239D]" : i === 1 ? "bg-[#7FD8D8]" : "bg-[#FF7F5C]",
-        textColor: i === 1 ? "text-[#00443D]" : "text-white",
-        users: ["/avatars/1.png", "/avatars/2.png", "/avatars/3.png"]
+        color: i % 3 === 0 ? "bg-[#5E239D]" : i % 3 === 1 ? "bg-[#7FD8D8]" : "bg-[#FF7F5C]",
+        textColor: i % 3 === 1 ? "text-[#00443D]" : "text-white",
+        users: ["/avatars/1.png", "/avatars/2.png", "/avatars/3.png"],
+        status: project.status,
+        completedAt: project.completedAt || null
     })) || [];
 
     // Map real meetings to timeline format
@@ -226,8 +268,27 @@ export default function StudentDashboard() {
 
     return (
         <div className="flex min-h-screen bg-background pt-20">
+            {/* Mobile Navigation - Visible only on mobile */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border z-30 safe-area-pb shadow-lg">
+                <nav className="flex items-center justify-around p-3">
+                    {navItems.map((item) => (
+                        <button
+                            key={item.label}
+                            onClick={() => setActiveTab(item.label)}
+                            className={`flex flex-col items-center gap-1.5 px-4 py-2.5 rounded-2xl transition-all ${activeTab === item.label
+                                ? "text-[#219EBC] bg-muted"
+                                : "text-muted-foreground hover:bg-muted"
+                                }`}
+                        >
+                            <item.icon className="w-5 h-5" />
+                            <span className="text-xs font-bold uppercase tracking-wide">{item.label}</span>
+                        </button>
+                    ))}
+                </nav>
+            </div>
+
             {/* Left Sidebar */}
-            <aside className="w-80 bg-background border-r border-border flex flex-col p-8 fixed left-0 top-20 bottom-0 z-20">
+            <aside className="hidden md:block md:w-80 bg-background border-r border-border flex flex-col p-8 md:fixed md:left-0 top-20 bottom-0 z-20">
                 <div className="mb-12">
                     <div className="relative inline-block mb-4">
                         <div className="w-20 h-20 rounded-full border-2 border-[#219EBC] p-1">
@@ -263,9 +324,31 @@ export default function StudentDashboard() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 ml-80 mr-96 p-12">
+            <main className="flex-1 md:ml-80 md:mr-96 p-4 md:p-12 pb-24 md:pb-12">
+                {/* Mobile Header - Visible only on mobile */}
+                <div className="md:hidden mb-6 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
+                            <img src={session.user?.image || "/avatars/default.png"} alt="User" className="w-full h-full rounded-full object-cover" />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-black text-foreground">{session.user?.name}</h2>
+                            <p className="text-xs text-muted-foreground font-bold">Level {user?.level || 1}</p>
+                        </div>
+                    </div>
+                    <button className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground relative transition-all">
+                        <Bell className="w-5 h-5" />
+                        <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-card" />
+                    </button>
+                </div>
+
                 {activeTab === "Dashboard" && (
                     <>
+                        {/* Mobile Daily Check-in - Visible only on mobile */}
+                        <div className="md:hidden mb-6">
+                            <DailyCheckIn />
+                        </div>
+
                         {/* Header */}
                         <WelcomeSection
                             userName={session.user?.name?.split(" ")[0] || "Student"}
@@ -273,51 +356,94 @@ export default function StudentDashboard() {
                             onSearchChange={setSearchQuery}
                         />
 
+                        {/* Project Status Filter Tabs */}
+                        <div className="mb-8">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-black text-[#023047]">My Projects</h2>
+                            </div>
+                            
+                            {/* Status Tabs */}
+                            <div className="flex flex-wrap gap-3 mb-6">
+                                <button
+                                    onClick={() => handleProjectStatusChange('ALL')}
+                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${
+                                        projectStatusFilter === 'ALL'
+                                            ? 'bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30'
+                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <FolderOpen className="w-4 h-4" />
+                                        <span>All Projects</span>
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                                            projectStatusFilter === 'ALL' 
+                                                ? 'bg-white/20 text-white' 
+                                                : 'bg-background text-foreground'
+                                        }`}>
+                                            {projectCounts.all}
+                                        </span>
+                                    </div>
+                                </button>
+                                
+                                <button
+                                    onClick={() => handleProjectStatusChange('IN_PROGRESS')}
+                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${
+                                        projectStatusFilter === 'IN_PROGRESS'
+                                            ? 'bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30'
+                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Loader2 className="w-4 h-4" />
+                                        <span>In Progress</span>
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                                            projectStatusFilter === 'IN_PROGRESS' 
+                                                ? 'bg-white/20 text-white' 
+                                                : 'bg-background text-foreground'
+                                        }`}>
+                                            {projectCounts.inProgress}
+                                        </span>
+                                    </div>
+                                </button>
+                                
+                                <button
+                                    onClick={() => handleProjectStatusChange('COMPLETED')}
+                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${
+                                        projectStatusFilter === 'COMPLETED'
+                                            ? 'bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30'
+                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle2 className="w-4 h-4" />
+                                        <span>Completed</span>
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                                            projectStatusFilter === 'COMPLETED' 
+                                                ? 'bg-white/20 text-white' 
+                                                : 'bg-background text-foreground'
+                                        }`}>
+                                            {projectCounts.completed}
+                                        </span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
                         {/* Project Cards */}
                         <ProgressSummary
                             projects={projectsDisplay}
                             searchQuery={searchQuery}
                         />
 
-                        {/* Mentor Sessions Section */}
-                        <section className="mb-12">
-                            <FindMentors sessionCount={mentorSessions.length} />
+                        {/* Confirmed Mentor Sessions Section */}
+                        {session?.user?.id && (
+                            <StudentConfirmedSessions userId={session.user.id} />
+                        )}
 
-                            {loadingSessions ? (
-                                <div className="text-center py-12">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
-                                    <p className="text-muted-foreground">Loading sessions...</p>
-                                </div>
-                            ) : mentorSessions.length === 0 ? (
-                                <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
-                                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-foreground mb-2">No Sessions Yet</h3>
-                                    <p className="text-muted-foreground mb-6">
-                                        Book your first mentorship session to get started
-                                    </p>
-                                    <Button
-                                        onClick={() => router.push('/mentors')}
-                                        className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
-                                    >
-                                        Browse Mentors
-                                    </Button>
-                                </Card>
-                            ) : (
-                                <div className="grid gap-6">
-                                    <UpcomingSessions
-                                        sessions={mentorSessions}
-                                        loading={loadingSessions}
-                                        onCancel={handleCancelSession}
-                                        onReview={handleReviewSession}
-                                    />
-                                    <SessionHistory
-                                        sessions={mentorSessions}
-                                        onCancel={handleCancelSession}
-                                        onReview={handleReviewSession}
-                                    />
-                                </div>
-                            )}
-                        </section>
+                        {/* Approved Mock Interviews Section */}
+                        {session?.user?.id && (
+                            <StudentApprovedInterviews userId={session.user.id} />
+                        )}
 
                         {/* Project Join Requests Section */}
                         {session?.user?.id && (
@@ -341,7 +467,7 @@ export default function StudentDashboard() {
                         </header>
 
                         {/* Streak & XP Overview */}
-                        <div className="grid grid-cols-2 gap-6 mb-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                             {/* Streak Card */}
                             <Card className="bg-gradient-to-br from-orange-500 to-red-500 text-white border-0 rounded-[32px] p-8 shadow-xl">
                                 <div className="flex items-start justify-between mb-6">
@@ -412,7 +538,7 @@ export default function StudentDashboard() {
                         {/* XP Breakdown */}
                         <section className="mb-12">
                             <h3 className="text-2xl font-black text-[#023047] mb-6">XP Rewards</h3>
-                            <div className="grid grid-cols-5 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                                 <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Calendar className="w-6 h-6 text-purple-600" />
@@ -454,7 +580,7 @@ export default function StudentDashboard() {
                         {/* Activity Summary */}
                         <section>
                             <h3 className="text-2xl font-black text-[#023047] mb-6">Activity Summary</h3>
-                            <div className="grid grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                                 <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
                                     <div className="flex items-center justify-between mb-4">
                                         <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -512,7 +638,7 @@ export default function StudentDashboard() {
                         </header>
 
                         {/* Community Stats */}
-                        <div className="grid grid-cols-4 gap-6 mb-12">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-12">
                             <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -601,7 +727,7 @@ export default function StudentDashboard() {
                                     <p className="text-muted-foreground">Loading groups...</p>
                                 </div>
                             ) : userGroups.length > 0 ? (
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                     {userGroups.slice(0, 3).map((group) => (
                                         <GroupCard key={group.id} group={group} />
                                     ))}
@@ -637,7 +763,7 @@ export default function StudentDashboard() {
             </main>
 
             {/* Right Sidebar - Calendar */}
-            <aside className="w-96 bg-card p-10 border-l border-border fixed right-0 top-20 bottom-0 z-20 overflow-y-auto">
+            <aside className="hidden md:block md:w-96 bg-card p-10 border-l border-border md:fixed md:right-0 top-20 bottom-0 z-20 overflow-y-auto">
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-black text-[#023047]">Calendar</h2>
                     <button className="w-10 h-10 rounded-xl bg-background shadow-sm border border-border flex items-center justify-center text-muted-foreground relative">

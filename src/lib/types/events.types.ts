@@ -57,3 +57,22 @@ export interface EventsQueryParams {
   sortBy?: EventSortOption;
   status?: 'UPCOMING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED';
 }
+
+/**
+ * Registration closure reason
+ * Feature: event-registration-closed
+ * Requirements: 5.1, 5.2, 5.3, 5.4
+ */
+export type RegistrationClosureReason = 'capacity' | 'deadline' | 'manual';
+
+/**
+ * Registration status information
+ * Feature: event-registration-closed
+ * Requirements: 5.1, 5.2, 5.3, 5.4
+ */
+export interface RegistrationStatusInfo {
+  isOpen: boolean;
+  reason?: RegistrationClosureReason;
+  message: string;
+  canReopen: boolean; // For admin UI
+}

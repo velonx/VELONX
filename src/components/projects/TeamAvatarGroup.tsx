@@ -24,6 +24,7 @@ export interface TeamAvatarGroupProps {
   maxDisplay?: number;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  ownerId?: string; // ID of the project owner to show indicator
 }
 
 const SIZE_CLASSES = {
@@ -66,6 +67,7 @@ export function TeamAvatarGroup({
   maxDisplay = 4,
   size = 'md',
   className,
+  ownerId,
 }: TeamAvatarGroupProps) {
   const displayMembers = members.slice(0, maxDisplay);
   const remainingCount = Math.max(0, members.length - maxDisplay);
@@ -85,6 +87,7 @@ export function TeamAvatarGroup({
           const userName = member.user?.name || 'Unknown User';
           const userImage = member.user?.image;
           const initials = getInitials(userName);
+          const isOwner = ownerId && member.userId === ownerId;
 
           return (
             <Tooltip key={member.id}>
@@ -100,7 +103,9 @@ export function TeamAvatarGroup({
                     className={cn(
                       SIZE_CLASSES[size],
                       BORDER_WIDTH[size],
-                      'border-white bg-gray-100 ring-1 ring-gray-200'
+                      isOwner 
+                        ? 'border-yellow-400 bg-yellow-50 ring-2 ring-yellow-400' 
+                        : 'border-white bg-gray-100 ring-1 ring-gray-200'
                     )}
                   >
                     {userImage && (
@@ -109,14 +114,35 @@ export function TeamAvatarGroup({
                         alt={userName}
                       />
                     )}
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+                    <AvatarFallback className={cn(
+                      'font-semibold',
+                      isOwner 
+                        ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white'
+                        : 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
+                    )}>
                       {initials}
                     </AvatarFallback>
                   </Avatar>
+                  {isOwner && (
+                    <div 
+                      className="absolute -bottom-0.5 -right-0.5 bg-yellow-400 rounded-full p-0.5 border border-white shadow-sm"
+                      aria-label="Project owner"
+                      title="Project owner"
+                    >
+                      <svg 
+                        className="w-2.5 h-2.5 text-white" 
+                        fill="currentColor" 
+                        viewBox="0 0 20 20"
+                        aria-hidden="true"
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                  )}
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{userName}</p>
+                <p>{userName}{isOwner ? ' (Owner)' : ''}</p>
               </TooltipContent>
             </Tooltip>
           );

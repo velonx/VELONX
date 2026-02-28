@@ -20,7 +20,7 @@ import {
     UserProjectRelationship,
     CATEGORY_COLORS
 } from '@/lib/types/project-page.types';
-import { Github, ExternalLink, Loader2, User } from 'lucide-react';
+import { Github, ExternalLink, Loader2, User, CheckCircle2, Trophy } from 'lucide-react';
 
 export interface ProjectCardProps {
     project: ExtendedProject;
@@ -29,6 +29,8 @@ export interface ProjectCardProps {
     onClick: (projectId: string) => void;
     isJoining?: boolean;
     currentUserId?: string;
+    onComplete?: (projectId: string, projectTitle: string) => void;
+    isCompleting?: boolean;
 }
 
 /**
@@ -155,6 +157,8 @@ const ProjectCardComponent = ({
     onClick,
     isJoining = false,
     currentUserId,
+    onComplete,
+    isCompleting = false,
 }: ProjectCardProps) => {
     const statusConfig = getStatusConfig(project.status);
     const joinButtonConfig = getJoinButtonConfig(joinRequestStatus);
@@ -177,6 +181,16 @@ const ProjectCardComponent = ({
     // Quick action buttons
     const hasGithub = !!project.githubUrl;
     const hasDemo = !!project.liveUrl;
+    
+    // Completion logic
+    const isOwner = currentUserId === project.ownerId;
+    const canComplete = isOwner && project.status === 'IN_PROGRESS' && !!onComplete;
+    const isCompleted = project.status === 'COMPLETED';
+    
+    // Format completion date
+    const completedAtDate = project.completedAt 
+        ? new Date(project.completedAt) 
+        : null;
 
     const handleCardClick = () => {
         onClick(project.id);
@@ -186,6 +200,13 @@ const ProjectCardComponent = ({
         e.stopPropagation();
         if (!joinButtonConfig.disabled && !isJoining) {
             onJoinRequest(project.id);
+        }
+    };
+
+    const handleCompleteClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (canComplete && !isCompleting && onComplete) {
+            onComplete(project.id, project.title);
         }
     };
 
@@ -229,6 +250,9 @@ const ProjectCardComponent = ({
                             className="object-cover"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             quality={85}
+                            loading="lazy"
+                            placeholder="blur"
+                            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YzZjRmNiIvPjwvc3ZnPg=="
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
                     </>
@@ -279,6 +303,22 @@ const ProjectCardComponent = ({
                         {project.description}
                     </p>
                 </div>
+                
+                {/* Completion Badge and Timestamp for Completed Projects */}
+                {isCompleted && completedAtDate && (
+                    <div className="flex items-center gap-2 py-2 px-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                        <Trophy className="h-4 w-4 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+                        <div className="flex-1">
+                            <p className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                                Completed on {completedAtDate.toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                })}
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Tech Stack */}
                 <div className="flex flex-wrap gap-1.5">
@@ -303,23 +343,63 @@ const ProjectCardComponent = ({
                     {/* Team Avatars or Owner */}
                     <div className="flex items-center gap-2">
                         {members.length > 0 ? (
-                            <TeamAvatarGroup members={members} maxDisplay={3} size="sm" />
+                            <TeamAvatarGroup 
+                                members={members} 
+                                maxDisplay={3} 
+                                size="sm" 
+                                ownerId={project.ownerId}
+                            />
                         ) : project.owner ? (
                             <div className="flex items-center gap-2">
                                 {project.owner.image ? (
-                                    <Image
-                                        src={project.owner.image}
-                                        alt={project.owner.name || 'Owner'}
-                                        width={24}
-                                        height={24}
-                                        className="rounded-full border border-border"
-                                    />
+                                    <div className="relative">
+                                        <Image
+                                            src={project.owner.image}
+                                            alt={project.owner.name || 'Owner'}
+                                            width={24}
+                                            height={24}
+                                            className="rounded-full border-2 border-yellow-400 ring-2 ring-yellow-400"
+                                            loading="lazy"
+                                            placeholder="blur"
+                                            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTIiIGZpbGw9IiNmM2Y0ZjYiLz48L3N2Zz4="
+                                        />
+                                        <div 
+                                            className="absolute -bottom-0.5 -right-0.5 bg-yellow-400 rounded-full p-0.5 border border-white shadow-sm"
+                                            aria-label="Project owner"
+                                            title="Project owner"
+                                        >
+                                            <svg 
+                                                className="w-2 h-2 text-white" 
+                                                fill="currentColor" 
+                                                viewBox="0 0 20 20"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                        </div>
+                                    </div>
                                 ) : (
-                                    <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center">
-                                        <User className="w-3 h-3 text-muted-foreground" />
+                                    <div className="relative">
+                                        <div className="w-6 h-6 rounded-full bg-yellow-50 border-2 border-yellow-400 ring-2 ring-yellow-400 flex items-center justify-center">
+                                            <User className="w-3 h-3 text-yellow-600" />
+                                        </div>
+                                        <div 
+                                            className="absolute -bottom-0.5 -right-0.5 bg-yellow-400 rounded-full p-0.5 border border-white shadow-sm"
+                                            aria-label="Project owner"
+                                            title="Project owner"
+                                        >
+                                            <svg 
+                                                className="w-2 h-2 text-white" 
+                                                fill="currentColor" 
+                                                viewBox="0 0 20 20"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                        </div>
                                     </div>
                                 )}
-                                <span className="text-xs text-muted-foreground">{project.owner.name || 'Anonymous'}</span>
+                                <span className="text-xs text-muted-foreground">{project.owner.name || 'Anonymous'} <span className="text-yellow-600">(Owner)</span></span>
                             </div>
                         ) : null}
                     </div>
@@ -363,24 +443,47 @@ const ProjectCardComponent = ({
                     )}
                 </div>
 
-                {/* Join Request Button */}
-                <Button
-                    variant={joinButtonConfig.variant}
-                    size="sm"
-                    onClick={handleJoinClick}
-                    disabled={joinButtonConfig.disabled || isJoining}
-                    className="h-9"
-                    aria-label={`${joinButtonConfig.label} for ${project.title}`}
-                >
-                    {isJoining ? (
-                        <>
-                            <Loader2 className="h-3 w-3 animate-spin mr-1.5" aria-hidden="true" />
-                            Joining...
-                        </>
-                    ) : (
-                        joinButtonConfig.label
-                    )}
-                </Button>
+                {/* Completion Button (for owners of IN_PROGRESS projects) or Join Request Button */}
+                {canComplete ? (
+                    <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleCompleteClick}
+                        disabled={isCompleting}
+                        className="h-9 bg-emerald-600 hover:bg-emerald-700 text-white"
+                        aria-label={`Mark ${project.title} as complete`}
+                    >
+                        {isCompleting ? (
+                            <>
+                                <Loader2 className="h-3 w-3 animate-spin mr-1.5" aria-hidden="true" />
+                                Completing...
+                            </>
+                        ) : (
+                            <>
+                                <CheckCircle2 className="h-3 w-3 mr-1.5" aria-hidden="true" />
+                                Mark Complete
+                            </>
+                        )}
+                    </Button>
+                ) : (
+                    <Button
+                        variant={joinButtonConfig.variant}
+                        size="sm"
+                        onClick={handleJoinClick}
+                        disabled={joinButtonConfig.disabled || isJoining}
+                        className="h-9"
+                        aria-label={`${joinButtonConfig.label} for ${project.title}`}
+                    >
+                        {isJoining ? (
+                            <>
+                                <Loader2 className="h-3 w-3 animate-spin mr-1.5" aria-hidden="true" />
+                                Joining...
+                            </>
+                        ) : (
+                            joinButtonConfig.label
+                        )}
+                    </Button>
+                )}
             </div>
         </Card>
     );
@@ -395,7 +498,9 @@ export const ProjectCard = React.memo(ProjectCardComponent, (prevProps, nextProp
         prevProps.project.updatedAt === nextProps.project.updatedAt &&
         prevProps.joinRequestStatus === nextProps.joinRequestStatus &&
         prevProps.isJoining === nextProps.isJoining &&
-        prevProps.currentUserId === nextProps.currentUserId
+        prevProps.currentUserId === nextProps.currentUserId &&
+        prevProps.isCompleting === nextProps.isCompleting &&
+        prevProps.onComplete === nextProps.onComplete
     );
 });
 

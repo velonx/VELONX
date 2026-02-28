@@ -14,6 +14,9 @@ import { SortControl } from "@/components/projects/SortControl";
 import { ProjectsGrid } from "@/components/projects/ProjectsGrid";
 import { ProjectsErrorBoundary } from "@/components/projects/ProjectsErrorBoundary";
 import { ErrorState } from "@/components/projects/ErrorState";
+import { useProjectCompletion } from "@/lib/hooks/useProjectCompletion";
+import { CompletionConfirmDialog } from "@/components/projects/CompletionConfirmDialog";
+import { CompletionCelebration } from "@/components/projects/CompletionCelebration";
 
 // Code splitting: Lazy load ProjectModal since it's only needed when user clicks a project
 const ProjectModal = lazy(() =>
@@ -84,6 +87,20 @@ function ProjectsPageContent() {
 
     // Track retry state
     const [isRetrying, setIsRetrying] = useState(false);
+
+    // Project completion hook
+    const {
+        completeProject,
+        isCompleting,
+        error: completionError,
+        showCelebration,
+        celebrationData,
+        dismissCelebration,
+    } = useProjectCompletion();
+
+    // Confirmation dialog state
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [pendingCompletion, setPendingCompletion] = useState<{ projectId: string; projectTitle: string } | null>(null);
 
     // Save filter preferences to session storage when they change
     useEffect(() => {
@@ -280,6 +297,36 @@ function ProjectsPageContent() {
         setSearchTerm("");
     }, []);
 
+    // Handle project completion - show confirmation dialog
+    const handleProjectComplete = useCallback((projectId: string, projectTitle: string) => {
+        setPendingCompletion({ projectId, projectTitle });
+        setShowConfirmDialog(true);
+    }, []);
+
+    // Confirm completion
+    const handleConfirmCompletion = useCallback(async () => {
+        if (!pendingCompletion) return;
+
+        setShowConfirmDialog(false);
+        
+        try {
+            await completeProject(pendingCompletion.projectId, pendingCompletion.projectTitle);
+            // Refetch projects to update the list
+            await Promise.all([refetchRunning(), refetchCompleted()]);
+        } catch (error) {
+            // Error is already handled by the hook
+            console.error('Failed to complete project:', error);
+        } finally {
+            setPendingCompletion(null);
+        }
+    }, [pendingCompletion, completeProject, refetchRunning, refetchCompleted]);
+
+    // Cancel completion
+    const handleCancelCompletion = useCallback(() => {
+        setShowConfirmDialog(false);
+        setPendingCompletion(null);
+    }, []);
+
     // Handle retry for API errors
     const handleRetry = useCallback(async () => {
         setIsRetrying(true);
@@ -431,6 +478,8 @@ function ProjectsPageContent() {
                                     onProjectClick={handleProjectClick}
                                     joiningProjects={joiningProjects}
                                     currentUserId={session?.user?.id}
+                                    onComplete={handleProjectComplete}
+                                    completingProjectId={isCompleting && pendingCompletion ? pendingCompletion.projectId : null}
                                 />
                             )}
                         </TabsContent>
@@ -456,6 +505,8 @@ function ProjectsPageContent() {
                                     onProjectClick={handleProjectClick}
                                     joiningProjects={joiningProjects}
                                     currentUserId={session?.user?.id}
+                                    onComplete={handleProjectComplete}
+                                    completingProjectId={isCompleting && pendingCompletion ? pendingCompletion.projectId : null}
                                 />
                             )}
                         </TabsContent>
@@ -492,6 +543,27 @@ function ProjectsPageContent() {
                     </div>
                 </div>
             </button>
+
+            {/* Completion Confirmation Dialog */}
+            {showConfirmDialog && pendingCompletion && (
+                <CompletionConfirmDialog
+                    isOpen={showConfirmDialog}
+                    projectTitle={pendingCompletion.projectTitle}
+                    onConfirm={handleConfirmCompletion}
+                    onCancel={handleCancelCompletion}
+                />
+            )}
+
+            {/* Completion Celebration */}
+            {showCelebration && celebrationData && (
+                <CompletionCelebration
+                    isOpen={showCelebration}
+                    projectTitle={celebrationData.projectTitle}
+                    xpAwarded={celebrationData.xpAwarded}
+                    hallOfFameUrl="/projects?tab=completed"
+                    onClose={dismissCelebration}
+                />
+            )}
         </div>
     );
 }

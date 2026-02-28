@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { BookOpen, Edit, Trash2, XCircle, Download, Eye, Plus } from "lucide-react";
+import { BookOpen, Edit, Trash2, XCircle, Download, Eye, Plus, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 import { getCSRFToken } from "@/lib/utils/csrf";
+import PDFUploadField, { PDFMetadata } from "@/components/admin/PDFUploadField";
 
 interface Resource {
   id: string;
@@ -15,9 +16,13 @@ interface Resource {
   description: string;
   category: string;
   type: string;
-  url: string;
+  url?: string;
   imageUrl?: string;
   accessCount: number;
+  pdfUrl?: string;
+  pdfPublicId?: string;
+  pdfFileName?: string;
+  pdfFileSize?: number;
 }
 
 export default function ResourceManagement() {
@@ -27,6 +32,9 @@ export default function ResourceManagement() {
   const [resourceImagePreview, setResourceImagePreview] = useState<string | null>(null);
   const [uploadingResourceImage, setUploadingResourceImage] = useState(false);
   const [deletingResourceId, setDeletingResourceId] = useState<string | null>(null);
+  const [pdfMetadata, setPdfMetadata] = useState<PDFMetadata | undefined>(undefined);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterPDF, setFilterPDF] = useState<"all" | "with-pdf" | "without-pdf">("all");
   const resourceFormRef = useRef<HTMLDivElement>(null);
   const resourceFormElementRef = useRef<HTMLFormElement>(null);
 
@@ -100,6 +108,17 @@ export default function ResourceManagement() {
   const handleEditResource = (resource: Resource) => {
     setEditingResource(resource);
     setResourceImagePreview(resource.imageUrl || null);
+    // Set PDF metadata if resource has PDF
+    if (resource.pdfUrl && resource.pdfPublicId && resource.pdfFileName && resource.pdfFileSize) {
+      setPdfMetadata({
+        url: resource.pdfUrl,
+        publicId: resource.pdfPublicId,
+        fileName: resource.pdfFileName,
+        fileSize: resource.pdfFileSize,
+      });
+    } else {
+      setPdfMetadata(undefined);
+    }
     setTimeout(() => {
       resourceFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
@@ -108,6 +127,7 @@ export default function ResourceManagement() {
   const handleCancelResourceEdit = () => {
     setEditingResource(null);
     setResourceImagePreview(null);
+    setPdfMetadata(undefined);
     if (resourceFormElementRef.current) {
       resourceFormElementRef.current.reset();
     }
@@ -116,6 +136,7 @@ export default function ResourceManagement() {
   const handleNewResource = () => {
     setEditingResource(null);
     setResourceImagePreview(null);
+    setPdfMetadata(undefined);
     if (resourceFormElementRef.current) {
       resourceFormElementRef.current.reset();
     }
@@ -124,12 +145,33 @@ export default function ResourceManagement() {
     }, 100);
   };
 
+  // Filter and search resources
+  const filteredResources = resources.filter((resource) => {
+    // Apply PDF filter
+    if (filterPDF === "with-pdf" && !resource.pdfUrl) return false;
+    if (filterPDF === "without-pdf" && resource.pdfUrl) return false;
+
+    // Apply search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        resource.title.toLowerCase().includes(query) ||
+        resource.description.toLowerCase().includes(query) ||
+        resource.category.toLowerCase().includes(query) ||
+        resource.type.toLowerCase().includes(query) ||
+        (resource.pdfFileName && resource.pdfFileName.toLowerCase().includes(query))
+      );
+    }
+
+    return true;
+  });
+
   return (
     <div className="space-y-12">
       {/* Manage Resources Section */}
       <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
         <CardHeader className="p-12 border-b border-gray-50">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-3xl font-black text-[#023047] mb-2">Manage Resources</h3>
               <p className="text-gray-400">View, edit, and delete learning resources</p>
@@ -142,6 +184,28 @@ export default function ResourceManagement() {
               Add Resource
             </Button>
           </div>
+
+          {/* Search and Filter Controls */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <Input
+                type="text"
+                placeholder="Search resources by title, description, category, or PDF filename..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-12 bg-gray-50 border-0 rounded-xl"
+              />
+            </div>
+            <select
+              value={filterPDF}
+              onChange={(e) => setFilterPDF(e.target.value as "all" | "with-pdf" | "without-pdf")}
+              className="h-12 px-4 bg-gray-50 border-0 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-[#219EBC] outline-none"
+            >
+              <option value="all">All Resources</option>
+              <option value="with-pdf">With PDF</option>
+              <option value="without-pdf">Without PDF</option>
+            </select>
+          </div>
         </CardHeader>
         <CardContent className="p-12">
           {loadingResources ? (
@@ -149,15 +213,21 @@ export default function ResourceManagement() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
               <p className="text-gray-600">Loading resources...</p>
             </div>
-          ) : resources.length === 0 ? (
+          ) : filteredResources.length === 0 ? (
             <div className="text-center py-12">
               <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-400 text-lg font-bold">No resources yet</p>
-              <p className="text-gray-400 text-sm mt-2">Add your first learning resource to get started</p>
+              <p className="text-gray-400 text-lg font-bold">
+                {searchQuery || filterPDF !== "all" ? "No resources found" : "No resources yet"}
+              </p>
+              <p className="text-gray-400 text-sm mt-2">
+                {searchQuery || filterPDF !== "all" 
+                  ? "Try adjusting your search or filter" 
+                  : "Add your first learning resource to get started"}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {resources.map((resource) => (
+              {filteredResources.map((resource) => (
                 <div 
                   key={resource.id} 
                   className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#219EBC]/20 hover:-translate-y-1"
@@ -193,6 +263,12 @@ export default function ResourceManagement() {
                       <Badge className="bg-purple-50 text-purple-600 border-0 font-bold text-xs transition-all hover:bg-purple-100">
                         {resource.category}
                       </Badge>
+                      {resource.pdfUrl && (
+                        <Badge className="bg-red-50 text-red-600 border-0 font-bold text-xs transition-all hover:bg-red-100 flex items-center gap-1">
+                          <FileText className="w-3 h-3" />
+                          PDF
+                        </Badge>
+                      )}
                     </div>
                     
                     {/* Access Count */}
@@ -254,6 +330,13 @@ export default function ResourceManagement() {
               const form = e.currentTarget;
               const formData = new FormData(form);
               
+              // Validate that at least URL or PDF is provided
+              const url = formData.get('url') as string;
+              if (!url && !pdfMetadata) {
+                toast.error("Please provide either a URL or upload a PDF file");
+                return;
+              }
+
               setLoadingResources(true);
               
               try {
@@ -262,8 +345,13 @@ export default function ResourceManagement() {
                   description: formData.get('description') as string,
                   category: formData.get('category') as string,
                   type: formData.get('type') as string,
-                  url: formData.get('url') as string,
+                  url: url || undefined,
                   imageUrl: (formData.get('imageUrl') as string) || undefined,
+                  // Include PDF metadata if available
+                  pdfUrl: pdfMetadata?.url,
+                  pdfPublicId: pdfMetadata?.publicId,
+                  pdfFileName: pdfMetadata?.fileName,
+                  pdfFileSize: pdfMetadata?.fileSize,
                 };
 
                 const csrfToken = await getCSRFToken();
@@ -292,6 +380,7 @@ export default function ResourceManagement() {
                     form.reset();
                   }
                   setResourceImagePreview(null);
+                  setPdfMetadata(undefined);
                   setEditingResource(null);
                   fetchResources();
                 } else {
@@ -387,16 +476,36 @@ export default function ResourceManagement() {
               </div>
 
               <div className="space-y-3">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Resource URL *</label>
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                  Resource URL {!pdfMetadata && <span className="text-red-500">*</span>}
+                </label>
                 <Input 
                   name="url" 
                   type="url"
-                  required 
+                  required={!pdfMetadata}
                   placeholder="e.g., https://example.com/resource" 
                   className="h-14 bg-gray-50 border-0 rounded-2xl"
                   defaultValue={editingResource?.url || ''}
                 />
+                <p className="text-xs text-gray-500 ml-1">
+                  {pdfMetadata 
+                    ? "Optional when PDF is uploaded" 
+                    : "Required if no PDF is uploaded"}
+                </p>
               </div>
+
+              {/* PDF Upload Field */}
+              <PDFUploadField
+                onUploadComplete={(metadata) => {
+                  setPdfMetadata(metadata);
+                  toast.success("PDF uploaded successfully!");
+                }}
+                onUploadError={(error) => {
+                  toast.error(error);
+                }}
+                existingPDF={pdfMetadata}
+                disabled={loadingResources}
+              />
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Resource Image</label>

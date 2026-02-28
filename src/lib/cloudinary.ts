@@ -48,3 +48,83 @@ export async function uploadImageToCloudinary(
     throw new Error('Failed to upload image to Cloudinary');
   }
 }
+
+// Helper function to upload PDF from base64
+export async function uploadPDFToCloudinary(
+  base64PDF: string,
+  fileName: string,
+  folder: string = 'velonx/resources/pdfs'
+): Promise<{ url: string; publicId: string }> {
+  try {
+    console.log('[Cloudinary] Starting PDF upload...');
+    console.log('[Cloudinary] Config check:', {
+      hasCloudName: !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      hasApiKey: !!process.env.CLOUDINARY_API_KEY,
+      hasApiSecret: !!process.env.CLOUDINARY_API_SECRET,
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    });
+    
+    const result = await cloudinary.uploader.upload(base64PDF, {
+      folder,
+      resource_type: 'raw',
+      public_id: fileName.replace(/\.pdf$/i, ''), // Remove .pdf extension if present
+      use_filename: true,
+      unique_filename: true,
+    });
+    
+    console.log('[Cloudinary] Upload successful:', {
+      publicId: result.public_id,
+      url: result.secure_url,
+    });
+    
+    return {
+      url: result.secure_url,
+      publicId: result.public_id,
+    };
+  } catch (error) {
+    console.error('[Cloudinary] PDF upload error:', error);
+    console.error('[Cloudinary] Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace',
+    });
+    throw new Error('Failed to upload PDF to Cloudinary');
+  }
+}
+
+// Helper function to delete PDF from Cloudinary
+export async function deletePDFFromCloudinary(
+  publicId: string
+): Promise<void> {
+  try {
+    await cloudinary.uploader.destroy(publicId, {
+      resource_type: 'raw',
+    });
+  } catch (error) {
+    // Log error but don't throw - graceful degradation
+    console.error('Cloudinary PDF deletion error:', error);
+    // We log but don't throw to prevent blocking resource deletion
+    // Orphaned files can be cleaned up by a background job
+  }
+}
+
+// Helper function to generate signed URL for secure PDF access
+export function generateSignedCloudinaryUrl(
+  publicId: string,
+  expiresIn: number = 3600
+): string {
+  try {
+    // Calculate expiration timestamp (current time + expiresIn seconds)
+    const expirationTimestamp = Math.floor(Date.now() / 1000) + expiresIn;
+
+    // Generate signed URL using Cloudinary's utils
+    const signedUrl = cloudinary.utils.private_download_url(publicId, 'raw', {
+      expires_at: expirationTimestamp,
+      attachment: false, // Set to true to force download
+    });
+
+    return signedUrl;
+  } catch (error) {
+    console.error('Cloudinary signed URL generation error:', error);
+    throw new Error('Failed to generate signed URL for PDF access');
+  }
+}

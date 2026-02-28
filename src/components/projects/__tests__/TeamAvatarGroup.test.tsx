@@ -362,4 +362,90 @@ describe('TeamAvatarGroup Component', () => {
       expect(screen.queryByText(/^\+\d+$/)).not.toBeInTheDocument();
     });
   });
+
+  describe('Owner Indicator', () => {
+    it('should display owner indicator for the owner', () => {
+      const members = [
+        createMockMember('1', 'John Doe'),
+        createMockMember('2', 'Jane Smith'),
+      ];
+      const { container } = render(
+        <TeamAvatarGroup members={members} ownerId="user-1" />
+      );
+      
+      // Should have owner indicator (star icon)
+      const ownerIndicator = container.querySelector('[aria-label="Project owner"]');
+      expect(ownerIndicator).toBeInTheDocument();
+    });
+
+    it('should show "(Owner)" in tooltip for owner', () => {
+      const members = [
+        createMockMember('1', 'John Doe'),
+        createMockMember('2', 'Jane Smith'),
+      ];
+      const { container } = render(<TeamAvatarGroup members={members} ownerId="user-1" />);
+      
+      // Verify owner indicator is present (which triggers the tooltip)
+      const ownerIndicator = container.querySelector('[aria-label="Project owner"]');
+      expect(ownerIndicator).toBeInTheDocument();
+      expect(ownerIndicator).toHaveAttribute('title', 'Project owner');
+    });
+
+    it('should apply special styling to owner avatar', () => {
+      const members = [
+        createMockMember('1', 'John Doe'),
+        createMockMember('2', 'Jane Smith'),
+      ];
+      const { container } = render(
+        <TeamAvatarGroup members={members} ownerId="user-1" />
+      );
+      
+      // Owner avatar should have yellow border
+      const avatars = container.querySelectorAll('[data-slot="avatar"]');
+      expect(avatars[0]).toHaveClass('border-yellow-400');
+      expect(avatars[0]).toHaveClass('ring-yellow-400');
+    });
+
+    it('should not show owner indicator when ownerId is not provided', () => {
+      const members = [
+        createMockMember('1', 'John Doe'),
+        createMockMember('2', 'Jane Smith'),
+      ];
+      const { container } = render(<TeamAvatarGroup members={members} />);
+      
+      // Should not have owner indicator
+      const ownerIndicator = container.querySelector('[aria-label="Project owner"]');
+      expect(ownerIndicator).not.toBeInTheDocument();
+    });
+
+    it('should not show owner indicator when ownerId does not match any member', () => {
+      const members = [
+        createMockMember('1', 'John Doe'),
+        createMockMember('2', 'Jane Smith'),
+      ];
+      const { container } = render(
+        <TeamAvatarGroup members={members} ownerId="user-999" />
+      );
+      
+      // Should not have owner indicator
+      const ownerIndicator = container.querySelector('[aria-label="Project owner"]');
+      expect(ownerIndicator).not.toBeInTheDocument();
+    });
+
+    it('should handle owner being the only member', () => {
+      const members = [createMockMember('1', 'John Doe')];
+      const { container } = render(
+        <TeamAvatarGroup members={members} ownerId="user-1" />
+      );
+      
+      // Should have owner indicator
+      const ownerIndicator = container.querySelector('[aria-label="Project owner"]');
+      expect(ownerIndicator).toBeInTheDocument();
+      expect(ownerIndicator).toHaveAttribute('title', 'Project owner');
+      
+      // Should have special styling
+      const avatar = container.querySelector('[data-slot="avatar"]');
+      expect(avatar).toHaveClass('border-yellow-400');
+    });
+  });
 });

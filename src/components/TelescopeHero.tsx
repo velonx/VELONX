@@ -89,13 +89,6 @@ export const TelescopeHero = () => {
                     </Link>
                 </div>
             </div>
-
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 animate-bounce text-muted-foreground/50">
-                <div className="w-6 h-10 border-2 border-current rounded-full flex justify-center p-1">
-                    <div className="w-1.5 h-1.5 bg-current rounded-full" />
-                </div>
-            </div>
         </section>
     );
 };

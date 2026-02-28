@@ -10,6 +10,7 @@ import { Calendar, Edit, Trash2, Users, MapPin, Clock, Plus, X, Download, XCircl
 import toast from "react-hot-toast";
 import { eventsApi } from "@/lib/api/client";
 import type { Event } from "@/lib/api/types";
+import { secureFetch } from "@/lib/utils/csrf";
 
 export default function EventManagement() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -38,11 +39,17 @@ export default function EventManagement() {
     setLoading(true);
     try {
       const response = await eventsApi.list({ pageSize: 100 });
-      if (response.success && response.data) {
-        setEvents(response.data);
+      // The API returns { success, data: { events, pagination, filters } }
+      // But the type says data: T[], so we need to handle both cases
+      const eventsData = (response.data as any).events || response.data;
+      if (response.success && Array.isArray(eventsData)) {
+        setEvents(eventsData);
+      } else {
+        setEvents([]);
       }
     } catch (error) {
       toast.error("Failed to load events");
+      setEvents([]);
     } finally {
       setLoading(false);
     }
@@ -353,7 +360,7 @@ export default function EventManagement() {
                                 try {
                                   const base64Image = reader.result as string;
                                   
-                                  const response = await fetch('/api/upload', {
+                                  const response = await secureFetch('/api/upload', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ 
@@ -439,7 +446,7 @@ export default function EventManagement() {
             </div>
           ) : (
             <div className="space-y-4">
-              {events.map((event) => (
+              {Array.isArray(events) && events.map((event) => (
                 <div
                   key={event.id}
                   className="bg-muted/30 p-6 rounded-2xl border border-border hover:border-primary/30 transition-all"
