@@ -10,6 +10,7 @@ import { OrganizationSchema } from "@/components/structured-data";
 import { FlipText } from "@/components/ui/flip-text";
 import { Carousel3 } from "@/components/Carousel3";
 import { TelescopeHero } from "@/components/TelescopeHero";
+import { ParallaxGallery } from "@/components/ParallaxGallery";
 import "./tech-background.css";
 
 export default function Home() {
@@ -116,18 +117,19 @@ export default function Home() {
                 </section>
             </ScrollReveal>
 
-            {/* Community Showcase Section - Carousel */}
-            <div className="w-full py-16 sm:py-20 md:py-24 lg:py-28 bg-gradient-to-b from-background via-[#1a1a2e] to-background overflow-hidden">
-                <Carousel3
+            {/* Community Showcase — Horizontal Parallax Gallery */}
+            <div className="w-full py-12 bg-background overflow-hidden">
+                <ParallaxGallery
                     title="Community Showcase"
                     description="Discover amazing projects built by our talented community members"
-                    type="showcase"
                     slides={[
                         { name: "KeyRacer", src: "https://images.unsplash.com/photo-1524492707947-54b025f190d7?q=80&w=2070&auto=format&fit=crop" },
                         { name: "AI Code Assistant", src: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop" },
                         { name: "HealthTrack", src: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop" },
                         { name: "DesignHub", src: "https://images.unsplash.com/photo-1513519107127-1bed33748e4c?q=80&w=2070&auto=format&fit=crop" },
                         { name: "EcoTracker", src: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2070&auto=format&fit=crop" },
+                        { name: "DevConnect", src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=2070&auto=format&fit=crop" },
+                        { name: "StudyFlow", src: "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?q=80&w=2070&auto=format&fit=crop" },
                     ]}
                 />
             </div>

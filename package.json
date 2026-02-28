@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "NODE_OPTIONS='--max-old-space-size=4096' node server.js",
     "dev:next": "next dev",
-    "dev:legacy": "NODE_OPTIONS='--openssl-legacy-provider' node server.js",
+    "dev:legacy": "NODE_OPTIONS='--openssl-legacy-provider --max-old-space-size=4096' node server.js",
     "build": "next build",
     "postbuild": "next-sitemap",
     "build:analyze": "ANALYZE=true next build",

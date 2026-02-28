@@ -38,7 +38,7 @@ export const TelescopeHero = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} className="hero-section relative overflow-hidden flex items-center justify-center min-h-screen">
+        <section ref={sectionRef} className="hero-section relative overflow-hidden flex items-start justify-center min-h-screen">
             {/* Base background colour fallback */}
             <div className="absolute inset-0 z-0 bg-background" />
 
@@ -66,45 +66,23 @@ export const TelescopeHero = () => {
             {/* Content Layer */}
             <div
                 ref={contentRef}
-                className="relative z-10 w-full max-w-6xl mx-auto px-4 text-center opacity-0 translate-y-20"
+                className="relative z-10 w-full max-w-6xl mx-auto px-4 text-center opacity-0 translate-y-20 pt-24"
             >
-                <div className="inline-block mb-6">
-                    <span className="text-foreground/80 text-xs sm:text-sm font-bold uppercase tracking-[0.2em] px-4 py-2 bg-foreground/5 backdrop-blur-sm rounded-full border border-foreground/10">
-                        Welcome to Velonx
-                    </span>
-                </div>
-
-                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-[1.1] text-foreground mb-8" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700 }}>
-                    Empowering the Next Generation of{" "}
-                    <div className="block mt-2">
-                        <FlipText
-                            words={["Innovators", "Developers", "Creators", "Builders", "Leaders"]}
-                            className="text-primary inline-block"
-                            duration={2500}
-                        />
-                    </div>
+                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-[1.1] text-foreground mb-8" style={{ fontFamily: "var(--font-girassol), serif", fontWeight: 400 }}>
+                    Empowering the Gen
                 </h1>
 
                 <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-12" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>
                     Join a thriving community where students and tech enthusiasts transform their potential into impact. Connect with expert mentors, build real projects, and launch your dream career.
                 </p>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link href="/auth/signup" className="w-full sm:w-auto">
+                <div className="flex items-center justify-center">
+                    <Link href="/auth/signup">
                         <button
-                            className="w-full sm:w-auto touch-target bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full px-10 py-5 text-lg flex items-center justify-center gap-2 transition-all shadow-xl hover:scale-105 active:scale-95"
+                            className="touch-target bg-white/90 hover:bg-white text-gray-900 font-semibold rounded-full px-10 py-5 text-lg flex items-center justify-center gap-2 transition-all shadow-xl hover:scale-105 active:scale-95 backdrop-blur-sm border border-white/30"
                             style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 600 }}
                         >
                             Start Your Journey <ArrowRight className="w-5 h-5" />
-                        </button>
-                    </Link>
-
-                    <Link href="/community" className="w-full sm:w-auto">
-                        <button
-                            className="w-full sm:w-auto touch-target bg-transparent hover:bg-foreground/5 text-foreground font-semibold rounded-full px-10 py-5 text-lg flex items-center justify-center gap-2 transition-all border border-foreground/20"
-                            style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 600 }}
-                        >
-                            Explore Community
                         </button>
                     </Link>
                 </div>
