@@ -46,6 +46,7 @@ export default function ChatInput({
   // Handle typing indicator
   useEffect(() => {
     if (message.trim() && !isTyping) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsTyping(true);
       onTyping?.(true);
     }
@@ -77,7 +78,7 @@ export default function ChatInput({
       setMessage("");
       setIsTyping(false);
       onTyping?.(false);
-      
+
       // Reset textarea height
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';

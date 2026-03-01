@@ -296,7 +296,10 @@ export default function CareerPage() {
                                                         <CardDescription className="text-muted-foreground font-medium">{internship.company}</CardDescription>
                                                     </div>
                                                     {internship.imageUrl && (
-                                                        <img src={internship.imageUrl} alt={internship.company} className="w-12 h-12 rounded-lg object-cover" />
+                                                        <>
+                                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                            <img src={internship.imageUrl} alt={internship.company} className="w-12 h-12 rounded-lg object-cover" />
+                                                        </>
                                                     )}
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mt-3">
@@ -361,7 +364,10 @@ export default function CareerPage() {
                                                         <CardDescription className="text-muted-foreground font-medium">{job.company}</CardDescription>
                                                     </div>
                                                     {job.imageUrl && (
-                                                        <img src={job.imageUrl} alt={job.company} className="w-12 h-12 rounded-lg object-cover" />
+                                                        <>
+                                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                            <img src={job.imageUrl} alt={job.company} className="w-12 h-12 rounded-lg object-cover" />
+                                                        </>
                                                     )}
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mt-3">

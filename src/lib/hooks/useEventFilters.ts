@@ -52,13 +52,13 @@ export function useEventFilters(): UseEventFiltersReturn {
   // Initialize filters from URL on mount, with session storage fallback
   const [filters, setFilters] = useState<EventFilterState>(() => {
     const urlFilters = parseFiltersFromURL(searchParams);
-    
+
     // If URL has filters, use them; otherwise try session storage
     const hasUrlFilters = searchParams.toString().length > 0;
     if (hasUrlFilters) {
       return urlFilters;
     }
-    
+
     // Try to load from session storage
     const defaultFilters: EventFilterState = {
       search: undefined,
@@ -70,7 +70,7 @@ export function useEventFilters(): UseEventFiltersReturn {
       page: 1,
       pageSize: 12,
     };
-    
+
     return loadEventFilterPreference(defaultFilters);
   });
 
@@ -78,8 +78,10 @@ export function useEventFilters(): UseEventFiltersReturn {
   useEffect(() => {
     const urlFilters = parseFiltersFromURL(searchParams);
     if (!areFiltersEqual(filters, urlFilters)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFilters(urlFilters);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]); // Only depend on searchParams, not filters to avoid loops
 
   // Update URL and session storage when filters change
@@ -87,7 +89,7 @@ export function useEventFilters(): UseEventFiltersReturn {
     const params = serializeFiltersToURL(filters);
     const queryString = params.toString();
     const currentUrl = searchParams.toString();
-    
+
     // Only update if URL actually changed
     if (currentUrl !== queryString) {
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname;

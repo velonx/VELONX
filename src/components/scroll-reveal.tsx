@@ -29,13 +29,14 @@ export function ScrollReveal({ children, className = "", delay = 0 }: ScrollReve
             }
         );
 
-        if (ref.current) {
-            observer.observe(ref.current);
+        const node = ref.current;
+        if (node) {
+            observer.observe(node);
         }
 
         return () => {
-            if (ref.current) {
-                observer.unobserve(ref.current);
+            if (node) {
+                observer.unobserve(node);
             }
         };
     }, [delay]);
@@ -44,8 +45,8 @@ export function ScrollReveal({ children, className = "", delay = 0 }: ScrollReve
         <div
             ref={ref}
             className={`transition-all duration-1000 ease-out ${isVisible
-                    ? "opacity-100 translate-y-0 scale-100"
-                    : "opacity-0 translate-y-16 scale-95"
+                ? "opacity-100 translate-y-0 scale-100"
+                : "opacity-0 translate-y-16 scale-95"
                 } ${className}`}
         >
             {children}
@@ -71,13 +72,14 @@ export function useScrollReveal() {
             }
         );
 
-        if (ref.current) {
-            observer.observe(ref.current);
+        const node = ref.current;
+        if (node) {
+            observer.observe(node);
         }
 
         return () => {
-            if (ref.current) {
-                observer.unobserve(ref.current);
+            if (node) {
+                observer.unobserve(node);
             }
         };
     }, []);

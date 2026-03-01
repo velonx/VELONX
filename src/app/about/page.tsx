@@ -103,6 +103,7 @@ export default function AboutPage() {
                     <div className="grid md:grid-cols-2 gap-16 items-center">
                         <div className="relative">
                             <div className="aspect-square bg-gray-100 rounded-[64px] overflow-hidden shadow-2xl">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80"
                                     alt="Team collaboration"

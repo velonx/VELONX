@@ -59,9 +59,9 @@ export function CustomStyledSkeletonExample() {
   return (
     <div className="p-6 bg-[#0a0f1e] min-h-screen">
       <h2 className="text-white text-2xl font-bold mb-6">Custom Styled Loading</h2>
-      <EventCardSkeletonLoader 
-        count={3} 
-        className="max-w-6xl mx-auto" 
+      <EventCardSkeletonLoader
+        count={3}
+        className="max-w-6xl mx-auto"
       />
     </div>
   );
@@ -73,7 +73,7 @@ export function CustomStyledSkeletonExample() {
  */
 export function ConditionalLoadingExample() {
   const [isLoading, setIsLoading] = React.useState(true);
-  const [events, setEvents] = React.useState([]);
+  const [events, setEvents] = React.useState<{ id: string; title: string }[]>([]);
 
   React.useEffect(() => {
     // Simulate API call
@@ -94,7 +94,7 @@ export function ConditionalLoadingExample() {
       <h2 className="text-white text-2xl font-bold mb-6">
         Conditional Loading State
       </h2>
-      
+
       {isLoading ? (
         <EventCardSkeletonLoader count={3} />
       ) : (
@@ -183,7 +183,7 @@ export function AccessibilityExample() {
 }
 
 // Export all examples for Storybook or documentation
-export default {
+const EventCardSkeletonExamples = {
   SingleSkeletonExample,
   GridSkeletonDefaultExample,
   GridSkeletonCustomCountExample,
@@ -193,3 +193,5 @@ export default {
   ResponsiveGridExample,
   AccessibilityExample,
 };
+
+export default EventCardSkeletonExamples;

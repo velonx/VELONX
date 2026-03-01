@@ -35,6 +35,7 @@ export function ModerationLogs({ roomId, groupId, limit = 50 }: ModerationLogsPr
 
   useEffect(() => {
     fetchLogs()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, groupId, limit])
 
   const fetchLogs = async () => {

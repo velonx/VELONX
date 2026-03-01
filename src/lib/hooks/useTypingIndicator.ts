@@ -63,19 +63,21 @@ export function useTypingIndicator(
   sendMessage?: (message: any) => void
 ): UseTypingIndicatorReturn {
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
-  
+
   const typingTimeoutsRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
   const lastTypingStatusRef = useRef<boolean>(false);
   const typingThrottleRef = useRef<NodeJS.Timeout | null>(null);
+  const sendTypingStatusRef = useRef<((isTyping: boolean) => void) | null>(null);
 
   /**
    * Cleanup timeouts on unmount
    */
   useEffect(() => {
+    const timeouts = typingTimeoutsRef.current;
     return () => {
-      typingTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
-      typingTimeoutsRef.current.clear();
-      
+      timeouts.forEach(timeout => clearTimeout(timeout));
+      timeouts.clear();
+
       if (typingThrottleRef.current) {
         clearTimeout(typingThrottleRef.current);
       }
@@ -87,15 +89,15 @@ export function useTypingIndicator(
    */
   const sendTypingStatus = useCallback((isTyping: boolean) => {
     if (!sendMessage || (!roomId && !groupId)) return;
-    
+
     // Don't send duplicate status
     if (lastTypingStatusRef.current === isTyping) return;
-    
+
     // Throttle typing status updates (max once per second)
     if (typingThrottleRef.current) return;
-    
+
     lastTypingStatusRef.current = isTyping;
-    
+
     sendMessage({
       type: 'TYPING',
       payload: {
@@ -104,35 +106,37 @@ export function useTypingIndicator(
         isTyping,
       },
     });
-    
+
     // Set throttle timeout
     typingThrottleRef.current = setTimeout(() => {
       typingThrottleRef.current = null;
     }, 1000);
-    
+
     // Auto-stop typing after timeout
     if (isTyping) {
       setTimeout(() => {
-        if (lastTypingStatusRef.current) {
-          sendTypingStatus(false);
+        if (lastTypingStatusRef.current && sendTypingStatusRef.current) {
+          sendTypingStatusRef.current(false);
         }
       }, TYPING_TIMEOUT);
     }
   }, [roomId, groupId, sendMessage]);
+
+  sendTypingStatusRef.current = sendTypingStatus;
 
   /**
    * Handle incoming typing message
    */
   const handleTypingMessage = useCallback((payload: TypingPayload) => {
     const { userId, userName, isTyping } = payload;
-    
+
     // Clear existing timeout for this user
     const existingTimeout = typingTimeoutsRef.current.get(userId);
     if (existingTimeout) {
       clearTimeout(existingTimeout);
       typingTimeoutsRef.current.delete(userId);
     }
-    
+
     if (isTyping) {
       // Add user to typing list
       setTypingUsers(prev => {
@@ -140,13 +144,13 @@ export function useTypingIndicator(
         if (exists) return prev;
         return [...prev, { userId, userName }];
       });
-      
+
       // Set timeout to remove user after TYPING_TIMEOUT
       const timeout = setTimeout(() => {
         setTypingUsers(prev => prev.filter(user => user.userId !== userId));
         typingTimeoutsRef.current.delete(userId);
       }, TYPING_TIMEOUT);
-      
+
       typingTimeoutsRef.current.set(userId, timeout);
     } else {
       // Remove user from typing list

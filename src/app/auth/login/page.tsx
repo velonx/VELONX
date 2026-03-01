@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -77,19 +78,23 @@ export default function LoginPage() {
             {/* Left Side — Theme-aware background image */}
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
                 {/* Background images — crossfade on theme change */}
-                <img
+                <Image
                     src="/login-light.jpeg"
                     alt=""
                     aria-hidden="true"
-                    className="login-bg-image"
+                    fill
+                    className="login-bg-image object-cover"
                     style={{ opacity: theme === "light" ? 1 : 0 }}
+                    priority
                 />
-                <img
+                <Image
                     src="/login-dark.jpeg"
                     alt=""
                     aria-hidden="true"
-                    className="login-bg-image"
+                    fill
+                    className="login-bg-image object-cover"
                     style={{ opacity: theme === "dark" ? 1 : 0 }}
+                    priority
                 />
 
                 {/* Gradient overlay so text stays readable */}

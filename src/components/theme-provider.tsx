@@ -16,6 +16,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
         // Get theme from localStorage or system preference
         const storedTheme = localStorage.getItem('theme') as Theme | null;
@@ -24,6 +25,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             : 'light';
 
         const initialTheme = storedTheme || systemTheme;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTheme(initialTheme);
 
         // Apply theme to document

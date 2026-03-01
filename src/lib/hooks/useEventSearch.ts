@@ -61,16 +61,16 @@ export interface UseEventSearchReturn {
  */
 export function useEventSearch(delay: number = 300): UseEventSearchReturn {
   const { filters, setSearch } = useEventFilters();
-  
+
   // Local state for immediate search input (not debounced)
   const [searchQuery, setSearchQueryState] = useState<string>(filters.search || '');
-  
+
   // Debounce the search query
   const debouncedQuery = useDebounce(searchQuery, delay);
-  
+
   // Track if we're currently debouncing (search query differs from debounced value)
   const isSearching = searchQuery !== debouncedQuery;
-  
+
   // Sync local state with filter state when filters change externally
   // (e.g., from URL navigation, browser back/forward)
   useEffect(() => {
@@ -78,23 +78,26 @@ export function useEventSearch(delay: number = 300): UseEventSearchReturn {
     if (filterSearch !== searchQuery && filterSearch === debouncedQuery) {
       // Only update if the filter search matches the debounced query
       // This prevents overwriting user input during typing
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchQueryState(filterSearch);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.search]); // Only depend on filters.search to avoid loops
-  
+
   // Update the filter state when debounced query changes
   useEffect(() => {
     // Only update if the debounced query is different from the current filter
     if (debouncedQuery !== (filters.search || '')) {
       setSearch(debouncedQuery);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedQuery, setSearch]); // filters.search intentionally omitted to avoid loops
-  
+
   // Wrapper for setSearchQuery to update local state
   const setSearchQuery = useCallback((query: string) => {
     setSearchQueryState(query);
   }, []);
-  
+
   return {
     searchQuery,
     setSearchQuery,

@@ -48,6 +48,7 @@ export function ResponsiveImage({
   // Intersection Observer for lazy loading
   useEffect(() => {
     if (priority || loading === "eager") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsInView(true);
       return;
     }

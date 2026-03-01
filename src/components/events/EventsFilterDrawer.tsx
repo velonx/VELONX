@@ -111,6 +111,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
   // Sync local filters with props when drawer opens
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalFilters({
         selectedTypes,
         dateRange,
@@ -182,15 +183,15 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
         onTypeToggle(type);
       }
     });
-    
+
     if (JSON.stringify(localFilters.dateRange) !== JSON.stringify(dateRange)) {
       onDateRangeChange(localFilters.dateRange);
     }
-    
+
     if (localFilters.availability !== availability) {
       onAvailabilityChange(localFilters.availability);
     }
-    
+
     if (localFilters.myEvents !== myEvents) {
       onMyEventsToggle(localFilters.myEvents);
     }

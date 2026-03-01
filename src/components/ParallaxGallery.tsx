@@ -31,6 +31,7 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<HTMLImageElement[]>([]);
     const rafRef = useRef<number | null>(null);
+    const renderRef = useRef<(() => void) | null>(null);
     const scrollRef = useRef({ current: 0, target: 0, ease: 0.07 });
     const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
 
@@ -60,8 +61,12 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
             containerRef.current.style.transform = `translateX(${-s.current}px)`;
         }
         applyParallax();
-        rafRef.current = requestAnimationFrame(render);
+        if (renderRef.current) {
+            rafRef.current = requestAnimationFrame(renderRef.current);
+        }
     }, [applyParallax, getLimit]);
+
+    renderRef.current = render;
 
     useEffect(() => {
         const wrapper = wrapperRef.current;

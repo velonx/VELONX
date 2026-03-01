@@ -120,21 +120,24 @@ export function SearchResults({
       }
     };
 
-    if (resultsRef.current) {
-      resultsRef.current.addEventListener('keydown', handleKeyDown);
+    const el = resultsRef.current;
+    if (el) {
+      el.addEventListener('keydown', handleKeyDown);
     }
 
     return () => {
-      if (resultsRef.current) {
-        resultsRef.current.removeEventListener('keydown', handleKeyDown);
+      if (el) {
+        el.removeEventListener('keydown', handleKeyDown);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusedIndex, filteredResults, onResultClick]);
 
   /**
    * Reset focused index when filter changes
    */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFocusedIndex(-1);
   }, [activeFilter]);
 

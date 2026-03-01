@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
@@ -43,21 +44,25 @@ export const TelescopeHero = () => {
             <div className="absolute inset-0 z-0 bg-background" />
 
             {/* Light-theme hero image */}
-            <img
+            <Image
                 src="/hero-light.jpeg"
                 alt=""
                 aria-hidden="true"
-                className="hero-bg-image"
+                fill
+                className="hero-bg-image object-cover"
                 style={{ opacity: theme === "light" ? 1 : 0 }}
+                priority
             />
 
             {/* Dark-theme hero image */}
-            <img
+            <Image
                 src="/hero-dark.jpeg"
                 alt=""
                 aria-hidden="true"
-                className="hero-bg-image"
+                fill
+                className="hero-bg-image object-cover"
                 style={{ opacity: theme === "dark" ? 1 : 0 }}
+                priority
             />
 
             {/* Subtle Gradient Overlay */}

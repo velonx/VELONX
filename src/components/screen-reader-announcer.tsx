@@ -17,13 +17,14 @@ export function ScreenReaderAnnouncer({ message, politeness = 'polite', clearAft
 
   useEffect(() => {
     if (message) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAnnouncement(message);
-      
+
       if (clearAfter > 0) {
         const timer = setTimeout(() => {
           setAnnouncement('');
         }, clearAfter);
-        
+
         return () => clearTimeout(timer);
       }
     }
@@ -52,7 +53,7 @@ export function useScreenReaderAnnouncer() {
   const announce = (text: string, level: 'polite' | 'assertive' = 'polite') => {
     setPoliteness(level);
     setMessage(text);
-    
+
     // Clear after announcement
     setTimeout(() => setMessage(''), 100);
   };

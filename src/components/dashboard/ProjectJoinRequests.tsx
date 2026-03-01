@@ -45,19 +45,19 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
       // Fetch projects owned by the user
       const projectsResponse = await fetch(`/api/projects?memberId=${userId}&pageSize=50`);
       const projectsData = await projectsResponse.json();
-      
+
       if (projectsData.success) {
         const ownedProjects = projectsData.data.filter((p: any) => p.ownerId === userId);
         setProjects(ownedProjects);
 
         // Fetch join requests for each owned project
         const requestsMap: Record<string, JoinRequest[]> = {};
-        
+
         for (const project of ownedProjects) {
           try {
             const requestsResponse = await fetch(`/api/projects/${project.id}/join-requests`);
             const requestsData = await requestsResponse.json();
-            
+
             if (requestsData.success) {
               requestsMap[project.id] = requestsData.data;
             }
@@ -65,7 +65,7 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
             console.error(`Failed to fetch requests for project ${project.id}:`, error);
           }
         }
-        
+
         setJoinRequests(requestsMap);
       }
     } catch (error) {
@@ -79,6 +79,7 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
     if (userId) {
       fetchProjectsAndRequests();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const handleApprove = async (requestId: string, userName: string, projectId: string) => {
@@ -228,9 +229,9 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
                 <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                   Pending Requests ({joinRequests[project.id]?.length || 0})
                 </p>
-                
+
                 {joinRequests[project.id]?.map((request) => (
-                  <div 
+                  <div
                     key={request.id}
                     className="bg-white rounded-xl p-4 hover:shadow-md transition-all border border-gray-100"
                   >

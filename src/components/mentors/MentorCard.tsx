@@ -6,6 +6,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Linkedin, Github, Twitter, MessageCircle, Star } from 'lucide-react';
 import type { Mentor } from '@/lib/api/types';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
@@ -61,18 +62,18 @@ export const MentorCard: React.FC<MentorCardProps> = ({
 }) => {
     const handleSocialClick = (config: SocialIconConfig) => {
         const url = config.getUrl(mentor);
-        
+
         // Handle special cases
         if (config.label === 'LinkedIn' && url) {
             onLinkedinClick(mentor.name);
             return;
         }
-        
+
         if (config.label === 'Message') {
             onBookSession(mentor);
             return;
         }
-        
+
         // Handle external social profile links
         if (url) {
             window.open(url, '_blank', 'noopener,noreferrer');
@@ -81,10 +82,13 @@ export const MentorCard: React.FC<MentorCardProps> = ({
 
     return (
         <div className="card-7">
-            <img
+            <Image
                 src={mentor.imageUrl || PLACEHOLDER_IMAGE}
                 alt={mentor.name}
+                width={200}
+                height={260}
                 loading="lazy"
+                style={{ objectFit: 'cover' }}
             />
             <div>
                 {/* Availability badge */}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Twitter, Linkedin, Github, Facebook, Share2 } from "lucide-react";
 
 export function Footer() {
@@ -9,7 +10,7 @@ export function Footer() {
                     {/* Brand */}
                     <div className="col-span-2 md:col-span-4">
                         <div className="flex items-center gap-2 mb-6">
-                            <img src="/logo.png" alt="Velonx" className="h-8 w-auto" />
+                            <Image src="/logo.png" alt="Velonx" width={32} height={32} className="h-8 w-auto" />
                             <span className="text-foreground font-outfit font-bold text-xl tracking-tight">Velonx</span>
                         </div>
                         <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mb-8">

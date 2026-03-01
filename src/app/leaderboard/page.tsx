@@ -32,7 +32,7 @@ export default function LeaderboardPage() {
     const { data: leaderboardData, loading } = useLeaderboard({ pageSize: 50 });
 
     // Extend leaderboard with avatars (use deterministic values based on index)
-     
+
     const EXTENDED_LEADERBOARD = leaderboardData?.map((user, index) => ({
         ...user,
         avatarSrc: user.image || AVATAR_OPTIONS[index % AVATAR_OPTIONS.length].src,
@@ -85,7 +85,7 @@ export default function LeaderboardPage() {
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
             <section className="relative py-12 bg-background overflow-hidden">
-                
+
                 <div className="container mx-auto px-4 text-center">
                     <div className="max-w-3xl mx-auto mb-12">
                         <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -128,11 +128,14 @@ export default function LeaderboardPage() {
                             <div className="relative mb-6">
                                 <div className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-[24px] overflow-hidden border-4 border-border/50 shadow-2xl bg-background p-2 group-hover:scale-105 transition-transform">
                                     {top3[1]?.avatarSrc ? (
-                                        <img
-                                            src={top3[1].avatarSrc}
-                                            alt={top3[1]?.name || 'User avatar'}
-                                            className="w-full h-full object-cover rounded-[18px]"
-                                        />
+                                        <>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={top3[1].avatarSrc}
+                                                alt={top3[1]?.name || 'User avatar'}
+                                                className="w-full h-full object-cover rounded-[18px]"
+                                            />
+                                        </>
                                     ) : (
                                         <div className="w-full h-full bg-gray-200 rounded-[18px] flex items-center justify-center">
                                             <span className="text-muted-foreground text-2xl">👤</span>
@@ -162,11 +165,14 @@ export default function LeaderboardPage() {
                                 </div>
                                 <div className="w-32 h-32 md:w-44 md:h-44 mx-auto rounded-[32px] overflow-hidden border-[6px] border-[#FFB703]/30 shadow-2xl shadow-[#FFB703]/20 bg-background p-2 group-hover:scale-110 transition-transform">
                                     {top3[0]?.avatarSrc ? (
-                                        <img
-                                            src={top3[0].avatarSrc}
-                                            alt={top3[0]?.name || 'User avatar'}
-                                            className="w-full h-full object-cover rounded-[24px]"
-                                        />
+                                        <>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={top3[0].avatarSrc}
+                                                alt={top3[0]?.name || 'User avatar'}
+                                                className="w-full h-full object-cover rounded-[24px]"
+                                            />
+                                        </>
                                     ) : (
                                         <div className="w-full h-full bg-gray-200 rounded-[24px] flex items-center justify-center">
                                             <span className="text-muted-foreground text-4xl">👤</span>
@@ -193,11 +199,14 @@ export default function LeaderboardPage() {
                             <div className="relative mb-6">
                                 <div className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-[24px] overflow-hidden border-4 border-[#F4A261]/30 shadow-2xl bg-background p-2 group-hover:scale-105 transition-transform">
                                     {top3[2]?.avatarSrc ? (
-                                        <img
-                                            src={top3[2].avatarSrc}
-                                            alt={top3[2]?.name || 'User avatar'}
-                                            className="w-full h-full object-cover rounded-[18px]"
-                                        />
+                                        <>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={top3[2].avatarSrc}
+                                                alt={top3[2]?.name || 'User avatar'}
+                                                className="w-full h-full object-cover rounded-[18px]"
+                                            />
+                                        </>
                                     ) : (
                                         <div className="w-full h-full bg-gray-200 rounded-[18px] flex items-center justify-center">
                                             <span className="text-muted-foreground text-2xl">👤</span>
@@ -271,6 +280,7 @@ export default function LeaderboardPage() {
                                             <div className="col-span-1 font-bold text-muted-foreground group-hover:text-[#219EBC]">{user.rank}</div>
                                             <div className="col-span-5 flex items-center gap-4">
                                                 <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-border group-hover:border-[#219EBC]/30 transition-colors">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                                     <img src={user.avatarSrc} alt={user.name || 'User'} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div>

@@ -59,15 +59,15 @@ export default function AdminDashboard() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState("management");
-    
+
     // Mentor management state
     const [mentorApplications, setMentorApplications] = useState<any[]>([]);
     const [loadingApplications, setLoadingApplications] = useState(false);
 
     // Fetch real data from API
-    const { data: userRequests, loading: requestsLoading, refetch: refetchRequests } = useUserRequests({ 
+    const { data: userRequests, loading: requestsLoading, refetch: refetchRequests } = useUserRequests({
         status: 'PENDING',
-        pageSize: 10 
+        pageSize: 10
     });
     const { data: platformStats, loading: statsLoading } = usePlatformStats();
 
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         if (status === "loading") return;
-        
+
         if (status === "unauthenticated") {
             router.push("/auth/login");
         } else if (status === "authenticated" && session?.user?.role !== "ADMIN") {
@@ -159,6 +159,7 @@ export default function AdminDashboard() {
                 <div className="mb-12">
                     <div className="relative inline-block mb-4">
                         <div className="w-20 h-20 rounded-full border-2 border-[#219EBC] p-1">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={session.user?.image || "/avatars/admin.png"} alt="Admin" className="w-full h-full rounded-full object-cover" />
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#219EBC] rounded-full flex items-center justify-center shadow-md">
@@ -225,8 +226,8 @@ export default function AdminDashboard() {
                         <AdminBookingApprovalPanel />
 
                         {/* User Management */}
-                        <UserManagement 
-                            userRequests={userRequests || []} 
+                        <UserManagement
+                            userRequests={userRequests || []}
                             onRefetch={refetchRequests}
                         />
 

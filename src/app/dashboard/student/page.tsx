@@ -108,13 +108,13 @@ function StudentDashboardContent() {
     }, [searchParams]);
 
     // Fetch projects based on status filter
-    const projectFilters = projectStatusFilter === 'ALL' 
-        ? { pageSize: 100 } 
+    const projectFilters = projectStatusFilter === 'ALL'
+        ? { pageSize: 100 }
         : { pageSize: 100, status: projectStatusFilter as 'IN_PROGRESS' | 'COMPLETED' };
 
     // Fetch real data from API
     const { data: projects, loading: projectsLoading } = useProjects(projectFilters);
-    
+
     // Fetch all projects for counts
     const { data: allProjects } = useProjects({ pageSize: 100 });
     const { data: inProgressProjects } = useProjects({ pageSize: 100, status: 'IN_PROGRESS' });
@@ -292,6 +292,7 @@ function StudentDashboardContent() {
                 <div className="mb-12">
                     <div className="relative inline-block mb-4">
                         <div className="w-20 h-20 rounded-full border-2 border-[#219EBC] p-1">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={session.user?.image || "/avatars/default.png"} alt="User" className="w-full h-full rounded-full object-cover" />
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-background rounded-full flex items-center justify-center shadow-md">
@@ -319,7 +320,8 @@ function StudentDashboardContent() {
                 </nav>
 
                 <div className="mt-auto relative">
-                    <img src="/dashboard-pattern.png" className="absolute bottom-0 left-0 w-full opacity-10" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/dashboard-pattern.png" alt="" className="absolute bottom-0 left-0 w-full opacity-10" />
                 </div>
             </aside>
 
@@ -329,6 +331,7 @@ function StudentDashboardContent() {
                 <div className="md:hidden mb-6 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={session.user?.image || "/avatars/default.png"} alt="User" className="w-full h-full rounded-full object-cover" />
                         </div>
                         <div>
@@ -361,67 +364,61 @@ function StudentDashboardContent() {
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-2xl font-black text-[#023047]">My Projects</h2>
                             </div>
-                            
+
                             {/* Status Tabs */}
                             <div className="flex flex-wrap gap-3 mb-6">
                                 <button
                                     onClick={() => handleProjectStatusChange('ALL')}
-                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${
-                                        projectStatusFilter === 'ALL'
+                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'ALL'
                                             ? 'bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30'
                                             : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="flex items-center gap-2">
                                         <FolderOpen className="w-4 h-4" />
                                         <span>All Projects</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                                            projectStatusFilter === 'ALL' 
-                                                ? 'bg-white/20 text-white' 
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'ALL'
+                                                ? 'bg-white/20 text-white'
                                                 : 'bg-background text-foreground'
-                                        }`}>
+                                            }`}>
                                             {projectCounts.all}
                                         </span>
                                     </div>
                                 </button>
-                                
+
                                 <button
                                     onClick={() => handleProjectStatusChange('IN_PROGRESS')}
-                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${
-                                        projectStatusFilter === 'IN_PROGRESS'
+                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'IN_PROGRESS'
                                             ? 'bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30'
                                             : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="flex items-center gap-2">
                                         <Loader2 className="w-4 h-4" />
                                         <span>In Progress</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                                            projectStatusFilter === 'IN_PROGRESS' 
-                                                ? 'bg-white/20 text-white' 
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'IN_PROGRESS'
+                                                ? 'bg-white/20 text-white'
                                                 : 'bg-background text-foreground'
-                                        }`}>
+                                            }`}>
                                             {projectCounts.inProgress}
                                         </span>
                                     </div>
                                 </button>
-                                
+
                                 <button
                                     onClick={() => handleProjectStatusChange('COMPLETED')}
-                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${
-                                        projectStatusFilter === 'COMPLETED'
+                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'COMPLETED'
                                             ? 'bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30'
                                             : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="flex items-center gap-2">
                                         <CheckCircle2 className="w-4 h-4" />
                                         <span>Completed</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                                            projectStatusFilter === 'COMPLETED' 
-                                                ? 'bg-white/20 text-white' 
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'COMPLETED'
+                                                ? 'bg-white/20 text-white'
                                                 : 'bg-background text-foreground'
-                                        }`}>
+                                            }`}>
                                             {projectCounts.completed}
                                         </span>
                                     </div>

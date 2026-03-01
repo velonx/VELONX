@@ -29,6 +29,7 @@ export function UnreadCountBadge({ className = "", onCountChange }: UnreadCountB
 
   useEffect(() => {
     fetchUnreadCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Expose refetch function globally for other components to trigger updates
@@ -41,6 +42,7 @@ export function UnreadCountBadge({ className = "", onCountChange }: UnreadCountB
         delete (window as any).refetchUnreadCount;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const displayCount = unreadCount > 99 ? "99+" : unreadCount.toString();

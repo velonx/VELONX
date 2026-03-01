@@ -44,7 +44,7 @@ export default function BlogPage() {
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
             <section className="py-20 bg-background overflow-hidden relative">
-                
+
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -111,7 +111,7 @@ export default function BlogPage() {
                     {blogPosts && blogPosts.length > 0 ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
                             {blogPosts
-                                .filter(post => 
+                                .filter(post =>
                                     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                     post.content.toLowerCase().includes(searchQuery.toLowerCase())
                                 )
@@ -126,6 +126,7 @@ export default function BlogPage() {
                                         <Card className="group h-full border-0 rounded-[48px] overflow-hidden bg-background shadow-2xl shadow-black/[0.03] hover:shadow-black/[0.08] transition-all duration-500 hover:-translate-y-2">
                                             <div className="aspect-[16/10] overflow-hidden relative bg-gradient-to-br from-[#219EBC] to-[#023047]">
                                                 {post.imageUrl ? (
+                                                    // eslint-disable-next-line @next/next/no-img-element
                                                     <img
                                                         src={post.imageUrl}
                                                         alt={post.title}
@@ -172,7 +173,7 @@ export default function BlogPage() {
                                                         <p className="text-[10px] font-bold text-muted-foreground tracking-wider">AUTHOR</p>
                                                     </div>
                                                 </div>
-                                                <button 
+                                                <button
                                                     onClick={() => handleReadMore(post)}
                                                     className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
                                                 >
@@ -217,7 +218,7 @@ export default function BlogPage() {
                                     />
                                 </div>
                             )}
-                            
+
                             {/* Content */}
                             <div className="p-12">
                                 {/* Tags */}
@@ -242,10 +243,10 @@ export default function BlogPage() {
                                 <div className="flex items-center gap-6 text-sm font-bold text-muted-foreground uppercase tracking-widest mb-8 pb-8 border-b border-border">
                                     <span className="flex items-center gap-2">
                                         <Calendar className="w-4 h-4" />
-                                        {new Date(selectedBlog.publishedAt || selectedBlog.createdAt).toLocaleDateString('en-US', { 
-                                            year: 'numeric', 
-                                            month: 'long', 
-                                            day: 'numeric' 
+                                        {new Date(selectedBlog.publishedAt || selectedBlog.createdAt).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
                                         })}
                                     </span>
                                     <span className="flex items-center gap-2">

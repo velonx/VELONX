@@ -96,8 +96,9 @@ export default function EventDetailsModal({
     if (isOpen && event) {
       const attendeeCount = event._count?.attendees || 0;
       const status = computeRegistrationStatus(event, attendeeCount);
-      
+
       if (isRegistered) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setStatusAnnouncement('You are registered for this event.');
       } else if (!status.isOpen) {
         setStatusAnnouncement(`Registration closed. ${status.message}`);
@@ -110,10 +111,12 @@ export default function EventDetailsModal({
   }, [isOpen, event, isRegistered]);
 
   // Fetch attendees when modal opens (admin only)
-   
+
   useEffect(() => {
     if (isOpen && event && isAdmin) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoadingAttendees(true);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAttendeesError(null);
 
       eventsApi.getAttendees(event.id)
@@ -210,7 +213,7 @@ export default function EventDetailsModal({
   // Get closure reason icon
   const getClosureIcon = () => {
     if (!registrationStatus.reason) return null;
-    
+
     switch (registrationStatus.reason) {
       case 'capacity':
         return Users;
@@ -458,7 +461,7 @@ export default function EventDetailsModal({
                     <p className="text-sm sm:text-base text-gray-200 leading-relaxed">
                       {registrationStatus.message}
                     </p>
-                    
+
                     {/* Additional context based on closure reason - Mobile optimized (Requirement 12.3, 12.5) */}
                     {registrationStatus.reason === 'capacity' && (
                       <div className="mt-3 p-2.5 sm:p-3 bg-white/5 rounded-lg border border-white/10">
@@ -468,7 +471,7 @@ export default function EventDetailsModal({
                         </p>
                       </div>
                     )}
-                    
+
                     {registrationStatus.reason === 'deadline' && event.registrationDeadline && (
                       <div className="mt-3 p-2.5 sm:p-3 bg-white/5 rounded-lg border border-white/10">
                         <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
@@ -485,7 +488,7 @@ export default function EventDetailsModal({
                         </p>
                       </div>
                     )}
-                    
+
                     {registrationStatus.reason === 'manual' && (
                       <div className="mt-3 p-2.5 sm:p-3 bg-white/5 rounded-lg border border-white/10">
                         <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
