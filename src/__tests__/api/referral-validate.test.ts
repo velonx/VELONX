@@ -5,11 +5,19 @@
  * These tests verify the endpoint structure and error handling.
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { POST } from '@/app/api/referral/validate/route'
 import { createMockNextRequest } from '../utils/api-test-helpers'
+import { validateReferralCode } from '@/lib/services/referral.service'
+
+vi.mock('@/lib/services/referral.service', () => ({
+  validateReferralCode: vi.fn(),
+}))
 
 describe('POST /api/referral/validate', () => {
+  beforeEach(() => {
+    vi.mocked(validateReferralCode).mockResolvedValue({ valid: true, referrerId: 'user123' })
+  })
   it('should accept POST requests with valid structure', async () => {
     // This test verifies the endpoint accepts requests with proper structure
     const request = createMockNextRequest({
@@ -19,10 +27,10 @@ describe('POST /api/referral/validate', () => {
     })
 
     const response = await POST(request)
-    
+
     // Should return 200 regardless of code validity
     expect(response.status).toBe(200)
-    
+
     const data = await response.json()
     expect(data).toHaveProperty('success')
     expect(data).toHaveProperty('data')

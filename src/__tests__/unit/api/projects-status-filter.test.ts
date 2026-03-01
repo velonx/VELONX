@@ -17,6 +17,21 @@ vi.mock('@/lib/services/project.service', () => ({
   },
 }));
 
+// Mock the cache service
+vi.mock('@/lib/services/cache.service', () => ({
+  cacheService: {
+    getOrSet: vi.fn(async (key, fetcher) => fetcher()),
+  },
+  CacheKeys: {
+    project: {
+      completed: vi.fn().mockReturnValue('mock-cache-key'),
+    },
+  },
+  CacheTTL: {
+    PROJECT_COMPLETED: 300,
+  },
+}));
+
 
 // Mock prisma to prevent DB connection attempts
 vi.mock('@/lib/prisma', () => ({

@@ -28,6 +28,14 @@ const NEW_USER_ID = '507f1f77bcf86cd799439013'
 const USER_1_ID = '507f1f77bcf86cd799439014'
 const USER_2_ID = '507f1f77bcf86cd799439015'
 
+vi.mock('@/lib/prisma', () => ({
+  prisma: {
+    eventAttendee: {
+      findMany: vi.fn().mockResolvedValue([]),
+    },
+  },
+}))
+
 // Mock auth middleware
 vi.mock('@/lib/middleware/auth.middleware', () => ({
   requireAuth: vi.fn(async () => createMockSession({ user: { id: TEST_USER_ID, role: 'STUDENT' } })),
@@ -90,7 +98,7 @@ describe('Event Analytics Endpoints Integration Tests', () => {
         expect(typeof data.data.upcomingEvents).toBe('number')
         expect(typeof data.data.participationStreak).toBe('number')
         expect(typeof data.data.totalHours).toBe('number')
-        
+
         // All counts should be non-negative
         expect(data.data.eventsAttended).toBeGreaterThanOrEqual(0)
         expect(data.data.upcomingEvents).toBeGreaterThanOrEqual(0)
@@ -154,7 +162,7 @@ describe('Event Analytics Endpoints Integration Tests', () => {
 
     it('should only return data for the authenticated user', async () => {
       const { requireAuth } = await import('@/lib/middleware/auth.middleware')
-      
+
       // First user
       vi.mocked(requireAuth).mockResolvedValueOnce(
         createMockSession({ user: { id: USER_1_ID, role: 'STUDENT' } })
@@ -234,7 +242,7 @@ describe('Event Analytics Endpoints Integration Tests', () => {
       if (response.status === 200) {
         // Streak should be non-negative
         expect(data.data.participationStreak).toBeGreaterThanOrEqual(0)
-        
+
         // If user has attended events, streak should be at least 1
         if (data.data.eventsAttended > 0) {
           expect(data.data.participationStreak).toBeGreaterThanOrEqual(1)
@@ -275,12 +283,12 @@ describe('Event Analytics Endpoints Integration Tests', () => {
       if (response.status === 200) {
         // Total hours should be non-negative
         expect(data.data.totalHours).toBeGreaterThanOrEqual(0)
-        
+
         // If user has attended events, total hours should be positive
         if (data.data.eventsAttended > 0) {
           expect(data.data.totalHours).toBeGreaterThan(0)
         }
-        
+
         // Total hours should be a reasonable number (not infinity or NaN)
         expect(Number.isFinite(data.data.totalHours)).toBe(true)
       }
@@ -295,7 +303,7 @@ describe('Event Analytics Endpoints Integration Tests', () => {
       })
 
       const response = await getPersonalAnalyticsHandler(request)
-      
+
       // Should not return 500 errors for normal requests
       expect(response.status).toBeLessThan(500)
     })
