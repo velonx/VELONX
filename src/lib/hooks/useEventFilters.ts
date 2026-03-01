@@ -78,7 +78,6 @@ export function useEventFilters(): UseEventFiltersReturn {
   useEffect(() => {
     const urlFilters = parseFiltersFromURL(searchParams);
     if (!areFiltersEqual(filters, urlFilters)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFilters(urlFilters);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

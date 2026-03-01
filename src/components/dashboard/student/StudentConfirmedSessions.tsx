@@ -150,7 +150,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
       <div className="space-y-4">
         {sessions.map((session) => {
           const { dateStr, timeStr } = formatDateTime(session.date);
-          
+
           return (
             <Card
               key={session.id}
@@ -160,6 +160,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
                 {/* Mentor Avatar */}
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={session.mentor.imageUrl || "/avatars/default.png"}
                       alt={session.mentor.name}

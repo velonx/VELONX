@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import type { TypingPayload } from '@/lib/types/community.types';
 
 /**
@@ -122,7 +122,9 @@ export function useTypingIndicator(
     }
   }, [roomId, groupId, sendMessage]);
 
-  sendTypingStatusRef.current = sendTypingStatus;
+  useLayoutEffect(() => {
+    sendTypingStatusRef.current = sendTypingStatus;
+  });
 
   /**
    * Handle incoming typing message

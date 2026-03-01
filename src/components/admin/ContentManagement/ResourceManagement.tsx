@@ -46,13 +46,13 @@ export default function ResourceManagement() {
     setLoadingResources(true);
     try {
       const response = await fetch('/api/resources?pageSize=100');
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         setResources(data.data);
       } else {
@@ -89,7 +89,7 @@ export default function ResourceManagement() {
       }
 
       const data = await response.json();
-      
+
       if (data.success) {
         toast.success("Resource deleted successfully!");
         fetchResources();
@@ -176,7 +176,7 @@ export default function ResourceManagement() {
               <h3 className="text-3xl font-black text-[#023047] mb-2">Manage Resources</h3>
               <p className="text-gray-400">View, edit, and delete learning resources</p>
             </div>
-            <Button 
+            <Button
               onClick={handleNewResource}
               className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl transition-all hover:shadow-lg hover:shadow-[#219EBC]/20 hover:scale-105"
             >
@@ -220,33 +220,36 @@ export default function ResourceManagement() {
                 {searchQuery || filterPDF !== "all" ? "No resources found" : "No resources yet"}
               </p>
               <p className="text-gray-400 text-sm mt-2">
-                {searchQuery || filterPDF !== "all" 
-                  ? "Try adjusting your search or filter" 
+                {searchQuery || filterPDF !== "all"
+                  ? "Try adjusting your search or filter"
                   : "Add your first learning resource to get started"}
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredResources.map((resource) => (
-                <div 
-                  key={resource.id} 
+                <div
+                  key={resource.id}
                   className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#219EBC]/20 hover:-translate-y-1"
                 >
                   {/* Resource Thumbnail */}
                   <div className="relative w-full h-48 bg-gray-100 overflow-hidden group">
                     {resource.imageUrl ? (
-                      <img 
-                        src={resource.imageUrl} 
-                        alt={resource.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={resource.imageUrl}
+                          alt={resource.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        />
+                      </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#219EBC]/10 to-[#023047]/10 transition-all duration-300 group-hover:from-[#219EBC]/20 group-hover:to-[#023047]/20">
                         <BookOpen className="w-16 h-16 text-gray-300 transition-transform duration-300 group-hover:scale-110" />
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Resource Info */}
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-3">
@@ -254,7 +257,7 @@ export default function ResourceManagement() {
                         {resource.title}
                       </h4>
                     </div>
-                    
+
                     {/* Badges */}
                     <div className="flex flex-wrap gap-2 mb-3">
                       <Badge className="bg-blue-50 text-blue-600 border-0 font-bold text-xs transition-all hover:bg-blue-100">
@@ -270,13 +273,13 @@ export default function ResourceManagement() {
                         </Badge>
                       )}
                     </div>
-                    
+
                     {/* Access Count */}
                     <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
                       <Eye className="w-4 h-4" />
                       <span>{resource.accessCount} views</span>
                     </div>
-                    
+
                     {/* Action Buttons */}
                     <div className="flex gap-2">
                       <button
@@ -329,7 +332,7 @@ export default function ResourceManagement() {
               e.preventDefault();
               const form = e.currentTarget;
               const formData = new FormData(form);
-              
+
               // Validate that at least URL or PDF is provided
               const url = formData.get('url') as string;
               if (!url && !pdfMetadata) {
@@ -338,7 +341,7 @@ export default function ResourceManagement() {
               }
 
               setLoadingResources(true);
-              
+
               try {
                 const resourceData = {
                   title: formData.get('title') as string,
@@ -360,7 +363,7 @@ export default function ResourceManagement() {
 
                 const response = await fetch(apiUrl, {
                   method,
-                  headers: { 
+                  headers: {
                     'Content-Type': 'application/json',
                     'x-csrf-token': csrfToken,
                   },
@@ -412,10 +415,10 @@ export default function ResourceManagement() {
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Title *</label>
-                <Input 
-                  name="title" 
-                  required 
-                  placeholder="e.g., Complete React Tutorial" 
+                <Input
+                  name="title"
+                  required
+                  placeholder="e.g., Complete React Tutorial"
                   className="h-14 bg-gray-50 border-0 rounded-2xl"
                   defaultValue={editingResource?.title || ''}
                   minLength={3}
@@ -425,11 +428,11 @@ export default function ResourceManagement() {
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Description *</label>
-                <textarea 
+                <textarea
                   name="description"
                   required
                   rows={4}
-                  className="w-full bg-gray-50 border-0 rounded-[32px] p-6 outline-none focus:ring-2 focus:ring-[#219EBC] transition-all" 
+                  className="w-full bg-gray-50 border-0 rounded-[32px] p-6 outline-none focus:ring-2 focus:ring-[#219EBC] transition-all"
                   placeholder="Describe the resource and what learners will gain from it..."
                   defaultValue={editingResource?.description || ''}
                   minLength={10}
@@ -439,9 +442,9 @@ export default function ResourceManagement() {
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Category *</label>
-                  <select 
-                    name="category" 
-                    required 
+                  <select
+                    name="category"
+                    required
                     className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
                     defaultValue={editingResource?.category || ''}
                   >
@@ -458,9 +461,9 @@ export default function ResourceManagement() {
                 </div>
                 <div className="space-y-3">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Type *</label>
-                  <select 
-                    name="type" 
-                    required 
+                  <select
+                    name="type"
+                    required
                     className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
                     defaultValue={editingResource?.type || ''}
                   >
@@ -479,17 +482,17 @@ export default function ResourceManagement() {
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
                   Resource URL {!pdfMetadata && <span className="text-red-500">*</span>}
                 </label>
-                <Input 
-                  name="url" 
+                <Input
+                  name="url"
                   type="url"
                   required={!pdfMetadata}
-                  placeholder="e.g., https://example.com/resource" 
+                  placeholder="e.g., https://example.com/resource"
                   className="h-14 bg-gray-50 border-0 rounded-2xl"
                   defaultValue={editingResource?.url || ''}
                 />
                 <p className="text-xs text-gray-500 ml-1">
-                  {pdfMetadata 
-                    ? "Optional when PDF is uploaded" 
+                  {pdfMetadata
+                    ? "Optional when PDF is uploaded"
                     : "Required if no PDF is uploaded"}
                 </p>
               </div>
@@ -512,9 +515,10 @@ export default function ResourceManagement() {
                 <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
                   {resourceImagePreview && (
                     <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
-                      <img 
-                        src={resourceImagePreview} 
-                        alt="Resource preview" 
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={resourceImagePreview}
+                        alt="Resource preview"
                         className="w-full h-full object-cover"
                         onError={() => {
                           setResourceImagePreview(null);
@@ -530,12 +534,12 @@ export default function ResourceManagement() {
                       </button>
                     </div>
                   )}
-                  
+
                   <div className="space-y-2">
-                    <Input 
-                      name="imageUrl" 
+                    <Input
+                      name="imageUrl"
                       type="url"
-                      placeholder="Paste image URL here..." 
+                      placeholder="Paste image URL here..."
                       className="h-12 bg-white border border-gray-200 rounded-xl"
                       defaultValue={editingResource?.imageUrl || ''}
                       onChange={(e) => {
@@ -557,7 +561,7 @@ export default function ResourceManagement() {
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
-                        
+
                         setUploadingResourceImage(true);
                         try {
                           const reader = new FileReader();
@@ -565,15 +569,15 @@ export default function ResourceManagement() {
                             try {
                               const base64Image = reader.result as string;
                               const csrfToken = await getCSRFToken();
-                              
+
                               const response = await fetch('/api/upload', {
                                 method: 'POST',
-                                headers: { 
+                                headers: {
                                   'Content-Type': 'application/json',
                                   'x-csrf-token': csrfToken,
                                 },
                                 credentials: 'include',
-                                body: JSON.stringify({ 
+                                body: JSON.stringify({
                                   image: base64Image,
                                   folder: 'velonx/resources'
                                 }),
@@ -584,7 +588,7 @@ export default function ResourceManagement() {
                               }
 
                               const data = await response.json();
-                              
+
                               if (data.success) {
                                 setResourceImagePreview(data.data.url);
                                 const imageUrlInput = document.querySelector('input[name="imageUrl"]') as HTMLInputElement;
@@ -603,12 +607,12 @@ export default function ResourceManagement() {
                               setUploadingResourceImage(false);
                             }
                           };
-                          
+
                           reader.onerror = () => {
                             toast.error('Failed to read image file');
                             setUploadingResourceImage(false);
                           };
-                          
+
                           reader.readAsDataURL(file);
                         } catch (error) {
                           console.error('File processing error:', error);
@@ -637,8 +641,8 @@ export default function ResourceManagement() {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={loadingResources}
                 className="w-full h-16 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-[24px] text-lg shadow-xl shadow-[#219EBC]/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >

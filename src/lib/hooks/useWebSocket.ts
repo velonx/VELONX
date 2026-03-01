@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import type { WSMessage } from '@/lib/types/community.types';
 
 /**
@@ -237,7 +237,9 @@ export function useWebSocket(
     }
   }, [fullConfig, onMessage, startHeartbeat, clearTimers]);
 
-  connectRef.current = connect;
+  useLayoutEffect(() => {
+    connectRef.current = connect;
+  });
 
   /**
    * Connect on mount

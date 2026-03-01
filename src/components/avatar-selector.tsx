@@ -76,12 +76,13 @@ export default function AvatarSelector({ currentAvatar, onSelectAvatar, trigger 
                             >
                                 {/* Card Background */}
                                 <div className={`rounded-2xl p-1 ${isSelected
-                                        ? `bg-gradient-to-br ${rarityColor}`
-                                        : "bg-white/5 hover:bg-white/10"
+                                    ? `bg-gradient-to-br ${rarityColor}`
+                                    : "bg-white/5 hover:bg-white/10"
                                     } transition-colors`}>
                                     <div className="bg-[#0a0a0f] rounded-xl p-2">
                                         {/* Avatar Image */}
                                         <div className="aspect-square rounded-xl overflow-hidden mb-2">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={avatar.src}
                                                 alt={avatar.name}
@@ -112,6 +113,7 @@ export default function AvatarSelector({ currentAvatar, onSelectAvatar, trigger 
                 <div className="flex items-center justify-between pt-4 border-t border-white/10">
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/10">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={selectedAvatar}
                                 alt="Selected avatar"

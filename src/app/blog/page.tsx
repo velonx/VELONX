@@ -211,6 +211,7 @@ export default function BlogPage() {
                             {/* Header Image */}
                             {selectedBlog.imageUrl && (
                                 <div className="aspect-[21/9] overflow-hidden relative bg-gradient-to-br from-[#219EBC] to-[#023047] rounded-t-[48px]">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={selectedBlog.imageUrl}
                                         alt={selectedBlog.title}
@@ -218,6 +219,7 @@ export default function BlogPage() {
                                     />
                                 </div>
                             )}
+
 
                             {/* Content */}
                             <div className="p-12">

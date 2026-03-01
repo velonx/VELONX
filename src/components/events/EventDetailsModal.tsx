@@ -114,9 +114,7 @@ export default function EventDetailsModal({
 
   useEffect(() => {
     if (isOpen && event && isAdmin) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoadingAttendees(true);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAttendeesError(null);
 
       eventsApi.getAttendees(event.id)

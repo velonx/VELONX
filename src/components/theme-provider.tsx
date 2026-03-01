@@ -25,7 +25,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             : 'light';
 
         const initialTheme = storedTheme || systemTheme;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTheme(initialTheme);
 
         // Apply theme to document

@@ -57,10 +57,10 @@ export default function EventManagement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const dateTime = new Date(`${formData.date}T${formData.time}`);
-      
+
       const eventData = {
         title: formData.title,
         description: formData.description,
@@ -300,9 +300,10 @@ export default function EventManagement() {
                   <div className="bg-muted/30 rounded-2xl p-6 space-y-4 mt-2">
                     {imagePreview && (
                       <div className="relative w-full h-48 rounded-xl overflow-hidden bg-muted">
-                        <img 
-                          src={imagePreview} 
-                          alt="Event preview" 
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={imagePreview}
+                          alt="Event preview"
                           className="w-full h-full object-cover"
                           onError={() => {
                             setImagePreview(null);
@@ -321,10 +322,10 @@ export default function EventManagement() {
                         </button>
                       </div>
                     )}
-                    
+
                     <div className="space-y-2">
-                      <Input 
-                        placeholder="Paste image URL here..." 
+                      <Input
+                        placeholder="Paste image URL here..."
                         className="h-12 bg-background border-border rounded-xl"
                         value={formData.imageUrl}
                         onChange={(e) => {
@@ -336,7 +337,7 @@ export default function EventManagement() {
                         }}
                       />
                       <p className="text-xs text-muted-foreground ml-1">
-                        Get free images from: 
+                        Get free images from:
                         <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">Unsplash</a>,
                         <a href="https://pexels.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">Pexels</a>, or
                         <a href="https://pixabay.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">Pixabay</a>
@@ -359,18 +360,18 @@ export default function EventManagement() {
                               reader.onloadend = async () => {
                                 try {
                                   const base64Image = reader.result as string;
-                                  
+
                                   const response = await secureFetch('/api/upload', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ 
+                                    body: JSON.stringify({
                                       image: base64Image,
                                       folder: 'velonx/events'
                                     }),
                                   });
 
                                   const data = await response.json();
-                                  
+
                                   if (data.success) {
                                     setImagePreview(data.data.url);
                                     setFormData({ ...formData, imageUrl: data.data.url });
@@ -453,11 +454,14 @@ export default function EventManagement() {
                 >
                   <div className="flex items-start justify-between gap-4">
                     {event.imageUrl && (
-                      <img 
-                        src={event.imageUrl} 
-                        alt={event.title}
-                        className="w-24 h-24 rounded-xl object-cover flex-shrink-0"
-                      />
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={event.imageUrl}
+                          alt={event.title}
+                          className="w-24 h-24 rounded-xl object-cover flex-shrink-0"
+                        />
+                      </>
                     )}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">

@@ -15,6 +15,7 @@ import { Event } from '@/lib/api/types';
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
+  // eslint-disable-next-line @next/next/no-img-element
   default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} {...props} />,
 }));
 
@@ -377,7 +378,7 @@ describe('Screen Reader Support', () => {
       announcer.setAttribute('aria-live', 'polite');
       announcer.setAttribute('aria-atomic', 'true');
       announcer.className = 'sr-only';
-      
+
       expect(announcer.getAttribute('role')).toBe('status');
       expect(announcer.getAttribute('aria-live')).toBe('polite');
       expect(announcer.getAttribute('aria-atomic')).toBe('true');
@@ -387,7 +388,7 @@ describe('Screen Reader Support', () => {
     it('should have sr-only class to hide announcer visually', () => {
       const announcer = document.createElement('div');
       announcer.className = 'sr-only';
-      
+
       // Verify the element would be hidden visually but available to screen readers
       expect(announcer.className).toBe('sr-only');
     });

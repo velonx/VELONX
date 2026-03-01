@@ -130,11 +130,14 @@ export default function BlogManagement() {
                 >
                   <div className="flex items-start gap-6">
                     {blog.imageUrl && (
-                      <img
-                        src={blog.imageUrl}
-                        alt={blog.title}
-                        className="w-24 h-24 rounded-xl object-cover"
-                      />
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={blog.imageUrl}
+                          alt={blog.title}
+                          className="w-24 h-24 rounded-xl object-cover"
+                        />
+                      </>
                     )}
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
@@ -304,6 +307,7 @@ export default function BlogManagement() {
                 <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
                   {blogImagePreview && (
                     <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={blogImagePreview}
                         alt="Blog cover preview"

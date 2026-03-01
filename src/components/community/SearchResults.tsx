@@ -137,7 +137,6 @@ export function SearchResults({
    * Reset focused index when filter changes
    */
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFocusedIndex(-1);
   }, [activeFilter]);
 

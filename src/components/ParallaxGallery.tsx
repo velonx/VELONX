@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect, useLayoutEffect, useCallback } from "react";
 import "./ParallaxGallery.css";
 
 interface SlideData {
@@ -66,7 +66,9 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
         }
     }, [applyParallax, getLimit]);
 
-    renderRef.current = render;
+    useLayoutEffect(() => {
+        renderRef.current = render;
+    });
 
     useEffect(() => {
         const wrapper = wrapperRef.current;
@@ -128,6 +130,7 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
                 <div className="parallax-gallery__container" ref={containerRef}>
                     {slides.map((slide, i) => (
                         <div key={`${slide.name}-${i}`} className="parallax-gallery__media">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 ref={(el) => { if (el) imagesRef.current[i] = el; }}
                                 src={slide.src}

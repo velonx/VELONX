@@ -78,7 +78,6 @@ export function useEventSearch(delay: number = 300): UseEventSearchReturn {
     if (filterSearch !== searchQuery && filterSearch === debouncedQuery) {
       // Only update if the filter search matches the debounced query
       // This prevents overwriting user input during typing
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchQueryState(filterSearch);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
