@@ -10,6 +10,14 @@ import { NotFoundError, ConflictError, ValidationError } from '@/lib/utils/error
 import { notificationService } from '@/lib/services/notification.service'
 import { awardXP, XP_REWARDS } from '@/lib/utils/xp'
 
+// Mock referral service to prevent userActivity DB calls in checkAndAwardFirstActivity
+vi.mock('@/lib/services/referral.service', () => ({
+  checkAndAwardFirstActivity: vi.fn().mockResolvedValue(undefined),
+  generateReferralCode: vi.fn().mockResolvedValue('MOCK-CODE'),
+  validateReferralCode: vi.fn().mockResolvedValue({ valid: false }),
+  createReferralRelationship: vi.fn().mockResolvedValue(null),
+}))
+
 // Mock dependencies
 vi.mock('@/lib/prisma', () => ({
   prisma: {
@@ -28,6 +36,18 @@ vi.mock('@/lib/prisma', () => ({
       findUnique: vi.fn(),
       findMany: vi.fn(),
       create: vi.fn(),
+    },
+    userActivity: {
+      findFirst: vi.fn().mockResolvedValue(null),
+      create: vi.fn().mockResolvedValue({}),
+      update: vi.fn().mockResolvedValue({}),
+      count: vi.fn().mockResolvedValue(0),
+    },
+    user: {
+      findUnique: vi.fn(({ where }: any) =>
+        Promise.resolve(where?.id ? { id: where.id, role: 'STUDENT', name: 'Student' } : null)
+      ),
+      update: vi.fn().mockResolvedValue({}),
     },
   },
 }))
@@ -68,8 +88,8 @@ describe('MentorSessionService', () => {
           title: 'Test Session',
           status: 'PENDING',
           date: new Date(),
-          mentor: { id: 'm1', name: 'Mentor 1' },
-          student: { id: 's1', name: 'Student 1' },
+          mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+          student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
         },
       ]
 
@@ -91,11 +111,11 @@ describe('MentorSessionService', () => {
       vi.mocked(prisma.mentorSession.findMany).mockResolvedValue([])
       vi.mocked(prisma.mentorSession.count).mockResolvedValue(0)
 
-      await service.listSessions({ userId: 's1', userRole: 'student' })
+      await service.listSessions({ userId: '507f1f77bcf86cd799439012', userRole: 'student' })
 
       expect(prisma.mentorSession.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ studentId: 's1' }),
+          where: expect.objectContaining({ studentId: '507f1f77bcf86cd799439012' }),
         })
       )
     })
@@ -104,11 +124,11 @@ describe('MentorSessionService', () => {
       vi.mocked(prisma.mentorSession.findMany).mockResolvedValue([])
       vi.mocked(prisma.mentorSession.count).mockResolvedValue(0)
 
-      await service.listSessions({ userId: 'm1', userRole: 'mentor' })
+      await service.listSessions({ userId: '507f1f77bcf86cd799439011', userRole: 'mentor' })
 
       expect(prisma.mentorSession.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ mentorId: 'm1' }),
+          where: expect.objectContaining({ mentorId: '507f1f77bcf86cd799439011' }),
         })
       )
     })
@@ -119,8 +139,8 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         title: 'Test Session',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
@@ -139,22 +159,22 @@ describe('MentorSessionService', () => {
 
   describe('createSession', () => {
     const validSessionData = {
-      mentorId: 'm1',
-      studentId: 's1',
+      mentorId: '507f1f77bcf86cd799439011',
+      studentId: '507f1f77bcf86cd799439012',
       title: 'Career Guidance',
       description: 'Discuss career path',
-      date: new Date('2024-12-01T10:00:00Z').toISOString(),
+      date: new Date(Date.now() + 7 * 24 * 60 * 60000).toISOString(), // 7 days in future
       duration: 60,
     }
 
     it('should create session successfully', async () => {
-      const mockMentor = { id: 'm1', available: true }
+      const mockMentor = { id: '507f1f77bcf86cd799439011', available: true }
       const mockSession = {
         id: '1',
         ...validSessionData,
         status: 'PENDING',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentor.findUnique).mockResolvedValue(mockMentor as any)
@@ -166,19 +186,20 @@ describe('MentorSessionService', () => {
 
       expect(result).toEqual(mockSession)
       expect(prisma.mentor.update).toHaveBeenCalledWith({
-        where: { id: 'm1' },
+        where: { id: '507f1f77bcf86cd799439011' },
         data: { totalSessions: { increment: 1 } },
       })
     })
 
-    it('should throw NotFoundError when mentor does not exist', async () => {
+    it('should throw ValidationError when mentor does not exist', async () => {
       vi.mocked(prisma.mentor.findUnique).mockResolvedValue(null)
 
-      await expect(service.createSession(validSessionData)).rejects.toThrow(NotFoundError)
+      // Service validates student first (succeeds), then throws ValidationError for missing mentor
+      await expect(service.createSession(validSessionData)).rejects.toThrow(ValidationError)
     })
 
     it('should throw ValidationError when mentor is not available', async () => {
-      const mockMentor = { id: 'm1', available: false }
+      const mockMentor = { id: '507f1f77bcf86cd799439011', available: false }
       vi.mocked(prisma.mentor.findUnique).mockResolvedValue(mockMentor as any)
 
       await expect(service.createSession(validSessionData)).rejects.toThrow(ValidationError)
@@ -188,10 +209,10 @@ describe('MentorSessionService', () => {
     })
 
     it('should throw ConflictError when time slot is not available', async () => {
-      const mockMentor = { id: 'm1', available: true }
+      const mockMentor = { id: '507f1f77bcf86cd799439011', available: true }
       const conflictingSession = {
         id: '2',
-        mentorId: 'm1',
+        mentorId: '507f1f77bcf86cd799439011',
         status: 'CONFIRMED',
         date: new Date('2024-12-01T10:30:00Z'),
       }
@@ -206,13 +227,13 @@ describe('MentorSessionService', () => {
     })
 
     it('should create notification for mentor', async () => {
-      const mockMentor = { id: 'm1', available: true }
+      const mockMentor = { id: '507f1f77bcf86cd799439011', available: true }
       const mockSession = {
         id: '1',
         ...validSessionData,
         date: new Date(validSessionData.date),
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentor.findUnique).mockResolvedValue(mockMentor as any)
@@ -224,7 +245,7 @@ describe('MentorSessionService', () => {
 
       expect(notificationService.createMentorSessionBookedNotification).toHaveBeenCalledWith({
         sessionId: '1',
-        mentorId: 'm1',
+        mentorId: '507f1f77bcf86cd799439011',
         studentName: 'Student 1',
         title: validSessionData.title,
         date: mockSession.date,
@@ -237,10 +258,10 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'PENDING',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
-        studentId: 's1',
-        mentorId: 'm1',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
@@ -268,10 +289,10 @@ describe('MentorSessionService', () => {
         status: 'PENDING',
         title: 'Test Session',
         date: new Date(),
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
         meetingLink: 'https://meet.example.com',
       }
 
@@ -292,10 +313,10 @@ describe('MentorSessionService', () => {
         status: 'CONFIRMED',
         title: 'Test Session',
         date: new Date(),
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
@@ -307,7 +328,7 @@ describe('MentorSessionService', () => {
       await service.updateSession('1', { status: 'COMPLETED' })
 
       expect(awardXP).toHaveBeenCalledWith(
-        's1',
+        '507f1f77bcf86cd799439012',
         XP_REWARDS.MENTOR_SESSION,
         expect.stringContaining('Completed session')
       )
@@ -320,12 +341,12 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'PENDING',
-        studentId: 's1',
-        mentorId: 'm1',
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
         title: 'Test Session',
         date: new Date(),
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
@@ -334,7 +355,7 @@ describe('MentorSessionService', () => {
         status: 'CANCELLED',
       } as any)
 
-      await service.cancelSession('1', 's1')
+      await service.cancelSession('1', '507f1f77bcf86cd799439012')
 
       expect(prisma.mentorSession.update).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -348,10 +369,10 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'PENDING',
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
@@ -366,16 +387,16 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'COMPLETED',
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
 
-      await expect(service.cancelSession('1', 's1')).rejects.toThrow(ValidationError)
-      await expect(service.cancelSession('1', 's1')).rejects.toThrow(
+      await expect(service.cancelSession('1', '507f1f77bcf86cd799439012')).rejects.toThrow(ValidationError)
+      await expect(service.cancelSession('1', '507f1f77bcf86cd799439012')).rejects.toThrow(
         'This session cannot be cancelled'
       )
     })
@@ -384,12 +405,12 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'PENDING',
-        studentId: 's1',
-        mentorId: 'm1',
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
         title: 'Test Session',
         date: new Date(),
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
@@ -398,7 +419,7 @@ describe('MentorSessionService', () => {
         status: 'CANCELLED',
       } as any)
 
-      await service.cancelSession('1', 's1')
+      await service.cancelSession('1', '507f1f77bcf86cd799439012')
 
       expect(notificationService.createMentorSessionCancelledNotification).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -414,17 +435,17 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'COMPLETED',
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       const mockReview = {
         id: 'r1',
         sessionId: '1',
-        mentorId: 'm1',
-        studentId: 's1',
+        mentorId: '507f1f77bcf86cd799439011',
+        studentId: '507f1f77bcf86cd799439012',
         rating: 5,
         comment: 'Great session!',
       }
@@ -437,14 +458,14 @@ describe('MentorSessionService', () => {
 
       const result = await service.submitReview({
         sessionId: '1',
-        studentId: 's1',
+        studentId: '507f1f77bcf86cd799439012',
         rating: 5,
         comment: 'Great session!',
       })
 
       expect(result).toEqual(mockReview)
       expect(prisma.mentor.update).toHaveBeenCalledWith({
-        where: { id: 'm1' },
+        where: { id: '507f1f77bcf86cd799439011' },
         data: { rating: 5 },
       })
     })
@@ -453,10 +474,10 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'PENDING',
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
@@ -464,14 +485,14 @@ describe('MentorSessionService', () => {
       await expect(
         service.submitReview({
           sessionId: '1',
-          studentId: 's1',
+          studentId: '507f1f77bcf86cd799439012',
           rating: 5,
         })
       ).rejects.toThrow(ValidationError)
       await expect(
         service.submitReview({
           sessionId: '1',
-          studentId: 's1',
+          studentId: '507f1f77bcf86cd799439012',
           rating: 5,
         })
       ).rejects.toThrow('Can only review completed sessions')
@@ -481,10 +502,10 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'COMPLETED',
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
@@ -509,10 +530,10 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'COMPLETED',
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       const existingReview = { id: 'r1', sessionId: '1' }
@@ -523,14 +544,14 @@ describe('MentorSessionService', () => {
       await expect(
         service.submitReview({
           sessionId: '1',
-          studentId: 's1',
+          studentId: '507f1f77bcf86cd799439012',
           rating: 5,
         })
       ).rejects.toThrow(ConflictError)
       await expect(
         service.submitReview({
           sessionId: '1',
-          studentId: 's1',
+          studentId: '507f1f77bcf86cd799439012',
           rating: 5,
         })
       ).rejects.toThrow('Review already submitted for this session')
@@ -540,10 +561,10 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'COMPLETED',
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       vi.mocked(prisma.mentorSession.findUnique).mockResolvedValue(mockSession as any)
@@ -552,14 +573,14 @@ describe('MentorSessionService', () => {
       await expect(
         service.submitReview({
           sessionId: '1',
-          studentId: 's1',
+          studentId: '507f1f77bcf86cd799439012',
           rating: 6,
         })
       ).rejects.toThrow(ValidationError)
       await expect(
         service.submitReview({
           sessionId: '1',
-          studentId: 's1',
+          studentId: '507f1f77bcf86cd799439012',
           rating: 6,
         })
       ).rejects.toThrow('Rating must be between 1 and 5')
@@ -569,10 +590,10 @@ describe('MentorSessionService', () => {
       const mockSession = {
         id: '1',
         status: 'COMPLETED',
-        studentId: 's1',
-        mentorId: 'm1',
-        mentor: { id: 'm1', name: 'Mentor 1' },
-        student: { id: 's1', name: 'Student 1' },
+        studentId: '507f1f77bcf86cd799439012',
+        mentorId: '507f1f77bcf86cd799439011',
+        mentor: { id: '507f1f77bcf86cd799439011', name: 'Mentor 1' },
+        student: { id: '507f1f77bcf86cd799439012', name: 'Student 1' },
       }
 
       const existingReviews = [
@@ -583,8 +604,8 @@ describe('MentorSessionService', () => {
       const newReview = {
         id: 'r3',
         sessionId: '1',
-        mentorId: 'm1',
-        studentId: 's1',
+        mentorId: '507f1f77bcf86cd799439011',
+        studentId: '507f1f77bcf86cd799439012',
         rating: 3,
       }
 
@@ -599,12 +620,12 @@ describe('MentorSessionService', () => {
 
       await service.submitReview({
         sessionId: '1',
-        studentId: 's1',
+        studentId: '507f1f77bcf86cd799439012',
         rating: 3,
       })
 
       expect(prisma.mentor.update).toHaveBeenCalledWith({
-        where: { id: 'm1' },
+        where: { id: '507f1f77bcf86cd799439011' },
         data: { rating: 4 }, // (4 + 5 + 3) / 3 = 4
       })
     })

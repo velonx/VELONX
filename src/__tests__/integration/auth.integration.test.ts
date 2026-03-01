@@ -14,9 +14,36 @@
  * For now, we test the API logic without full database cleanup between tests.
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { POST as signupHandler } from '@/app/api/auth/signup/route'
 import { createMockNextRequest } from '../utils/api-test-helpers'
+
+// Mock Prisma to prevent real MongoDB connections
+vi.mock('@/lib/prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: vi.fn().mockResolvedValue(null),
+      findFirst: vi.fn().mockResolvedValue(null),
+      create: vi.fn(({ data }: any) => {
+        const { password, ...rest } = data
+        return Promise.resolve({ id: 'user-123', ...rest })
+      }),
+      update: vi.fn().mockResolvedValue({}),
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+    },
+    referralRelationship: {
+      create: vi.fn().mockResolvedValue({}),
+      findFirst: vi.fn().mockResolvedValue(null),
+    },
+    userActivity: {
+      create: vi.fn().mockResolvedValue({}),
+      findFirst: vi.fn().mockResolvedValue(null),
+    },
+    xpTransaction: {
+      create: vi.fn().mockResolvedValue({}),
+    },
+  },
+}))
 
 describe('Authentication Endpoints Integration Tests', () => {
   describe('POST /api/auth/signup', () => {
@@ -154,7 +181,7 @@ describe('Authentication Endpoints Integration Tests', () => {
   describe('CSRF Protection', () => {
     it('should accept requests with valid content-type', async () => {
       const email = `csrf-${Date.now()}-${Math.random()}@test.com`
-      
+
       const userData = {
         name: 'Test User',
         email,

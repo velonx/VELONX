@@ -30,6 +30,7 @@ const mockEvent: Event = {
   status: 'UPCOMING',
   creatorId: 'creator-1',
   createdAt: '2024-01-01T00:00:00Z',
+  isRegistrationClosed: false,
   updatedAt: '2024-01-01T00:00:00Z',
 };
 
@@ -53,7 +54,7 @@ describe('CalendarExportMenu', () => {
     it('renders the trigger button', () => {
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       expect(button).toBeInTheDocument();
     });
 
@@ -66,7 +67,7 @@ describe('CalendarExportMenu', () => {
         />
       );
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       expect(button).toHaveAttribute('data-variant', 'ghost');
       expect(button).toHaveAttribute('data-size', 'sm');
     });
@@ -74,7 +75,7 @@ describe('CalendarExportMenu', () => {
     it('shows calendar icon', () => {
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       expect(button.querySelector('svg')).toBeInTheDocument();
     });
   });
@@ -84,7 +85,7 @@ describe('CalendarExportMenu', () => {
       const user = userEvent.setup();
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       await user.click(button);
       
       await waitFor(() => {
@@ -96,7 +97,7 @@ describe('CalendarExportMenu', () => {
       const user = userEvent.setup();
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       await user.click(button);
       
       await waitFor(() => {
@@ -110,7 +111,7 @@ describe('CalendarExportMenu', () => {
       const user = userEvent.setup();
       render(<CalendarExportMenu event={mockEvent} isRegistered={true} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       await user.click(button);
       
       await waitFor(() => {
@@ -122,7 +123,7 @@ describe('CalendarExportMenu', () => {
       const user = userEvent.setup();
       render(<CalendarExportMenu event={mockEvent} isRegistered={false} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       await user.click(button);
       
       await waitFor(() => {
@@ -136,7 +137,7 @@ describe('CalendarExportMenu', () => {
       const user = userEvent.setup();
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       await user.click(button);
       
       const icsOption = await screen.findByText('Download ICS File');
@@ -150,7 +151,7 @@ describe('CalendarExportMenu', () => {
       const user = userEvent.setup();
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       await user.click(button);
       
       const googleOption = await screen.findByText('Google Calendar');
@@ -164,7 +165,7 @@ describe('CalendarExportMenu', () => {
       const user = userEvent.setup();
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       await user.click(button);
       
       const outlookOption = await screen.findByText('Outlook Calendar');
@@ -186,7 +187,7 @@ describe('CalendarExportMenu', () => {
 
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       expect(button).toBeDisabled();
     });
 
@@ -196,7 +197,7 @@ describe('CalendarExportMenu', () => {
       // First render with isExporting false to open menu
       const { rerender } = render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       await user.click(button);
       
       // Wait for menu to open
@@ -226,15 +227,15 @@ describe('CalendarExportMenu', () => {
     it('has proper aria-label on trigger button', () => {
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
-      expect(button).toHaveAttribute('aria-label', 'Add to calendar');
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
+      expect(button).toHaveAttribute('aria-label', 'Add event to calendar - opens menu with export options');
     });
 
     it('supports keyboard navigation', async () => {
       const user = userEvent.setup();
       render(<CalendarExportMenu event={mockEvent} />);
       
-      const button = screen.getByRole('button', { name: /add to calendar/i });
+      const button = screen.getByRole('button', { name: /add event to calendar/i });
       
       // Focus and open with Enter
       button.focus();

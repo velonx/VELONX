@@ -55,7 +55,7 @@ describe('useEventRegistration', () => {
       // Assert
       expect(eventsApi.register).toHaveBeenCalledWith('event-123');
       expect(toast.success).toHaveBeenCalledWith(
-        'Successfully registered for "Web Development Workshop"! Check your email for details.'
+        'Successfully registered for Web Development Workshop. Check your email for details.'
       );
       expect(result.current.isRegistering).toBe(false);
       expect(result.current.error).toBe(null);
@@ -75,7 +75,7 @@ describe('useEventRegistration', () => {
 
       // Assert
       expect(toast.success).toHaveBeenCalledWith(
-        'Successfully registered for "the event"! Check your email for details.'
+        'Successfully registered for the event. Check your email for details.'
       );
     });
 
@@ -245,7 +245,7 @@ describe('useEventRegistration', () => {
       // Assert
       expect(eventsApi.unregister).toHaveBeenCalledWith('event-123');
       expect(toast.success).toHaveBeenCalledWith(
-        'Successfully unregistered from "Web Development Workshop"'
+        'Successfully unregistered from Web Development Workshop'
       );
       expect(result.current.isRegistering).toBe(false);
       expect(result.current.error).toBe(null);
@@ -265,7 +265,7 @@ describe('useEventRegistration', () => {
 
       // Assert
       expect(toast.success).toHaveBeenCalledWith(
-        'Successfully unregistered from "the event"'
+        'Successfully unregistered from the event'
       );
     });
 

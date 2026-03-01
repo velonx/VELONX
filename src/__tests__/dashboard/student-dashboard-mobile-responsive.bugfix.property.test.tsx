@@ -178,8 +178,8 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
           
           // AFTER FIX: Should NOT have non-responsive margin classes
           // ON UNFIXED CODE: Will have these classes causing overflow
-          expect(mainContentClasses).not.toMatch(/\bml-80\b/)
-          expect(mainContentClasses).not.toMatch(/\bmr-96\b/)
+          expect(mainContentClasses.split(' ')).not.toContain('ml-80')
+          expect(mainContentClasses.split(' ')).not.toContain('mr-96')
         }),
         {
           ...PROPERTY_TEST_CONFIG,
@@ -232,8 +232,8 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
       // AFTER FIX: These assertions should pass
       expect(mainContentClasses).toContain('md:ml-80')
       expect(mainContentClasses).toContain('md:mr-96')
-      expect(mainContentClasses).not.toMatch(/\bml-80\b/)
-      expect(mainContentClasses).not.toMatch(/\bmr-96\b/)
+      expect(mainContentClasses.split(' ')).not.toContain('ml-80')
+      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
 
     it('should handle standard mobile viewport (414px)', () => {
@@ -269,8 +269,8 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
       // AFTER FIX: Main content should have responsive margins
       expect(mainContentClasses).toContain('md:ml-80')
       expect(mainContentClasses).toContain('md:mr-96')
-      expect(mainContentClasses).not.toMatch(/\bml-80\b/)
-      expect(mainContentClasses).not.toMatch(/\bmr-96\b/)
+      expect(mainContentClasses.split(' ')).not.toContain('ml-80')
+      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
 
     it('should handle small tablet viewport (600px)', () => {
@@ -306,8 +306,8 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
       // AFTER FIX: Main content should have responsive margins
       expect(mainContentClasses).toContain('md:ml-80')
       expect(mainContentClasses).toContain('md:mr-96')
-      expect(mainContentClasses).not.toMatch(/\bml-80\b/)
-      expect(mainContentClasses).not.toMatch(/\bmr-96\b/)
+      expect(mainContentClasses.split(' ')).not.toContain('ml-80')
+      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
 
     it('should handle breakpoint edge viewport (767px)', () => {
@@ -344,8 +344,8 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
       // AFTER FIX: Main content should have responsive margins
       expect(mainContentClasses).toContain('md:ml-80')
       expect(mainContentClasses).toContain('md:mr-96')
-      expect(mainContentClasses).not.toMatch(/\bml-80\b/)
-      expect(mainContentClasses).not.toMatch(/\bmr-96\b/)
+      expect(mainContentClasses.split(' ')).not.toContain('ml-80')
+      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
   })
 

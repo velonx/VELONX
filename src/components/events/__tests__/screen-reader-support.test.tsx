@@ -40,6 +40,7 @@ describe('Screen Reader Support', () => {
     createdAt: '2024-12-20T10:00:00Z',
     updatedAt: '2024-12-20T10:00:00Z',
     creatorId: 'creator-1',
+    isRegistrationClosed: false,
     _count: {
       attendees: 25,
     },
@@ -63,7 +64,8 @@ describe('Screen Reader Support', () => {
       );
 
       const card = screen.getByRole('article');
-      expect(card).toHaveAttribute('aria-label', 'Event: Web Development Workshop');
+      // EventCard appends the registration status message to the aria-label
+      expect(card).toHaveAttribute('aria-label', 'Event: Web Development Workshop. 25 spots available');
     });
 
     it('should have descriptive alt text for event images', () => {
@@ -203,7 +205,8 @@ describe('Screen Reader Support', () => {
         />
       );
 
-      const fullButton = screen.getByLabelText('Web Development Workshop is full');
+      // EventCard uses the pattern: `${event.title}: ${registrationStatus.message}` for closed events
+      const fullButton = screen.getByLabelText('Web Development Workshop: Event is full (50/50 registered)');
       expect(fullButton).toBeInTheDocument();
       expect(fullButton).toHaveAttribute('aria-disabled', 'true');
     });

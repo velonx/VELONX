@@ -82,6 +82,15 @@ global.fetch = vi.fn(() =>
   })
 ) as any
 
+
+// Helper to find sidebar by class substring since Tailwind responsive classes (e.g. md:w-80)
+// don't match CSS class selectors like .w-80
+function findSidebarByClass(container: HTMLElement, classSubstring: string) {
+  return Array.from(container.querySelectorAll('aside')).find(el =>
+    el.className.includes(classSubstring)
+  ) || null;
+}
+
 describe('Student Dashboard Mobile Responsiveness - Preservation Property', () => {
   let originalInnerWidth: number
 
@@ -139,7 +148,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
           console.log(`\n=== Observing viewport width: ${viewportWidth}px ===`)
 
           // Check left sidebar - should be visible with fixed width
-          const leftSidebar = container.querySelector('aside.w-80')
+          const leftSidebar = findSidebarByClass(container, 'w-80')
           expect(leftSidebar).toBeTruthy()
           
           const leftSidebarClasses = leftSidebar?.className || ''
@@ -153,7 +162,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
           expect(leftSidebarClasses).toContain('left-0')
 
           // Check right sidebar - should be visible with fixed width
-          const rightSidebar = container.querySelector('aside.w-96')
+          const rightSidebar = findSidebarByClass(container, 'w-96')
           expect(rightSidebar).toBeTruthy()
           
           const rightSidebarClasses = rightSidebar?.className || ''
@@ -208,8 +217,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`\n=== Observation: Desktop Breakpoint (768px) ===`)
 
       // Check three-column layout exists
-      const leftSidebar = container.querySelector('aside.w-80')
-      const rightSidebar = container.querySelector('aside.w-96')
+      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
       expect(leftSidebar).toBeTruthy()
@@ -252,8 +261,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Observation: Standard Laptop (1024px) ===`)
 
-      const leftSidebar = container.querySelector('aside.w-80')
-      const rightSidebar = container.querySelector('aside.w-96')
+      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
       expect(leftSidebar).toBeTruthy()
@@ -294,8 +303,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Observation: Large Desktop (1440px) ===`)
 
-      const leftSidebar = container.querySelector('aside.w-80')
-      const rightSidebar = container.querySelector('aside.w-96')
+      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
       expect(leftSidebar).toBeTruthy()
@@ -332,8 +341,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Observation: Ultra-wide (1920px) ===`)
 
-      const leftSidebar = container.querySelector('aside.w-80')
-      const rightSidebar = container.querySelector('aside.w-96')
+      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
       expect(leftSidebar).toBeTruthy()
@@ -377,7 +386,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`\n=== Functional Preservation Check ===`)
 
       // Verify left sidebar content (user profile and navigation)
-      const leftSidebar = container.querySelector('aside.w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-80')
       expect(leftSidebar).toBeTruthy()
       expect(leftSidebar?.textContent).toContain('Test Student')
       expect(leftSidebar?.textContent).toContain('Dashboard')
@@ -390,7 +399,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       expect(mainContent).toBeTruthy()
 
       // Verify right sidebar content (calendar and timeline)
-      const rightSidebar = container.querySelector('aside.w-96')
+      const rightSidebar = findSidebarByClass(container, 'w-96')
       expect(rightSidebar).toBeTruthy()
       expect(rightSidebar?.textContent).toContain('Calendar')
 
@@ -409,7 +418,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`\n=== Navigation Preservation Check ===`)
 
       // Verify navigation buttons exist
-      const leftSidebar = container.querySelector('aside.w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-80')
       const navButtons = leftSidebar?.querySelectorAll('button')
       
       expect(navButtons).toBeTruthy()
@@ -434,8 +443,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Breakpoint Boundary: 768px ===`)
 
-      const leftSidebar = container.querySelector('aside.w-80')
-      const rightSidebar = container.querySelector('aside.w-96')
+      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
       // At 768px, desktop layout should be active
@@ -467,8 +476,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Breakpoint Boundary: 767px ===`)
 
-      const leftSidebar = container.querySelector('aside.w-80')
-      const rightSidebar = container.querySelector('aside.w-96')
+      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const rightSidebar = findSidebarByClass(container, 'w-96')
 
       // At 767px (below md:768px), mobile layout should be active
       // This test documents the expected behavior after the fix

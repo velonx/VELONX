@@ -12,12 +12,14 @@ describe('EventCard', () => {
     date: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // 2 days from now
     endDate: new Date(Date.now() + 50 * 60 * 60 * 1000).toISOString(), // 2 hours duration
     location: 'Google Meet',
+    meetingLink: 'https://meet.google.com/test',
     imageUrl: null,
     maxSeats: 50,
     status: 'UPCOMING',
     creatorId: 'creator-1',
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
     updatedAt: new Date().toISOString(),
+    isRegistrationClosed: false,
     _count: {
       attendees: 25
     },
@@ -231,7 +233,8 @@ describe('EventCard', () => {
     it('should apply hover classes', () => {
       const { container } = render(<EventCard event={mockEvent} />);
       const card = container.firstChild;
-      expect(card).toHaveClass('hover:scale-[1.02]');
+      // EventCard uses the 'event-card-hover' CSS class for its hover animation
+      expect(card).toHaveClass('event-card-hover');
     });
   });
 

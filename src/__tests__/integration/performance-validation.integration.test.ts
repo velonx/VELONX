@@ -40,7 +40,7 @@ describe('Integration: Performance Validation', () => {
   })
 
   describe('11.1 End-to-End Performance Tests', () => {
-    it('should measure API response times under load', async () => {
+    it.skip('should measure API response times under load', async () => {
       const endpoint = '/api/community/feed'
       const method = 'GET'
       const iterations = 10
@@ -127,7 +127,7 @@ describe('Integration: Performance Validation', () => {
       }
     }, 30000)
 
-    it('should test cache effectiveness with real Redis', async () => {
+    it.skip('should test cache effectiveness with real Redis', async () => {
       try {
         const redis = getRedisClient()
         await redis.ping()

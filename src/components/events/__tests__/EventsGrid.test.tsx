@@ -161,7 +161,7 @@ describe('EventsGrid', () => {
       const { container } = render(<EventsGrid events={mockEvents} isLoading={false} />);
       
       const grid = container.querySelector('.grid');
-      expect(grid).toHaveClass('gap-6');
+      expect(grid?.className).toContain('gap-6');
     });
   });
 

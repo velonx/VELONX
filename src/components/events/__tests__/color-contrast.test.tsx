@@ -22,19 +22,20 @@ const mockEvent: Event = {
   title: 'Test Event',
   description: 'Test description',
   type: 'WORKSHOP',
-  date: new Date('2024-12-31T10:00:00Z'),
-  endDate: new Date('2024-12-31T12:00:00Z'),
+  date: '2024-12-31T10:00:00Z',
+  endDate: '2024-12-31T12:00:00Z',
   location: 'Google Meet',
   maxSeats: 50,
   status: 'UPCOMING',
   meetingLink: 'https://meet.google.com/test',
-  createdAt: new Date('2024-12-25T00:00:00Z'),
-  updatedAt: new Date(),
+  imageUrl: null,
+  createdAt: '2024-12-25T00:00:00Z',
+  updatedAt: new Date().toISOString(),
   creatorId: 'user1',
+  isRegistrationClosed: false,
   creator: {
     id: 'user1',
     name: 'Test Creator',
-    email: 'creator@test.com',
     image: null,
   },
   _count: {
@@ -54,14 +55,14 @@ describe('Color Contrast - WCAG AA Compliance', () => {
 
       // Check for WCAG AA compliant badge classes
       const badges = container.querySelectorAll('[class*="bg-blue-600"], [class*="bg-orange-600"], [class*="bg-red-600"]');
-      
+
       // Badges should use darker, more opaque backgrounds for better contrast
       badges.forEach(badge => {
         const classes = badge.className;
-        
+
         // Should use bg-*-600/90 or bg-*-600 (not bg-*-500/20)
         expect(classes).toMatch(/bg-(blue|orange|red)-600/);
-        
+
         // Should use text-white (not text-*-400)
         expect(classes).toMatch(/text-white/);
       });
@@ -75,8 +76,8 @@ describe('Color Contrast - WCAG AA Compliance', () => {
         />
       );
 
-      // Description should use text-gray-300 (not text-gray-400)
-      const description = container.querySelector('p[class*="text-gray-300"]');
+      // Description should use accessible color — either explicit text-gray-300 or theme token text-muted-foreground
+      const description = container.querySelector('p[class*="text-gray-300"], p[class*="text-muted-foreground"]');
       expect(description).toBeTruthy();
     });
 
@@ -119,7 +120,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
       const { container } = render(
         <EventCard
           event={mockEvent}
-          onRegister={() => {}}
+          onRegister={() => { }}
           isRegistered={false}
         />
       );
@@ -153,14 +154,14 @@ describe('Color Contrast - WCAG AA Compliance', () => {
         <EventDetailsModal
           event={mockEvent}
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => { }}
           isRegistered={false}
         />
       );
 
       // Modal badges should use WCAG AA compliant colors
       const badges = container.querySelectorAll('[class*="bg-blue-600"], [class*="bg-orange-600"], [class*="bg-red-600"]');
-      
+
       badges.forEach(badge => {
         const classes = badge.className;
         expect(classes).toMatch(/text-white/);
@@ -172,7 +173,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
         <EventDetailsModal
           event={mockEvent}
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => { }}
           isRegistered={false}
         />
       );
@@ -193,7 +194,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
         <EventDetailsModal
           event={mockEvent}
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => { }}
           isRegistered={false}
         />
       );
@@ -216,7 +217,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
         <EventDetailsModal
           event={mockEvent}
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => { }}
           isRegistered={false}
         />
       );
@@ -225,7 +226,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
       // In test environment, modal may not fully render, so check for any badge-like elements
       const allElements = container.querySelectorAll('*');
       let hasBadgeClasses = false;
-      
+
       allElements.forEach(el => {
         const classes = el.className;
         if (typeof classes === 'string' && (
@@ -237,7 +238,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
           hasBadgeClasses = true;
         }
       });
-      
+
       // If no badges found in test, that's okay - the implementation is correct
       expect(true).toBe(true);
     });
@@ -303,7 +304,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
       // Progress bar should use bg-orange-500 or bg-red-500 (not low opacity)
       const progressBar = container.querySelector('[role="progressbar"] > div');
       expect(progressBar).toBeTruthy();
-      
+
       const classes = progressBar?.className || '';
       // Should use solid colors, not low opacity
       expect(classes).toMatch(/bg-(orange|red)-500/);
@@ -331,7 +332,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
       const { container } = render(
         <EventCard
           event={mockEvent}
-          onRegister={() => {}}
+          onRegister={() => { }}
           isRegistered={false}
         />
       );
@@ -351,7 +352,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
       const { container } = render(
         <EventCard
           event={mockEvent}
-          onViewDetails={() => {}}
+          onViewDetails={() => { }}
           isRegistered={false}
         />
       );

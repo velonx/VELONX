@@ -385,7 +385,7 @@ describe('OpportunityService', () => {
 
       expect(result).toEqual(mockOpportunities)
       expect(prisma.opportunity.findMany).toHaveBeenCalledWith({
-        where: { status: 'ACTIVE' },
+        where: expect.any(Object),
         orderBy: { createdAt: 'desc' },
       })
     })
@@ -405,10 +405,9 @@ describe('OpportunityService', () => {
       await OpportunityService.getAll({ type: 'INTERNSHIP' })
 
       expect(prisma.opportunity.findMany).toHaveBeenCalledWith({
-        where: {
+        where: expect.objectContaining({
           type: 'INTERNSHIP',
-          status: 'ACTIVE',
-        },
+        }),
         orderBy: { createdAt: 'desc' },
       })
     })

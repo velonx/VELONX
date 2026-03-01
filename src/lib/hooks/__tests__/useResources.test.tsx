@@ -183,22 +183,22 @@ describe('useResources', () => {
     // Wait for initial error
     await waitFor(() => {
       expect(result.current.error).toBeTruthy();
-    });
+    }, { timeout: 3000 });
 
     expect(resourcesApi.list).toHaveBeenCalledTimes(1);
 
-    // Call retry
-    await result.current.retry();
+    // Call retry — hook may delay before retrying
+    result.current.retry();
 
-    // Wait for retry to complete
+    // Wait for retry to complete with extended timeout for internal delay
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
-    });
+      expect(result.current.error).toBeNull();
+    }, { timeout: 4000 });
 
     // Should have called API twice (initial + 1 retry)
     expect(resourcesApi.list).toHaveBeenCalledTimes(2);
     expect(result.current.resources).toEqual(mockResources);
-    expect(result.current.error).toBeNull();
   });
 
   it('should preserve filter state during retry', async () => {

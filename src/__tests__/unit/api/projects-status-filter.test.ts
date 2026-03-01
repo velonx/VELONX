@@ -17,6 +17,23 @@ vi.mock('@/lib/services/project.service', () => ({
   },
 }));
 
+
+// Mock prisma to prevent DB connection attempts
+vi.mock('@/lib/prisma', () => ({
+  prisma: {
+    project: {
+      findMany: vi.fn().mockResolvedValue([]),
+      count: vi.fn().mockResolvedValue(0),
+      findUnique: vi.fn().mockResolvedValue(null),
+      create: vi.fn().mockResolvedValue({}),
+      update: vi.fn().mockResolvedValue({}),
+      delete: vi.fn().mockResolvedValue({}),
+    },
+    $connect: vi.fn().mockResolvedValue(undefined),
+    $disconnect: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
 describe('GET /api/projects - Status Filter', () => {
   beforeEach(() => {
     vi.clearAllMocks();
