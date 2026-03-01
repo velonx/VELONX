@@ -1,0 +1,17 @@
+# *
+User-agent: *
+Allow: /
+
+# *
+User-agent: *
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api
+Disallow: /auth
+Disallow: /settings
+
+# Host
+Host: https://velonx.com
+
+# Sitemaps
+Sitemap: https://velonx.com/sitemap.xml

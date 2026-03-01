@@ -27,8 +27,10 @@ app.prepare().then(async () => {
 
   // Initialize Prisma database connection first
   try {
-    const prismaModule = await import('./src/lib/prisma');
-    const initializePrisma = prismaModule.initializePrisma || (prismaModule.default && prismaModule.default.initializePrisma);
+    // Import from the source during development, from build during production
+    const prismaPath = dev ? './src/lib/prisma.ts' : './src/lib/prisma';
+    const prismaModule = await import(prismaPath);
+    const { initializePrisma } = prismaModule;
 
     if (typeof initializePrisma !== 'function') {
       throw new Error(`initializePrisma is not a function. Type: ${typeof initializePrisma}`);
@@ -39,8 +41,11 @@ app.prepare().then(async () => {
   } catch (error) {
     console.error('[Server] Failed to initialize database:', error.stack || error)
     console.error('[Server] Please check your DATABASE_URL environment variable')
-    process.exit(1)
-
+    
+    // In production, this is a fatal error
+    if (!dev) {
+      process.exit(1)
+    }
   }
 
   // Create HTTP server
@@ -57,10 +62,11 @@ app.prepare().then(async () => {
 
   // Initialize WebSocket server (dynamic import for ES modules)
   try {
-    const { getWebSocketServer } = await import('./src/lib/websocket/server')
-    const { initializePubSub } = await import('./src/lib/websocket/pubsub')
-    const { initializeRedis } = await import('./src/lib/redis')
-    const { disconnectPrisma } = await import('./src/lib/prisma')
+    const basePath = dev ? './src/lib' : './src/lib';
+    const { getWebSocketServer } = await import(`${basePath}/websocket/server`)
+    const { initializePubSub } = await import(`${basePath}/websocket/pubsub`)
+    const { initializeRedis } = await import(`${basePath}/redis`)
+    const { disconnectPrisma } = await import(dev ? './src/lib/prisma.ts' : './src/lib/prisma')
 
     // Initialize Redis first
     await initializeRedis()

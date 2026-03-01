@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -12,7 +12,22 @@ import SplineScene from "@/components/SplineScene";
 import { ArrowRight, Sparkles, Rocket, Users, Trophy, Code, Mail, Lock, User, Eye, EyeOff, Gift } from "lucide-react";
 import { authApi } from "@/lib/api/client";
 
-export default function SignupPage() {
+export default function SignupPageWrapper() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="text-center">
+                    <Rocket className="w-16 h-16 mx-auto mb-4 animate-pulse text-primary" />
+                    <p className="text-lg text-muted-foreground">Loading signup...</p>
+                </div>
+            </div>
+        }>
+            <SignupPage />
+        </Suspense>
+    );
+}
+
+function SignupPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);

@@ -41,7 +41,15 @@ const LoadingFallback = () => (
     </div>
 );
 
-export default function EventsPage() {
+export default function EventsPageWrapper() {
+    return (
+        <Suspense fallback={<LoadingFallback />}>
+            <EventsPage />
+        </Suspense>
+    );
+}
+
+function EventsPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const isAdmin = session?.user?.role === "ADMIN";

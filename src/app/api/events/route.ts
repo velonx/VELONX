@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
           isRegistrationClosed: !statusInfo.isOpen,
           registrationClosureReason: statusInfo.reason,
           isUserRegistered,
-        } as Event;
+        };
       })
     );
     

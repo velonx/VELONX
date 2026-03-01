@@ -3,6 +3,9 @@ import { redisManager } from '@/lib/redis'
 import { prisma } from '@/lib/prisma'
 import { initializeServices } from '@/lib/init'
 
+// Force dynamic rendering - skip pre-rendering during build
+export const dynamic = 'force-dynamic'
+
 /**
  * Health Check Endpoint
  * GET /api/health

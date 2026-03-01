@@ -110,9 +110,9 @@ export default function Home() {
             </ScrollReveal>
 
 
-            {/* Community Showcase Section - Carousel */}
+            {/* Community Showcase Section - Parallax Gallery */}
             <div className="w-full py-16 sm:py-20 md:py-24 lg:py-28 bg-gradient-to-b from-background via-[#1a1a2e] to-background overflow-hidden">
-                <Carousel3
+                <ParallaxGallery
                     title="Community Showcase"
                     description="Discover amazing projects built by our talented community members"
                     slides={[

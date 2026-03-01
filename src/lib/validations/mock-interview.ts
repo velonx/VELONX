@@ -15,10 +15,10 @@ export const mockInterviewSchema = z.object({
     "SYSTEM_DESIGN",
     "BEHAVIORAL",
   ], {
-    errorMap: () => ({ message: "Invalid interview type" }),
+    message: "Invalid interview type",
   }),
   experienceLevel: z.enum(["INTERN", "JUNIOR", "SENIOR"], {
-    errorMap: () => ({ message: "Invalid experience level" }),
+    message: "Invalid experience level",
   }),
 }).refine(
   (data) => {
@@ -34,7 +34,7 @@ export const mockInterviewSchema = z.object({
 
 export const interviewApprovalSchema = z.object({
   action: z.enum(['approve', 'reject'], {
-    errorMap: () => ({ message: "Action must be either 'approve' or 'reject'" }),
+    message: "Action must be either 'approve' or 'reject'",
   }),
   feedback: z.string().optional(),
 }).refine(

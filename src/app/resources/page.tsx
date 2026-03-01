@@ -18,6 +18,7 @@
 'use client';
 
 import * as React from 'react';
+import { Suspense } from 'react';
 import { Sparkles, Search, X } from 'lucide-react';
 import {
   ResourcesGrid,
@@ -41,7 +42,22 @@ import { ScreenReaderAnnouncer } from '@/components/screen-reader-announcer';
  * 
  * Validates: Requirements 1.1, 1.2, 1.3, 2.1, 3.1, 5.1, 8.4
  */
-export default function ResourcesPage() {
+export default function ResourcesPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Search className="w-16 h-16 mx-auto mb-4 animate-pulse text-primary" />
+          <p className="text-lg text-muted-foreground">Loading resources...</p>
+        </div>
+      </div>
+    }>
+      <ResourcesPage />
+    </Suspense>
+  );
+}
+
+function ResourcesPage() {
   // Screen reader announcements
   const [announcement, setAnnouncement] = React.useState('');
 

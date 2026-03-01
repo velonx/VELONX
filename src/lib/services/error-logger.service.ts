@@ -358,7 +358,6 @@ export function logValidationError(
   ErrorLogger.info(
     'VALIDATION_ERROR',
     `Validation failed for fields: ${fields.join(', ')}`,
-    undefined,
     {
       ...options,
       context: {

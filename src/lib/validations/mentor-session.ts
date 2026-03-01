@@ -24,7 +24,7 @@ export const createSessionSchema = z.object({
 
 export const sessionApprovalSchema = z.object({
   action: z.enum(['approve', 'reject'], {
-    errorMap: () => ({ message: "Action must be either 'approve' or 'reject'" }),
+    message: "Action must be either 'approve' or 'reject'",
   }),
   reason: z.string().optional(),
 }).refine(

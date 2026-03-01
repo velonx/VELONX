@@ -155,8 +155,8 @@ export class AchievementService {
                     userId,
                     type: 'AWARD',
                     title: `🏆 ${achievement.title}`,
-                    message: achievement.description,
-                    link: '/profile', // Link to profile achievements
+                    description: achievement.description,
+                    actionUrl: '/profile', // Link to profile achievements
                     read: false,
                 },
             });

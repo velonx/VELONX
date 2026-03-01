@@ -1,8 +1,7 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { FileText, CheckCircle, AlertCircle, Scale, PenTool } from "lucide-react";
-
-// Enable ISR with revalidation every 30 days (2592000 seconds)
-export const revalidate = 2592000;
 
 export default function TermsPage() {
     return (

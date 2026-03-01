@@ -456,7 +456,7 @@ export class PerformanceMonitorService {
         if (metrics.length === 0) continue
         
         // Parse and aggregate metrics
-        const parsedMetrics = metrics.map((m: string) => JSON.parse(m))
+        const parsedMetrics = (metrics as string[]).map((m) => JSON.parse(m))
         const durations = parsedMetrics.map((m: any) => m.duration)
         const errors = parsedMetrics.filter((m: any) => m.statusCode >= 400).length
         
@@ -508,7 +508,7 @@ export class PerformanceMonitorService {
           { byScore: true }
         )
         
-        const parsedMetrics = metrics.map((m: string) => JSON.parse(m))
+        const parsedMetrics = (metrics as string[]).map((m) => JSON.parse(m))
         allDurations.push(...parsedMetrics.map((m: any) => m.duration))
       }
       
@@ -520,8 +520,8 @@ export class PerformanceMonitorService {
         { byScore: true }
       )
       
-      const slowQueries = slowQueriesData
-        .map((m: string) => JSON.parse(m))
+      const slowQueries = (slowQueriesData as string[])
+        .map((m) => JSON.parse(m))
         .sort((a: any, b: any) => b.duration - a.duration)
         .slice(0, 10) // Top 10 slowest queries
       
@@ -572,7 +572,7 @@ export class PerformanceMonitorService {
         )
         
         // Handle both string and object responses from Redis
-        const parsedMetrics = metrics.map((m: string | object) => {
+        const parsedMetrics = (metrics as (string | object)[]).map((m) => {
           if (typeof m === 'string') {
             try {
               return JSON.parse(m)
@@ -642,7 +642,7 @@ export class PerformanceMonitorService {
           { byScore: true }
         )
         
-        const parsedMetrics = metrics.map((m: string) => JSON.parse(m))
+        const parsedMetrics = (metrics as string[]).map((m) => JSON.parse(m))
         allLoadTimes.push(...parsedMetrics.map((m: any) => m.loadTime))
       }
       

@@ -25,9 +25,9 @@ export async function GET(request: NextRequest) {
     const result = await resourceService.listResources({
       page: queryParams.page,
       pageSize: queryParams.pageSize,
-      category: queryParams.category,
-      type: queryParams.type,
-      search: queryParams.search,
+      category: queryParams.category ?? undefined,
+      type: queryParams.type ?? undefined,
+      search: queryParams.search ?? undefined,
     });
     
     return NextResponse.json({

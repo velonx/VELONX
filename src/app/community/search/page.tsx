@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -10,7 +11,7 @@ import { SearchResults } from "@/components/community/SearchResults";
 import { SearchBar } from "@/components/community/SearchBar";
 import { useSearch } from "@/lib/hooks/useSearch";
 
-export default function SearchPage() {
+function SearchPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
@@ -40,10 +41,16 @@ export default function SearchPage() {
   }, [debouncedQuery, activeTab, router]);
 
   // Fetch search results
-  const { results, loading } = useSearch(debouncedQuery);
+  const { results, isSearching, search } = useSearch();
+
+  // Trigger search when debounced query changes
+  useEffect(() => {
+    if (debouncedQuery) {
+      search(debouncedQuery);
+    }
+  }, [debouncedQuery, search]);
 
   const totalResults = 
-    (results?.rooms?.length || 0) +
     (results?.groups?.length || 0) +
     (results?.posts?.length || 0) +
     (results?.users?.length || 0);
@@ -116,7 +123,7 @@ export default function SearchPage() {
             </div>
 
             {/* Results Count */}
-            {debouncedQuery && !loading && (
+            {debouncedQuery && !isSearching && (
               <div className="flex items-center justify-center gap-2">
                 <Badge variant="secondary">
                   {totalResults} {totalResults === 1 ? 'result' : 'results'} found
@@ -134,26 +141,18 @@ export default function SearchPage() {
         <div className="container mx-auto px-4">
           {debouncedQuery ? (
             <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 max-w-3xl mx-auto mb-8">
+              <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto mb-8">
                 <TabsTrigger value="all">
                   All
-                  {!loading && totalResults > 0 && (
+                  {!isSearching && totalResults > 0 && (
                     <Badge variant="secondary" className="ml-2">
                       {totalResults}
                     </Badge>
                   )}
                 </TabsTrigger>
-                <TabsTrigger value="rooms">
-                  Rooms
-                  {!loading && results?.rooms && results.rooms.length > 0 && (
-                    <Badge variant="secondary" className="ml-2">
-                      {results.rooms.length}
-                    </Badge>
-                  )}
-                </TabsTrigger>
                 <TabsTrigger value="groups">
                   Groups
-                  {!loading && results?.groups && results.groups.length > 0 && (
+                  {!isSearching && results?.groups && results.groups.length > 0 && (
                     <Badge variant="secondary" className="ml-2">
                       {results.groups.length}
                     </Badge>
@@ -161,7 +160,7 @@ export default function SearchPage() {
                 </TabsTrigger>
                 <TabsTrigger value="posts">
                   Posts
-                  {!loading && results?.posts && results.posts.length > 0 && (
+                  {!isSearching && results?.posts && results.posts.length > 0 && (
                     <Badge variant="secondary" className="ml-2">
                       {results.posts.length}
                     </Badge>
@@ -169,7 +168,7 @@ export default function SearchPage() {
                 </TabsTrigger>
                 <TabsTrigger value="users">
                   Users
-                  {!loading && results?.users && results.users.length > 0 && (
+                  {!isSearching && results?.users && results.users.length > 0 && (
                     <Badge variant="secondary" className="ml-2">
                       {results.users.length}
                     </Badge>
@@ -180,45 +179,32 @@ export default function SearchPage() {
               <TabsContent value="all">
                 <SearchResults 
                   results={results}
-                  loading={loading}
+                  isSearching={isSearching}
                   query={debouncedQuery}
-                  type="all"
-                />
-              </TabsContent>
-
-              <TabsContent value="rooms">
-                <SearchResults 
-                  results={results}
-                  loading={loading}
-                  query={debouncedQuery}
-                  type="rooms"
                 />
               </TabsContent>
 
               <TabsContent value="groups">
                 <SearchResults 
                   results={results}
-                  loading={loading}
+                  isSearching={isSearching}
                   query={debouncedQuery}
-                  type="groups"
                 />
               </TabsContent>
 
               <TabsContent value="posts">
                 <SearchResults 
                   results={results}
-                  loading={loading}
+                  isSearching={isSearching}
                   query={debouncedQuery}
-                  type="posts"
                 />
               </TabsContent>
 
               <TabsContent value="users">
                 <SearchResults 
                   results={results}
-                  loading={loading}
+                  isSearching={isSearching}
                   query={debouncedQuery}
-                  type="users"
                 />
               </TabsContent>
             </Tabs>
@@ -232,5 +218,21 @@ export default function SearchPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen pt-24 bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Search className="w-16 h-16 mx-auto mb-4 opacity-50 animate-pulse" />
+          <p className="text-lg text-muted-foreground">Loading search...</p>
+        </div>
+      </div>
+    }>
+      <SearchPageContent />
+    </Suspense>
   );
 }

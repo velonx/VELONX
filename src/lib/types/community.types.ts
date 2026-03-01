@@ -222,6 +222,10 @@ export type WSMessageType =
   | 'POST_DELETED'
   | 'REACTION_ADDED'
   | 'COMMENT_ADDED'
+  | 'PING'
+  | 'PONG'
+  | 'SUBSCRIBE'
+  | 'UNSUBSCRIBE'
 
 /**
  * Base WebSocket message structure

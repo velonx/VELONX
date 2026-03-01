@@ -346,10 +346,56 @@ export class LeaderboardService {
       },
     };
   }
+
+  /**
+   * Award XP to a user
+   */
+  static async awardXP(
+    userId: string,
+    amount: number,
+    reason: string
+  ): Promise<{
+    userId: string;
+    newXP: number;
+    newLevel: number;
+    awarded: number;
+  }> {
+    // Create XP transaction
+    await prisma.xPTransaction.create({
+      data: {
+        userId,
+        amount,
+        reason,
+        source: 'MANUAL',
+        timestamp: new Date(),
+      },
+    });
+
+    // Update user XP
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        xp: { increment: amount },
+      },
+      select: {
+        id: true,
+        xp: true,
+        level: true,
+      },
+    });
+
+    return {
+      userId: user.id,
+      newXP: user.xp,
+      newLevel: user.level,
+      awarded: amount,
+    };
+  }
 }
 
 // Keep legacy export for backward compatibility
 export const leaderboardService = {
   getLeaderboard: (params: any) => LeaderboardService.getLeaderboard('ALL_TIME', params.pageSize || 10),
   getUserRank: (userId: string) => LeaderboardService.getUserRank(userId, 'ALL_TIME'),
+  awardXP: (userId: string, amount: number, reason: string) => LeaderboardService.awardXP(userId, amount, reason),
 };

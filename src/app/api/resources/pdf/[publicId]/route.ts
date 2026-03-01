@@ -22,7 +22,7 @@ import { handleError } from '@/lib/utils/errors';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { publicId: string } }
+  { params }: { params: Promise<{ publicId: string }> }
 ) {
   try {
     // Verify user is authenticated
@@ -41,7 +41,7 @@ export async function GET(
       );
     }
 
-    const { publicId } = params;
+    const { publicId } = await params;
 
     if (!publicId) {
       return NextResponse.json(

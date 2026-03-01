@@ -29,23 +29,23 @@ interface FilterPanelProps {
 }
 
 const CATEGORY_OPTIONS: { value: ResourceCategory; label: string; description: string }[] = [
-  { value: 'PROGRAMMING', label: 'Programming', description: 'Code & algorithms' },
-  { value: 'DESIGN', label: 'Design', description: 'UI/UX & graphics' },
-  { value: 'BUSINESS', label: 'Business', description: 'Strategy & management' },
-  { value: 'DATA_SCIENCE', label: 'Data Science', description: 'Analytics & ML' },
-  { value: 'DEVOPS', label: 'DevOps', description: 'Infrastructure & CI/CD' },
-  { value: 'MOBILE', label: 'Mobile', description: 'iOS & Android' },
-  { value: 'WEB', label: 'Web', description: 'Frontend & backend' },
-  { value: 'OTHER', label: 'Other', description: 'Miscellaneous' },
+  { value: ResourceCategory.PROGRAMMING, label: 'Programming', description: 'Code & algorithms' },
+  { value: ResourceCategory.DESIGN, label: 'Design', description: 'UI/UX & graphics' },
+  { value: ResourceCategory.BUSINESS, label: 'Business', description: 'Strategy & management' },
+  { value: ResourceCategory.DATA_SCIENCE, label: 'Data Science', description: 'Analytics & ML' },
+  { value: ResourceCategory.DEVOPS, label: 'DevOps', description: 'Infrastructure & CI/CD' },
+  { value: ResourceCategory.MOBILE, label: 'Mobile', description: 'iOS & Android' },
+  { value: ResourceCategory.WEB, label: 'Web', description: 'Frontend & backend' },
+  { value: ResourceCategory.OTHER, label: 'Other', description: 'Miscellaneous' },
 ];
 
 const TYPE_OPTIONS: { value: ResourceType; label: string; icon: string }[] = [
-  { value: 'ARTICLE', label: 'Article', icon: '📄' },
-  { value: 'VIDEO', label: 'Video', icon: '🎥' },
-  { value: 'COURSE', label: 'Course', icon: '🎓' },
-  { value: 'BOOK', label: 'Book', icon: '📚' },
-  { value: 'TOOL', label: 'Tool', icon: '🛠️' },
-  { value: 'DOCUMENTATION', label: 'Documentation', icon: '📖' },
+  { value: ResourceType.ARTICLE, label: 'Article', icon: '📄' },
+  { value: ResourceType.VIDEO, label: 'Video', icon: '🎥' },
+  { value: ResourceType.COURSE, label: 'Course', icon: '🎓' },
+  { value: ResourceType.BOOK, label: 'Book', icon: '📚' },
+  { value: ResourceType.TOOL, label: 'Tool', icon: '🛠️' },
+  { value: ResourceType.DOCUMENTATION, label: 'Documentation', icon: '📖' },
 ];
 
 export const FilterPanelComponent = ({

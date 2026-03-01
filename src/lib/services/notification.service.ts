@@ -923,7 +923,8 @@ export class NotificationService {
         return true; // Default to sending if user not found
       }
 
-      return user[preferenceField] as boolean;
+      const value = user[preferenceField];
+      return typeof value === 'boolean' ? value : true;
     } catch (error) {
       console.error('[Notification] Error checking community preference:', error);
       return true; // Default to sending if check fails
@@ -1318,10 +1319,6 @@ export class NotificationService {
         type: NotificationType.EVENT,
         createdAt: {
           gte: fiveMinutesAgo,
-        },
-        metadata: {
-          path: ['eventId'],
-          equals: closureData.eventId,
         },
         title: 'Event Registration Closed',
       },

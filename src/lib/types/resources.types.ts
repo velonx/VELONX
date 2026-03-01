@@ -3,8 +3,10 @@
  * Feature: resources-page-ui-improvements
  */
 
+import type { Resource as APIResource } from '@/lib/api/types';
+
 // Re-export Resource type from API types for convenience
-export type { Resource } from '@/lib/api/types';
+export type Resource = APIResource;
 
 /**
  * Resource Category Enum

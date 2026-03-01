@@ -1,7 +1,18 @@
 import { Resend } from 'resend';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization of Resend client
+let resend: Resend | null = null;
+
+function getResendClient(): Resend {
+    if (!resend) {
+        const apiKey = process.env.RESEND_API_KEY;
+        if (!apiKey) {
+            throw new Error('RESEND_API_KEY environment variable is not set');
+        }
+        resend = new Resend(apiKey);
+    }
+    return resend;
+}
 
 // Email configuration
 const EMAIL_FROM = process.env.EMAIL_FROM || 'VELONX <onboarding@resend.dev>';
@@ -20,7 +31,8 @@ export class EmailService {
     ): Promise<{ success: boolean; error?: string }> {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
-                const { data, error } = await resend.emails.send({
+                const client = getResendClient();
+                const { data, error } = await client.emails.send({
                     from: EMAIL_FROM,
                     to,
                     subject,

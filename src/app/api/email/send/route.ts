@@ -3,6 +3,9 @@ import { auth } from '@/auth';
 import { EmailService } from '@/lib/services/email.service';
 import { z } from 'zod';
 
+// Force dynamic rendering - skip pre-rendering during build
+export const dynamic = 'force-dynamic';
+
 // Validation schema
 const sendEmailSchema = z.object({
     type: z.enum([

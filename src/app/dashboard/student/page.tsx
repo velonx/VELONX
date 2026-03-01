@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
@@ -85,7 +85,7 @@ interface ExtendedUser {
     level?: number;
 }
 
-export default function StudentDashboard() {
+function StudentDashboardContent() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -830,5 +830,21 @@ export default function StudentDashboard() {
                 onClose={() => setShowFollowingDialog(false)}
             />
         </div>
+    );
+}
+
+
+export default function StudentDashboard() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="text-center">
+                    <Loader2 className="w-16 h-16 mx-auto mb-4 animate-spin text-primary" />
+                    <p className="text-lg text-muted-foreground">Loading dashboard...</p>
+                </div>
+            </div>
+        }>
+            <StudentDashboardContent />
+        </Suspense>
     );
 }

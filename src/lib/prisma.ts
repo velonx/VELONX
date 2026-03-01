@@ -12,11 +12,28 @@ const globalForPrisma = globalThis as unknown as {
  * Create a simple Prisma client
  */
 function createPrismaClient() {
+  // During build time, DATABASE_URL might not be set
+  // In this case, create a minimal client that will fail gracefully
+  const databaseUrl = process.env.DATABASE_URL;
+  
+  if (!databaseUrl) {
+    console.warn('[Prisma] DATABASE_URL not set - creating stub client for build time');
+    // Return a stub client that will throw errors if actually used
+    return new PrismaClient({
+      log: ['error'],
+      datasources: {
+        db: {
+          url: 'mongodb://localhost:27017/stub', // Stub URL for build time
+        },
+      },
+    });
+  }
+
   const client = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
     datasources: {
       db: {
-        url: process.env.DATABASE_URL,
+        url: databaseUrl,
       },
     },
   });

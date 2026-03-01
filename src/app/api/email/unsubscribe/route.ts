@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
+// Force dynamic rendering - skip pre-rendering during build
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/email/unsubscribe?token=xxx
  * Unsubscribe user from all emails

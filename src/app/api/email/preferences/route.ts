@@ -3,6 +3,9 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
+// Force dynamic rendering - skip pre-rendering during build
+export const dynamic = 'force-dynamic';
+
 // Validation schema
 const preferencesSchema = z.object({
     emailNotifications: z.boolean().optional(),

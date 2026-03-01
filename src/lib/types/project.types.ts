@@ -183,10 +183,10 @@ export interface CompletionValidation {
  * Project with completion button state
  * Used in ProjectCard component
  */
-export interface ProjectWithCompletionState extends Project {
+export interface ProjectWithCompletionState extends Omit<Project, 'completedAt'> {
   canComplete: boolean;
   isCompleting?: boolean;
-  completedAt?: Date;
+  completedAt?: Date | string | null;
   completedBy?: string;
 }
 

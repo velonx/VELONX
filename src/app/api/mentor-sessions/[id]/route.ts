@@ -90,6 +90,20 @@ export async function PATCH(
       // Validate approval schema
       const validatedData = sessionApprovalSchema.parse(body);
       
+      // Ensure user ID exists
+      if (!session.user.id) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: "INVALID_SESSION",
+              message: "User ID not found in session",
+            },
+          },
+          { status: 401 }
+        );
+      }
+      
       let mentorSession;
       
       if (validatedData.action === 'approve') {
