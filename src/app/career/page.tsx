@@ -288,12 +288,13 @@ export default function CareerPage() {
                             ) : internships.length > 0 ? (
                                 <div className="grid md:grid-cols-2 gap-6">
                                     {internships.map((internship) => (
-                                        <Card key={internship.id} className="bg-background border border-border hover:shadow-lg transition-all">
-                                            <CardHeader>
+                                        <Card key={internship.id} className="bg-[#141A2B] border-[#2A3441] hover:shadow-2xl hover:shadow-[#219EBC]/10 transition-all rounded-[2rem] overflow-hidden">
+                                            <div className="h-1.5 w-full bg-gradient-to-r from-[#219EBC] to-blue-500" />
+                                            <CardHeader className="p-6 sm:p-8">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
-                                                        <CardTitle className="text-foreground text-lg">{internship.title}</CardTitle>
-                                                        <CardDescription className="text-muted-foreground font-medium">{internship.company}</CardDescription>
+                                                        <CardTitle className="text-white text-xl md:text-2xl mb-2" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, letterSpacing: '1px' }}>{internship.title}</CardTitle>
+                                                        <CardDescription className="text-[#8E9AAF] font-medium text-sm md:text-base" style={{ fontFamily: "'Montserrat', sans-serif" }}>{internship.company}</CardDescription>
                                                     </div>
                                                     {internship.imageUrl && (
                                                         <>
@@ -318,32 +319,36 @@ export default function CareerPage() {
                                                     )}
                                                 </div>
                                             </CardHeader>
-                                            <CardContent>
-                                                <p className="text-muted-foreground text-sm line-clamp-3 mb-3">{internship.description}</p>
-                                                <div className="space-y-1">
-                                                    <p className="text-xs font-semibold text-foreground">Requirements:</p>
-                                                    <ul className="text-xs text-muted-foreground space-y-1">
+                                            <CardContent className="px-6 sm:px-8">
+                                                <p className="text-[#8E9AAF] text-sm md:text-base line-clamp-3 mb-4 leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>{internship.description}</p>
+                                                <div className="space-y-2 bg-[#1A2238] p-4 rounded-xl border border-[#2A3441]">
+                                                    <p className="text-sm font-semibold text-white">Requirements:</p>
+                                                    <ul className="text-sm text-[#8E9AAF] space-y-1.5">
                                                         {internship.requirements.slice(0, 3).map((req: string, idx: number) => (
-                                                            <li key={idx}>• {req}</li>
+                                                            <li key={idx} className="flex items-start gap-2">
+                                                                <span className="text-[#219EBC] mt-0.5">•</span>
+                                                                <span>{req}</span>
+                                                            </li>
                                                         ))}
                                                     </ul>
                                                 </div>
                                             </CardContent>
-                                            <CardFooter>
+                                            <CardFooter className="px-6 sm:px-8 pb-8">
                                                 <Button
                                                     onClick={() => handleApply(internship.applyUrl, internship.title)}
-                                                    className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-full"
+                                                    className="w-full bg-gradient-to-r from-orange-400 to-[#FFB703] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#FFB703]/20 border border-orange-300 transition-all"
+                                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                                 >
-                                                    Apply Now <ExternalLink className="w-4 h-4 ml-2" />
+                                                    Apply Now <ExternalLink className="w-5 h-5 ml-2" />
                                                 </Button>
                                             </CardFooter>
                                         </Card>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-background rounded-3xl border border-border">
-                                    <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                    <p className="text-muted-foreground italic">No internships available at the moment. Check back soon!</p>
+                                <div className="text-center py-20 bg-[#141A2B] rounded-3xl border border-[#2A3441]">
+                                    <GraduationCap className="w-16 h-16 text-[#8E9AAF] opacity-50 mx-auto mb-4" />
+                                    <p className="text-[#8E9AAF] text-lg font-medium" style={{ fontFamily: "'Indie Flower', cursive" }}>No internships available at the moment. Check back soon!</p>
                                 </div>
                             )}
                         </TabsContent>
@@ -356,12 +361,13 @@ export default function CareerPage() {
                             ) : jobs.length > 0 ? (
                                 <div className="grid md:grid-cols-2 gap-6">
                                     {jobs.map((job) => (
-                                        <Card key={job.id} className="bg-background border border-border hover:shadow-lg transition-all">
-                                            <CardHeader>
+                                        <Card key={job.id} className="bg-[#141A2B] border-[#2A3441] hover:shadow-2xl hover:shadow-[#219EBC]/10 transition-all rounded-[2rem] overflow-hidden">
+                                            <div className="h-1.5 w-full bg-gradient-to-r from-[#219EBC] to-teal-400" />
+                                            <CardHeader className="p-6 sm:p-8">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
-                                                        <CardTitle className="text-foreground text-lg">{job.title}</CardTitle>
-                                                        <CardDescription className="text-muted-foreground font-medium">{job.company}</CardDescription>
+                                                        <CardTitle className="text-white text-xl md:text-2xl mb-2" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, letterSpacing: '1px' }}>{job.title}</CardTitle>
+                                                        <CardDescription className="text-[#8E9AAF] font-medium text-sm md:text-base" style={{ fontFamily: "'Montserrat', sans-serif" }}>{job.company}</CardDescription>
                                                     </div>
                                                     {job.imageUrl && (
                                                         <>
@@ -381,32 +387,36 @@ export default function CareerPage() {
                                                     )}
                                                 </div>
                                             </CardHeader>
-                                            <CardContent>
-                                                <p className="text-muted-foreground text-sm line-clamp-3 mb-3">{job.description}</p>
-                                                <div className="space-y-1">
-                                                    <p className="text-xs font-semibold text-foreground">Requirements:</p>
-                                                    <ul className="text-xs text-muted-foreground space-y-1">
+                                            <CardContent className="px-6 sm:px-8">
+                                                <p className="text-[#8E9AAF] text-sm md:text-base line-clamp-3 mb-4 leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>{job.description}</p>
+                                                <div className="space-y-2 bg-[#1A2238] p-4 rounded-xl border border-[#2A3441]">
+                                                    <p className="text-sm font-semibold text-white">Requirements:</p>
+                                                    <ul className="text-sm text-[#8E9AAF] space-y-1.5">
                                                         {job.requirements.slice(0, 3).map((req: string, idx: number) => (
-                                                            <li key={idx}>• {req}</li>
+                                                            <li key={idx} className="flex items-start gap-2">
+                                                                <span className="text-[#219EBC] mt-0.5">•</span>
+                                                                <span>{req}</span>
+                                                            </li>
                                                         ))}
                                                     </ul>
                                                 </div>
                                             </CardContent>
-                                            <CardFooter>
+                                            <CardFooter className="px-6 sm:px-8 pb-8">
                                                 <Button
                                                     onClick={() => handleApply(job.applyUrl, job.title)}
-                                                    className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-full"
+                                                    className="w-full bg-gradient-to-r from-teal-400 to-[#219EBC] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#219EBC]/20 border border-teal-300 transition-all"
+                                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                                 >
-                                                    Apply Now <ExternalLink className="w-4 h-4 ml-2" />
+                                                    Apply Now <ExternalLink className="w-5 h-5 ml-2" />
                                                 </Button>
                                             </CardFooter>
                                         </Card>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-background rounded-3xl border border-border">
-                                    <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                    <p className="text-muted-foreground italic">No jobs available at the moment. Check back soon!</p>
+                                <div className="text-center py-20 bg-[#141A2B] rounded-3xl border border-[#2A3441]">
+                                    <Briefcase className="w-16 h-16 text-[#8E9AAF] opacity-50 mx-auto mb-4" />
+                                    <p className="text-[#8E9AAF] text-lg font-medium" style={{ fontFamily: "'Indie Flower', cursive" }}>No jobs available at the moment. Check back soon!</p>
                                 </div>
                             )}
                         </TabsContent>

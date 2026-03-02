@@ -49,63 +49,94 @@
     --radius-2xl: calc(var(--radius) + 8px);
 }
 
-/* Premium Dark Theme - DeFi/Web3 Aesthetic */
+/* Premium Light Theme */
 :root {
     --radius: 0.625rem;
-    --background: #FFFFFF;
-    --foreground: #020617;
+    --background: #F1FAEE;
+    /* Soft White */
+    --foreground: #1A2238;
+    /* Deep Navy */
     --card: #FFFFFF;
-    --card-foreground: #020617;
+    --card-foreground: #1A2238;
     --popover: #FFFFFF;
-    --popover-foreground: #020617;
-    --primary: #023047;
-    --primary-foreground: #FFFFFF;
-    --secondary: #FF7D61;
-    --secondary-foreground: #FFFFFF;
-    --muted: #F8FAFC;
-    --muted-foreground: #475569;
-    /* Improved from #64748B for better contrast */
-    --accent: #219EBC;
-    --accent-foreground: #FFFFFF;
+    --popover-foreground: #1A2238;
+    --primary: #FFB703;
+    /* Amber Gold */
+    --primary-foreground: #1A2238;
+    --secondary: #8E9AAF;
+    /* Cool Slate */
+    --secondary-foreground: #F1FAEE;
+    --muted: #E2E8F0;
+    --muted-foreground: #8E9AAF;
+    /* Cool Slate */
+    --accent: #FFB703;
+    /* Amber Gold */
+    --accent-foreground: #1A2238;
     --destructive: #DC2626;
-    /* Improved from #EF4444 for better contrast */
-    --border: #E2E8F0;
-    --input: #E2E8F0;
-    --ring: #219EBC;
+    --border: #8E9AAF;
+    /* Cool Slate */
+    --input: #8E9AAF;
+    /* Cool Slate */
+    --ring: #FFB703;
+    /* Amber Gold */
 
-    /* Brand Colors from Image */
-    --velonx-navy: #023047;
-    --velonx-teal: #219EBC;
-    --velonx-coral: #FF7D61;
-    --velonx-bg: #F8FAFC;
+    /* Brand Colors */
+    --velonx-navy: #1A2238;
+    --velonx-teal: #8E9AAF;
+    /* Using Cool Slate here */
+    --velonx-coral: #FFB703;
+    /* Using Amber Gold here */
+    --velonx-bg: #F1FAEE;
+    /* Soft White */
 }
 
 /* Dark Mode Theme */
 .dark {
-    --background: #0a0e1a;
-    --foreground: #E2E8F0;
-    --card: #141824;
-    --card-foreground: #E2E8F0;
-    --popover: #1a1f2e;
-    --popover-foreground: #E2E8F0;
-    --primary: #219EBC;
-    --primary-foreground: #020617;
-    --secondary: #FF7D61;
-    --secondary-foreground: #FFFFFF;
-    --muted: #1a1f2e;
-    --muted-foreground: #94A3B8;
-    --accent: #219EBC;
-    --accent-foreground: #020617;
+    --background: #1A2238;
+    /* Deep Navy */
+    --foreground: #F1FAEE;
+    /* Soft White */
+    --card: #141A2B;
+    /* Slightly darker Navy */
+    --card-foreground: #F1FAEE;
+    /* Soft White */
+    --popover: #1A2238;
+    /* Deep Navy */
+    --popover-foreground: #F1FAEE;
+    /* Soft White */
+    --primary: #FFB703;
+    /* Amber Gold */
+    --primary-foreground: #1A2238;
+    /* Deep Navy */
+    --secondary: #8E9AAF;
+    /* Cool Slate */
+    --secondary-foreground: #F1FAEE;
+    /* Soft White */
+    --muted: #242E4C;
+    /* Lighter Navy */
+    --muted-foreground: #8E9AAF;
+    /* Cool Slate */
+    --accent: #FFB703;
+    /* Amber Gold */
+    --accent-foreground: #1A2238;
+    /* Deep Navy */
     --destructive: #EF4444;
-    --border: #1e293b;
-    --input: #1e293b;
-    --ring: #219EBC;
+    --border: #8E9AAF;
+    /* Cool Slate */
+    --input: #8E9AAF;
+    /* Cool Slate */
+    --ring: #FFB703;
+    /* Amber Gold */
 
-    /* Brand Colors remain same but with adjusted usage */
-    --velonx-navy: #219EBC;
-    --velonx-teal: #4FC3F7;
-    --velonx-coral: #FF8E53;
-    --velonx-bg: #0a0e1a;
+    /* Brand Colors */
+    --velonx-navy: #1A2238;
+    /* Deep Navy */
+    --velonx-teal: #8E9AAF;
+    /* Cool Slate */
+    --velonx-coral: #FFB703;
+    /* Amber Gold */
+    --velonx-bg: #1A2238;
+    /* Deep Navy */
 }
 
 @layer base {
@@ -1807,7 +1838,7 @@
 
 /* Enhanced focus indicators for keyboard navigation */
 *:focus-visible {
-    outline: 3px solid var(--color-ring, #219EBC);
+    outline: 3px solid var(--color-ring, #FFB703);
     outline-offset: 2px;
     border-radius: 4px;
 }
@@ -1821,7 +1852,7 @@ textarea:focus-visible,
 [role="button"]:focus-visible,
 [role="link"]:focus-visible,
 [tabindex]:not([tabindex="-1"]):focus-visible {
-    outline: 3px solid var(--color-ring, #219EBC);
+    outline: 3px solid var(--color-ring, #FFB703);
     outline-offset: 2px;
     box-shadow: 0 0 0 4px rgba(33, 158, 188, 0.1);
 }
@@ -1830,7 +1861,7 @@ textarea:focus-visible,
 .card:focus-visible,
 [role="article"]:focus-visible,
 [role="region"]:focus-visible {
-    outline: 2px solid var(--color-ring, #219EBC);
+    outline: 2px solid var(--color-ring, #FFB703);
     outline-offset: 4px;
 }
 
@@ -1840,7 +1871,7 @@ textarea:focus-visible,
     left: -9999px;
     z-index: 999;
     padding: 1rem 1.5rem;
-    background-color: var(--color-primary, #023047);
+    background-color: var(--color-primary, #1A2238);
     color: var(--color-primary-foreground, #FFFFFF);
     text-decoration: none;
     border-radius: 0.5rem;
@@ -1873,7 +1904,7 @@ button[data-variant="destructive"]:focus-visible {
 
 /* Focus styles for navigation links */
 nav a:focus-visible {
-    outline: 2px solid var(--color-ring, #219EBC);
+    outline: 2px solid var(--color-ring, #FFB703);
     outline-offset: 4px;
     background-color: rgba(33, 158, 188, 0.05);
     border-radius: 0.5rem;
@@ -1882,14 +1913,14 @@ nav a:focus-visible {
 /* Focus styles for dropdown menu items */
 [role="menuitem"]:focus-visible,
 [role="option"]:focus-visible {
-    outline: 2px solid var(--color-ring, #219EBC);
+    outline: 2px solid var(--color-ring, #FFB703);
     outline-offset: -2px;
     background-color: rgba(33, 158, 188, 0.1);
 }
 
 /* Keyboard navigation helper - show focus ring on tab */
 body.using-keyboard *:focus {
-    outline: 3px solid var(--color-ring, #219EBC);
+    outline: 3px solid var(--color-ring, #FFB703);
     outline-offset: 2px;
 }
 
@@ -1934,7 +1965,7 @@ body.using-keyboard *:focus {
 
 /* Ensure text on colored backgrounds has sufficient contrast */
 .bg-primary-accessible {
-    background-color: #023047;
+    background-color: #1A2238;
     color: #ffffff;
 }
 
@@ -1945,7 +1976,7 @@ body.using-keyboard *:focus {
 }
 
 .bg-accent-accessible {
-    background-color: #1a7a94;
+    background-color: #E5A400;
     /* Darker teal for better contrast */
     color: #ffffff;
 }
@@ -1958,7 +1989,7 @@ body.using-keyboard *:focus {
 }
 
 .link-accessible:hover {
-    color: #023047;
+    color: #1A2238;
 }
 
 /* Badge colors with proper contrast */

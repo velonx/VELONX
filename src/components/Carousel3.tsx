@@ -54,7 +54,7 @@ export const Carousel3: React.FC<Carousel3Props> = ({
 }) => {
     return (
         <section className="page carousel-3-page">
-            {title && <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-bold mb-4">{title}</h2>}
+            {title && <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">{title}</h2>}
             {description && <p className="section-desc text-muted-foreground text-lg mb-8 px-4 font-normal">{description}</p>}
 
             <Swiper
@@ -94,9 +94,8 @@ export const Carousel3: React.FC<Carousel3Props> = ({
                         key={`${slide.name}-${index}`}
                         style={{
                             backgroundImage: type === 'showcase' ? `url(${slide.src})` : 'none',
-                            backgroundColor: type === 'testimonial' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
-                            border: type === 'testimonial' ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
                         }}
+                        className={type === 'testimonial' ? 'bg-card border border-border' : ''}
                     >
                         <div className={`slide-content ${type === 'testimonial' ? 'p-8 flex flex-col justify-center items-center h-full' : ''}`}>
                             {type === 'showcase' ? (
@@ -106,9 +105,9 @@ export const Carousel3: React.FC<Carousel3Props> = ({
                                 </>
                             ) : (
                                 <>
-                                    <p className="text-white text-sm mb-4 leading-relaxed line-clamp-4 font-normal">"{slide.description}"</p>
-                                    <h2 className="text-white text-lg mt-auto">{slide.name}</h2>
-                                    <span className="text-blue-400 text-xs font-semibold uppercase tracking-wider">Verified User</span>
+                                    <p className="text-foreground text-sm mb-4 leading-relaxed line-clamp-4 font-normal">"{slide.description}"</p>
+                                    <h2 className="text-foreground text-lg mt-auto">{slide.name}</h2>
+                                    <span className="text-secondary-foreground text-xs font-semibold uppercase tracking-wider">Verified User</span>
                                 </>
                             )}
                         </div>

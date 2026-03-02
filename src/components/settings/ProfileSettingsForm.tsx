@@ -31,7 +31,7 @@ interface FormState {
 export default function ProfileSettingsForm({ initialData }: ProfileSettingsFormProps) {
   // Get session update function
   const { update: updateSession } = useSession();
-  
+
   // Form state
   const [formState, setFormState] = useState<FormState>({
     name: initialData.name || "",
@@ -39,15 +39,13 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
     avatar: initialData.image,
     isLoading: false,
     error: null,
-    success: false,
-  });
+    success: false});
 
   // Track original values for cancel/revert
   const [originalValues, setOriginalValues] = useState({
     name: initialData.name || "",
     bio: initialData.bio || "",
-    avatar: initialData.image,
-  });
+    avatar: initialData.image});
 
   // Validation errors
   const [validationErrors, setValidationErrors] = useState<{
@@ -87,14 +85,14 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
   // Handle name input change
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    
+
     // Prevent input beyond character limit
     if (value.length > 100) {
       return;
     }
 
     setFormState((prev) => ({ ...prev, name: value }));
-    
+
     // Real-time validation
     const error = validateName(value);
     setValidationErrors((prev) => ({ ...prev, name: error }));
@@ -103,14 +101,14 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
   // Handle bio input change
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    
+
     // Prevent input beyond character limit
     if (value.length > 500) {
       return;
     }
 
     setFormState((prev) => ({ ...prev, bio: value }));
-    
+
     // Real-time validation
     const error = validateBio(value);
     setValidationErrors((prev) => ({ ...prev, bio: error }));
@@ -132,14 +130,17 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         reader.readAsDataURL(file);
       });
 
+      // Get CSRF token for the POST request
+      const { getCSRFToken } = await import('@/lib/utils/csrf');
+      const csrfToken = await getCSRFToken();
+
       // Upload to Cloudinary via API
       const response = await fetch("/api/user/profile/upload", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ image: base64 }),
-      });
+          "x-csrf-token": csrfToken},
+        body: JSON.stringify({ image: base64 })});
 
       const result = await response.json();
 
@@ -164,8 +165,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
 
     setValidationErrors({
       name: nameError,
-      bio: bioError,
-    });
+      bio: bioError});
 
     return !nameError && !bioError;
   };
@@ -184,26 +184,27 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
       ...prev,
       isLoading: true,
       error: null,
-      success: false,
-    }));
+      success: false}));
 
     try {
       // Sanitize inputs (basic XSS prevention)
       const sanitizedName = formState.name.trim();
       const sanitizedBio = formState.bio.trim();
 
+      // Get CSRF token for the PATCH request
+      const { getCSRFToken } = await import('@/lib/utils/csrf');
+      const csrfToken = await getCSRFToken();
+
       // Submit to API
       const response = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-        },
+          "x-csrf-token": csrfToken},
         body: JSON.stringify({
           name: sanitizedName,
           bio: sanitizedBio || null,
-          avatar: formState.avatar,
-        }),
-      });
+          avatar: formState.avatar})});
 
       const result = await response.json();
 
@@ -211,10 +212,10 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         // Extract error details from API response
         const errorCode = result.error?.code;
         const errorMessage = result.error?.message || "Failed to update profile";
-        
+
         // Provide user-friendly error messages based on error code
         let userMessage = errorMessage;
-        
+
         if (errorCode === "DATABASE_ERROR" || errorCode === "DATABASE_CONNECTION_ERROR") {
           userMessage = "Unable to save changes due to a database error. Please try again in a moment.";
         } else if (errorCode === "DATABASE_TIMEOUT") {
@@ -224,7 +225,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         } else if (errorCode === "VALIDATION_ERROR") {
           userMessage = "Invalid data provided. Please check your entries and try again.";
         }
-        
+
         throw new Error(userMessage);
       }
 
@@ -234,8 +235,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         try {
           await updateSession({
             name: result.data.name,
-            image: result.data.image,
-          });
+            image: result.data.image});
         } catch (sessionError) {
           console.error("Failed to update session:", sessionError);
           // Don't fail the entire operation if session update fails
@@ -247,25 +247,23 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
       setOriginalValues({
         name: sanitizedName,
         bio: sanitizedBio,
-        avatar: formState.avatar,
-      });
+        avatar: formState.avatar});
 
       // Show success message
       setFormState((prev) => ({
         ...prev,
         isLoading: false,
         success: true,
-        error: null,
-      }));
+        error: null}));
     } catch (error) {
       console.error("Profile update error:", error);
-      
+
       // Handle different error types
       let errorMessage = "An error occurred while updating your profile.";
-      
+
       if (error instanceof Error) {
         const errMsg = error.message.toLowerCase();
-        
+
         // Network errors
         if (errMsg.includes("network") || errMsg.includes("fetch") || errMsg.includes("failed to fetch")) {
           errorMessage = "Network error. Please check your internet connection and try again.";
@@ -279,14 +277,13 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
           errorMessage = error.message;
         }
       }
-      
+
       // Show error message
       setFormState((prev) => ({
         ...prev,
         isLoading: false,
         error: errorMessage,
-        success: false,
-      }));
+        success: false}));
     }
   };
 
@@ -298,8 +295,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
       bio: originalValues.bio,
       avatar: originalValues.avatar,
       error: null,
-      success: false,
-    }));
+      success: false}));
     setValidationErrors({});
   };
 
@@ -348,9 +344,8 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
             onChange={handleNameChange}
             disabled={formState.isLoading}
             maxLength={100}
-            className={`bg-white/5 border-white/10 text-gray-100 ${
-              validationErrors.name ? "border-red-500" : ""
-            }`}
+            className={`bg-white/5 border-white/10 text-gray-100 ${validationErrors.name ? "border-red-500" : ""
+              }`}
             placeholder="Enter your display name"
             aria-invalid={!!validationErrors.name}
           />
@@ -375,9 +370,8 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
             onChange={handleBioChange}
             disabled={formState.isLoading}
             maxLength={500}
-            className={`bg-white/5 border-white/10 text-gray-100 min-h-24 ${
-              validationErrors.bio ? "border-red-500" : ""
-            }`}
+            className={`bg-white/5 border-white/10 text-gray-100 min-h-24 ${validationErrors.bio ? "border-red-500" : ""
+              }`}
             placeholder="Tell us about yourself..."
             aria-invalid={!!validationErrors.bio}
           />
@@ -405,13 +399,13 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
             <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-sm text-red-400">{formState.error}</p>
-              {(formState.error.toLowerCase().includes("network") || 
+              {(formState.error.toLowerCase().includes("network") ||
                 formState.error.toLowerCase().includes("timeout") ||
                 formState.error.toLowerCase().includes("connection")) && (
-                <p className="text-xs text-red-300 mt-2">
-                  Tip: Check your internet connection and try saving again.
-                </p>
-              )}
+                  <p className="text-xs text-red-300 mt-2">
+                    Tip: Check your internet connection and try saving again.
+                  </p>
+                )}
             </div>
           </div>
         </div>
