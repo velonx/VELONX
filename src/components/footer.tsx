@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Twitter, Linkedin, Github, Facebook, Share2 } from "lucide-react";
+import SocialFlipButton from "@/components/ui/social-flip-button";
 
 export function Footer() {
     return (
@@ -49,6 +50,10 @@ export function Footer() {
                                     </a>
                                 </span>
                             </button>
+                        </div>
+                        {/* Contact - SocialFlipButton */}
+                        <div className="mt-4 -ml-4">
+                            <SocialFlipButton />
                         </div>
                     </div>
 

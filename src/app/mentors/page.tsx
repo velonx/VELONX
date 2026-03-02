@@ -97,10 +97,10 @@ export default function MentorsPage() {
                             <Sparkles className="w-4 h-4" />
                             Mentorship Program
                         </div>
-                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
+                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground font-bold tracking-tight">
                             Connect with <span className="text-secondary">Industry Mentors</span>
                         </h1>
-                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
                             Get guidance from experienced professionals who have been in your shoes and succeeded.
                         </p>
                         <div className="relative max-w-xl mx-auto">
@@ -186,11 +186,11 @@ export default function MentorsPage() {
             {/* CTA Section */}
             <section className="py-20 bg-background">
                 <div className="container mx-auto px-4 max-w-4xl">
-                    <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-10 text-center text-white relative overflow-hidden">
+                    <div className="bg-card rounded-3xl p-10 text-center relative overflow-hidden border border-border shadow-xl">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-3xl rounded-full -mr-20 -mt-20" />
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/10 blur-3xl rounded-full -ml-20 -mb-20" />
 
-                        <h2 className="text-3xl font-bold mb-4 relative z-10">Want to become a Mentor?</h2>
+                        <h2 className="text-3xl font-bold mb-4 relative z-10 text-foreground">Want to become a Mentor?</h2>
                         <p className="text-muted-foreground mb-8 max-w-xl mx-auto relative z-10 text-lg">
                             Share your knowledge and help the next generation of tech leaders. Join our elite pool of mentors today.
                         </p>

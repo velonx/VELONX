@@ -308,7 +308,7 @@ function ProjectsPageContent() {
         if (!pendingCompletion) return;
 
         setShowConfirmDialog(false);
-        
+
         try {
             await completeProject(pendingCompletion.projectId, pendingCompletion.projectTitle);
             // Refetch projects to update the list
@@ -360,10 +360,10 @@ function ProjectsPageContent() {
 
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto">
-                        <h1 className="text-4xl md:text-6xl text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
+                        <h1 className="text-4xl md:text-6xl text-foreground font-bold tracking-tight mb-4">
                             Build Projects That Matter
                         </h1>
-                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
                             Join active projects, collaborate with peers, and create solutions that make a difference.
                         </p>
 
@@ -381,7 +381,6 @@ function ProjectsPageContent() {
                                     type="search"
                                     value={searchTerm}
                                     onChange={(e) => handleSearchChange(e.target.value)}
-                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                 />
                                 {searchTerm && (
                                     <button
@@ -436,7 +435,7 @@ function ProjectsPageContent() {
                                     <Clock className="w-4 h-4" />
                                     <span>Running Projects</span>
                                     {runningProjects && runningProjects.length > 0 && (
-                                        <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-white/20 font-bold">
+                                        <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-foreground/20 font-bold">
                                             {runningProjects.length}
                                         </span>
                                     )}
@@ -449,7 +448,7 @@ function ProjectsPageContent() {
                                     <CheckCircle className="w-4 h-4" />
                                     <span>Hall of Fame</span>
                                     {completedProjects && completedProjects.length > 0 && (
-                                        <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-white/20 font-bold">
+                                        <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-foreground/20 font-bold">
                                             {completedProjects.length}
                                         </span>
                                     )}
