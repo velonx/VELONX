@@ -120,8 +120,8 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
         <section className="parallax-gallery-section">
             {(title || description) && (
                 <div className="parallax-gallery-header">
-                    {title && <h2 style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700 }}>{title}</h2>}
-                    {description && <p style={{ fontFamily: "'Indie Flower', cursive" }}>{description}</p>}
+                    {title && <h2 style={{ fontWeight: 700 }}>{title}</h2>}
+                    {description && <p className="font-normal">{description}</p>}
                     <p className="parallax-gallery-hint">Scroll or drag to explore →</p>
                 </div>
             )}

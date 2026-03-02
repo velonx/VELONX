@@ -54,8 +54,8 @@ export const Carousel3: React.FC<Carousel3Props> = ({
 }) => {
     return (
         <section className="page carousel-3-page">
-            {title && <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: "'Amatic SC', cursive" }}>{title}</h2>}
-            {description && <p className="section-desc text-muted-foreground text-lg mb-8 px-4" style={{ fontFamily: "'Indie Flower', cursive" }}>{description}</p>}
+            {title && <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-bold mb-4">{title}</h2>}
+            {description && <p className="section-desc text-muted-foreground text-lg mb-8 px-4 font-normal">{description}</p>}
 
             <Swiper
                 grabCursor
@@ -106,7 +106,7 @@ export const Carousel3: React.FC<Carousel3Props> = ({
                                 </>
                             ) : (
                                 <>
-                                    <p className="text-white text-sm mb-4 leading-relaxed line-clamp-4" style={{ fontFamily: "'Indie Flower', cursive" }}>"{slide.description}"</p>
+                                    <p className="text-white text-sm mb-4 leading-relaxed line-clamp-4 font-normal">"{slide.description}"</p>
                                     <h2 className="text-white text-lg mt-auto">{slide.name}</h2>
                                     <span className="text-blue-400 text-xs font-semibold uppercase tracking-wider">Verified User</span>
                                 </>

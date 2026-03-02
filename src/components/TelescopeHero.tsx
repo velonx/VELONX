@@ -77,7 +77,7 @@ export const TelescopeHero = () => {
                     Empowering the Gen
                 </h1>
 
-                <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-12" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>
+                <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-12 font-normal">
                     Join a thriving community where students and tech enthusiasts transform their potential into impact. Connect with expert mentors, build real projects, and launch your dream career.
                 </p>
 
