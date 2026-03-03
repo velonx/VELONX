@@ -57,8 +57,7 @@ export default function BlogPage() {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-7xl text-foreground mb-8 leading-tight"
-                        style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
+                        className="text-5xl md:text-7xl text-foreground mb-8 leading-tight font-bold tracking-tight"
                     >
                         Velonx <span className="text-[#219EBC]">Insights</span>
                     </motion.h1>
@@ -67,7 +66,6 @@ export default function BlogPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
                         className="text-muted-foreground text-xl max-w-2xl mx-auto leading-relaxed"
-                        style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
                     >
                         Explore our blog for the latest in technology, career advice, and community stories.
                     </motion.p>

@@ -103,7 +103,7 @@ export default function LoginPage() {
                 {/* Content sits above the image */}
                 <div className="relative z-10 flex flex-col items-center justify-end w-full p-12 pb-16">
                     <div className="text-center">
-                        <h2 className="text-3xl text-foreground mb-3" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                        <h2 className="text-3xl text-foreground mb-3 font-bold">
                             Welcome to Velonx
                         </h2>
                         <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
@@ -140,7 +140,7 @@ export default function LoginPage() {
                             <Sparkles className="w-4 h-4" />
                             Welcome Back
                         </div>
-                        <h1 className="text-3xl text-foreground mb-2" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>Login</h1>
+                        <h1 className="text-3xl text-foreground mb-2 font-bold">Login</h1>
                         <p className="text-muted-foreground text-sm">Continue your innovation journey</p>
                     </div>
 

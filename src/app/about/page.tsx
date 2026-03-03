@@ -54,8 +54,7 @@ export default function AboutPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl md:text-7xl text-foreground mb-8 leading-tight"
-                        style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
+                        className="text-5xl md:text-7xl text-foreground mb-8 leading-tight font-bold tracking-tight"
                     >
                         Empowering the <br />
                         <span className="text-[#219EBC]">Next Generation</span>
@@ -65,7 +64,6 @@ export default function AboutPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                         className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed"
-                        style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
                     >
                         Velonx is more than a platform; it's a movement. we're building a community where students can learn, build, and grow together in the ever-evolving world of technology.
                     </motion.p>
@@ -113,7 +111,7 @@ export default function AboutPage() {
                             <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[#FFB703]/20 rounded-[48px] -z-10" />
                         </div>
                         <div>
-                            <h2 className="text-4xl mb-8 text-foreground" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>Our Mission & <span className="text-[#219EBC]">Vision</span></h2>
+                            <h2 className="text-4xl mb-8 text-foreground font-bold">Our Mission & <span className="text-[#219EBC]">Vision</span></h2>
                             <div className="space-y-12">
                                 <div className="flex gap-6">
                                     <div className="w-16 h-16 bg-[#219EBC] rounded-3xl shrink-0 flex items-center justify-center text-white shadow-lg shadow-[#219EBC]/30">
@@ -157,10 +155,10 @@ export default function AboutPage() {
             {/* Core Values */}
             <section className="py-24 bg-gray-50">
                 <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-4xl mb-4 text-foreground" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                    <h2 className="text-4xl mb-4 text-foreground font-bold">
                         The Core Values that <span className="text-[#219EBC]">Drive Us</span>
                     </h2>
-                    <p className="text-muted-foreground text-lg mb-12 max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                    <p className="text-muted-foreground text-lg mb-12 max-w-2xl mx-auto">
                         Our principles guide every decision we make and every feature we build
                     </p>
                     <HoverEffect items={coreValues} />

@@ -201,11 +201,11 @@ export default function AdminDashboard() {
             <main className="flex-1 ml-80 p-12">
                 <header className="flex items-center justify-between mb-12">
                     <div>
-                        <h1 className="text-3xl font-black text-[#023047] mb-2">Command Center</h1>
+                        <h1 className="text-3xl font-bold text-foreground mb-2">Command Center</h1>
                         <p className="text-muted-foreground font-medium tracking-tight">Managing the Velonx Ecosystem</p>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Button onClick={() => router.push("/")} className="h-14 px-8 bg-background border border-border text-[#023047] font-black rounded-2xl shadow-sm hover:bg-muted flex items-center gap-2">
+                        <Button onClick={() => router.push("/")} className="h-14 px-8 bg-background border border-border text-foreground font-bold rounded-2xl shadow-sm hover:bg-muted flex items-center gap-2">
                             View Site <Eye className="w-5 h-5" />
                         </Button>
                     </div>
@@ -214,10 +214,10 @@ export default function AdminDashboard() {
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <div className="flex justify-between items-center mb-8">
                         <TabsList className="bg-background p-1 rounded-2xl border border-border shadow-sm">
-                            <TabsTrigger value="management" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Review Center</TabsTrigger>
-                            <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Post Blog</TabsTrigger>
-                            <TabsTrigger value="career" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Career</TabsTrigger>
-                            <TabsTrigger value="resources" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-black text-sm">Resources</TabsTrigger>
+                            <TabsTrigger value="management" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Review Center</TabsTrigger>
+                            <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Post Blog</TabsTrigger>
+                            <TabsTrigger value="career" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Career</TabsTrigger>
+                            <TabsTrigger value="resources" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Resources</TabsTrigger>
                         </TabsList>
                     </div>
 
@@ -269,7 +269,7 @@ export default function AdminDashboard() {
                     <TabsContent value="platform">
                         <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
                             <CardHeader className="p-12 border-b border-gray-50">
-                                <h3 className="text-3xl font-black text-[#023047] mb-2">Platform Information</h3>
+                                <h3 className="text-3xl font-bold text-foreground mb-2">Platform Information</h3>
                                 <p className="text-muted-foreground">System status and configuration</p>
                             </CardHeader>
                             <CardContent className="p-12">
@@ -277,23 +277,23 @@ export default function AdminDashboard() {
                                     <div className="grid grid-cols-2 gap-6">
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Total Users</p>
-                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.totalUsers ?? 0}</p>
+                                            <p className="text-3xl font-bold text-foreground">{platformStats?.totalUsers ?? 0}</p>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Total Events</p>
-                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.totalEvents ?? 0}</p>
+                                            <p className="text-3xl font-bold text-foreground">{platformStats?.totalEvents ?? 0}</p>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Total Projects</p>
-                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.totalProjects ?? 0}</p>
+                                            <p className="text-3xl font-bold text-foreground">{platformStats?.totalProjects ?? 0}</p>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Total Mentors</p>
-                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.totalMentors ?? 0}</p>
+                                            <p className="text-3xl font-bold text-foreground">{platformStats?.totalMentors ?? 0}</p>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Pending Requests</p>
-                                            <p className="text-3xl font-black text-[#023047]">{platformStats?.pendingRequests ?? 0}</p>
+                                            <p className="text-3xl font-bold text-foreground">{platformStats?.pendingRequests ?? 0}</p>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">System Status</p>

@@ -88,21 +88,21 @@ export default function LeaderboardPage() {
 
                 <div className="container mx-auto px-4 text-center">
                     <div className="max-w-3xl mx-auto mb-12">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-4 py-2 text-sm font-medium text-primary mb-6">
                             <Trophy className="w-4 h-4" />
                             Community Champions
                         </div>
-                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground leading-tight" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
-                            The <span className="text-[#219EBC]">Leaderboard</span>
+                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground leading-tight font-bold tracking-tight">
+                            The <span className="text-secondary">Leaderboard</span>
                         </h1>
-                        <p className="text-muted-foreground text-xl max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                        <p className="text-muted-foreground text-xl max-w-2xl mx-auto">
                             Climb to the top by contributing to projects, attending events, and helping fellow students!
                         </p>
                     </div>
 
                     {/* Period Toggle */}
                     <div className="flex justify-center mb-16">
-                        <div className="inline-flex bg-gray-100 rounded-2xl p-1.5 border border-border">
+                        <div className="inline-flex bg-muted rounded-2xl p-1.5 border border-border">
                             {[
                                 { id: "daily", label: "Daily" },
                                 { id: "monthly", label: "Monthly" }
@@ -111,8 +111,8 @@ export default function LeaderboardPage() {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
                                     className={`px-10 py-3 rounded-xl font-bold transition-all ${activeTab === tab.id
-                                        ? "bg-white text-[#219EBC] shadow-lg shadow-black/5"
-                                        : "text-muted-foreground hover:text-muted-foreground"
+                                        ? "bg-background text-primary shadow-lg shadow-black/5"
+                                        : "text-muted-foreground hover:text-foreground"
                                         }`}
                                 >
                                     {tab.label}
@@ -151,9 +151,9 @@ export default function LeaderboardPage() {
                             </div>
 
                             {/* Podium Block */}
-                            <div className="w-32 md:w-44 h-32 mt-6 bg-gradient-to-t from-gray-100 to-white rounded-t-[32px] border-x border-t border-border shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center pt-8">
+                            <div className="w-32 md:w-44 h-32 mt-6 bg-gradient-to-t from-muted to-card rounded-t-[32px] border-x border-t border-border shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center pt-8">
                                 <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Silver</span>
-                                <div className="text-2xl font-black text-gray-300">2nd</div>
+                                <div className="text-2xl font-black text-muted-foreground/30">2nd</div>
                             </div>
                         </div>
 
@@ -188,7 +188,7 @@ export default function LeaderboardPage() {
                             </div>
 
                             {/* Podium Block */}
-                            <div className="w-36 md:w-56 h-48 mt-6 bg-gradient-to-t from-[#FFB703]/10 to-white rounded-t-[40px] border-x border-t border-[#FFB703]/20 shadow-[inset_0_2px_10px_rgba(255,183,3,0.05)] flex flex-col items-center pt-10">
+                            <div className="w-36 md:w-56 h-48 mt-6 bg-gradient-to-t from-[#FFB703]/10 to-card rounded-t-[40px] border-x border-t border-[#FFB703]/20 shadow-[inset_0_2px_10px_rgba(255,183,3,0.05)] flex flex-col items-center pt-10">
                                 <span className="text-sm font-bold text-[#FFB703] uppercase tracking-widest">Gold</span>
                                 <div className="text-4xl font-black text-[#FFB703]/50">1st</div>
                             </div>
@@ -222,7 +222,7 @@ export default function LeaderboardPage() {
                             </div>
 
                             {/* Podium Block */}
-                            <div className="w-32 md:w-44 h-24 mt-6 bg-gradient-to-t from-[#F4A261]/10 to-white rounded-t-[32px] border-x border-t border-[#F4A261]/20 shadow-[inset_0_2px_10px_rgba(244,162,97,0.02)] flex flex-col items-center pt-6">
+                            <div className="w-32 md:w-44 h-24 mt-6 bg-gradient-to-t from-[#F4A261]/10 to-card rounded-t-[32px] border-x border-t border-[#F4A261]/20 shadow-[inset_0_2px_10px_rgba(244,162,97,0.02)] flex flex-col items-center pt-6">
                                 <span className="text-sm font-bold text-[#F4A261] uppercase tracking-widest">Bronze</span>
                                 <div className="text-2xl font-black text-[#F4A261]/50">3rd</div>
                             </div>

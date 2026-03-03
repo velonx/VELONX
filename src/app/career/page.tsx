@@ -128,21 +128,20 @@ export default function CareerPage() {
 
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6 mx-auto" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6 mx-auto">
                             <Briefcase className="w-4 h-4" />
                             Career Accelerator
                         </div>
-                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
+                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground font-bold tracking-tight">
                             Launch Your <span className="text-[#219EBC]">Tech Career</span>
                         </h1>
-                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
                             Practice interviews, explore internships, and discover job opportunities from top companies.
                         </p>
                         <div className="flex justify-center gap-4">
                             <Button
                                 onClick={() => window.open("https://keyracer.in/pages/career-chat-widget.html", "_blank")}
                                 className="bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-full px-8 py-6 text-lg shadow-lg shadow-[#0f2c59]/30"
-                                style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}
                             >
                                 <Sparkles className="w-5 h-5 mr-2" /> Get Resume Feedback
                             </Button>
@@ -157,10 +156,10 @@ export default function CareerPage() {
             <section className="py-16 bg-background">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl text-foreground mb-4" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                        <h2 className="text-3xl md:text-4xl text-foreground mb-4 font-bold">
                             Our <span className="text-[#219EBC]">Career Services</span>
                         </h2>
-                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                             Everything you need to accelerate your tech career journey
                         </p>
                     </div>
@@ -293,8 +292,8 @@ export default function CareerPage() {
                                             <CardHeader className="p-6 sm:p-8">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
-                                                        <CardTitle className="text-white text-xl md:text-2xl mb-2" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, letterSpacing: '1px' }}>{internship.title}</CardTitle>
-                                                        <CardDescription className="text-[#8E9AAF] font-medium text-sm md:text-base" style={{ fontFamily: "'Montserrat', sans-serif" }}>{internship.company}</CardDescription>
+                                                        <CardTitle className="text-white text-xl md:text-2xl mb-2 font-bold">{internship.title}</CardTitle>
+                                                        <CardDescription className="text-[#8E9AAF] font-medium text-sm md:text-base">{internship.company}</CardDescription>
                                                     </div>
                                                     {internship.imageUrl && (
                                                         <>
@@ -320,7 +319,7 @@ export default function CareerPage() {
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="px-6 sm:px-8">
-                                                <p className="text-[#8E9AAF] text-sm md:text-base line-clamp-3 mb-4 leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>{internship.description}</p>
+                                                <p className="text-[#8E9AAF] text-sm md:text-base line-clamp-3 mb-4 leading-relaxed">{internship.description}</p>
                                                 <div className="space-y-2 bg-[#1A2238] p-4 rounded-xl border border-[#2A3441]">
                                                     <p className="text-sm font-semibold text-white">Requirements:</p>
                                                     <ul className="text-sm text-[#8E9AAF] space-y-1.5">
@@ -337,7 +336,6 @@ export default function CareerPage() {
                                                 <Button
                                                     onClick={() => handleApply(internship.applyUrl, internship.title)}
                                                     className="w-full bg-gradient-to-r from-orange-400 to-[#FFB703] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#FFB703]/20 border border-orange-300 transition-all"
-                                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                                 >
                                                     Apply Now <ExternalLink className="w-5 h-5 ml-2" />
                                                 </Button>
@@ -348,7 +346,7 @@ export default function CareerPage() {
                             ) : (
                                 <div className="text-center py-20 bg-[#141A2B] rounded-3xl border border-[#2A3441]">
                                     <GraduationCap className="w-16 h-16 text-[#8E9AAF] opacity-50 mx-auto mb-4" />
-                                    <p className="text-[#8E9AAF] text-lg font-medium" style={{ fontFamily: "'Indie Flower', cursive" }}>No internships available at the moment. Check back soon!</p>
+                                    <p className="text-[#8E9AAF] text-lg font-medium">No internships available at the moment. Check back soon!</p>
                                 </div>
                             )}
                         </TabsContent>
@@ -366,8 +364,8 @@ export default function CareerPage() {
                                             <CardHeader className="p-6 sm:p-8">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
-                                                        <CardTitle className="text-white text-xl md:text-2xl mb-2" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, letterSpacing: '1px' }}>{job.title}</CardTitle>
-                                                        <CardDescription className="text-[#8E9AAF] font-medium text-sm md:text-base" style={{ fontFamily: "'Montserrat', sans-serif" }}>{job.company}</CardDescription>
+                                                        <CardTitle className="text-white text-xl md:text-2xl mb-2 font-bold">{job.title}</CardTitle>
+                                                        <CardDescription className="text-[#8E9AAF] font-medium text-sm md:text-base">{job.company}</CardDescription>
                                                     </div>
                                                     {job.imageUrl && (
                                                         <>
@@ -388,7 +386,7 @@ export default function CareerPage() {
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="px-6 sm:px-8">
-                                                <p className="text-[#8E9AAF] text-sm md:text-base line-clamp-3 mb-4 leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>{job.description}</p>
+                                                <p className="text-[#8E9AAF] text-sm md:text-base line-clamp-3 mb-4 leading-relaxed">{job.description}</p>
                                                 <div className="space-y-2 bg-[#1A2238] p-4 rounded-xl border border-[#2A3441]">
                                                     <p className="text-sm font-semibold text-white">Requirements:</p>
                                                     <ul className="text-sm text-[#8E9AAF] space-y-1.5">
@@ -405,7 +403,6 @@ export default function CareerPage() {
                                                 <Button
                                                     onClick={() => handleApply(job.applyUrl, job.title)}
                                                     className="w-full bg-gradient-to-r from-teal-400 to-[#219EBC] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#219EBC]/20 border border-teal-300 transition-all"
-                                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                                 >
                                                     Apply Now <ExternalLink className="w-5 h-5 ml-2" />
                                                 </Button>
@@ -416,7 +413,7 @@ export default function CareerPage() {
                             ) : (
                                 <div className="text-center py-20 bg-[#141A2B] rounded-3xl border border-[#2A3441]">
                                     <Briefcase className="w-16 h-16 text-[#8E9AAF] opacity-50 mx-auto mb-4" />
-                                    <p className="text-[#8E9AAF] text-lg font-medium" style={{ fontFamily: "'Indie Flower', cursive" }}>No jobs available at the moment. Check back soon!</p>
+                                    <p className="text-[#8E9AAF] text-lg font-medium">No jobs available at the moment. Check back soon!</p>
                                 </div>
                             )}
                         </TabsContent>

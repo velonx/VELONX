@@ -74,14 +74,12 @@ export default function GroupsPage() {
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <h1
-              className="text-4xl md:text-6xl text-foreground"
-              style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
+              className="text-4xl md:text-6xl text-foreground font-bold tracking-tight"
             >
               Community Groups
             </h1>
             <p
               className="text-muted-foreground text-xl max-w-2xl mx-auto"
-              style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
             >
               Create or join groups around shared interests. Build communities, share posts, and collaborate with like-minded learners.
             </p>
@@ -99,7 +97,6 @@ export default function GroupsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-12 py-3 md:py-4 rounded-full bg-card border-2 border-border focus:border-primary outline-none text-foreground placeholder:text-muted-foreground transition-all shadow-sm hover:shadow-md focus:shadow-lg"
-                  style={{ fontFamily: "'Montserrat', sans-serif" }}
                   aria-label="Search groups"
                 />
                 {searchQuery && (

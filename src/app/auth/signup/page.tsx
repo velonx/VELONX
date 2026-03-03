@@ -102,7 +102,7 @@ function SignupPage() {
     const handleReferralCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setReferralCode(value);
-        
+
         if (robotState === "error") {
             setRobotState("idle");
             setError(null);
@@ -141,7 +141,7 @@ function SignupPage() {
         try {
             // Create student account only (admins are seeded in database)
             const fullName = `${firstName} ${lastName}`.trim();
-            
+
             // Include referral code if provided (even if invalid - backend will handle)
             const signupData: any = {
                 name: fullName,
@@ -170,18 +170,18 @@ function SignupPage() {
             } else {
                 // Show success state
                 setRobotState("success");
-                
+
                 // Wait to show happy robot
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                
+
                 router.push("/dashboard/student");
             }
         } catch (err: any) {
             console.error("Signup error:", err);
-            
+
             // Show error state
             setRobotState("error");
-            
+
             // Handle specific error messages
             if (err.code === "USER_EXISTS") {
                 setError("An account with this email already exists");
@@ -234,10 +234,10 @@ function SignupPage() {
                     </div>
 
                     <div className="text-center mt-8">
-                        <h2 className="text-3xl text-[#023047] mb-3" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                        <h2 className="text-3xl text-[#023047] mb-3 font-bold">
                             Start Building Your Future
                         </h2>
-                        <p className="text-muted-foreground max-w-sm" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>
+                        <p className="text-muted-foreground max-w-sm">
                             Join thousands of students who are already building real projects and launching their tech careers.
                         </p>
                     </div>
@@ -245,23 +245,23 @@ function SignupPage() {
                     <div className="grid grid-cols-2 gap-4 mt-10">
                         <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
                             <Rocket className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
-                            <div className="text-xl font-bold text-[#023047]" style={{ fontFamily: "'Montserrat', sans-serif" }}>50+</div>
-                            <div className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>Projects Built</div>
+                            <div className="text-xl font-bold text-[#023047]">50+</div>
+                            <div className="text-muted-foreground text-xs">Projects Built</div>
                         </div>
                         <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
                             <Users className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
-                            <div className="text-xl font-bold text-[#023047]" style={{ fontFamily: "'Montserrat', sans-serif" }}>1000+</div>
-                            <div className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>Members</div>
+                            <div className="text-xl font-bold text-[#023047]">1000+</div>
+                            <div className="text-muted-foreground text-xs">Members</div>
                         </div>
                         <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
                             <Trophy className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
-                            <div className="text-xl font-bold text-[#023047]" style={{ fontFamily: "'Montserrat', sans-serif" }}>30+</div>
-                            <div className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>Events Hosted</div>
+                            <div className="text-xl font-bold text-[#023047]">30+</div>
+                            <div className="text-muted-foreground text-xs">Events Hosted</div>
                         </div>
                         <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
                             <Code className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
-                            <div className="text-xl font-bold text-[#023047]" style={{ fontFamily: "'Montserrat', sans-serif" }}>Free</div>
-                            <div className="text-muted-foreground text-xs" style={{ fontFamily: "'Montserrat', sans-serif" }}>Forever</div>
+                            <div className="text-xl font-bold text-[#023047]">Free</div>
+                            <div className="text-muted-foreground text-xs">Forever</div>
                         </div>
                     </div>
                 </div>
@@ -276,24 +276,24 @@ function SignupPage() {
                     </div>
 
                     <div className="text-center mb-6">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-4" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-4">
                             <Sparkles className="w-4 h-4" />
                             Join 1000+ Students
                         </div>
-                        <h1 className="text-3xl text-[#023047] mb-2" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>Create Account</h1>
-                        <p className="text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400 }}>Start your innovation journey today</p>
+                        <h1 className="text-3xl text-[#023047] mb-2 font-bold">Create Account</h1>
+                        <p className="text-muted-foreground">Start your innovation journey today</p>
                     </div>
 
                     <form onSubmit={handleSignup} className="space-y-4">
                         {error && (
-                            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm">
                                 {error}
                             </div>
                         )}
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>First Name</Label>
+                                <Label className="text-foreground text-sm">First Name</Label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                     <Input
@@ -301,13 +301,12 @@ function SignupPage() {
                                         value={firstName}
                                         onChange={handleFieldChange(setFirstName)}
                                         className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
-                                        style={{ fontFamily: "'Montserrat', sans-serif" }}
                                         required
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Last Name</Label>
+                                <Label className="text-foreground text-sm">Last Name</Label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                     <Input
@@ -315,14 +314,13 @@ function SignupPage() {
                                         value={lastName}
                                         onChange={handleFieldChange(setLastName)}
                                         className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
-                                        style={{ fontFamily: "'Montserrat', sans-serif" }}
                                         required
                                     />
                                 </div>
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Email</Label>
+                            <Label className="text-foreground text-sm">Email</Label>
                             <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                 <Input
@@ -331,13 +329,12 @@ function SignupPage() {
                                     value={email}
                                     onChange={handleFieldChange(setEmail)}
                                     className="pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
-                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                     required
                                 />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>Password</Label>
+                            <Label className="text-foreground text-sm">Password</Label>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                 <Input
@@ -346,7 +343,6 @@ function SignupPage() {
                                     value={password}
                                     onChange={handleFieldChange(setPassword)}
                                     className="pl-12 pr-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
-                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                     required
                                 />
                                 <button
@@ -360,7 +356,7 @@ function SignupPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-foreground text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                            <Label className="text-foreground text-sm">
                                 Referral Code <span className="text-muted-foreground font-normal">(Optional)</span>
                             </Label>
                             <div className="relative">
@@ -371,10 +367,8 @@ function SignupPage() {
                                     value={referralCode}
                                     onChange={handleReferralCodeChange}
                                     onBlur={handleReferralCodeBlur}
-                                    className={`pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all ${
-                                        referralCodeError ? 'border-yellow-500' : ''
-                                    }`}
-                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                                    className={`pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all ${referralCodeError ? 'border-yellow-500' : ''
+                                        }`}
                                 />
                                 {referralCodeValidating && (
                                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -383,12 +377,12 @@ function SignupPage() {
                                 )}
                             </div>
                             {referralCodeError && (
-                                <p className="text-xs text-yellow-600 mt-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                <p className="text-xs text-yellow-600 mt-1">
                                     {referralCodeError}
                                 </p>
                             )}
                             {referralCode && !referralCodeError && !referralCodeValidating && (
-                                <p className="text-xs text-green-600 mt-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                <p className="text-xs text-green-600 mt-1">
                                     ✓ Valid referral code
                                 </p>
                             )}
@@ -401,7 +395,7 @@ function SignupPage() {
                                 onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
                                 className="border-border data-[state=checked]:bg-[#219EBC] data-[state=checked]:border-[#219EBC] mt-0.5"
                             />
-                            <label htmlFor="terms" className="text-sm text-muted-foreground leading-tight" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                            <label htmlFor="terms" className="text-sm text-muted-foreground leading-tight">
                                 I agree to the <Link href="#" className="text-[#219EBC] hover:underline">Terms of Service</Link> and <Link href="#" className="text-[#219EBC] hover:underline">Privacy Policy</Link>
                             </label>
                         </div>
@@ -409,7 +403,6 @@ function SignupPage() {
                         <Button
                             type="submit"
                             className="w-full bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-xl py-6 shadow-lg shadow-[#0f2c59]/30 transition-all"
-                            style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}
                             disabled={loading}
                         >
                             {loading ? "Creating Account..." : "Create Account"} <ArrowRight className="w-4 h-4 ml-2" />
@@ -421,7 +414,7 @@ function SignupPage() {
                             <div className="w-full border-t border-border"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-background text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>Or sign up with</span>
+                            <span className="px-4 bg-background text-muted-foreground">Or sign up with</span>
                         </div>
                     </div>
 
@@ -429,7 +422,6 @@ function SignupPage() {
                         <Button
                             variant="outline"
                             className="py-5 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all"
-                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                             onClick={handleGoogleSignup}
                             disabled={loading}
                         >
@@ -444,7 +436,6 @@ function SignupPage() {
                         <Button
                             variant="outline"
                             className="py-5 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all"
-                            style={{ fontFamily: "'Montserrat', sans-serif" }}
                             onClick={handleGitHubSignup}
                             disabled={loading}
                         >
@@ -455,7 +446,7 @@ function SignupPage() {
                         </Button>
                     </div>
 
-                    <p className="text-center text-sm text-muted-foreground mt-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                    <p className="text-center text-sm text-muted-foreground mt-6">
                         Already have an account? <Link href="/auth/login" className="text-[#219EBC] font-medium hover:text-[#1a7a94] transition-colors underline-offset-4 hover:underline">Sign In</Link>
                     </p>
                 </div>

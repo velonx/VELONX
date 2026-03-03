@@ -50,7 +50,7 @@ function SearchPageContent() {
     }
   }, [debouncedQuery, search]);
 
-  const totalResults = 
+  const totalResults =
     (results?.groups?.length || 0) +
     (results?.posts?.length || 0) +
     (results?.users?.length || 0);
@@ -80,15 +80,13 @@ function SearchPageContent() {
       <section className="relative py-16 bg-background overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
-            <h1 
-              className="text-4xl md:text-6xl text-foreground"
-              style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
+            <h1
+              className="text-4xl md:text-6xl text-foreground font-bold tracking-tight"
             >
               Search Community
             </h1>
-            <p 
+            <p
               className="text-muted-foreground text-xl max-w-2xl mx-auto"
-              style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
             >
               Find rooms, groups, posts, and users across the community.
             </p>
@@ -106,7 +104,6 @@ function SearchPageContent() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-12 py-3 md:py-4 rounded-full bg-card border-2 border-border focus:border-primary outline-none text-foreground placeholder:text-muted-foreground transition-all shadow-sm hover:shadow-md focus:shadow-lg"
-                  style={{ fontFamily: "'Montserrat', sans-serif" }}
                   aria-label="Search community"
                   autoFocus
                 />
@@ -177,7 +174,7 @@ function SearchPageContent() {
               </TabsList>
 
               <TabsContent value="all">
-                <SearchResults 
+                <SearchResults
                   results={results}
                   isSearching={isSearching}
                   query={debouncedQuery}
@@ -185,7 +182,7 @@ function SearchPageContent() {
               </TabsContent>
 
               <TabsContent value="groups">
-                <SearchResults 
+                <SearchResults
                   results={results}
                   isSearching={isSearching}
                   query={debouncedQuery}
@@ -193,7 +190,7 @@ function SearchPageContent() {
               </TabsContent>
 
               <TabsContent value="posts">
-                <SearchResults 
+                <SearchResults
                   results={results}
                   isSearching={isSearching}
                   query={debouncedQuery}
@@ -201,7 +198,7 @@ function SearchPageContent() {
               </TabsContent>
 
               <TabsContent value="users">
-                <SearchResults 
+                <SearchResults
                   results={results}
                   isSearching={isSearching}
                   query={debouncedQuery}

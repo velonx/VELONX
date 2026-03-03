@@ -88,14 +88,12 @@ export default function FeedPage() {
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <h1
-              className="text-4xl md:text-6xl text-foreground"
-              style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
+              className="text-4xl md:text-6xl text-foreground font-bold tracking-tight"
             >
               Your Feed
             </h1>
             <p
               className="text-muted-foreground text-xl max-w-2xl mx-auto"
-              style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
             >
               Stay updated with posts from people you follow and groups you've joined.
             </p>

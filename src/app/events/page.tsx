@@ -240,10 +240,10 @@ function EventsPage() {
             <section className="relative py-8 md:py-12 lg:py-16 bg-background overflow-hidden" role="banner">
                 <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto space-y-4 md:space-y-6">
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground tracking-tight" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground tracking-tight font-bold">
                             Join Our Events
                         </h1>
-                        <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed px-4 sm:px-0" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
+                        <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
                             Participate in live coding sessions, workshops, hackathons, and networking events to grow your skills and connect with the community.
                         </p>
                         <div className="w-full max-w-md mx-auto pt-2 md:pt-4">
@@ -256,7 +256,6 @@ function EventsPage() {
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="w-full pl-12 pr-12 py-3 md:py-4 rounded-full bg-card border-2 border-border focus:border-primary outline-none text-foreground placeholder:text-muted-foreground transition-all shadow-sm hover:shadow-md focus:shadow-lg"
-                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                                     aria-label="Search events"
                                 />
                                 {searchQuery && (

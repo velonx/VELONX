@@ -187,16 +187,14 @@ function ResourcesPage() {
             {/* Title */}
             <h1
               id="page-title"
-              className="text-4xl md:text-6xl mb-6 text-foreground"
-              style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}
+              className="text-4xl md:text-6xl mb-6 text-foreground font-bold tracking-tight"
             >
               Master New <span className="text-primary">Skills</span> Every Day
             </h1>
 
             {/* Description */}
             <p
-              className="text-muted-foreground text-xl mb-8 mx-auto whitespace-nowrap"
-              style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}
+              className="text-muted-foreground text-xl mb-8 mx-auto"
             >
               Curated tutorials, articles, courses, and tools to accelerate your learning journey.
             </p>
@@ -215,7 +213,6 @@ function ResourcesPage() {
                   type="search"
                   value={filters.search || ''}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  style={{ fontFamily: "'Montserrat', sans-serif" }}
                 />
                 {filters.search && (
                   <button
