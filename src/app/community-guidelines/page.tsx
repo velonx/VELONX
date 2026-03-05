@@ -1,4 +1,5 @@
-import { Shield, Heart, Users, MessageCircle, AlertTriangle, CheckCircle, XCircle, BookOpen } from "lucide-react";
+ 
+  import { Shield, Heart, Users, MessageCircle, AlertTriangle, CheckCircle, XCircle, BookOpen } from "lucide-react";
 
 // Enable ISR with revalidation every 7 days (604800 seconds)
 export const revalidate = 604800;
@@ -8,17 +9,17 @@ export default function CommunityGuidelinesPage() {
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
             <section className="relative py-16 bg-background overflow-hidden">
-
+                
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-4xl mx-auto">
                         <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6 mx-auto">
                             <Shield className="w-4 h-4" />
                             Community Standards
                         </div>
-                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground font-bold tracking-tight">
-                            Community <span className="text-secondary">Guidelines</span>
+                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
+                            Community <span className="text-[#219EBC]">Guidelines</span>
                         </h1>
-                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
+                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300 }}>
                             Building a respectful, inclusive, and supportive community for all members.
                         </p>
                     </div>
@@ -259,8 +260,8 @@ export default function CommunityGuidelinesPage() {
                     <p className="text-muted-foreground mb-8 text-lg">
                         If you have questions about these guidelines or need to report a violation, please contact our moderation team.
                     </p>
-                    <a
-                        href="/contact"
+                    <a 
+                        href="/contact" 
                         className="inline-block bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold px-8 py-4 rounded-full transition-colors"
                     >
                         Contact Support
