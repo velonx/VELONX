@@ -238,6 +238,9 @@ export function useCommunityPosts(
       isPinned: false,
       reactionCount: 0,
       commentCount: 0,
+      upvotes: 0,
+      downvotes: 0,
+      score: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
