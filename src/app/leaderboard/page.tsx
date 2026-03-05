@@ -1,14 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Trophy, Medal, Zap, TrendingUp, Sparkles, Crown, Flame, Target, Users, Diamond, Clock, ChevronRight, Bell, User } from "lucide-react";
+import { Trophy, Medal, Crown, Diamond } from "lucide-react";
 import { useLeaderboard } from "@/lib/api/hooks";
-
 // Avatar options for users to choose from
 const AVATAR_OPTIONS = [
     { id: 1, name: "Cool Ape", src: "/avatars/cool-ape.png" },
@@ -20,58 +16,22 @@ const AVATAR_OPTIONS = [
 
 export default function LeaderboardPage() {
     const { data: session } = useSession();
-    const [timeLeft, setTimeLeft] = useState({
-        days: 10,
-        hours: 23,
-        minutes: 59,
-        seconds: 29,
-    });
     const [activeTab, setActiveTab] = useState<"daily" | "monthly">("daily");
 
     // Fetch leaderboard from API
     const { data: leaderboardData, loading } = useLeaderboard({ pageSize: 50 });
 
     // Extend leaderboard with avatars (use deterministic values based on index)
-
     const EXTENDED_LEADERBOARD = leaderboardData?.map((user, index) => ({
         ...user,
         avatarSrc: user.image || AVATAR_OPTIONS[index % AVATAR_OPTIONS.length].src,
-        followers: Math.floor((index * 137 + 1000) % 15000) + 1000, // Deterministic pseudo-random
+        followers: Math.floor((index * 137 + 1000) % 15000) + 1000,
         prize: index === 0 ? 100000 : index === 1 ? 50000 : index === 2 ? 20000 : Math.floor(1000 / (index + 1)) * 100,
         earnPoints: 2000,
     })) || [];
 
     const top3 = EXTENDED_LEADERBOARD.slice(0, 3);
 
-    // Countdown timer effect
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTimeLeft(prev => {
-                let { days, hours, minutes, seconds } = prev;
-                seconds--;
-                if (seconds < 0) {
-                    seconds = 59;
-                    minutes--;
-                }
-                if (minutes < 0) {
-                    minutes = 59;
-                    hours--;
-                }
-                if (hours < 0) {
-                    hours = 23;
-                    days--;
-                }
-                if (days < 0) {
-                    days = 0;
-                    hours = 0;
-                    minutes = 0;
-                    seconds = 0;
-                }
-                return { days, hours, minutes, seconds };
-            });
-        }, 1000);
-        return () => clearInterval(timer);
-    }, []);
 
     if (loading) {
         return (
@@ -88,16 +48,6 @@ export default function LeaderboardPage() {
 
                 <div className="container mx-auto px-4 text-center">
                     <div className="max-w-3xl mx-auto mb-12">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-4 py-2 text-sm font-medium text-primary mb-6">
-                            <Trophy className="w-4 h-4" />
-                            Community Champions
-                        </div>
-                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground leading-tight font-bold tracking-tight">
-                            The <span className="text-secondary">Leaderboard</span>
-                        </h1>
-                        <p className="text-muted-foreground text-xl max-w-2xl mx-auto">
-                            Climb to the top by contributing to projects, attending events, and helping fellow students!
-                        </p>
                     </div>
 
                     {/* Period Toggle */}
@@ -229,31 +179,12 @@ export default function LeaderboardPage() {
                         </div>
                     </div>
 
-                    {/* Timer Banner */}
-                    <div className="max-w-md mx-auto mb-20">
-                        <div className="bg-[#023047] rounded-3xl p-6 text-white shadow-xl flex items-center justify-between overflow-hidden relative group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-background/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-                            <div className="flex items-center gap-4 relative z-10">
-                                <div className="w-12 h-12 bg-background/10 rounded-2xl flex items-center justify-center">
-                                    <Clock className="w-6 h-6 text-[#219EBC]" />
-                                </div>
-                                <div className="text-left">
-                                    <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest mb-1">Season Ends In</p>
-                                    <div className="font-mono text-xl font-black">
-                                        {timeLeft.days}d {String(timeLeft.hours).padStart(2, '0')}h {String(timeLeft.minutes).padStart(2, '0')}m
-                                    </div>
-                                </div>
-                            </div>
-                            <Button className="bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-xl relative z-10">
-                                View Prizes
-                            </Button>
-                        </div>
-                    </div>
+
                 </div>
             </section>
 
             {/* User Stats Section */}
-            <section className="py-12 bg-gray-50/50 relative">
+            <section className="py-12 bg-muted/30 relative">
                 <div className="container mx-auto px-4 max-w-5xl">
                     <div className="grid md:grid-cols-12 gap-8 items-center">
                         <div className="md:col-span-8">
@@ -263,7 +194,7 @@ export default function LeaderboardPage() {
                             </h2>
                             <div className="bg-background rounded-[32px] border border-border shadow-sm overflow-hidden">
                                 {/* Table Header */}
-                                <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-border text-muted-foreground text-xs font-bold uppercase tracking-widest bg-gray-50/50">
+                                <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-border text-muted-foreground text-xs font-bold uppercase tracking-widest bg-muted/50">
                                     <div className="col-span-1">#</div>
                                     <div className="col-span-5">Champion</div>
                                     <div className="col-span-3 text-center">Activity</div>
@@ -271,7 +202,7 @@ export default function LeaderboardPage() {
                                 </div>
 
                                 {/* Table Body */}
-                                <div className="divide-y divide-gray-100">
+                                <div className="divide-y divide-border">
                                     {EXTENDED_LEADERBOARD.map((user, index) => (
                                         <div
                                             key={user.id}
@@ -304,51 +235,7 @@ export default function LeaderboardPage() {
                             </div>
                         </div>
 
-                        <div className="md:col-span-4 space-y-6">
-                            <Card className="rounded-[32px] border-0 shadow-2xl shadow-[#219EBC]/10 overflow-hidden bg-[#023047] text-white">
-                                <CardHeader className="text-center pb-2">
-                                    <div className="w-16 h-16 bg-[#219EBC] rounded-3xl flex items-center justify-center mx-auto mb-4 animate-pulse shadow-lg shadow-[#219EBC]/40">
-                                        <Flame className="w-8 h-8 text-white" />
-                                    </div>
-                                    <CardTitle className="text-2xl font-black">Join the Bloom!</CardTitle>
-                                    <p className="text-muted-foreground text-sm">Become part of the elite 1%</p>
-                                </CardHeader>
-                                <CardContent className="space-y-6 py-6 text-center">
-                                    <div className="flex items-center gap-4 bg-background/5 rounded-2xl p-4 text-left border border-white/10">
-                                        <div className="w-12 h-12 bg-background/10 rounded-xl flex items-center justify-center text-xl">🔥</div>
-                                        <div>
-                                            <p className="text-sm font-bold">Daily Hot Streaks</p>
-                                            <p className="text-xs text-muted-foreground">Earn up to 2.5x more XP</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4 bg-background/5 rounded-2xl p-4 text-left border border-white/10">
-                                        <div className="w-12 h-12 bg-background/10 rounded-xl flex items-center justify-center text-xl">🤝</div>
-                                        <div>
-                                            <p className="text-sm font-bold">Refer & Earn</p>
-                                            <p className="text-xs text-muted-foreground">+500 XP per student</p>
-                                        </div>
-                                    </div>
-                                    <Button className="w-full h-14 bg-background text-[#023047] font-black rounded-2xl hover:bg-muted transition-all text-lg mt-4">
-                                        Boost My Score
-                                    </Button>
-                                </CardContent>
-                            </Card>
 
-                            <div className="bg-background rounded-[32px] p-8 border border-border">
-                                <h4 className="text-foreground font-black text-xl mb-6">Recent Activity</h4>
-                                <div className="space-y-6">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="flex gap-4">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-[#219EBC] mt-2" />
-                                            <div>
-                                                <p className="text-sm font-bold text-foreground">Alice completed "AI Bot"</p>
-                                                <p className="text-xs text-muted-foreground">2 minutes ago • +150 XP</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>

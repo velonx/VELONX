@@ -83,6 +83,9 @@ export interface CommunityPostData {
   isPinned: boolean
   reactionCount: number
   commentCount: number
+  upvotes: number
+  downvotes: number
+  score: number
   createdAt: Date
   updatedAt: Date
 }
@@ -121,6 +124,10 @@ export interface PostCommentData {
   authorName: string
   authorImage?: string
   content: string
+  parentId?: string | null
+  upvotes: number
+  downvotes: number
+  replies?: PostCommentData[]
   createdAt: Date
   updatedAt: Date
 }
@@ -162,7 +169,7 @@ export interface UserBlockData {
 /**
  * Moderation action types
  */
-export type ModerationType = 
+export type ModerationType =
   | 'MESSAGE_DELETE'
   | 'POST_DELETE'
   | 'USER_MUTE'
@@ -210,7 +217,7 @@ export interface GroupJoinRequestData {
 /**
  * WebSocket message types
  */
-export type WSMessageType = 
+export type WSMessageType =
   | 'CHAT_MESSAGE'
   | 'TYPING'
   | 'USER_JOINED'
@@ -560,29 +567,29 @@ export enum ErrorCode {
   // Authentication Errors
   UNAUTHORIZED = 'UNAUTHORIZED',
   FORBIDDEN = 'FORBIDDEN',
-  
+
   // Validation Errors
   INVALID_INPUT = 'INVALID_INPUT',
   INVALID_IMAGE_FORMAT = 'INVALID_IMAGE_FORMAT',
   INVALID_URL = 'INVALID_URL',
   CONTENT_TOO_LONG = 'CONTENT_TOO_LONG',
-  
+
   // Resource Errors
   NOT_FOUND = 'NOT_FOUND',
   ALREADY_EXISTS = 'ALREADY_EXISTS',
   ALREADY_MEMBER = 'ALREADY_MEMBER',
   NOT_MEMBER = 'NOT_MEMBER',
-  
+
   // Permission Errors
   NOT_MODERATOR = 'NOT_MODERATOR',
   NOT_OWNER = 'NOT_OWNER',
   CANNOT_SELF_FOLLOW = 'CANNOT_SELF_FOLLOW',
   USER_MUTED = 'USER_MUTED',
   USER_BLOCKED = 'USER_BLOCKED',
-  
+
   // Rate Limiting
   RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
-  
+
   // Server Errors
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   DATABASE_ERROR = 'DATABASE_ERROR',
@@ -625,7 +632,7 @@ export interface PostPaginationOptions {
 /**
  * Notification preference types
  */
-export type NotificationPreferenceType = 
+export type NotificationPreferenceType =
   | 'COMMENT'
   | 'REACTION'
   | 'MENTION'
@@ -649,7 +656,7 @@ export interface NotificationPreferences {
 /**
  * WebSocket connection state
  */
-export type ConnectionState = 
+export type ConnectionState =
   | 'CONNECTING'
   | 'CONNECTED'
   | 'DISCONNECTED'

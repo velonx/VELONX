@@ -86,13 +86,14 @@ export function Navbar() {
                     {/* Community Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <button
+                            <Link
+                                href="/community"
                                 className="relative flex items-center space-x-1.5 text-muted-foreground hover:text-foreground px-3 py-2 rounded-full transition-all duration-200 hover:bg-muted text-sm font-medium"
                                 aria-label="Community menu"
                             >
                                 Community
                                 <ChevronDown className="w-3 h-3" />
-                            </button>
+                            </Link>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-48 p-2 bg-card border border-border shadow-xl rounded-xl">
                             {communityLinks.map((link) => (
@@ -243,9 +244,13 @@ export function Navbar() {
 
                                     {/* Community Section */}
                                     <div className="mt-2 border-t border-border pt-2">
-                                        <div className="px-6 py-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                        <Link
+                                            href="/community"
+                                            onClick={() => setOpen(false)}
+                                            className="px-6 py-3 text-lg font-black text-muted-foreground hover:text-accent hover:bg-muted rounded-2xl transition-all uppercase tracking-wide block"
+                                        >
                                             Community
-                                        </div>
+                                        </Link>
                                         {communityLinks.map((link) => (
                                             <Link
                                                 key={link.href}

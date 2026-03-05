@@ -9,11 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Upload, Video, Calendar, CheckCircle, Clock, Briefcase, GraduationCap, ArrowRight, Loader2, Search, ChevronRight, ExternalLink, MapPin, DollarSign, Sparkles, FileText, Users } from "lucide-react";
 import toast from "react-hot-toast";
-import { HoverEffect } from "@/components/ui/card-hover-effect";
 
 export default function CareerPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [activeTab, setActiveTab] = useState("mock");
+    const [activeTab, setActiveTab] = useState("internships");
     const [internships, setInternships] = useState<any[]>([]);
     const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -100,27 +99,6 @@ export default function CareerPage() {
         toast.success(`Opening application for ${title}...`);
     };
 
-    const careerServices = [
-        {
-            title: "Mock Interviews",
-            description: "Practice with industry professionals and get real-time feedback on your interview performance. Build confidence before the real thing.",
-            link: "#mock",
-            icon: <Video className="w-12 h-12" />,
-        },
-        {
-            title: "Resume Review",
-            description: "Get your resume reviewed by experts and receive personalized feedback to make it stand out to recruiters.",
-            link: "https://keyracer.in/pages/career-chat-widget.html",
-            icon: <FileText className="w-12 h-12" />,
-        },
-        {
-            title: "Career Mentorship",
-            description: "Connect with experienced mentors who can guide you through your career journey and help you make informed decisions.",
-            link: "/mentors",
-            icon: <Users className="w-12 h-12" />,
-        },
-    ];
-
     return (
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
@@ -128,61 +106,33 @@ export default function CareerPage() {
 
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-6 mx-auto">
-                            <Briefcase className="w-4 h-4" />
-                            Career Accelerator
-                        </div>
-                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground font-bold tracking-tight">
+
+                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
                             Launch Your <span className="text-[#219EBC]">Tech Career</span>
                         </h1>
                         <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
                             Practice interviews, explore internships, and discover job opportunities from top companies.
                         </p>
-                        <div className="flex justify-center gap-4">
-                            <Button
-                                onClick={() => window.open("https://keyracer.in/pages/career-chat-widget.html", "_blank")}
-                                className="bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-full px-8 py-6 text-lg shadow-lg shadow-[#0f2c59]/30"
-                            >
-                                <Sparkles className="w-5 h-5 mr-2" /> Get Resume Feedback
-                            </Button>
-                        </div>
                     </div>
-                </div>
-            </section>
-
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-
-            {/* Career Services Section */}
-            <section className="py-16 bg-background">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl text-foreground mb-4 font-bold">
-                            Our <span className="text-[#219EBC]">Career Services</span>
-                        </h2>
-                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            Everything you need to accelerate your tech career journey
-                        </p>
-                    </div>
-                    <HoverEffect items={careerServices} />
                 </div>
             </section>
 
             <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
             {/* Services Tabs */}
-            <section className="py-16 animate-on-scroll bg-gray-50">
+            <section className="py-16 animate-on-scroll bg-background">
                 <div className="container mx-auto px-4">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <div className="flex justify-center mb-10">
-                            <TabsList className="bg-gray-100 border border-border p-1.5">
-                                <TabsTrigger value="mock" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-white font-medium gap-2">
-                                    <Video className="w-4 h-4" /> Mock Interview
-                                </TabsTrigger>
+                            <TabsList className="bg-muted border border-border p-1.5 rounded-xl">
                                 <TabsTrigger value="internships" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-white font-medium gap-2">
                                     <GraduationCap className="w-4 h-4" /> Internships
                                 </TabsTrigger>
                                 <TabsTrigger value="jobs" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-white font-medium gap-2">
                                     <Briefcase className="w-4 h-4" /> Jobs
+                                </TabsTrigger>
+                                <TabsTrigger value="mock" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-white font-medium gap-2">
+                                    <Video className="w-4 h-4" /> Mock Interview
                                 </TabsTrigger>
                             </TabsList>
                         </div>
@@ -207,7 +157,7 @@ export default function CareerPage() {
                                                     placeholder="your.email@example.com"
                                                     value={mockFormData.email}
                                                     onChange={(e) => setMockFormData({ ...mockFormData, email: e.target.value })}
-                                                    className="bg-gray-50 border-border text-foreground"
+                                                    className="bg-muted border-border text-foreground"
                                                     required
                                                 />
                                             </div>
@@ -219,7 +169,7 @@ export default function CareerPage() {
                                                         value={mockFormData.preferredDate}
                                                         onChange={(e) => setMockFormData({ ...mockFormData, preferredDate: e.target.value })}
                                                         min={new Date().toISOString().split('T')[0]}
-                                                        className="bg-gray-50 border-border text-foreground"
+                                                        className="bg-muted border-border text-foreground"
                                                         required
                                                     />
                                                 </div>
@@ -229,7 +179,7 @@ export default function CareerPage() {
                                                         type="time"
                                                         value={mockFormData.preferredTime}
                                                         onChange={(e) => setMockFormData({ ...mockFormData, preferredTime: e.target.value })}
-                                                        className="bg-gray-50 border-border text-foreground"
+                                                        className="bg-muted border-border text-foreground"
                                                         required
                                                     />
                                                 </div>
@@ -239,7 +189,7 @@ export default function CareerPage() {
                                                 <select
                                                     value={mockFormData.interviewType}
                                                     onChange={(e) => setMockFormData({ ...mockFormData, interviewType: e.target.value })}
-                                                    className="w-full flex h-10 rounded-md border border-border bg-gray-50 px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#219EBC] text-foreground"
+                                                    className="w-full flex h-10 rounded-md border border-border bg-muted px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#219EBC] text-foreground"
                                                 >
                                                     <option value="TECHNICAL_FRONTEND">Technical (Frontend)</option>
                                                     <option value="TECHNICAL_BACKEND">Technical (Backend)</option>
@@ -250,7 +200,7 @@ export default function CareerPage() {
                                             </div>
                                             <div className="space-y-2">
                                                 <Label className="text-foreground">Experience Level *</Label>
-                                                <div className="flex gap-4">
+                                                <div className="flex gap-4 flex-wrap sm:flex-nowrap">
                                                     {["INTERN", "JUNIOR", "SENIOR"].map((level) => (
                                                         <label key={level} className="flex-1">
                                                             <input
@@ -261,7 +211,7 @@ export default function CareerPage() {
                                                                 onChange={(e) => setMockFormData({ ...mockFormData, experienceLevel: e.target.value })}
                                                                 className="hidden peer"
                                                             />
-                                                            <div className="text-center py-2 border rounded-lg cursor-pointer border-border peer-checked:border-[#219EBC] peer-checked:bg-blue-50 peer-checked:text-[#219EBC] text-muted-foreground">
+                                                            <div className="text-center py-2 px-2 sm:px-0 border rounded-lg cursor-pointer border-border peer-checked:border-[#219EBC] peer-checked:bg-[#219EBC]/10 peer-checked:text-[#219EBC] text-muted-foreground transition-all">
                                                                 {level.charAt(0) + level.slice(1).toLowerCase()}
                                                             </div>
                                                         </label>
@@ -287,13 +237,13 @@ export default function CareerPage() {
                             ) : internships.length > 0 ? (
                                 <div className="grid md:grid-cols-2 gap-6">
                                     {internships.map((internship) => (
-                                        <Card key={internship.id} className="bg-[#141A2B] border-[#2A3441] hover:shadow-2xl hover:shadow-[#219EBC]/10 transition-all rounded-[2rem] overflow-hidden">
+                                        <Card key={internship.id} className="bg-card border-border hover:shadow-2xl hover:shadow-[#219EBC]/10 transition-all rounded-[2rem] overflow-hidden">
                                             <div className="h-1.5 w-full bg-gradient-to-r from-[#219EBC] to-blue-500" />
                                             <CardHeader className="p-6 sm:p-8">
                                                 <div className="flex items-start justify-between">
-                                                    <div className="flex-1">
-                                                        <CardTitle className="text-white text-xl md:text-2xl mb-2 font-bold">{internship.title}</CardTitle>
-                                                        <CardDescription className="text-[#8E9AAF] font-medium text-sm md:text-base">{internship.company}</CardDescription>
+                                                    <div className="flex-1 min-w-0 pr-4">
+                                                        <CardTitle className="text-foreground text-xl md:text-2xl mb-2" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, letterSpacing: '1px' }}>{internship.title}</CardTitle>
+                                                        <CardDescription className="text-muted-foreground font-medium text-sm md:text-base" style={{ fontFamily: "'Montserrat', sans-serif" }}>{internship.company}</CardDescription>
                                                     </div>
                                                     {internship.imageUrl && (
                                                         <>
@@ -303,26 +253,26 @@ export default function CareerPage() {
                                                     )}
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mt-3">
-                                                    <Badge className="bg-blue-50 text-blue-600 border-0 flex items-center gap-1">
+                                                    <Badge className="bg-blue-500/10 text-blue-500 dark:text-blue-400 border-0 flex items-center gap-1">
                                                         <MapPin className="w-3 h-3" /> {internship.location}
                                                     </Badge>
                                                     {internship.duration && (
-                                                        <Badge className="bg-purple-50 text-purple-600 border-0 flex items-center gap-1">
+                                                        <Badge className="bg-purple-500/10 text-purple-500 dark:text-purple-400 border-0 flex items-center gap-1">
                                                             <Clock className="w-3 h-3" /> {internship.duration}
                                                         </Badge>
                                                     )}
                                                     {internship.salary && (
-                                                        <Badge className="bg-green-50 text-green-600 border-0 flex items-center gap-1">
+                                                        <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-0 flex items-center gap-1">
                                                             <DollarSign className="w-3 h-3" /> {internship.salary}
                                                         </Badge>
                                                     )}
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="px-6 sm:px-8">
-                                                <p className="text-[#8E9AAF] text-sm md:text-base line-clamp-3 mb-4 leading-relaxed">{internship.description}</p>
-                                                <div className="space-y-2 bg-[#1A2238] p-4 rounded-xl border border-[#2A3441]">
-                                                    <p className="text-sm font-semibold text-white">Requirements:</p>
-                                                    <ul className="text-sm text-[#8E9AAF] space-y-1.5">
+                                                <p className="text-muted-foreground text-sm md:text-base line-clamp-3 mb-4 leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>{internship.description}</p>
+                                                <div className="space-y-2 bg-muted/50 p-4 rounded-xl border border-border">
+                                                    <p className="text-sm font-semibold text-foreground">Requirements:</p>
+                                                    <ul className="text-sm text-muted-foreground space-y-1.5">
                                                         {internship.requirements.slice(0, 3).map((req: string, idx: number) => (
                                                             <li key={idx} className="flex items-start gap-2">
                                                                 <span className="text-[#219EBC] mt-0.5">•</span>
@@ -344,9 +294,9 @@ export default function CareerPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-[#141A2B] rounded-3xl border border-[#2A3441]">
-                                    <GraduationCap className="w-16 h-16 text-[#8E9AAF] opacity-50 mx-auto mb-4" />
-                                    <p className="text-[#8E9AAF] text-lg font-medium">No internships available at the moment. Check back soon!</p>
+                                <div className="text-center py-20 bg-muted/50 rounded-3xl border border-border">
+                                    <GraduationCap className="w-16 h-16 text-muted-foreground opacity-50 mx-auto mb-4" />
+                                    <p className="text-muted-foreground text-lg font-medium" style={{ fontFamily: "'Indie Flower', cursive" }}>No internships available at the moment. Check back soon!</p>
                                 </div>
                             )}
                         </TabsContent>
@@ -359,13 +309,13 @@ export default function CareerPage() {
                             ) : jobs.length > 0 ? (
                                 <div className="grid md:grid-cols-2 gap-6">
                                     {jobs.map((job) => (
-                                        <Card key={job.id} className="bg-[#141A2B] border-[#2A3441] hover:shadow-2xl hover:shadow-[#219EBC]/10 transition-all rounded-[2rem] overflow-hidden">
+                                        <Card key={job.id} className="bg-card border-border hover:shadow-2xl hover:shadow-[#219EBC]/10 transition-all rounded-[2rem] overflow-hidden">
                                             <div className="h-1.5 w-full bg-gradient-to-r from-[#219EBC] to-teal-400" />
                                             <CardHeader className="p-6 sm:p-8">
                                                 <div className="flex items-start justify-between">
-                                                    <div className="flex-1">
-                                                        <CardTitle className="text-white text-xl md:text-2xl mb-2 font-bold">{job.title}</CardTitle>
-                                                        <CardDescription className="text-[#8E9AAF] font-medium text-sm md:text-base">{job.company}</CardDescription>
+                                                    <div className="flex-1 min-w-0 pr-4">
+                                                        <CardTitle className="text-foreground text-xl md:text-2xl mb-2" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, letterSpacing: '1px' }}>{job.title}</CardTitle>
+                                                        <CardDescription className="text-muted-foreground font-medium text-sm md:text-base" style={{ fontFamily: "'Montserrat', sans-serif" }}>{job.company}</CardDescription>
                                                     </div>
                                                     {job.imageUrl && (
                                                         <>
@@ -375,21 +325,21 @@ export default function CareerPage() {
                                                     )}
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mt-3">
-                                                    <Badge className="bg-blue-50 text-blue-600 border-0 flex items-center gap-1">
+                                                    <Badge className="bg-blue-500/10 text-blue-500 dark:text-blue-400 border-0 flex items-center gap-1">
                                                         <MapPin className="w-3 h-3" /> {job.location}
                                                     </Badge>
                                                     {job.salary && (
-                                                        <Badge className="bg-green-50 text-green-600 border-0 flex items-center gap-1">
+                                                        <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-0 flex items-center gap-1">
                                                             <DollarSign className="w-3 h-3" /> {job.salary}
                                                         </Badge>
                                                     )}
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="px-6 sm:px-8">
-                                                <p className="text-[#8E9AAF] text-sm md:text-base line-clamp-3 mb-4 leading-relaxed">{job.description}</p>
-                                                <div className="space-y-2 bg-[#1A2238] p-4 rounded-xl border border-[#2A3441]">
-                                                    <p className="text-sm font-semibold text-white">Requirements:</p>
-                                                    <ul className="text-sm text-[#8E9AAF] space-y-1.5">
+                                                <p className="text-muted-foreground text-sm md:text-base line-clamp-3 mb-4 leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>{job.description}</p>
+                                                <div className="space-y-2 bg-muted/50 p-4 rounded-xl border border-border">
+                                                    <p className="text-sm font-semibold text-foreground">Requirements:</p>
+                                                    <ul className="text-sm text-muted-foreground space-y-1.5">
                                                         {job.requirements.slice(0, 3).map((req: string, idx: number) => (
                                                             <li key={idx} className="flex items-start gap-2">
                                                                 <span className="text-[#219EBC] mt-0.5">•</span>
@@ -411,15 +361,32 @@ export default function CareerPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-[#141A2B] rounded-3xl border border-[#2A3441]">
-                                    <Briefcase className="w-16 h-16 text-[#8E9AAF] opacity-50 mx-auto mb-4" />
-                                    <p className="text-[#8E9AAF] text-lg font-medium">No jobs available at the moment. Check back soon!</p>
+                                <div className="text-center py-20 bg-muted/50 rounded-3xl border border-border">
+                                    <Briefcase className="w-16 h-16 text-muted-foreground opacity-50 mx-auto mb-4" />
+                                    <p className="text-muted-foreground text-lg font-medium" style={{ fontFamily: "'Indie Flower', cursive" }}>No jobs available at the moment. Check back soon!</p>
                                 </div>
                             )}
                         </TabsContent>
                     </Tabs>
                 </div>
             </section>
+
+            {/* Floating Action Button - Get Resume Feedback */}
+            <button
+                onClick={() => window.open("https://keyracer.in/pages/career-chat-widget.html", "_blank")}
+                className="fixed bottom-8 right-8 z-50 group hover:scale-105 transition-transform"
+                aria-label="Get Resume Feedback"
+            >
+                <div className="relative">
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-violet-600 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+                    {/* Button */}
+                    <div className="relative flex items-center gap-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white px-6 py-4 rounded-full shadow-2xl transition-all duration-300 group-hover:scale-110 group-active:scale-95">
+                        <Sparkles className="w-5 h-5" />
+                        <span className="font-semibold" style={{ fontFamily: "'Montserrat', sans-serif" }}>Get Resume Feedback</span>
+                    </div>
+                </div>
+            </button>
         </div>
     );
 }

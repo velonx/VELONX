@@ -86,32 +86,7 @@ export default function GroupList({
 
   return (
     <div className={cn("w-full space-y-6", className)}>
-      {/* Filter Bar */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
-          <Select value={filter} onValueChange={(value) => setFilter(value as FilterType)}>
-            <SelectTrigger className="w-[180px]" aria-label="Filter groups by type">
-              <SelectValue placeholder="Filter groups" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Groups</SelectItem>
-              <SelectItem value="public">Public Only</SelectItem>
-              <SelectItem value="private">Private Only</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
 
-        {onCreateGroup && (
-          <Button
-            onClick={onCreateGroup}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 text-white font-bold rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-purple-600/20"
-          >
-            <Plus className="w-4 h-4" aria-hidden="true" />
-            Create Group
-          </Button>
-        )}
-      </div>
 
       {/* Groups Grid */}
       {filteredGroups.length === 0 ? (

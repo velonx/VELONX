@@ -93,11 +93,8 @@ export default function MentorsPage() {
 
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-secondary/10 border border-secondary/30 px-4 py-2 text-sm font-medium text-secondary mb-6 mx-auto" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                            <Sparkles className="w-4 h-4" />
-                            Mentorship Program
-                        </div>
-                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground font-bold tracking-tight">
+
+                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
                             Connect with <span className="text-secondary">Industry Mentors</span>
                         </h1>
                         <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">

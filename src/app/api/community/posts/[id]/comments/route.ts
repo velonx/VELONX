@@ -9,6 +9,7 @@ import { z } from "zod";
  */
 const createCommentSchema = z.object({
   content: z.string().min(1, "Comment content is required").max(1000, "Comment content must be 1000 characters or less"),
+  parentId: z.string().optional(),
 });
 
 /**
@@ -70,8 +71,26 @@ export const POST = withErrorHandler(async (
   const body = await request.json();
   const validatedData = createCommentSchema.parse(body);
 
-  // Create comment via service
-  const comment = await postService.commentOnPost(postId, validatedData.content, userId);
+  // Create comment via service or prisma directly since postService might not have parentId
+  const { prisma } = await import("@/lib/prisma");
+  const comment = await prisma.postComment.create({
+    data: {
+      content: validatedData.content,
+      postId,
+      authorId: userId,
+      parentId: validatedData.parentId || null,
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+    },
+  });
+  // Comment count is derived from _count.comments aggregation, no manual update needed
 
   return NextResponse.json(
     {
@@ -164,7 +183,10 @@ export const GET = withErrorHandler(async (
 
   const [comments, total] = await Promise.all([
     prisma.postComment.findMany({
-      where: { postId },
+      where: {
+        postId,
+        parentId: null // Only fetch top-level comments initially
+      },
       skip,
       take: pageSize,
       include: {
@@ -175,10 +197,25 @@ export const GET = withErrorHandler(async (
             image: true,
           },
         },
+        replies: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "asc" },
+        }
       },
-      orderBy: { createdAt: "asc" }, // Oldest first for comments
+      orderBy: [
+        { upvotes: "desc" }, // Sort by upvotes first (top voted)
+        { createdAt: "desc" }
+      ],
     }),
-    prisma.postComment.count({ where: { postId } }),
+    prisma.postComment.count({ where: { postId, parentId: null } }),
   ]);
 
   return NextResponse.json(

@@ -1003,6 +1003,8 @@ model CommunityPost {
   linkUrls   String[]
   isEdited   Boolean        @default(false)
   isPinned   Boolean        @default(false)
+  upvotes    Int            @default(0)
+  downvotes  Int            @default(0)
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
 
@@ -1043,11 +1045,16 @@ model PostComment {
   postId    String   @db.ObjectId
   authorId  String   @db.ObjectId
   content   String
+  parentId  String?  @db.ObjectId
+  upvotes   Int      @default(0)
+  downvotes Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author User          @relation("PostComments", fields: [authorId], references: [id], onDelete: Cascade)
+  post    CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author  User          @relation("PostComments", fields: [authorId], references: [id], onDelete: Cascade)
+  parent  PostComment?  @relation("ThreadedComments", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies PostComment[] @relation("ThreadedComments")
 
   @@index([postId, createdAt])
   @@index([authorId])

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ApiClientError } from '@/lib/api/client';
+import { getCSRFToken } from '@/lib/utils/csrf';
 import toast from 'react-hot-toast';
 
 /**
@@ -12,12 +13,16 @@ export interface PostComment {
   postId: string;
   authorId: string;
   content: string;
+  parentId: string | null;
+  upvotes: number;
+  downvotes: number;
+  replies?: PostComment[];
   createdAt: Date;
   updatedAt: Date;
   author: {
     id: string;
     name: string | null;
-    email: string;
+    email?: string;
     image: string | null;
   };
 }
@@ -36,7 +41,7 @@ export interface UsePostCommentsState {
  * Post Comments Hook Return Interface
  */
 export interface UsePostCommentsReturn extends UsePostCommentsState {
-  createComment: (content: string) => Promise<PostComment | null>;
+  createComment: (content: string, parentId?: string) => Promise<PostComment | null>;
   loadMore: () => Promise<void>;
   refetch: () => Promise<void>;
   isCreating: boolean;
@@ -95,9 +100,9 @@ export function usePostComments(
     isLoading: true,
     error: null,
   });
-  
+
   const [isCreating, setIsCreating] = useState(false);
-  
+
   const isMountedRef = useRef(true);
   const cursorRef = useRef<string | null>(null);
 
@@ -106,16 +111,16 @@ export function usePostComments(
    */
   const fetchComments = useCallback(async (cursor?: string | null) => {
     if (!postId || !isMountedRef.current) return;
-    
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
       const params = new URLSearchParams();
       params.append('limit', limit.toString());
       if (cursor) params.append('cursor', cursor);
-      
+
       const response = await fetch(`/api/community/posts/${postId}/comments?${params.toString()}`);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -124,14 +129,14 @@ export function usePostComments(
           errorData.error?.message || 'Failed to fetch comments'
         );
       }
-      
+
       const data = await response.json();
-      
+
       if (!isMountedRef.current) return;
-      
+
       const newComments = data.data || [];
       const nextCursor = data.pagination?.cursor || null;
-      
+
       setState(prev => ({
         ...prev,
         comments: cursor ? [...prev.comments, ...newComments] : newComments,
@@ -139,17 +144,17 @@ export function usePostComments(
         isLoading: false,
         error: null,
       }));
-      
+
       cursorRef.current = nextCursor;
     } catch (err) {
       console.error('[usePostComments] Fetch error:', err);
-      
+
       if (!isMountedRef.current) return;
-      
-      const error = err instanceof ApiClientError 
-        ? err 
+
+      const error = err instanceof ApiClientError
+        ? err
         : new ApiClientError(500, 'NETWORK_ERROR', getErrorMessage(err));
-      
+
       setState(prev => ({
         ...prev,
         isLoading: false,
@@ -165,7 +170,7 @@ export function usePostComments(
     cursorRef.current = null;
     fetchComments();
   }, [fetchComments]);
-  
+
   /**
    * Cleanup on unmount
    */
@@ -182,7 +187,7 @@ export function usePostComments(
     cursorRef.current = null;
     await fetchComments();
   }, [fetchComments]);
-  
+
   /**
    * Load more comments (pagination)
    */
@@ -190,21 +195,21 @@ export function usePostComments(
     if (!state.hasMore || state.isLoading) return;
     await fetchComments(cursorRef.current);
   }, [state.hasMore, state.isLoading, fetchComments]);
-  
+
   /**
    * Create a new comment with optimistic update
    */
-  const createComment = useCallback(async (content: string): Promise<PostComment | null> => {
+  const createComment = useCallback(async (content: string, parentId?: string): Promise<PostComment | null> => {
     if (!postId) {
       toast.error('Post ID is required');
       return null;
     }
-    
+
     if (!content.trim()) {
       toast.error('Comment cannot be empty');
       return null;
     }
-    
+
     setIsCreating(true);
 
     // Create optimistic comment
@@ -213,33 +218,52 @@ export function usePostComments(
       postId,
       authorId: 'current-user',
       content: content.trim(),
+      parentId: parentId || null,
+      upvotes: 0,
+      downvotes: 0,
+      replies: [],
       createdAt: new Date(),
       updatedAt: new Date(),
       author: {
         id: 'current-user',
         name: 'You',
-        email: '',
         image: null,
       },
     };
 
     // Optimistically add comment to state
     if (isMountedRef.current) {
-      setState(prev => ({
-        ...prev,
-        comments: [optimisticComment, ...prev.comments],
-      }));
+      setState(prev => {
+        // If it's a reply, find the parent and add it to its replies
+        if (parentId) {
+          return {
+            ...prev,
+            comments: prev.comments.map(c =>
+              c.id === parentId
+                ? { ...c, replies: [...(c.replies || []), optimisticComment] }
+                : c
+            )
+          };
+        }
+        // Top level comment
+        return {
+          ...prev,
+          comments: [optimisticComment, ...prev.comments],
+        };
+      });
     }
 
     try {
+      const csrfToken = await getCSRFToken();
       const response = await fetch(`/api/community/posts/${postId}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
         },
-        body: JSON.stringify({ content: content.trim() }),
+        body: JSON.stringify({ content: content.trim(), parentId }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new ApiClientError(
@@ -248,33 +272,57 @@ export function usePostComments(
           errorData.error?.message || 'Failed to create comment'
         );
       }
-      
+
       const result = await response.json();
       const newComment = result.data;
-      
+
       // Replace optimistic comment with real comment
       if (isMountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          comments: prev.comments.map(comment =>
-            comment.id === optimisticComment.id ? newComment : comment
-          ),
-        }));
+        setState(prev => {
+          if (parentId) {
+            return {
+              ...prev,
+              comments: prev.comments.map(c =>
+                c.id === parentId
+                  ? { ...c, replies: (c.replies || []).map(r => r.id === optimisticComment.id ? newComment : r) }
+                  : c
+              )
+            };
+          }
+          return {
+            ...prev,
+            comments: prev.comments.map(comment =>
+              comment.id === optimisticComment.id ? newComment : comment
+            ),
+          };
+        });
       }
-      
+
       toast.success('Comment added');
       return newComment;
     } catch (err) {
       console.error('[usePostComments] Create error:', err);
-      
+
       // Remove optimistic comment on error
       if (isMountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          comments: prev.comments.filter(comment => comment.id !== optimisticComment.id),
-        }));
+        setState(prev => {
+          if (parentId) {
+            return {
+              ...prev,
+              comments: prev.comments.map(c =>
+                c.id === parentId
+                  ? { ...c, replies: (c.replies || []).filter(r => r.id !== optimisticComment.id) }
+                  : c
+              )
+            };
+          }
+          return {
+            ...prev,
+            comments: prev.comments.filter(comment => comment.id !== optimisticComment.id),
+          };
+        });
       }
-      
+
       toast.error(getErrorMessage(err));
       return null;
     } finally {

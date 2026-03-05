@@ -4,7 +4,28 @@
  */
 
 // Load environment variables from .env file
-require('dotenv').config()
+// Note: Using fs-based loading to avoid Node.js v24 built-in dotenv conflict
+try {
+  const fs = require('fs');
+  const path = require('path');
+  const envPath = path.resolve(process.cwd(), '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    envContent.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const eqIdx = trimmed.indexOf('=');
+        if (eqIdx > 0) {
+          const key = trimmed.slice(0, eqIdx).trim();
+          const val = trimmed.slice(eqIdx + 1).trim().replace(/^['"]|['"]$/g, '');
+          if (!process.env[key]) process.env[key] = val;
+        }
+      }
+    });
+  }
+} catch (e) {
+  console.warn('[Server] Could not load .env file:', e.message);
+}
 
 const { createServer } = require('http')
 const { parse } = require('url')
@@ -41,7 +62,7 @@ app.prepare().then(async () => {
   } catch (error) {
     console.error('[Server] Failed to initialize database:', error.stack || error)
     console.error('[Server] Please check your DATABASE_URL environment variable')
-    
+
     // In production, this is a fatal error
     if (!dev) {
       process.exit(1)

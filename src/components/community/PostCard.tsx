@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -11,10 +11,13 @@ import {
   EditIcon,
   TrashIcon,
   LinkIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
 } from 'lucide-react';
 import { formatDistanceToNow } from '@/lib/utils/date-helpers';
 import type { CommunityPostData } from '@/lib/types/community.types';
-import { PostReactions } from './PostReactions';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-hot-toast';
 import { CommentSection } from './CommentSection';
 import { AvatarImage, CardImage } from '@/components/responsive-image';
 
@@ -33,27 +36,7 @@ export interface PostCardProps {
 }
 
 /**
- * PostCard Component
- * 
- * Displays a community post with reactions, comments, and actions.
- * 
- * Features:
- * - Post content with images and links
- * - Reaction buttons
- * - Comment section (expandable)
- * - Edit/delete actions for post author
- * - Pin/unpin actions for moderators
- * - Accessibility support
- * 
- * @example
- * ```tsx
- * <PostCard
- *   post={postData}
- *   onEdit={editPost}
- *   onDelete={deletePost}
- *   currentUserId="user-123"
- * />
- * ```
+ * PostCard Component — Reddit-style layout with voting sidebar
  */
 export function PostCard({
   post,
@@ -69,281 +52,277 @@ export function PostCard({
   const [showActions, setShowActions] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
+  const [localScore, setLocalScore] = useState(post.score || 0);
+
+  const { data: session } = useSession();
+  const loggedInUserId = session?.user?.id;
 
   const isAuthor = currentUserId === post.authorId;
   const canEdit = isAuthor && onEdit;
   const canDelete = (isAuthor || isModerator) && onDelete;
   const canPin = isModerator && (onPin || onUnpin);
 
-  /**
-   * Handle edit submission
-   */
+  const handleVote = async (action: 'upvote' | 'downvote') => {
+    if (!loggedInUserId) {
+      toast.error('You must be signed in to vote');
+      return;
+    }
+    setLocalScore(prev => action === 'upvote' ? prev + 1 : prev - 1);
+    try {
+      const { getCSRFToken } = await import('@/lib/utils/csrf');
+      const csrfToken = await getCSRFToken();
+      const res = await fetch(`/api/community/posts/${post.id}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+        body: JSON.stringify({ action })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Failed to vote');
+      if (data.data?.score !== undefined) setLocalScore(data.data.score);
+    } catch (error: any) {
+      toast.error(error.message);
+      setLocalScore(prev => action === 'upvote' ? prev - 1 : prev + 1);
+    }
+  };
+
   const handleEditSubmit = async () => {
     if (!onEdit || !editContent.trim()) return;
-
     try {
       await onEdit(post.id, editContent.trim());
       setIsEditing(false);
     } catch (error) {
-      // Error handling is done in the hook
       console.error('[PostCard] Edit error:', error);
     }
   };
 
-  /**
-   * Handle delete
-   */
   const handleDelete = async () => {
     if (!onDelete) return;
-
     if (!confirm('Are you sure you want to delete this post?')) return;
-
     try {
       await onDelete(post.id);
     } catch (error) {
-      // Error handling is done in the hook
       console.error('[PostCard] Delete error:', error);
     }
   };
 
-  /**
-   * Handle pin/unpin
-   */
   const handleTogglePin = async () => {
     try {
-      if (post.isPinned && onUnpin) {
-        await onUnpin(post.id);
-      } else if (!post.isPinned && onPin) {
-        await onPin(post.id);
-      }
+      if (post.isPinned && onUnpin) await onUnpin(post.id);
+      else if (!post.isPinned && onPin) await onPin(post.id);
     } catch (error) {
       console.error('[PostCard] Pin toggle error:', error);
     }
   };
 
   return (
-    <Card className="w-full">
-      {/* Header */}
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            {/* Author Avatar */}
-            <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
-              {post.authorImage ? (
-                <AvatarImage
-                  src={post.authorImage}
-                  alt={post.authorName}
-                  size={40}
-                />
-              ) : (
-                <span className="text-sm font-medium text-primary">
-                  {post.authorName.charAt(0).toUpperCase()}
-                </span>
-              )}
-            </div>
-
-            {/* Author Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-sm truncate">
-                  {post.authorName}
-                </span>
-                {post.isPinned && (
-                  <Badge variant="secondary" className="gap-1">
-                    <PinIcon className="size-3" />
-                    Pinned
-                  </Badge>
-                )}
-                {post.isEdited && (
-                  <span className="text-xs text-muted-foreground">(edited)</span>
-                )}
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <time dateTime={new Date(post.createdAt).toISOString()}>
-                  {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-                </time>
-                {post.visibility !== 'PUBLIC' && (
-                  <>
-                    <span>•</span>
-                    <Badge variant="outline" className="text-xs">
-                      {post.visibility === 'FOLLOWERS' ? 'Followers' : 'Group'}
-                    </Badge>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Actions Menu */}
-          {(canEdit || canDelete || canPin) && (
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => setShowActions(!showActions)}
-                aria-label="Post actions"
-                aria-expanded={showActions}
-              >
-                <MoreVerticalIcon />
-              </Button>
-
-              {showActions && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-background border rounded-md shadow-lg z-10">
-                  {canEdit && (
-                    <button
-                      onClick={() => {
-                        setIsEditing(true);
-                        setShowActions(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-2"
-                    >
-                      <EditIcon className="size-4" />
-                      Edit
-                    </button>
-                  )}
-                  {canPin && (
-                    <button
-                      onClick={() => {
-                        handleTogglePin();
-                        setShowActions(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-2"
-                    >
-                      <PinIcon className="size-4" />
-                      {post.isPinned ? 'Unpin' : 'Pin'}
-                    </button>
-                  )}
-                  {canDelete && (
-                    <button
-                      onClick={() => {
-                        handleDelete();
-                        setShowActions(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-accent text-destructive flex items-center gap-2"
-                    >
-                      <TrashIcon className="size-4" />
-                      Delete
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </CardHeader>
-
-      {/* Content */}
-      <CardContent className="space-y-4">
-        {isEditing ? (
-          <div className="space-y-2">
-            <textarea
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              className="w-full min-h-24 px-3 py-2 text-sm border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-              aria-label="Edit post content"
-            />
-            <div className="flex gap-2">
-              <Button size="sm" onClick={handleEditSubmit}>
-                Save
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  setIsEditing(false);
-                  setEditContent(post.content);
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <p className="text-sm whitespace-pre-wrap break-words">{post.content}</p>
-        )}
-
-        {/* Images */}
-        {post.imageUrls.length > 0 && (
-          <div
-            className={`grid gap-2 ${post.imageUrls.length === 1
-                ? 'grid-cols-1'
-                : post.imageUrls.length === 2
-                  ? 'grid-cols-2'
-                  : 'grid-cols-2 sm:grid-cols-3'
-              }`}
-          >
-            {post.imageUrls.map((url, index) => (
-              <div
-                key={index}
-                className="cursor-pointer"
-                onClick={() => window.open(url, '_blank')}
-              >
-                <CardImage
-                  src={url}
-                  alt={`Post image ${index + 1}`}
-                  aspectRatio="1/1"
-                  className="hover:scale-105 transition-transform"
-                />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Links */}
-        {post.linkUrls.length > 0 && (
-          <div className="space-y-2">
-            {post.linkUrls.map((url, index) => (
-              <a
-                key={index}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-3 bg-muted rounded-md text-sm hover:bg-muted/80 transition-colors"
-              >
-                <LinkIcon className="size-4 text-muted-foreground shrink-0" />
-                <span className="flex-1 truncate text-primary">{url}</span>
-              </a>
-            ))}
-          </div>
-        )}
-      </CardContent>
-
-      {/* Footer */}
-      <CardFooter className="flex-col gap-3 pt-0">
-        {/* Reactions and Comment Count */}
-        <div className="flex items-center justify-between w-full text-xs text-muted-foreground">
-          <span>{post.reactionCount} reactions</span>
-          <button
-            onClick={() => setShowComments(!showComments)}
-            className="hover:underline"
-            aria-label={`${showComments ? 'Hide' : 'Show'} comments`}
-            aria-expanded={showComments}
-          >
-            {post.commentCount} comments
-          </button>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2 w-full border-t pt-3">
-          <PostReactions postId={post.id} />
+    <Card className="w-full border border-border/40 shadow-sm bg-card overflow-hidden rounded-xl">
+      <div className="flex">
+        {/* ── Left Voting Sidebar ── */}
+        <div className="hidden sm:flex flex-col items-center py-5 px-3 bg-muted/30 border-r border-border/30 shrink-0 gap-0.5">
           <Button
             variant="ghost"
-            size="sm"
-            onClick={() => setShowComments(!showComments)}
-            className="flex-1"
+            size="icon"
+            className="size-8 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+            onClick={() => handleVote('upvote')}
+            aria-label="Upvote"
           >
-            <MessageCircleIcon />
-            Comment
+            <ChevronUpIcon className="size-5" />
+          </Button>
+          <span className="text-sm font-bold text-foreground tabular-nums py-0.5">
+            {localScore}
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+            onClick={() => handleVote('downvote')}
+            aria-label="Downvote"
+          >
+            <ChevronDownIcon className="size-5" />
           </Button>
         </div>
 
-        {/* Comments Section */}
-        {showComments && (
-          <div className="w-full border-t pt-3">
-            <CommentSection postId={post.id} />
+        {/* ── Main Content ── */}
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Header: Author + Meta + Actions */}
+          <div className="flex items-start justify-between gap-3 px-5 pt-5 pb-2">
+            <div className="flex items-center gap-3 min-w-0">
+              {/* Avatar */}
+              <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-background">
+                {post.authorImage ? (
+                  <AvatarImage src={post.authorImage} alt={post.authorName} size={40} />
+                ) : (
+                  <span className="text-sm font-semibold text-primary">
+                    {post.authorName.charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+
+              {/* Author name + meta */}
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-semibold text-sm text-foreground">{post.authorName}</span>
+                  {isAuthor && (
+                    <Badge variant="default" className="text-[10px] h-4 px-1.5 rounded bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 shadow-none border-blue-500/20 uppercase tracking-wider font-bold">
+                      OP
+                    </Badge>
+                  )}
+                  {post.isPinned && (
+                    <Badge variant="secondary" className="gap-1 text-[10px] h-4 px-1.5">
+                      <PinIcon className="size-2.5" />
+                      Pinned
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                  <time dateTime={new Date(post.createdAt).toISOString()}>
+                    {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                  </time>
+                  {post.isEdited && <span>• edited</span>}
+                  {post.visibility !== 'PUBLIC' && (
+                    <>
+                      <span>•</span>
+                      <span>{post.visibility === 'FOLLOWERS' ? 'Followers' : 'Group'}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Actions dropdown */}
+            {(canEdit || canDelete || canPin) && (
+              <div className="relative shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 rounded-full text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowActions(!showActions)}
+                  aria-label="Post actions"
+                >
+                  <MoreVerticalIcon className="size-4" />
+                </Button>
+                {showActions && (
+                  <div className="absolute right-0 top-full mt-1 w-44 bg-card border border-border rounded-lg shadow-lg z-20 py-1">
+                    {canEdit && (
+                      <button onClick={() => { setIsEditing(true); setShowActions(false); }} className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center gap-2">
+                        <EditIcon className="size-4" /> Edit
+                      </button>
+                    )}
+                    {canPin && (
+                      <button onClick={() => { handleTogglePin(); setShowActions(false); }} className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center gap-2">
+                        <PinIcon className="size-4" /> {post.isPinned ? 'Unpin' : 'Pin'}
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button onClick={() => { handleDelete(); setShowActions(false); }} className="w-full px-3 py-2 text-left text-sm hover:bg-muted text-destructive flex items-center gap-2">
+                        <TrashIcon className="size-4" /> Delete
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        )}
-      </CardFooter>
+
+          {/* Post Content */}
+          <div className="px-5 pb-3">
+            {isEditing ? (
+              <div className="space-y-3">
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="w-full min-h-24 px-3 py-2 text-sm border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+                  aria-label="Edit post content"
+                />
+                <div className="flex gap-2">
+                  <Button size="sm" className="rounded-full px-4" onClick={handleEditSubmit}>Save</Button>
+                  <Button size="sm" variant="outline" className="rounded-full px-4" onClick={() => { setIsEditing(false); setEditContent(post.content); }}>Cancel</Button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-1">
+                {post.content.includes('\n\n') ? (
+                  <>
+                    <h2 className="text-lg sm:text-xl font-bold text-foreground mb-2 leading-snug">
+                      {post.content.split('\n\n')[0]}
+                    </h2>
+                    <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">
+                      {post.content.substring(post.content.indexOf('\n\n') + 2)}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm sm:text-base text-foreground whitespace-pre-wrap break-words leading-relaxed">
+                    {post.content}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {['#discussion', '#community'].map(tag => (
+                <Badge key={tag} variant="secondary" className="bg-muted/60 text-muted-foreground text-[11px] font-normal hover:bg-muted rounded-full px-2.5 py-0.5">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+
+            {/* Images */}
+            {post.imageUrls.length > 0 && (
+              <div className={`grid gap-2 mt-3 ${post.imageUrls.length === 1 ? 'grid-cols-1' : post.imageUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
+                {post.imageUrls.map((url, i) => (
+                  <div key={i} className="cursor-pointer rounded-lg overflow-hidden" onClick={() => window.open(url, '_blank')}>
+                    <CardImage src={url} alt={`Post image ${i + 1}`} aspectRatio="16/9" className="hover:scale-105 transition-transform" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Links */}
+            {post.linkUrls.length > 0 && (
+              <div className="space-y-2 mt-3">
+                {post.linkUrls.map((url, i) => (
+                  <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2.5 bg-muted/50 rounded-lg text-sm hover:bg-muted transition-colors">
+                    <LinkIcon className="size-4 text-muted-foreground shrink-0" />
+                    <span className="flex-1 truncate text-primary">{url}</span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer: Comment count + mobile vote */}
+          <div className="px-5 py-3 border-t border-border/30 flex items-center gap-3">
+            {/* Mobile voting (hidden on sm+) */}
+            <div className="flex sm:hidden items-center gap-0.5 mr-2">
+              <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-primary" onClick={() => handleVote('upvote')}>
+                <ChevronUpIcon className="size-4" />
+              </Button>
+              <span className="text-xs font-bold tabular-nums min-w-[20px] text-center">{localScore}</span>
+              <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-destructive" onClick={() => handleVote('downvote')}>
+                <ChevronDownIcon className="size-4" />
+              </Button>
+            </div>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowComments(!showComments)}
+              className="text-muted-foreground hover:text-foreground gap-1.5 h-8 px-3 rounded-full"
+            >
+              <MessageCircleIcon className="size-4" />
+              <span className="text-sm">{post.commentCount} Comments</span>
+            </Button>
+          </div>
+
+          {/* Comments Section */}
+          {showComments && (
+            <div className="px-5 pb-5 border-t border-border/30">
+              <CommentSection postId={post.id} />
+            </div>
+          )}
+        </div>
+      </div>
     </Card>
   );
 }
