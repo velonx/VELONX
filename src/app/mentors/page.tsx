@@ -15,20 +15,7 @@ import BookingDialog from "@/components/mentors/BookingDialog";
 import { MentorCard } from "@/components/mentors/MentorCard";
 import type { Mentor } from "@/lib/api/types";
 
-const MOCK_MENTOR: Mentor = {
-    id: 'mock-mentor-1',
-    name: 'Aisha Patel',
-    email: 'aisha.patel@example.com',
-    expertise: ['React', 'Next.js', 'TypeScript', 'System Design'],
-    company: 'Senior Engineer @ Google',
-    bio: 'Passionate about building scalable web applications and mentoring the next generation of developers. 8+ years of experience in full-stack development with a focus on performance and accessibility.',
-    imageUrl: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=500&fit=crop&crop=face',
-    rating: 4.9,
-    totalSessions: 127,
-    available: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-};
+
 
 export default function MentorsPage() {
     const { data: session, status } = useSession();
@@ -94,8 +81,8 @@ export default function MentorsPage() {
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto">
 
-                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
-                            Connect with <span className="text-secondary">Industry Mentors</span>
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground tracking-tight font-bold mb-6">
+                            Connect with <span className="text-secondary">Mentors</span>
                         </h1>
                         <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
                             Get guidance from experienced professionals who have been in your shoes and succeeded.
@@ -152,23 +139,15 @@ export default function MentorsPage() {
             {/* Mentors Grid */}
             <section className="py-16 bg-muted/30">
                 <div className="container mx-auto px-4">
-                    {(filteredMentors.length > 0 || searchQuery === '') ? (
+                    {filteredMentors.length > 0 ? (
                         <div className="grid md:grid-cols-2 gap-10 justify-items-center">
-                            {/* Always show mock mentor first */}
-                            <MentorCard
-                                key={MOCK_MENTOR.id}
-                                mentor={MOCK_MENTOR}
-                                onBookSession={handleConnect}
-                                onLinkedinClick={handleLinkedin}
-                                index={0}
-                            />
                             {filteredMentors.map((mentor, index) => (
                                 <MentorCard
                                     key={mentor.id}
                                     mentor={mentor}
                                     onBookSession={handleConnect}
                                     onLinkedinClick={handleLinkedin}
-                                    index={index + 1}
+                                    index={index}
                                 />
                             ))}
                         </div>

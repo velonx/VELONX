@@ -94,7 +94,7 @@ export function ResponsiveImage({
               quality={quality}
               sizes={defaultSizes}
               className={`${objectFit === "cover" ? "object-cover" : objectFit === "contain" ? "object-contain" : ""} transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"}`}
-              onLoadingComplete={() => setIsLoading(false)}
+              onLoad={() => setIsLoading(false)}
               onError={() => {
                 setHasError(true);
                 setIsLoading(false);
@@ -130,7 +130,7 @@ export function ResponsiveImage({
             quality={quality}
             sizes={defaultSizes}
             className={`transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"}`}
-            onLoadingComplete={() => setIsLoading(false)}
+            onLoad={() => setIsLoading(false)}
             onError={() => {
               setHasError(true);
               setIsLoading(false);

@@ -107,8 +107,8 @@ export default function CareerPage() {
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto">
 
-                        <h1 className="text-4xl md:text-6xl mb-6 text-foreground" style={{ fontFamily: "'Great Vibes', cursive", fontWeight: 400 }}>
-                            Launch Your <span className="text-[#219EBC]">Tech Career</span>
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground tracking-tight font-bold mb-6">
+                            Launch Your <span className="text-[#219EBC]">Career</span>
                         </h1>
                         <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
                             Practice interviews, explore internships, and discover job opportunities from top companies.
@@ -242,8 +242,8 @@ export default function CareerPage() {
                                             <CardHeader className="p-6 sm:p-8">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1 min-w-0 pr-4">
-                                                        <CardTitle className="text-foreground text-xl md:text-2xl mb-2" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, letterSpacing: '1px' }}>{internship.title}</CardTitle>
-                                                        <CardDescription className="text-muted-foreground font-medium text-sm md:text-base" style={{ fontFamily: "'Montserrat', sans-serif" }}>{internship.company}</CardDescription>
+                                                        <CardTitle className="text-foreground text-xl md:text-2xl mb-2 font-bold tracking-tight">{internship.title}</CardTitle>
+                                                        <CardDescription className="text-muted-foreground font-medium text-sm md:text-base">{internship.company}</CardDescription>
                                                     </div>
                                                     {internship.imageUrl && (
                                                         <>
@@ -269,7 +269,7 @@ export default function CareerPage() {
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="px-6 sm:px-8">
-                                                <p className="text-muted-foreground text-sm md:text-base line-clamp-3 mb-4 leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>{internship.description}</p>
+                                                <p className="text-muted-foreground text-sm md:text-base line-clamp-3 mb-4 leading-relaxed">{internship.description}</p>
                                                 <div className="space-y-2 bg-muted/50 p-4 rounded-xl border border-border">
                                                     <p className="text-sm font-semibold text-foreground">Requirements:</p>
                                                     <ul className="text-sm text-muted-foreground space-y-1.5">
@@ -296,7 +296,7 @@ export default function CareerPage() {
                             ) : (
                                 <div className="text-center py-20 bg-muted/50 rounded-3xl border border-border">
                                     <GraduationCap className="w-16 h-16 text-muted-foreground opacity-50 mx-auto mb-4" />
-                                    <p className="text-muted-foreground text-lg font-medium" style={{ fontFamily: "'Indie Flower', cursive" }}>No internships available at the moment. Check back soon!</p>
+                                    <p className="text-muted-foreground text-lg font-medium">No internships available at the moment. Check back soon!</p>
                                 </div>
                             )}
                         </TabsContent>
@@ -314,8 +314,8 @@ export default function CareerPage() {
                                             <CardHeader className="p-6 sm:p-8">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1 min-w-0 pr-4">
-                                                        <CardTitle className="text-foreground text-xl md:text-2xl mb-2" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, letterSpacing: '1px' }}>{job.title}</CardTitle>
-                                                        <CardDescription className="text-muted-foreground font-medium text-sm md:text-base" style={{ fontFamily: "'Montserrat', sans-serif" }}>{job.company}</CardDescription>
+                                                        <CardTitle className="text-foreground text-xl md:text-2xl mb-2 font-bold tracking-tight">{job.title}</CardTitle>
+                                                        <CardDescription className="text-muted-foreground font-medium text-sm md:text-base">{job.company}</CardDescription>
                                                     </div>
                                                     {job.imageUrl && (
                                                         <>
@@ -336,7 +336,7 @@ export default function CareerPage() {
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="px-6 sm:px-8">
-                                                <p className="text-muted-foreground text-sm md:text-base line-clamp-3 mb-4 leading-relaxed" style={{ fontFamily: "'Indie Flower', cursive", fontWeight: 400 }}>{job.description}</p>
+                                                <p className="text-muted-foreground text-sm md:text-base line-clamp-3 mb-4 leading-relaxed">{job.description}</p>
                                                 <div className="space-y-2 bg-muted/50 p-4 rounded-xl border border-border">
                                                     <p className="text-sm font-semibold text-foreground">Requirements:</p>
                                                     <ul className="text-sm text-muted-foreground space-y-1.5">
@@ -363,7 +363,7 @@ export default function CareerPage() {
                             ) : (
                                 <div className="text-center py-20 bg-muted/50 rounded-3xl border border-border">
                                     <Briefcase className="w-16 h-16 text-muted-foreground opacity-50 mx-auto mb-4" />
-                                    <p className="text-muted-foreground text-lg font-medium" style={{ fontFamily: "'Indie Flower', cursive" }}>No jobs available at the moment. Check back soon!</p>
+                                    <p className="text-muted-foreground text-lg font-medium">No jobs available at the moment. Check back soon!</p>
                                 </div>
                             )}
                         </TabsContent>

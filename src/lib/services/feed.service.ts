@@ -79,46 +79,47 @@ export class FeedService {
    * Optimized with parallel queries and select-only fields
    */
   async getUserFeed(userId: string, query: FeedQuery = {}): Promise<FeedItemData[]> {
-    // Validate that the user exists
-    const userExists = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true },
-    });
-
-    if (!userExists) {
-      throw new NotFoundError("User");
-    }
-
     const limit = query.limit && query.limit > 0 ? Math.min(query.limit, 100) : 20;
     const filter = query.filter || "ALL";
 
-    // Execute relationship queries in parallel using Promise.all
-    const [blockedUserIds, followingIds, groupIds] = await Promise.all([
-      this.getBlockedUserIds(userId),
-      this.getFollowingIds(userId),
-      this.getGroupIds(userId),
-    ]);
+    // Single round-trip: fetch all relationship data needed for feed filtering
+    const userData = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        // Users this person has blocked (@relation "Blocking")
+        blocking: { select: { blockedId: true } },
+        // Users who have blocked this person (@relation "BlockedBy")
+        blockedBy: { select: { blockerId: true } },
+        // Users this person follows (@relation "Following")
+        following: { select: { followingId: true } },
+        // Groups this person belongs to (@relation "GroupMemberships")
+        groupMemberships: { select: { groupId: true } },
+      },
+    });
+
+    if (!userData) {
+      throw new NotFoundError("User");
+    }
+
+    const blockedUserIds = [
+      ...userData.blocking.map((b) => b.blockedId),
+      ...userData.blockedBy.map((b) => b.blockerId),
+    ];
+    const followingIds = userData.following.map((f) => f.followingId);
+    const groupIds = userData.groupMemberships.map((g) => g.groupId);
 
     // Build the where clause based on filter
     let whereClause: any = {
-      // Exclude deleted posts
-      NOT: {
-        content: "",
-      },
+      NOT: { content: "" },
     };
 
     if (blockedUserIds.length > 0) {
-      whereClause.authorId = {
-        notIn: blockedUserIds,
-      };
+      whereClause.authorId = { notIn: blockedUserIds };
     }
 
     if (filter === "FOLLOWING") {
-      if (followingIds.length === 0) {
-        // User doesn't follow anyone, return empty feed
-        return [];
-      }
-
+      if (followingIds.length === 0) return [];
       whereClause.AND = [
         {
           OR: [
@@ -128,15 +129,11 @@ export class FeedService {
         },
       ];
     } else if (filter === "GROUPS") {
-      if (groupIds.length === 0) {
-        // User is not a member of any groups, return empty feed
-        return [];
-      }
-
+      if (groupIds.length === 0) return [];
       whereClause.groupId = { in: groupIds };
       whereClause.visibility = "GROUP";
     } else {
-      // ALL filter: show public posts, posts from followed users, and posts from joined groups
+      // ALL filter: public posts + posts from followed users + posts from joined groups
       whereClause.OR = [
         { visibility: "PUBLIC" },
         { visibility: "FOLLOWERS", authorId: { in: followingIds } },
@@ -144,14 +141,10 @@ export class FeedService {
       ];
     }
 
-    // Add cursor-based pagination
     if (query.cursor) {
-      whereClause.id = {
-        lt: query.cursor,
-      };
+      whereClause.id = { lt: query.cursor };
     }
 
-    // Fetch posts with select instead of include for optimized field selection
     const posts = await prisma.communityPost.findMany({
       where: whereClause,
       select: {
@@ -166,34 +159,17 @@ export class FeedService {
         isPinned: true,
         createdAt: true,
         updatedAt: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
-        },
-        group: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        _count: {
-          select: {
-            reactions: true,
-            comments: true,
-          },
-        },
+        author: { select: { id: true, name: true, image: true } },
+        group: { select: { id: true, name: true } },
+        _count: { select: { reactions: true, comments: true } },
       },
       orderBy: [
-        { isPinned: "desc" }, // Pinned posts first
-        { createdAt: "desc" }, // Then chronological order
+        { isPinned: "desc" },
+        { createdAt: "desc" },
       ],
       take: limit,
     });
 
-    // Format posts as feed items
     return posts.map((post) => this.formatFeedItem(post));
   }
 

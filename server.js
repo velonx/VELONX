@@ -83,10 +83,9 @@ app.prepare().then(async () => {
 
   // Initialize WebSocket server (dynamic import for ES modules)
   try {
-    const basePath = dev ? './src/lib' : './src/lib';
-    const { getWebSocketServer } = await import(`${basePath}/websocket/server`)
-    const { initializePubSub } = await import(`${basePath}/websocket/pubsub`)
-    const { initializeRedis } = await import(`${basePath}/redis`)
+    const { getWebSocketServer } = await import(dev ? './src/lib/websocket/server.ts' : './src/lib/websocket/server')
+    const { initializePubSub } = await import(dev ? './src/lib/websocket/pubsub.ts' : './src/lib/websocket/pubsub')
+    const { initializeRedis } = await import(dev ? './src/lib/redis.ts' : './src/lib/redis')
     const { disconnectPrisma } = await import(dev ? './src/lib/prisma.ts' : './src/lib/prisma')
 
     // Initialize Redis first

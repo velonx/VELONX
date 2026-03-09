@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   images: {
     // Enable modern image formats (AVIF and WebP)
     formats: ['image/avif', 'image/webp'],
+    // Allowed quality values used across the app (75=default, 80=avatars, 85=heroes)
+    qualities: [75, 80, 85],
     // Configure remote image domains
     remotePatterns: [
       {

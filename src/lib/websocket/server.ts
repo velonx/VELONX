@@ -11,12 +11,12 @@ import { getRedisClient } from '@/lib/redis'
 import { subscribeToPubSub, publishMessage } from './pubsub'
 
 // WebSocket message types
-export type WSMessageType = 
-  | 'CHAT_MESSAGE' 
-  | 'TYPING' 
-  | 'USER_JOINED' 
-  | 'USER_LEFT' 
-  | 'MESSAGE_EDIT' 
+export type WSMessageType =
+  | 'CHAT_MESSAGE'
+  | 'TYPING'
+  | 'USER_JOINED'
+  | 'USER_LEFT'
+  | 'MESSAGE_EDIT'
   | 'MESSAGE_DELETE'
   | 'PING'
   | 'PONG'
@@ -92,7 +92,7 @@ export function getWebSocketServer(server: any): WebSocketServer {
 
   console.log('[WebSocket] Initializing new server instance')
   wsServerInstance = initializeWebSocketServer(server)
-  
+
   return wsServerInstance
 }
 
@@ -101,7 +101,7 @@ export function getWebSocketServer(server: any): WebSocketServer {
  * @internal Use getWebSocketServer() instead for singleton access
  */
 function initializeWebSocketServer(server: any): WebSocketServer {
-  const wss = new WebSocketServer({ 
+  const wss = new WebSocketServer({
     noServer: true,
     path: '/api/community/ws'
   })
@@ -109,12 +109,12 @@ function initializeWebSocketServer(server: any): WebSocketServer {
   // Handle upgrade requests
   server.on('upgrade', async (request: IncomingMessage, socket: any, head: Buffer) => {
     const { pathname } = parse(request.url || '', true)
-    
+
     if (pathname === '/api/community/ws') {
       try {
         // Authenticate the connection
         const userId = await authenticateConnection(request)
-        
+
         if (!userId) {
           socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
           socket.destroy()
@@ -130,16 +130,16 @@ function initializeWebSocketServer(server: any): WebSocketServer {
         socket.write('HTTP/1.1 500 Internal Server Error\r\n\r\n')
         socket.destroy()
       }
-    } else {
-      socket.destroy()
     }
+    // For all other paths (e.g. Next.js HMR at _next/webpack-hmr),
+    // do nothing — let the runtime handle the upgrade naturally.
   })
 
   // Handle new connections
   wss.on('connection', async (ws: WebSocket, _request: IncomingMessage, userId: string) => {
     const extWs = ws as ExtendedWebSocket
     console.log(`[WebSocket] User ${userId} connected`)
-    
+
     // Set up connection properties
     extWs.userId = userId
     extWs.isAlive = true
@@ -173,7 +173,7 @@ function initializeWebSocketServer(server: any): WebSocketServer {
     // Handle disconnection
     extWs.on('close', async () => {
       console.log(`[WebSocket] User ${userId} disconnected`)
-      
+
       // Remove from connection pool
       const userConnections = connections.get(userId)
       if (userConnections) {
@@ -212,7 +212,7 @@ function initializeWebSocketServer(server: any): WebSocketServer {
   const heartbeatInterval = setInterval(() => {
     wss.clients.forEach((ws: WebSocket) => {
       const extWs = ws as ExtendedWebSocket
-      
+
       if (extWs.isAlive === false) {
         console.log(`[WebSocket] Terminating inactive connection for user ${extWs.userId}`)
         return ws.terminate()
@@ -253,7 +253,7 @@ async function authenticateConnection(request: IncomingMessage): Promise<string 
     }
 
     const decoded = verify(token, secret) as { sub?: string }
-    
+
     if (!decoded.sub) {
       console.error('[WebSocket] Invalid token payload')
       return null
@@ -343,7 +343,7 @@ export async function subscribeToChannel(ws: ExtendedWebSocket, channel: string)
   }
 
   ws.subscriptions.add(channel)
-  
+
   // Subscribe to Redis Pub/Sub for this channel
   await subscribeToPubSub(channel, (message: WSMessage) => {
     // Broadcast to this specific connection
@@ -362,7 +362,7 @@ async function unsubscribeFromChannel(ws: ExtendedWebSocket, channel: string): P
   if (ws.subscriptions) {
     ws.subscriptions.delete(channel)
   }
-  
+
   console.log(`[WebSocket] User ${ws.userId} unsubscribed from ${channel}`)
 }
 
@@ -430,12 +430,12 @@ export async function getOnlineUsers(roomId?: string, groupId?: string): Promise
   try {
     const redis = getRedisClient()
     const channel = roomId ? `room:${roomId}` : groupId ? `group:${groupId}` : null
-    
+
     if (!channel) return []
 
     const onlineKey = `${channel}:online`
     const onlineUsers = await redis.smembers(onlineKey)
-    
+
     return onlineUsers
   } catch (error) {
     console.error('[WebSocket] Get online users error:', error)
