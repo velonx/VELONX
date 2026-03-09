@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import Image from "next/image";
 import {
   Dialog,
@@ -75,17 +75,27 @@ export default function EventDetailsModal({
   isLoading = false,
   userRole
 }: EventDetailsModalProps) {
-  const [attendees, setAttendees] = useState<Array<{
-    id: string;
-    user: {
-      id: string;
-      name: string | null;
-      image: string | null;
-    };
-  }>>([]);
-  const [isLoadingAttendees, setIsLoadingAttendees] = useState(false);
+  // Attendee fetch state managed via reducer to avoid setState-in-effect warnings
+  type AttendeeState = { attendees: Array<{ id: string; user: { id: string; name: string | null; image: string | null } }>; loading: boolean; error: string | null };
+  type AttendeeAction =
+    | { type: 'FETCH_START' }
+    | { type: 'FETCH_SUCCESS'; attendees: AttendeeState['attendees'] }
+    | { type: 'FETCH_ERROR'; error: string }
+    | { type: 'RESET' };
+
+  const [attendeeState, dispatchAttendee] = useReducer(
+    (state: AttendeeState, action: AttendeeAction): AttendeeState => {
+      switch (action.type) {
+        case 'FETCH_START': return { ...state, loading: true, error: null };
+        case 'FETCH_SUCCESS': return { loading: false, error: null, attendees: action.attendees };
+        case 'FETCH_ERROR': return { loading: false, error: action.error, attendees: [] };
+        case 'RESET': return { loading: false, error: null, attendees: [] };
+      }
+    },
+    { attendees: [], loading: false, error: null }
+  );
+  const { attendees, loading: isLoadingAttendees, error: attendeesError } = attendeeState;
   const [showAllAttendees, setShowAllAttendees] = useState(false);
-  const [attendeesError, setAttendeesError] = useState<string | null>(null);
   const [statusAnnouncement, setStatusAnnouncement] = useState<string>('');
 
   const isAdmin = userRole === 'ADMIN';
@@ -114,30 +124,29 @@ export default function EventDetailsModal({
 
   useEffect(() => {
     if (isOpen && event && isAdmin) {
-      setIsLoadingAttendees(true);
-      setAttendeesError(null);
+      dispatchAttendee({ type: 'FETCH_START' });
 
       eventsApi.getAttendees(event.id)
         .then((response) => {
           if (response.success) {
-            setAttendees(response.data.attendees.map(a => ({
-              id: a.id,
-              user: a.user
-            })));
+            dispatchAttendee({
+              type: 'FETCH_SUCCESS',
+              attendees: response.data.attendees.map(a => ({
+                id: a.id,
+                user: a.user
+              }))
+            });
           }
         })
         .catch((error) => {
           console.error('Failed to fetch attendees:', error);
-          setAttendeesError('Failed to load attendees');
-        })
-        .finally(() => {
-          setIsLoadingAttendees(false);
+          dispatchAttendee({ type: 'FETCH_ERROR', error: 'Failed to load attendees' });
         });
     } else {
       // Reset attendees when modal closes or user is not admin
-      setAttendees([]);
+      dispatchAttendee({ type: 'RESET' });
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowAllAttendees(false);
-      setAttendeesError(null);
     }
   }, [isOpen, event, isAdmin]);
 

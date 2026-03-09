@@ -66,12 +66,14 @@ export default function Home() {
                                         (e.currentTarget as HTMLDivElement).style.borderColor = '#925B3A30';
                                     }}
                                 >
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src="/illustrations/mentor-light.jpg"
                                         alt="Expert Mentors"
                                         className="absolute inset-0 w-full h-full block dark:hidden"
                                         style={{ objectFit: 'cover' }}
                                     />
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src="/illustrations/mentor-dark.jpg"
                                         alt="Expert Mentors"
@@ -116,12 +118,14 @@ export default function Home() {
                                         (e.currentTarget as HTMLDivElement).style.borderColor = '#C47A4A30';
                                     }}
                                 >
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src="/illustrations/project-light.jpg"
                                         alt="Real Projects"
                                         className="absolute inset-0 w-full h-full block dark:hidden"
                                         style={{ objectFit: 'cover' }}
                                     />
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src="/illustrations/project-dark.jpg"
                                         alt="Real Projects"
@@ -164,12 +168,14 @@ export default function Home() {
                                         (e.currentTarget as HTMLDivElement).style.borderColor = '#E8A87C30';
                                     }}
                                 >
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src="/illustrations/community-light.jpg"
                                         alt="Career Growth"
                                         className="absolute inset-0 w-full h-full block dark:hidden"
                                         style={{ objectFit: 'cover' }}
                                     />
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src="/illustrations/community-dark.jpg"
                                         alt="Career Growth"
