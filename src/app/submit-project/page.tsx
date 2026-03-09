@@ -53,11 +53,9 @@ export default function SubmitProjectPage() {
     setLoading(true);
 
     try {
-      // Get CSRF token for the POST request
       const { getCSRFToken } = await import('@/lib/utils/csrf');
       const csrfToken = await getCSRFToken();
 
-      // Create a user request for project submission
       const response = await fetch('/api/user-requests', {
         method: 'POST',
         headers: {
@@ -93,7 +91,6 @@ export default function SubmitProjectPage() {
     }
   };
 
-  // Redirect if not authenticated
   if (status === 'unauthenticated') {
     router.push('/auth/login');
     return null;
@@ -102,7 +99,7 @@ export default function SubmitProjectPage() {
   if (status === 'loading') {
     return (
       <div className="min-h-screen pt-24 flex items-center justify-center bg-background">
-        <div className="w-16 h-16 rounded-full border-4 border-[#219EBC] border-t-transparent animate-spin" />
+        <div className="w-16 h-16 rounded-full border-4 border-primary border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -112,47 +109,47 @@ export default function SubmitProjectPage() {
       <div className="min-h-screen pt-24 bg-background">
         <div className="container mx-auto px-4 max-w-2xl py-20">
           <div className="text-center">
-            <div className="w-24 h-24 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-8">
-              <CheckCircle2 className="w-12 h-12 text-green-600" />
+            <div className="w-24 h-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-8">
+              <CheckCircle2 className="w-12 h-12 text-green-500" />
             </div>
-            <h1 className="text-4xl font-black text-[#023047] mb-4">
+            <h1 className="text-4xl font-black text-foreground mb-4">
               Project Idea Submitted!
             </h1>
             <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
               Thank you for submitting your project idea. Our team will review it and get back to you within 48 hours.
             </p>
-            <div className="bg-gray-50 rounded-2xl p-6 mb-8 text-left max-w-md mx-auto">
-              <h3 className="font-bold text-[#023047] mb-3">What happens next?</h3>
+            <div className="bg-muted/40 border border-border rounded-2xl p-6 mb-8 text-left max-w-md mx-auto">
+              <h3 className="font-bold text-foreground mb-3">What happens next?</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span>Our team reviews your project idea</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Once approved, it will appear in "Running Projects"</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Once approved, it will appear in &quot;Running Projects&quot;</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span>Other students can request to join your project</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>You'll manage join requests from your dashboard</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>You&apos;ll manage join requests from your dashboard</span>
                 </li>
               </ul>
             </div>
             <div className="flex gap-4 justify-center">
               <Button
                 onClick={() => router.push('/projects')}
-                className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl px-8"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl px-8"
               >
                 Browse Projects
               </Button>
               <Button
                 onClick={() => router.push('/')}
                 variant="outline"
-                className="border-2 border-border hover:border-[#219EBC] text-foreground font-bold rounded-xl px-8"
+                className="font-bold rounded-xl px-8"
               >
                 Back to Home
               </Button>
@@ -166,25 +163,25 @@ export default function SubmitProjectPage() {
   return (
     <div className="min-h-screen pt-24 bg-background">
       {/* Header */}
-      <section className="py-12 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-12 bg-muted/20 border-b border-border">
         <div className="container mx-auto px-4 max-w-4xl">
           <Button
             onClick={() => router.back()}
             variant="ghost"
-            className="mb-6 text-muted-foreground hover:text-[#219EBC]"
+            className="mb-6 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#E9C46A]/10 border border-[#E9C46A]/30 px-4 py-2 text-sm font-medium text-[#8B7A52] mb-6">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-2 text-sm font-medium text-primary mb-6">
             <Sparkles className="w-4 h-4" />
             Submit Project Idea
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-[#023047] mb-4">
+          <h1 className="text-4xl md:text-5xl font-black text-foreground mb-4">
             Build Something Amazing
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
-            Have an innovative project idea? Share it with our community! Once approved, you'll lead the project and collaborate with talented students.
+            Have an innovative project idea? Share it with our community! Once approved, you&apos;ll lead the project and collaborate with talented students.
           </p>
         </div>
       </section>
@@ -192,21 +189,21 @@ export default function SubmitProjectPage() {
       {/* Form */}
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-4xl">
-          <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
-            <CardHeader className="p-12 border-b border-gray-50">
-              <CardTitle className="text-2xl font-black text-[#023047]">
+          <Card className="bg-card border border-border shadow-lg rounded-[32px] overflow-hidden">
+            <CardHeader className="p-10 border-b border-border">
+              <CardTitle className="text-2xl font-black text-foreground">
                 Project Submission
               </CardTitle>
               <p className="text-muted-foreground mt-2">
                 Tell us about your project idea
               </p>
             </CardHeader>
-            <CardContent className="p-12">
+            <CardContent className="p-10">
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Project Information */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold text-[#023047] flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-[#219EBC]" />
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-primary" />
                     Project Details
                   </h3>
 
@@ -220,7 +217,7 @@ export default function SubmitProjectPage() {
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       placeholder="e.g., AI-Powered Study Buddy, Community Food Sharing App"
-                      className="h-12 bg-gray-50 border-0 rounded-xl"
+                      className="h-12 bg-muted/40 border-border rounded-xl"
                     />
                   </div>
 
@@ -235,7 +232,7 @@ export default function SubmitProjectPage() {
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       placeholder="Describe what your project does, the problem it solves, and its key features..."
                       maxLength={1000}
-                      className="w-full h-40 bg-gray-50 border-0 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#219EBC] resize-none"
+                      className="w-full h-40 bg-muted/40 border border-border rounded-xl p-4 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring resize-none"
                     />
                     <p className="text-xs text-muted-foreground text-right">
                       {formData.description.length}/1000 characters
@@ -245,8 +242,8 @@ export default function SubmitProjectPage() {
 
                 {/* Technical Details */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold text-[#023047] flex items-center gap-2">
-                    <Code className="w-5 h-5 text-[#219EBC]" />
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Code className="w-5 h-5 text-primary" />
                     Technical Stack
                   </h3>
 
@@ -265,13 +262,13 @@ export default function SubmitProjectPage() {
                           }
                         }}
                         placeholder="e.g., React, Node.js, Python, MongoDB"
-                        className="h-12 bg-gray-50 border-0 rounded-xl"
+                        className="h-12 bg-muted/40 border-border rounded-xl"
                       />
                       <Button
                         type="button"
                         onClick={handleAddTech}
                         disabled={!techInput.trim() || formData.techStack.length >= 15}
-                        className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                        className="h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl"
                       >
                         Add
                       </Button>
@@ -281,7 +278,7 @@ export default function SubmitProjectPage() {
                         {formData.techStack.map((tech, index) => (
                           <Badge
                             key={index}
-                            className="bg-[#219EBC]/10 text-[#219EBC] border-0 font-bold px-3 py-1.5 text-sm hover:bg-[#219EBC]/20 cursor-pointer"
+                            className="bg-primary/10 text-primary border border-primary/20 font-bold px-3 py-1.5 text-sm hover:bg-primary/20 cursor-pointer"
                             onClick={() => handleRemoveTech(index)}
                           >
                             {tech} ×
@@ -298,7 +295,7 @@ export default function SubmitProjectPage() {
                 {/* Project Goals */}
                 <div className="space-y-2">
                   <Label htmlFor="goals" className="text-sm font-bold text-foreground">
-                    Project Goals & Expected Outcomes *
+                    Project Goals &amp; Expected Outcomes *
                   </Label>
                   <textarea
                     id="goals"
@@ -307,7 +304,7 @@ export default function SubmitProjectPage() {
                     onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
                     placeholder="What do you hope to achieve with this project? What will be the final deliverables?"
                     maxLength={500}
-                    className="w-full h-32 bg-gray-50 border-0 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#219EBC] resize-none"
+                    className="w-full h-32 bg-muted/40 border border-border rounded-xl p-4 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring resize-none"
                   />
                   <p className="text-xs text-muted-foreground text-right">
                     {formData.goals.length}/500 characters
@@ -328,7 +325,7 @@ export default function SubmitProjectPage() {
                     value={formData.teamSize}
                     onChange={(e) => setFormData({ ...formData, teamSize: e.target.value })}
                     placeholder="e.g., 4"
-                    className="h-12 bg-gray-50 border-0 rounded-xl"
+                    className="h-12 bg-muted/40 border-border rounded-xl"
                   />
                   <p className="text-xs text-muted-foreground">
                     How many team members (including you) would be ideal for this project?
@@ -339,7 +336,7 @@ export default function SubmitProjectPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-14 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-xl text-lg"
+                  className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl text-lg"
                 >
                   {loading ? (
                     <>

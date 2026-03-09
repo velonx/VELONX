@@ -23,12 +23,22 @@ import type { RegistrationStatusInfo, RegistrationClosureReason } from '@/lib/ty
  * **Validates: Requirements 1.3, 1.5, 2.1, 2.2, 3.2, 3.3**
  */
 export function computeRegistrationStatus(
-  event: Event & { 
+  event: Event & {
     registrationDeadline?: string | null;
     registrationManuallyClosedAt?: string | null;
   },
   attendeeCount: number
 ): RegistrationStatusInfo {
+  // Priority 0: Event has already happened — block registration entirely
+  if (new Date() > new Date(event.date)) {
+    return {
+      isOpen: false,
+      reason: 'deadline',
+      message: 'This event has already taken place',
+      canReopen: false
+    };
+  }
+
   // Priority 1: Check manual closure (highest priority)
   if (event.registrationManuallyClosedAt) {
     return {
@@ -38,7 +48,7 @@ export function computeRegistrationStatus(
       canReopen: true
     };
   }
-  
+
   // Priority 2: Check deadline
   if (event.registrationDeadline && new Date() > new Date(event.registrationDeadline)) {
     const deadlineDate = new Date(event.registrationDeadline).toLocaleDateString();
@@ -49,7 +59,7 @@ export function computeRegistrationStatus(
       canReopen: false
     };
   }
-  
+
   // Priority 3: Check capacity
   if (attendeeCount >= event.maxSeats) {
     return {
@@ -59,7 +69,7 @@ export function computeRegistrationStatus(
       canReopen: true // Can reopen if someone unregisters
     };
   }
-  
+
   // Registration is open
   return {
     isOpen: true,
@@ -82,7 +92,7 @@ export function getRegistrationButtonText(
   statusInfo: RegistrationStatusInfo
 ): string {
   if (isRegistered) return 'Registered';
-  
+
   if (!statusInfo.isOpen) {
     switch (statusInfo.reason) {
       case 'capacity': return 'Event Full';
@@ -91,6 +101,6 @@ export function getRegistrationButtonText(
       default: return 'Unavailable';
     }
   }
-  
+
   return 'Register Now';
 }

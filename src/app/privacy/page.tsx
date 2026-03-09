@@ -28,12 +28,12 @@ export default function PrivacyPage() {
     return (
         <div className="min-h-screen pt-24 bg-background">
             {/* Header Section */}
-            <section className="py-20 bg-gradient-to-b from-gray-50 to-white text-center">
+            <section className="py-20 bg-muted/20 border-b border-border text-center">
                 <div className="container mx-auto px-4">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="w-16 h-16 bg-[#219EBC]/10 rounded-[20px] flex items-center justify-center mx-auto mb-6 text-[#219EBC]"
+                        className="w-16 h-16 bg-primary/10 rounded-[20px] flex items-center justify-center mx-auto mb-6 text-primary"
                     >
                         <Lock className="w-8 h-8" />
                     </motion.div>
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-4xl md:text-5xl font-black text-foreground mb-6"
                     >
-                        Privacy <span className="text-[#219EBC]">Policy</span>
+                        Privacy <span className="text-primary">Policy</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 10 }}
@@ -68,17 +68,17 @@ export default function PrivacyPage() {
                                 className="grid md:grid-cols-12 gap-8 items-start"
                             >
                                 <div className="md:col-span-1 hidden md:block">
-                                    <div className="w-12 h-12 bg-background shadow-lg border border-border rounded-2xl flex items-center justify-center text-[#219EBC]">
+                                    <div className="w-12 h-12 bg-card shadow-lg border border-border rounded-2xl flex items-center justify-center text-primary">
                                         <section.icon className="w-6 h-6" />
                                     </div>
                                 </div>
-                                <div className="md:col-span-11 bg-gray-50/50 p-8 md:p-12 rounded-[40px] border border-border">
+                                <div className="md:col-span-11 bg-muted/30 p-8 md:p-12 rounded-[40px] border border-border">
                                     <h2 className="text-2xl font-black text-foreground mb-4">{section.title}</h2>
                                     <p className="text-muted-foreground mb-8 leading-relaxed text-lg">{section.content}</p>
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         {section.list.map((item, i) => (
                                             <div key={i} className="flex items-center gap-3 text-muted-foreground font-medium">
-                                                <CheckCircle className="w-5 h-5 text-[#219EBC]" />
+                                                <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
                                                 {item}
                                             </div>
                                         ))}
@@ -88,18 +88,18 @@ export default function PrivacyPage() {
                         ))}
                     </div>
 
-                    {/* Additional Details */}
-                    <div className="mt-24 p-12 bg-[#023047] rounded-[48px] text-white">
+                    {/* Contact Banner */}
+                    <div className="mt-24 p-12 bg-card border border-border rounded-[48px]">
                         <div className="flex flex-col md:flex-row gap-8 items-center">
-                            <div className="w-24 h-24 bg-background/10 rounded-[32px] flex items-center justify-center shrink-0">
-                                <FileText className="w-12 h-12 text-[#219EBC]" />
+                            <div className="w-24 h-24 bg-primary/10 rounded-[32px] flex items-center justify-center shrink-0">
+                                <FileText className="w-12 h-12 text-primary" />
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold mb-3">Questions & Contact</h3>
+                                <h3 className="text-2xl font-bold text-foreground mb-3">Questions &amp; Contact</h3>
                                 <p className="text-muted-foreground mb-6">
                                     If you have any questions about this Privacy Policy or our treatment of your personal data, please contact us at privacy@velonx.com.
                                 </p>
-                                <button className="px-8 py-3 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl transition-all">
+                                <button className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl transition-all">
                                     Contact Support
                                 </button>
                             </div>

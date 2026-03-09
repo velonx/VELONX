@@ -32,8 +32,8 @@ interface SocialFlipButtonProps {
 const defaultItems: SocialItem[] = [
     { letter: "C", icon: <FaGithub />, label: "Github", href: "#" },
     { letter: "O", icon: <FaTwitter />, label: "Twitter", href: "#" },
-    { letter: "N", icon: <FaLinkedin />, label: "LinkedIn", href: "#" },
-    { letter: "T", icon: <FaInstagram />, label: "Instagram", href: "#" },
+    { letter: "N", icon: <FaLinkedin />, label: "LinkedIn", href: "https://www.linkedin.com/showcase/velonx24" },
+    { letter: "T", icon: <FaInstagram />, label: "Instagram", href: "https://www.instagram.com/velo_nx/" },
     { letter: "A", icon: <FaFacebook />, label: "Facebook", href: "#" },
     { letter: "C", icon: <FaEnvelope />, label: "Email", href: "#" },
     { letter: "T", icon: <FaDiscord />, label: "Discord", href: "#" },

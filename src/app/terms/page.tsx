@@ -7,12 +7,12 @@ export default function TermsPage() {
     return (
         <div className="min-h-screen pt-24 bg-background">
             {/* Header Section */}
-            <section className="py-20 bg-gradient-to-b from-gray-50 to-white text-center">
+            <section className="py-20 bg-muted/20 border-b border-border text-center">
                 <div className="container mx-auto px-4">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="w-16 h-16 bg-[#FFB703]/10 rounded-[20px] flex items-center justify-center mx-auto mb-6 text-[#FFB703]"
+                        className="w-16 h-16 bg-primary/10 rounded-[20px] flex items-center justify-center mx-auto mb-6 text-primary"
                     >
                         <Scale className="w-8 h-8" />
                     </motion.div>
@@ -21,7 +21,7 @@ export default function TermsPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-4xl md:text-5xl font-black text-foreground mb-6"
                     >
-                        Terms of <span className="text-[#FFB703]">Service</span>
+                        Terms of <span className="text-primary">Service</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 10 }}
@@ -66,9 +66,9 @@ export default function TermsPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="group flex flex-col md:flex-row gap-8 bg-background p-8 md:p-12 rounded-[48px] border border-border hover:border-[#FFB703]/30 transition-all shadow-xl shadow-black/5"
+                                className="group flex flex-col md:flex-row gap-8 bg-card p-8 md:p-12 rounded-[48px] border border-border hover:border-primary/30 transition-all shadow-xl shadow-black/5"
                             >
-                                <div className="w-16 h-16 bg-gray-50 rounded-[24px] flex items-center justify-center text-[#FFB703] group-hover:scale-110 transition-transform shrink-0">
+                                <div className="w-16 h-16 bg-muted/50 rounded-[24px] flex items-center justify-center text-primary group-hover:scale-110 transition-transform shrink-0">
                                     <term.icon className="w-8 h-8" />
                                 </div>
                                 <div>
@@ -80,13 +80,13 @@ export default function TermsPage() {
                     </div>
 
                     {/* Disclaimer */}
-                    <div className="mt-20 p-10 bg-gray-50 rounded-[40px] border border-dashed border-border">
+                    <div className="mt-20 p-10 bg-muted/30 rounded-[40px] border border-dashed border-border">
                         <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
                             <AlertCircle className="w-5 h-5 text-muted-foreground" />
                             Disclaimer
                         </h3>
                         <p className="text-muted-foreground leading-relaxed italic">
-                            The materials on Velonx's website are provided on an 'as is' basis. Velonx makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
+                            The materials on Velonx&apos;s website are provided on an &apos;as is&apos; basis. Velonx makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
                         </p>
                     </div>
                 </div>

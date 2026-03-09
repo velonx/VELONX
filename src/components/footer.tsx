@@ -61,23 +61,12 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-2 md:ml-auto">
                         <h4 className="font-bold mb-6 text-foreground">Platform</h4>
                         <ul className="space-y-4 text-sm text-muted-foreground font-medium">
-                            <li><Link href="/events" className="hover:text-[#219EBC] transition-colors">Events</Link></li>
-                            <li><Link href="/projects" className="hover:text-[#219EBC] transition-colors">Projects</Link></li>
-                            <li><Link href="/resources" className="hover:text-[#219EBC] transition-colors">Resources</Link></li>
-                            <li><Link href="/mentors" className="hover:text-[#219EBC] transition-colors">Mentorship</Link></li>
-                            <li><Link href="/career" className="hover:text-[#219EBC] transition-colors">Job Board</Link></li>
-                            <li><Link href="/leaderboard" className="hover:text-[#219EBC] transition-colors">Leaderboard</Link></li>
-                        </ul>
-                    </div>
-
-                    {/* Company */}
-                    <div className="col-span-1 md:col-span-2 md:ml-auto">
-                        <h4 className="font-bold mb-6 text-foreground">Company</h4>
-                        <ul className="space-y-4 text-sm text-muted-foreground font-medium">
-                            <li><Link href="/about" className="hover:text-[#219EBC] transition-colors">About Us</Link></li>
-                            <li><Link href="/career" className="hover:text-[#219EBC] transition-colors">Careers</Link></li>
-                            <li><Link href="/blog" className="hover:text-[#219EBC] transition-colors">Blog</Link></li>
-                            <li><Link href="/contact" className="hover:text-[#219EBC] transition-colors">Contact</Link></li>
+                            <li><Link href="/events" className="hover:text-primary transition-colors">Events</Link></li>
+                            <li><Link href="/projects" className="hover:text-primary transition-colors">Projects</Link></li>
+                            <li><Link href="/resources" className="hover:text-primary transition-colors">Resources</Link></li>
+                            <li><Link href="/mentors" className="hover:text-primary transition-colors">Mentorship</Link></li>
+                            <li><Link href="/career" className="hover:text-primary transition-colors">Job Board</Link></li>
+                            <li><Link href="/leaderboard" className="hover:text-primary transition-colors">Leaderboard</Link></li>
                         </ul>
                     </div>
 
@@ -85,11 +74,20 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-2 md:ml-auto">
                         <h4 className="font-bold mb-6 text-foreground">Resources</h4>
                         <ul className="space-y-4 text-sm text-muted-foreground font-medium">
-                            <li><Link href="/docs" className="hover:text-[#219EBC] transition-colors">Documentation</Link></li>
-                            <li><Link href="/help" className="hover:text-[#219EBC] transition-colors">Help Center</Link></li>
-                            <li><Link href="/community-guidelines" className="hover:text-[#219EBC] transition-colors">Community Guidelines</Link></li>
-                            <li><Link href="/privacy" className="hover:text-[#219EBC] transition-colors">Privacy Policy</Link></li>
-                            <li><Link href="/terms" className="hover:text-[#219EBC] transition-colors">Terms of Service</Link></li>
+                            <li><Link href="/career" className="hover:text-primary transition-colors">Careers</Link></li>
+                            <li><Link href="/blog" className="hover:text-primary transition-colors">Blog</Link></li>
+                            <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Company */}
+                    <div className="col-span-1 md:col-span-2 md:ml-auto">
+                        <h4 className="font-bold mb-6 text-foreground">Company</h4>
+                        <ul className="space-y-4 text-sm text-muted-foreground font-medium">
+                            <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
+                            <li><Link href="/community-guidelines" className="hover:text-primary transition-colors">Community Guidelines</Link></li>
+                            <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                            <li><Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
                         </ul>
                     </div>
                 </div>

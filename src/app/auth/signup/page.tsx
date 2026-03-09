@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import SplineScene from "@/components/SplineScene";
 import { ArrowRight, Sparkles, Rocket, Users, Trophy, Code, Mail, Lock, User, Eye, EyeOff, Gift } from "lucide-react";
 import { authApi } from "@/lib/api/client";
 
@@ -33,9 +32,7 @@ function SignupPage() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [robotState, setRobotState] = useState<"idle" | "success" | "error">("idle");
 
-    // Form state
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
@@ -45,49 +42,31 @@ function SignupPage() {
     const [referralCodeValidating, setReferralCodeValidating] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-    // Extract and pre-fill referral code from URL on mount
     useEffect(() => {
         const refParam = searchParams.get('ref');
         if (refParam) {
             setReferralCode(refParam);
-            // Validate the pre-filled code
             validateReferralCodeAsync(refParam);
         }
     }, [searchParams]);
 
-    // Reset robot state when user types after error
     const handleFieldChange = (setter: (value: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
         setter(e.target.value);
-        if (robotState === "error") {
-            setRobotState("idle");
-            setError(null);
-        }
+        if (error) setError(null);
     };
 
-    // Validate referral code asynchronously
     const validateReferralCodeAsync = async (code: string) => {
-        if (!code || code.trim() === "") {
-            setReferralCodeError(null);
-            return;
-        }
-
+        if (!code || code.trim() === "") { setReferralCodeError(null); return; }
         setReferralCodeValidating(true);
         setReferralCodeError(null);
-
         try {
             const response = await fetch('/api/referral/validate', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code: code.trim() }),
             });
-
             const result = await response.json();
-
-            if (result.success && result.data.valid) {
-                setReferralCodeError(null);
-            } else {
+            if (!(result.success && result.data.valid)) {
                 setReferralCodeError("Invalid referral code. You can still register without one.");
             }
         } catch (err) {
@@ -98,98 +77,43 @@ function SignupPage() {
         }
     };
 
-    // Handle referral code change with debounced validation
     const handleReferralCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setReferralCode(value);
-
-        if (robotState === "error") {
-            setRobotState("idle");
-            setError(null);
-        }
-
-        // Clear previous error when user types
+        setReferralCode(e.target.value);
+        if (error) setError(null);
         setReferralCodeError(null);
     };
 
-    // Validate on blur
     const handleReferralCodeBlur = () => {
-        if (referralCode.trim()) {
-            validateReferralCodeAsync(referralCode.trim());
-        }
+        if (referralCode.trim()) validateReferralCodeAsync(referralCode.trim());
     };
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
-        if (!agreedToTerms) {
-            setError("Please agree to the Terms of Service and Privacy Policy");
-            setRobotState("error");
-            return;
-        }
-
-        if (password.length < 6) {
-            setError("Password must be at least 6 characters");
-            setRobotState("error");
-            return;
-        }
+        if (!agreedToTerms) { setError("Please agree to the Terms of Service and Privacy Policy"); return; }
+        if (password.length < 6) { setError("Password must be at least 6 characters"); return; }
 
         setLoading(true);
-        setRobotState("idle"); // Keep neutral during loading
-
         try {
-            // Create student account only (admins are seeded in database)
             const fullName = `${firstName} ${lastName}`.trim();
-
-            // Include referral code if provided (even if invalid - backend will handle)
-            const signupData: any = {
-                name: fullName,
-                email: email,
-                password: password,
-                role: "STUDENT", // Only students can sign up
-            };
-
-            // Add referral code if provided
-            if (referralCode.trim()) {
-                signupData.referralCode = referralCode.trim();
-            }
+            const signupData: { name: string; email: string; password: string; role: "STUDENT" | "ADMIN"; referralCode?: string } = { name: fullName, email, password, role: "STUDENT" };
+            if (referralCode.trim()) signupData.referralCode = referralCode.trim();
 
             await authApi.signup(signupData);
 
-            // Then, sign in with the new credentials
-            const result = await signIn("credentials", {
-                email: email,
-                password: password,
-                redirect: false,
-            });
-
+            const result = await signIn("credentials", { email, password, redirect: false });
             if (result?.error) {
                 setError("Account created but login failed. Please try logging in manually.");
-                setRobotState("error");
             } else {
-                // Show success state
-                setRobotState("success");
-
-                // Wait to show happy robot
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
+                await new Promise(resolve => setTimeout(resolve, 500));
                 router.push("/dashboard/student");
             }
         } catch (err: any) {
             console.error("Signup error:", err);
-
-            // Show error state
-            setRobotState("error");
-
-            // Handle specific error messages
-            if (err.code === "USER_EXISTS") {
-                setError("An account with this email already exists");
-            } else if (err.message) {
-                setError(err.message);
-            } else {
-                setError("Failed to create account. Please try again.");
-            }
+            if (err.code === "USER_EXISTS") setError("An account with this email already exists");
+            else if (err.message) setError(err.message);
+            else setError("Failed to create account. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -197,96 +121,73 @@ function SignupPage() {
 
     const handleGoogleSignup = async () => {
         setLoading(true);
-        try {
-            await signIn("google", { callbackUrl: "/dashboard/student" });
-        } catch (error) {
-            console.error("Google signup error:", error);
-            setLoading(false);
-        }
+        try { await signIn("google", { callbackUrl: "/dashboard/student" }); }
+        catch (error) { console.error("Google signup error:", error); setLoading(false); }
     };
 
     const handleGitHubSignup = async () => {
         setLoading(true);
-        try {
-            await signIn("github", { callbackUrl: "/dashboard/student" });
-        } catch (error) {
-            console.error("GitHub signup error:", error);
-            setLoading(false);
-        }
+        try { await signIn("github", { callbackUrl: "/dashboard/student" }); }
+        catch (error) { console.error("GitHub signup error:", error); setLoading(false); }
     };
+
+    const stats = [
+        { icon: Rocket, value: "50+", label: "Projects Built" },
+        { icon: Users, value: "1000+", label: "Members" },
+        { icon: Trophy, value: "30+", label: "Events Hosted" },
+        { icon: Code, value: "Free", label: "Forever" },
+    ];
 
     return (
         <div className="min-h-screen flex pt-16 bg-background">
-            {/* Left Side - Animated Illustration */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
-                {/* Animated Background Elements */}
+            {/* Left Panel */}
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-muted/20 border-r border-border">
                 <div className="absolute inset-0">
-                    <div className="absolute top-[15%] right-[15%] w-40 h-40 rounded-full bg-[#219EBC]/10 blur-3xl animate-float" />
-                    <div className="absolute top-[50%] left-[10%] w-48 h-48 rounded-full bg-[#0f2c59]/10 blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
-                    <div className="absolute bottom-[15%] right-[25%] w-36 h-36 rounded-full bg-[#219EBC]/5 blur-3xl animate-float" style={{ animationDelay: '0.5s' }} />
+                    <div className="absolute top-[15%] right-[15%] w-40 h-40 rounded-full bg-primary/10 blur-3xl animate-float" />
+                    <div className="absolute top-[50%] left-[10%] w-48 h-48 rounded-full bg-primary/5 blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
+                    <div className="absolute bottom-[15%] right-[25%] w-36 h-36 rounded-full bg-secondary/10 blur-3xl animate-float" style={{ animationDelay: '0.5s' }} />
                 </div>
 
-                {/* Main Content */}
                 <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
-                    {/* Interactive Robot */}
-                    <div className="relative mb-8 w-full h-[400px]">
-                        <SplineScene showPassword={showPassword} loginState={robotState} />
+                    {/* Brand icon */}
+                    <div className="w-24 h-24 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-8">
+                        <Rocket className="w-12 h-12 text-primary" />
                     </div>
 
-                    <div className="text-center mt-8">
-                        <h2 className="text-3xl text-[#023047] mb-3 font-bold">
-                            Start Building Your Future
-                        </h2>
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl text-foreground mb-3 font-bold">Start Building Your Future</h2>
                         <p className="text-muted-foreground max-w-sm">
                             Join thousands of students who are already building real projects and launching their tech careers.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mt-10">
-                        <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
-                            <Rocket className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
-                            <div className="text-xl font-bold text-[#023047]">50+</div>
-                            <div className="text-muted-foreground text-xs">Projects Built</div>
-                        </div>
-                        <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
-                            <Users className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
-                            <div className="text-xl font-bold text-[#023047]">1000+</div>
-                            <div className="text-muted-foreground text-xs">Members</div>
-                        </div>
-                        <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
-                            <Trophy className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
-                            <div className="text-xl font-bold text-[#023047]">30+</div>
-                            <div className="text-muted-foreground text-xs">Events Hosted</div>
-                        </div>
-                        <div className="bg-background rounded-2xl p-4 border border-border text-center hover:shadow-lg transition-all">
-                            <Code className="w-6 h-6 text-[#219EBC] mx-auto mb-2" />
-                            <div className="text-xl font-bold text-[#023047]">Free</div>
-                            <div className="text-muted-foreground text-xs">Forever</div>
-                        </div>
+                    <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+                        {stats.map(({ icon: Icon, value, label }) => (
+                            <div key={label} className="bg-card rounded-2xl p-4 border border-border text-center hover:shadow-lg hover:border-primary/30 transition-all">
+                                <Icon className="w-6 h-6 text-primary mx-auto mb-2" />
+                                <div className="text-xl font-bold text-foreground">{value}</div>
+                                <div className="text-muted-foreground text-xs">{label}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
 
-            {/* Right Side - Signup Form */}
+            {/* Right Panel — Form */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background relative overflow-hidden">
                 <div className="w-full max-w-md relative z-10">
-                    {/* Mobile Interactive Robot */}
-                    <div className="lg:hidden flex justify-center mb-6 h-[250px]">
-                        <SplineScene showPassword={showPassword} loginState={robotState} />
-                    </div>
-
                     <div className="text-center mb-6">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-4">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-2 text-sm font-medium text-primary mb-4">
                             <Sparkles className="w-4 h-4" />
                             Join 1000+ Students
                         </div>
-                        <h1 className="text-3xl text-[#023047] mb-2 font-bold">Create Account</h1>
+                        <h1 className="text-3xl text-foreground mb-2 font-bold">Create Account</h1>
                         <p className="text-muted-foreground">Start your innovation journey today</p>
                     </div>
 
                     <form onSubmit={handleSignup} className="space-y-4">
                         {error && (
-                            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm">
+                            <div className="bg-destructive/10 border border-destructive/20 rounded-xl px-4 py-3 text-destructive text-sm">
                                 {error}
                             </div>
                         )}
@@ -300,7 +201,7 @@ function SignupPage() {
                                         placeholder="John"
                                         value={firstName}
                                         onChange={handleFieldChange(setFirstName)}
-                                        className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                        className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
                                         required
                                     />
                                 </div>
@@ -313,12 +214,13 @@ function SignupPage() {
                                         placeholder="Doe"
                                         value={lastName}
                                         onChange={handleFieldChange(setLastName)}
-                                        className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                        className="pl-10 py-5 rounded-xl bg-muted border-border text-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
                                         required
                                     />
                                 </div>
                             </div>
                         </div>
+
                         <div className="space-y-2">
                             <Label className="text-foreground text-sm">Email</Label>
                             <div className="relative">
@@ -328,11 +230,12 @@ function SignupPage() {
                                     placeholder="john@example.com"
                                     value={email}
                                     onChange={handleFieldChange(setEmail)}
-                                    className="pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                    className="pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
                                     required
                                 />
                             </div>
                         </div>
+
                         <div className="space-y-2">
                             <Label className="text-foreground text-sm">Password</Label>
                             <div className="relative">
@@ -342,13 +245,13 @@ function SignupPage() {
                                     placeholder="Create a strong password"
                                     value={password}
                                     onChange={handleFieldChange(setPassword)}
-                                    className="pl-12 pr-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all"
+                                    className="pl-12 pr-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
                                     required
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
@@ -367,24 +270,17 @@ function SignupPage() {
                                     value={referralCode}
                                     onChange={handleReferralCodeChange}
                                     onBlur={handleReferralCodeBlur}
-                                    className={`pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-[#219EBC] focus:ring-2 focus:ring-[#219EBC]/20 transition-all ${referralCodeError ? 'border-yellow-500' : ''
-                                        }`}
+                                    className={`pl-12 py-5 rounded-xl bg-muted border-border text-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all ${referralCodeError ? 'border-yellow-500' : ''}`}
                                 />
                                 {referralCodeValidating && (
                                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                        <div className="w-5 h-5 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin"></div>
+                                        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                                     </div>
                                 )}
                             </div>
-                            {referralCodeError && (
-                                <p className="text-xs text-yellow-600 mt-1">
-                                    {referralCodeError}
-                                </p>
-                            )}
+                            {referralCodeError && <p className="text-xs text-yellow-600 mt-1">{referralCodeError}</p>}
                             {referralCode && !referralCodeError && !referralCodeValidating && (
-                                <p className="text-xs text-green-600 mt-1">
-                                    ✓ Valid referral code
-                                </p>
+                                <p className="text-xs text-emerald-600 mt-1">✓ Valid referral code</p>
                             )}
                         </div>
 
@@ -393,16 +289,19 @@ function SignupPage() {
                                 id="terms"
                                 checked={agreedToTerms}
                                 onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
-                                className="border-border data-[state=checked]:bg-[#219EBC] data-[state=checked]:border-[#219EBC] mt-0.5"
+                                className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary mt-0.5"
                             />
                             <label htmlFor="terms" className="text-sm text-muted-foreground leading-tight">
-                                I agree to the <Link href="#" className="text-[#219EBC] hover:underline">Terms of Service</Link> and <Link href="#" className="text-[#219EBC] hover:underline">Privacy Policy</Link>
+                                I agree to the{" "}
+                                <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link>
+                                {" "}and{" "}
+                                <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
                             </label>
                         </div>
 
                         <Button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-[#0f2c59] to-[#1e40af] hover:brightness-110 text-white font-semibold rounded-xl py-6 shadow-lg shadow-[#0f2c59]/30 transition-all"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl py-6 shadow-lg shadow-primary/20 transition-all"
                             disabled={loading}
                         >
                             {loading ? "Creating Account..." : "Create Account"} <ArrowRight className="w-4 h-4 ml-2" />
@@ -411,7 +310,7 @@ function SignupPage() {
 
                     <div className="relative my-6">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-border"></div>
+                            <div className="w-full border-t border-border" />
                         </div>
                         <div className="relative flex justify-center text-sm">
                             <span className="px-4 bg-background text-muted-foreground">Or sign up with</span>
@@ -421,7 +320,7 @@ function SignupPage() {
                     <div className="grid grid-cols-2 gap-4">
                         <Button
                             variant="outline"
-                            className="py-5 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all"
+                            className="py-5 rounded-xl border-border bg-background text-foreground hover:bg-muted transition-all"
                             onClick={handleGoogleSignup}
                             disabled={loading}
                         >
@@ -435,7 +334,7 @@ function SignupPage() {
                         </Button>
                         <Button
                             variant="outline"
-                            className="py-5 rounded-xl border-border bg-background text-foreground hover:bg-muted hover:border-border transition-all"
+                            className="py-5 rounded-xl border-border bg-background text-foreground hover:bg-muted transition-all"
                             onClick={handleGitHubSignup}
                             disabled={loading}
                         >
@@ -447,7 +346,10 @@ function SignupPage() {
                     </div>
 
                     <p className="text-center text-sm text-muted-foreground mt-6">
-                        Already have an account? <Link href="/auth/login" className="text-[#219EBC] font-medium hover:text-[#1a7a94] transition-colors underline-offset-4 hover:underline">Sign In</Link>
+                        Already have an account?{" "}
+                        <Link href="/auth/login" className="text-primary font-medium hover:underline underline-offset-4 transition-colors">
+                            Sign In
+                        </Link>
                     </p>
                 </div>
             </div>

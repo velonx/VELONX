@@ -54,7 +54,6 @@ export default function ApplyMentorPage() {
 
   const validateUrl = (field: 'linkedinUrl' | 'githubUrl' | 'twitterUrl', value: string) => {
     if (!value) {
-      // Empty is valid for optional fields
       setValidationErrors(prev => ({ ...prev, [field]: '' }));
       return true;
     }
@@ -94,7 +93,6 @@ export default function ApplyMentorPage() {
       return;
     }
 
-    // Validate all URL fields before submission
     const linkedinValid = validateUrl('linkedinUrl', formData.linkedinUrl);
     const githubValid = validateUrl('githubUrl', formData.githubUrl);
     const twitterValid = validateUrl('twitterUrl', formData.twitterUrl);
@@ -107,11 +105,9 @@ export default function ApplyMentorPage() {
     setLoading(true);
 
     try {
-      // Get CSRF token for the POST request
       const { getCSRFToken } = await import('@/lib/utils/csrf');
       const csrfToken = await getCSRFToken();
 
-      // Create a user request for mentor application
       const response = await fetch('/api/user-requests', {
         method: 'POST',
         headers: {
@@ -150,7 +146,6 @@ export default function ApplyMentorPage() {
     }
   };
 
-  // Redirect if not authenticated
   if (status === 'unauthenticated') {
     router.push('/auth/login');
     return null;
@@ -159,7 +154,7 @@ export default function ApplyMentorPage() {
   if (status === 'loading') {
     return (
       <div className="min-h-screen pt-24 flex items-center justify-center bg-background">
-        <div className="w-16 h-16 rounded-full border-4 border-[#219EBC] border-t-transparent animate-spin" />
+        <div className="w-16 h-16 rounded-full border-4 border-primary border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -169,28 +164,28 @@ export default function ApplyMentorPage() {
       <div className="min-h-screen pt-24 bg-background">
         <div className="container mx-auto px-4 max-w-2xl py-20">
           <div className="text-center">
-            <div className="w-24 h-24 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-8">
-              <CheckCircle2 className="w-12 h-12 text-green-600" />
+            <div className="w-24 h-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-8">
+              <CheckCircle2 className="w-12 h-12 text-green-500" />
             </div>
-            <h1 className="text-4xl font-black text-[#023047] mb-4">
+            <h1 className="text-4xl font-black text-foreground mb-4">
               Application Submitted!
             </h1>
             <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
               Thank you for applying to become a mentor. Our team will review your application and get back to you within 3-5 business days.
             </p>
-            <div className="bg-gray-50 rounded-2xl p-6 mb-8 text-left max-w-md mx-auto">
-              <h3 className="font-bold text-[#023047] mb-3">What happens next?</h3>
+            <div className="bg-muted/40 border border-border rounded-2xl p-6 mb-8 text-left max-w-md mx-auto">
+              <h3 className="font-bold text-foreground mb-3">What happens next?</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span>Our team reviews your application</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span>We&apos;ll contact you for a brief interview</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span>Once approved, you&apos;ll be added to our mentor directory</span>
                 </li>
               </ul>
@@ -198,14 +193,14 @@ export default function ApplyMentorPage() {
             <div className="flex gap-4 justify-center">
               <Button
                 onClick={() => router.push('/')}
-                className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl px-8"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl px-8"
               >
                 Back to Home
               </Button>
               <Button
                 onClick={() => router.push('/mentors')}
                 variant="outline"
-                className="border-2 border-border hover:border-[#219EBC] text-foreground font-bold rounded-xl px-8"
+                className="font-bold rounded-xl px-8"
               >
                 Browse Mentors
               </Button>
@@ -219,21 +214,21 @@ export default function ApplyMentorPage() {
   return (
     <div className="min-h-screen pt-24 bg-background">
       {/* Header */}
-      <section className="py-12 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-12 bg-muted/20 border-b border-border">
         <div className="container mx-auto px-4 max-w-4xl">
           <Button
             onClick={() => router.back()}
             variant="ghost"
-            className="mb-6 text-muted-foreground hover:text-[#219EBC]"
+            className="mb-6 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#E9C46A]/10 border border-[#E9C46A]/30 px-4 py-2 text-sm font-medium text-[#8B7A52] mb-6">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-2 text-sm font-medium text-primary mb-6">
             <Sparkles className="w-4 h-4" />
             Become a Mentor
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-[#023047] mb-4">
+          <h1 className="text-4xl md:text-5xl font-black text-foreground mb-4">
             Share Your Knowledge
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
@@ -245,21 +240,21 @@ export default function ApplyMentorPage() {
       {/* Form */}
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-4xl">
-          <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
-            <CardHeader className="p-12 border-b border-gray-50">
-              <CardTitle className="text-2xl font-black text-[#023047]">
+          <Card className="bg-card border border-border shadow-lg rounded-[32px] overflow-hidden">
+            <CardHeader className="p-10 border-b border-border">
+              <CardTitle className="text-2xl font-black text-foreground">
                 Mentor Application
               </CardTitle>
               <p className="text-muted-foreground mt-2">
                 Tell us about yourself and your expertise
               </p>
             </CardHeader>
-            <CardContent className="p-12">
+            <CardContent className="p-10">
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Personal Information */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold text-[#023047] flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-[#219EBC]" />
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <GraduationCap className="w-5 h-5 text-primary" />
                     Personal Information
                   </h3>
 
@@ -274,7 +269,7 @@ export default function ApplyMentorPage() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="John Doe"
-                        className="h-12 bg-gray-50 border-0 rounded-xl"
+                        className="h-12 bg-muted/40 border-border rounded-xl"
                       />
                     </div>
                     <div className="space-y-2">
@@ -288,7 +283,7 @@ export default function ApplyMentorPage() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="john@example.com"
-                        className="h-12 bg-gray-50 border-0 rounded-xl"
+                        className="h-12 bg-muted/40 border-border rounded-xl"
                       />
                     </div>
                   </div>
@@ -296,8 +291,8 @@ export default function ApplyMentorPage() {
 
                 {/* Professional Information */}
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold text-[#023047] flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-[#219EBC]" />
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-primary" />
                     Professional Background
                   </h3>
 
@@ -312,7 +307,7 @@ export default function ApplyMentorPage() {
                         value={formData.company}
                         onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                         placeholder="e.g., Google, Microsoft, Startup Inc."
-                        className="h-12 bg-gray-50 border-0 rounded-xl"
+                        className="h-12 bg-muted/40 border-border rounded-xl"
                       />
                     </div>
                     <div className="space-y-2">
@@ -327,7 +322,7 @@ export default function ApplyMentorPage() {
                         value={formData.yearsOfExperience}
                         onChange={(e) => setFormData({ ...formData, yearsOfExperience: e.target.value })}
                         placeholder="5"
-                        className="h-12 bg-gray-50 border-0 rounded-xl"
+                        className="h-12 bg-muted/40 border-border rounded-xl"
                       />
                     </div>
                   </div>
@@ -343,10 +338,10 @@ export default function ApplyMentorPage() {
                       value={formData.linkedinUrl}
                       onChange={(e) => handleUrlChange('linkedinUrl', e.target.value)}
                       placeholder="https://linkedin.com/in/yourprofile"
-                      className={`h-12 bg-gray-50 border-0 rounded-xl ${validationErrors.linkedinUrl ? 'ring-2 ring-red-500' : ''}`}
+                      className={`h-12 bg-muted/40 border-border rounded-xl ${validationErrors.linkedinUrl ? 'ring-2 ring-destructive' : ''}`}
                     />
                     {validationErrors.linkedinUrl && (
-                      <p className="text-xs text-red-600 mt-1">{validationErrors.linkedinUrl}</p>
+                      <p className="text-xs text-destructive mt-1">{validationErrors.linkedinUrl}</p>
                     )}
                   </div>
 
@@ -362,10 +357,10 @@ export default function ApplyMentorPage() {
                         value={formData.githubUrl}
                         onChange={(e) => handleUrlChange('githubUrl', e.target.value)}
                         placeholder="https://github.com/username"
-                        className={`h-12 bg-gray-50 border-0 rounded-xl ${validationErrors.githubUrl ? 'ring-2 ring-red-500' : ''}`}
+                        className={`h-12 bg-muted/40 border-border rounded-xl ${validationErrors.githubUrl ? 'ring-2 ring-destructive' : ''}`}
                       />
                       {validationErrors.githubUrl && (
-                        <p className="text-xs text-red-600 mt-1">{validationErrors.githubUrl}</p>
+                        <p className="text-xs text-destructive mt-1">{validationErrors.githubUrl}</p>
                       )}
                     </div>
 
@@ -380,10 +375,10 @@ export default function ApplyMentorPage() {
                         value={formData.twitterUrl}
                         onChange={(e) => handleUrlChange('twitterUrl', e.target.value)}
                         placeholder="https://twitter.com/username"
-                        className={`h-12 bg-gray-50 border-0 rounded-xl ${validationErrors.twitterUrl ? 'ring-2 ring-red-500' : ''}`}
+                        className={`h-12 bg-muted/40 border-border rounded-xl ${validationErrors.twitterUrl ? 'ring-2 ring-destructive' : ''}`}
                       />
                       {validationErrors.twitterUrl && (
-                        <p className="text-xs text-red-600 mt-1">{validationErrors.twitterUrl}</p>
+                        <p className="text-xs text-destructive mt-1">{validationErrors.twitterUrl}</p>
                       )}
                     </div>
                   </div>
@@ -398,20 +393,20 @@ export default function ApplyMentorPage() {
                     <Input
                       value={expertiseInput}
                       onChange={(e) => setExpertiseInput(e.target.value)}
-                      onKeyPress={(e) => {
+                      onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
                           handleAddExpertise();
                         }
                       }}
                       placeholder="e.g., React, Node.js, Python, AI/ML"
-                      className="h-12 bg-gray-50 border-0 rounded-xl"
+                      className="h-12 bg-muted/40 border-border rounded-xl"
                     />
                     <Button
                       type="button"
                       onClick={handleAddExpertise}
                       disabled={!expertiseInput.trim() || formData.expertise.length >= 10}
-                      className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                      className="h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl"
                     >
                       Add
                     </Button>
@@ -421,7 +416,7 @@ export default function ApplyMentorPage() {
                       {formData.expertise.map((skill, index) => (
                         <Badge
                           key={index}
-                          className="bg-[#219EBC]/10 text-[#219EBC] border-0 font-bold px-3 py-1.5 text-sm hover:bg-[#219EBC]/20 cursor-pointer"
+                          className="bg-primary/10 text-primary border border-primary/20 font-bold px-3 py-1.5 text-sm hover:bg-primary/20 cursor-pointer"
                           onClick={() => handleRemoveExpertise(index)}
                         >
                           {skill} ×
@@ -446,7 +441,7 @@ export default function ApplyMentorPage() {
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     placeholder="Share your background, what you're passionate about, and why you want to become a mentor..."
                     maxLength={1000}
-                    className="w-full h-40 bg-gray-50 border-0 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#219EBC] resize-none"
+                    className="w-full h-40 bg-muted/40 border border-border rounded-xl p-4 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring resize-none"
                   />
                   <p className="text-xs text-muted-foreground text-right">
                     {formData.bio.length}/1000 characters
@@ -457,7 +452,7 @@ export default function ApplyMentorPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-14 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-xl text-lg"
+                  className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl text-lg"
                 >
                   {loading ? (
                     <>

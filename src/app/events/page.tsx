@@ -244,7 +244,7 @@ function EventsPage() {
                             Join Our Events
                         </h1>
                         <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
-                            Participate in live coding sessions, workshops, hackathons, and networking events to grow your skills and connect with the community.
+                            Join live coding sessions, workshops, hackathons, and community events.
                         </p>
                         <div className="w-full max-w-md mx-auto pt-2 md:pt-4">
                             <div className="relative">

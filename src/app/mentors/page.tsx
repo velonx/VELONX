@@ -85,7 +85,7 @@ export default function MentorsPage() {
                             Connect with <span className="text-secondary">Mentors</span>
                         </h1>
                         <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
-                            Get guidance from experienced professionals who have been in your shoes and succeeded.
+                            Learn from experienced professionals
                         </p>
                         <div className="relative max-w-xl mx-auto">
                             <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />

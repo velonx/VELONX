@@ -6,21 +6,16 @@ import { SettingsErrorBoundary } from "@/components/error-boundary";
 import { Settings } from "lucide-react";
 
 export default async function SettingsPage() {
-  // Authenticate user
   const session = await auth();
 
-  // Redirect to login if not authenticated
   if (!session?.user?.id) {
     redirect("/auth/login");
   }
 
-  // Fetch current user data from database with error handling
   let user;
   try {
     user = await prisma.user.findUnique({
-      where: {
-        id: session.user.id,
-      },
+      where: { id: session.user.id },
       select: {
         id: true,
         name: true,
@@ -31,18 +26,17 @@ export default async function SettingsPage() {
     });
   } catch (error) {
     console.error("Failed to fetch user data:", error);
-    // In case of database error, show a user-friendly error page
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#023047] via-[#126782] to-[#219EBC] pt-20">
+      <div className="min-h-screen bg-background pt-20">
         <div className="container mx-auto px-4 py-12 max-w-4xl">
-          <div className="bg-background/10 backdrop-blur-md rounded-3xl border border-white/20 shadow-2xl p-12 text-center">
-            <h1 className="text-2xl font-bold text-white mb-4">Unable to Load Settings</h1>
-            <p className="text-cyan-100 mb-6">
+          <div className="bg-card border border-border rounded-3xl shadow-2xl p-12 text-center">
+            <h1 className="text-2xl font-bold text-foreground mb-4">Unable to Load Settings</h1>
+            <p className="text-muted-foreground mb-6">
               We encountered an error while loading your account settings. Please try again later.
             </p>
             <a
               href="/dashboard/student"
-              className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors"
+              className="inline-block px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors font-semibold"
             >
               Go to Dashboard
             </a>
@@ -52,48 +46,46 @@ export default async function SettingsPage() {
     );
   }
 
-  // Handle case where user is not found (shouldn't happen but good to check)
   if (!user) {
     redirect("/auth/login");
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#023047] via-[#126782] to-[#219EBC] pt-20">
+    <div className="min-h-screen bg-background pt-20">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-xl bg-background/10 backdrop-blur-sm flex items-center justify-center">
-              <Settings className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Settings className="w-6 h-6 text-primary" />
             </div>
-            <h1 className="text-4xl font-black text-white">Account Settings</h1>
+            <h1 className="text-4xl font-black text-foreground">Account Settings</h1>
           </div>
-          <p className="text-cyan-100 text-lg">
+          <p className="text-muted-foreground text-lg">
             Manage your profile information and preferences
           </p>
         </div>
 
-        {/* Settings Card - Responsive Layout with Error Boundary */}
-        <div className="bg-background/10 backdrop-blur-md rounded-3xl border border-white/20 shadow-2xl">
+        {/* Settings Card */}
+        <div className="bg-card border border-border rounded-3xl shadow-lg">
           <div className="p-8 md:p-12">
-            {/* Profile Settings Form wrapped in Error Boundary */}
             <SettingsErrorBoundary>
               <ProfileSettingsForm initialData={user} />
             </SettingsErrorBoundary>
           </div>
         </div>
 
-        {/* Additional Info Section - Mobile Friendly */}
+        {/* Info Cards */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-background/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-            <h3 className="text-white font-bold mb-2">Privacy & Security</h3>
-            <p className="text-cyan-100 text-sm">
+          <div className="bg-card rounded-2xl p-6 border border-border">
+            <h3 className="text-foreground font-bold mb-2">Privacy &amp; Security</h3>
+            <p className="text-muted-foreground text-sm">
               Your data is encrypted and secure. We never share your information with third parties.
             </p>
           </div>
-          <div className="bg-background/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-            <h3 className="text-white font-bold mb-2">Need Help?</h3>
-            <p className="text-cyan-100 text-sm">
+          <div className="bg-card rounded-2xl p-6 border border-border">
+            <h3 className="text-foreground font-bold mb-2">Need Help?</h3>
+            <p className="text-muted-foreground text-sm">
               Contact our support team if you have any questions about your account settings.
             </p>
           </div>

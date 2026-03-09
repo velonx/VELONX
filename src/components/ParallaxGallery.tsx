@@ -34,11 +34,25 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
     const renderRef = useRef<(() => void) | null>(null);
     const scrollRef = useRef({ current: 0, target: 0, ease: 0.07 });
     const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
+    const isHoveredRef = useRef(false);
+    const autoScrollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const getLimit = useCallback(() => {
         if (!containerRef.current || !wrapperRef.current) return 0;
         return containerRef.current.scrollWidth - wrapperRef.current.clientWidth;
     }, []);
+
+    // Auto-scroll: advance by ~280px every 1500ms, loop back smoothly at end
+    const startAutoScroll = useCallback(() => {
+        if (autoScrollRef.current) clearInterval(autoScrollRef.current);
+        autoScrollRef.current = setInterval(() => {
+            if (isHoveredRef.current) return;
+            const limit = getLimit();
+            if (limit <= 0) return;
+            const next = scrollRef.current.target + 280;
+            scrollRef.current.target = next > limit ? 0 : next;
+        }, 1500);
+    }, [getLimit]);
 
     const applyParallax = useCallback(() => {
         if (!wrapperRef.current) return;
@@ -94,8 +108,13 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
         };
         const onTouchEnd = () => { dragRef.current.active = false; };
 
+        const onMouseEnter = () => { isHoveredRef.current = true; };
+        const onMouseLeave = () => { isHoveredRef.current = false; };
+
         wrapper.addEventListener("wheel", onWheel, { passive: true });
         wrapper.addEventListener("mousedown", onMouseDown);
+        wrapper.addEventListener("mouseenter", onMouseEnter);
+        wrapper.addEventListener("mouseleave", onMouseLeave);
         window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("mouseup", onMouseUp);
         wrapper.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -103,18 +122,22 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
         window.addEventListener("touchend", onTouchEnd);
 
         rafRef.current = requestAnimationFrame(render);
+        startAutoScroll();
 
         return () => {
             wrapper.removeEventListener("wheel", onWheel);
             wrapper.removeEventListener("mousedown", onMouseDown);
+            wrapper.removeEventListener("mouseenter", onMouseEnter);
+            wrapper.removeEventListener("mouseleave", onMouseLeave);
             window.removeEventListener("mousemove", onMouseMove);
             window.removeEventListener("mouseup", onMouseUp);
             wrapper.removeEventListener("touchstart", onTouchStart);
             window.removeEventListener("touchmove", onTouchMove);
             window.removeEventListener("touchend", onTouchEnd);
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            if (autoScrollRef.current) clearInterval(autoScrollRef.current);
         };
-    }, [render]);
+    }, [render, startAutoScroll]);
 
     return (
         <section className="parallax-gallery-section">

@@ -29,7 +29,7 @@ export const HoverEffect = ({
       {items.map((item, idx) => (
         <Link
           href={item?.link}
-          key={item?.link}
+          key={`${item?.link}-${idx}`}
           className="relative group block p-2 h-full w-full"
           onMouseEnter={() => setHoveredIndex(idx)}
           onMouseLeave={() => setHoveredIndex(null)}
@@ -37,23 +37,17 @@ export const HoverEffect = ({
           <AnimatePresence>
             {hoveredIndex === idx && (
               <motion.span
-                className="absolute inset-0 h-full w-full bg-gradient-to-br from-[#219EBC]/10 via-[#4FC3F7]/10 to-[#E9C46A]/10 block rounded-3xl"
+                className="absolute inset-0 h-full w-full bg-primary/5 block rounded-3xl"
                 layoutId="hoverBackground"
                 initial={{ opacity: 0 }}
-                animate={{
-                  opacity: 1,
-                  transition: { duration: 0.15 },
-                }}
-                exit={{
-                  opacity: 0,
-                  transition: { duration: 0.15, delay: 0.2 },
-                }}
+                animate={{ opacity: 1, transition: { duration: 0.15 } }}
+                exit={{ opacity: 0, transition: { duration: 0.15, delay: 0.2 } }}
               />
             )}
           </AnimatePresence>
           <Card>
             {item.icon && (
-              <div className="mb-4 text-[#219EBC]">
+              <div className="mb-4 text-primary">
                 {item.icon}
               </div>
             )}
@@ -76,7 +70,7 @@ export const Card = ({
   return (
     <div
       className={cn(
-        "rounded-3xl h-full w-full p-6 overflow-hidden bg-white border border-gray-100 hover:border-[#219EBC]/30 hover:shadow-xl transition-all duration-300 relative z-20",
+        "rounded-3xl h-full w-full p-6 overflow-hidden bg-card border border-border hover:border-primary/30 hover:shadow-xl transition-all duration-300 relative z-20",
         className
       )}
     >
@@ -97,7 +91,7 @@ export const CardTitle = ({
   return (
     <h4
       className={cn(
-        "text-[#023047] font-bold tracking-wide text-xl mb-3",
+        "text-foreground font-bold tracking-wide text-xl mb-3",
         className
       )}
     >
@@ -116,7 +110,7 @@ export const CardDescription = ({
   return (
     <p
       className={cn(
-        "text-gray-600 tracking-wide leading-relaxed text-sm",
+        "text-muted-foreground tracking-wide leading-relaxed text-sm",
         className
       )}
     >

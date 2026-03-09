@@ -364,7 +364,7 @@ function ProjectsPageContent() {
                             Build Projects That Matter
                         </h1>
                         <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
-                            Join active projects, collaborate with peers, and create solutions that make a difference.
+                            Join projects, collaborate with peers, and build impactful solutions
                         </p>
 
                         {/* Search Bar - Matching Events Page Style */}

@@ -76,7 +76,7 @@ export const TelescopeHero = () => {
                 <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-[1.1] text-foreground mb-8" style={{ fontFamily: "var(--font-girassol), serif", fontWeight: 400 }}>Empowering the Gen</h1>
 
                 <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-12 font-normal">
-                    Join a thriving community where students and tech enthusiasts transform their potential into impact. Connect with expert mentors, build real projects, and launch your dream career.
+                    Join a thriving community where students turn potential into impact Build projects, learn from mentors, and launch your career.
                 </p>
 
                 <div className="flex items-center justify-center">

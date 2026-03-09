@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Rocket, Target, Users, Shield, Zap, Sparkles, Heart, Lightbulb } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 
 export default function AboutPage() {
@@ -17,19 +17,19 @@ export default function AboutPage() {
         {
             title: "Integrity",
             description: "Honesty and transparency in everything we do. We build trust through consistent actions and open communication.",
-            link: "#values",
+            link: "#values-integrity",
             icon: <Shield className="w-12 h-12" />,
         },
         {
             title: "Inclusion",
             description: "A welcoming space for all tech enthusiasts. We celebrate diversity and create opportunities for everyone.",
-            link: "#values",
+            link: "#values-inclusion",
             icon: <Heart className="w-12 h-12" />,
         },
         {
             title: "Impact",
             description: "Making a real difference in students' careers. We measure success by the lives we transform.",
-            link: "#values",
+            link: "#values-impact",
             icon: <Lightbulb className="w-12 h-12" />,
         },
     ];
@@ -38,14 +38,13 @@ export default function AboutPage() {
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
             <section className="py-20 bg-background overflow-hidden relative">
-
-                <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#FFB703]/5 rounded-full blur-3xl" />
+                <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
 
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 rounded-full bg-[#219EBC]/10 border border-[#219EBC]/30 px-4 py-2 text-sm font-medium text-[#219EBC] mb-8"
+                        className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-2 text-sm font-medium text-primary mb-8"
                     >
                         <Sparkles className="w-4 h-4" />
                         Our Story
@@ -57,7 +56,7 @@ export default function AboutPage() {
                         className="text-5xl md:text-7xl text-foreground mb-8 leading-tight font-bold tracking-tight"
                     >
                         Empowering the <br />
-                        <span className="text-[#219EBC]">Next Generation</span>
+                        <span className="text-primary">Next Generation</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -65,7 +64,7 @@ export default function AboutPage() {
                         transition={{ delay: 0.2 }}
                         className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed"
                     >
-                        Velonx is more than a platform; it's a movement. we're building a community where students can learn, build, and grow together in the ever-evolving world of technology.
+                        Velonx is more than a platform; it&apos;s a movement. We&apos;re building a community where students can learn, build, and grow together in the ever-evolving world of technology.
                     </motion.p>
                 </div>
             </section>
@@ -82,8 +81,8 @@ export default function AboutPage() {
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <Card className="border-0 shadow-xl shadow-black/5 rounded-[32px] bg-background text-center p-8 hover:scale-[1.02] transition-transform">
-                                    <div className="w-12 h-12 bg-[#219EBC]/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#219EBC]">
+                                <Card className="border border-border shadow-xl shadow-black/5 rounded-[32px] bg-card text-center p-8 hover:scale-[1.02] transition-transform">
+                                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-primary">
                                         <stat.icon className="w-6 h-6" />
                                     </div>
                                     <div className="text-3xl font-black text-foreground mb-1">{stat.value}</div>
@@ -100,7 +99,7 @@ export default function AboutPage() {
                 <div className="container mx-auto px-4">
                     <div className="grid md:grid-cols-2 gap-16 items-center">
                         <div className="relative">
-                            <div className="aspect-square bg-gray-100 rounded-[64px] overflow-hidden shadow-2xl">
+                            <div className="aspect-square bg-muted rounded-[64px] overflow-hidden shadow-2xl">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80"
@@ -108,13 +107,13 @@ export default function AboutPage() {
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[#FFB703]/20 rounded-[48px] -z-10" />
+                            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-secondary/20 rounded-[48px] -z-10" />
                         </div>
                         <div>
-                            <h2 className="text-4xl mb-8 text-foreground font-bold">Our Mission & <span className="text-[#219EBC]">Vision</span></h2>
+                            <h2 className="text-4xl mb-8 text-foreground font-bold">Our Mission &amp; <span className="text-primary">Vision</span></h2>
                             <div className="space-y-12">
                                 <div className="flex gap-6">
-                                    <div className="w-16 h-16 bg-[#219EBC] rounded-3xl shrink-0 flex items-center justify-center text-white shadow-lg shadow-[#219EBC]/30">
+                                    <div className="w-16 h-16 bg-primary rounded-3xl shrink-0 flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/30">
                                         <Target className="w-8 h-8" />
                                     </div>
                                     <div>
@@ -125,7 +124,7 @@ export default function AboutPage() {
                                     </div>
                                 </div>
                                 <div className="flex gap-6">
-                                    <div className="w-16 h-16 bg-[#FFB703] rounded-3xl shrink-0 flex items-center justify-center text-white shadow-lg shadow-[#FFB703]/30">
+                                    <div className="w-16 h-16 bg-secondary rounded-3xl shrink-0 flex items-center justify-center text-primary-foreground shadow-lg shadow-secondary/30">
                                         <Rocket className="w-8 h-8" />
                                     </div>
                                     <div>
@@ -136,7 +135,7 @@ export default function AboutPage() {
                                     </div>
                                 </div>
                                 <div className="flex gap-6">
-                                    <div className="w-16 h-16 bg-[#023047] rounded-3xl shrink-0 flex items-center justify-center text-white shadow-lg shadow-[#023047]/30">
+                                    <div className="w-16 h-16 bg-muted rounded-3xl shrink-0 flex items-center justify-center text-foreground shadow-lg border border-border">
                                         <Users className="w-8 h-8" />
                                     </div>
                                     <div>
@@ -153,10 +152,10 @@ export default function AboutPage() {
             </section>
 
             {/* Core Values */}
-            <section className="py-24 bg-gray-50">
+            <section className="py-24 bg-muted/20 border-y border-border">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-4xl mb-4 text-foreground font-bold">
-                        The Core Values that <span className="text-[#219EBC]">Drive Us</span>
+                        The Core Values that <span className="text-primary">Drive Us</span>
                     </h2>
                     <p className="text-muted-foreground text-lg mb-12 max-w-2xl mx-auto">
                         Our principles guide every decision we make and every feature we build
@@ -168,19 +167,19 @@ export default function AboutPage() {
             {/* CTA Section */}
             <section className="py-24">
                 <div className="container mx-auto px-4 max-w-5xl">
-                    <div className="bg-[#023047] rounded-[64px] p-12 md:p-20 text-center text-white relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-[#219EBC]/10 rounded-full -mr-48 -mt-48 group-hover:scale-110 transition-transform duration-1000" />
-                        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#FFB703]/5 rounded-full -ml-48 -mb-48 group-hover:scale-110 transition-transform duration-1000" />
+                    <div className="bg-card border border-border rounded-[64px] p-12 md:p-20 text-center relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full -mr-48 -mt-48 group-hover:scale-110 transition-transform duration-1000" />
+                        <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full -ml-48 -mb-48 group-hover:scale-110 transition-transform duration-1000" />
 
-                        <h2 className="text-4xl md:text-5xl font-black mb-8 relative z-10">Ready to start your journey?</h2>
+                        <h2 className="text-4xl md:text-5xl font-black text-foreground mb-8 relative z-10">Ready to start your journey?</h2>
                         <p className="text-muted-foreground text-xl mb-12 max-w-2xl mx-auto relative z-10 leading-relaxed">
                             Join thousands of students who are already building the future on Velonx.
                         </p>
                         <div className="flex flex-wrap justify-center gap-6 relative z-10">
-                            <button className="h-16 px-10 bg-background text-[#023047] font-black rounded-[24px] hover:bg-muted transition-all text-lg shadow-2xl shadow-white/10">
+                            <button className="h-16 px-10 bg-primary text-primary-foreground font-black rounded-[24px] hover:bg-primary/90 transition-all text-lg shadow-lg shadow-primary/20">
                                 Join the Community
                             </button>
-                            <button className="h-16 px-10 bg-background/5 border border-white/20 text-white font-black rounded-[24px] hover:bg-background/10 transition-all text-lg">
+                            <button className="h-16 px-10 bg-transparent border border-border text-foreground font-black rounded-[24px] hover:bg-muted transition-all text-lg">
                                 Contact Our Team
                             </button>
                         </div>

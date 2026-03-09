@@ -1,7 +1,8 @@
 "use client";
-import React from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Pagination, Mousewheel } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 
 // Import Swiper styles
 import "swiper/css";
@@ -52,8 +53,42 @@ export const Carousel3: React.FC<Carousel3Props> = ({
     slides = defaultSlides,
     type = 'showcase'
 }) => {
+    const swiperRef = useRef<SwiperType | null>(null);
+    const isHoveredRef = useRef(false);
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const sectionRef = useRef<HTMLElement | null>(null);
+
+    const startAutoPlay = useCallback(() => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = setInterval(() => {
+            if (isHoveredRef.current) return;
+            swiperRef.current?.slideNext(600);
+        }, 1500);
+    }, []);
+
+    useEffect(() => {
+        startAutoPlay();
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, [startAutoPlay]);
+
+    // Attach hover listeners after mount
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const onEnter = () => { isHoveredRef.current = true; };
+        const onLeave = () => { isHoveredRef.current = false; };
+        el.addEventListener("mouseenter", onEnter);
+        el.addEventListener("mouseleave", onLeave);
+        return () => {
+            el.removeEventListener("mouseenter", onEnter);
+            el.removeEventListener("mouseleave", onLeave);
+        };
+    }, []);
+
     return (
-        <section className="page carousel-3-page">
+        <section ref={sectionRef} className="page carousel-3-page">
             {title && <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">{title}</h2>}
             {description && <p className="section-desc text-muted-foreground text-lg mb-8 px-4 font-normal">{description}</p>}
 
@@ -88,6 +123,7 @@ export const Carousel3: React.FC<Carousel3Props> = ({
                         spaceBetween: 40
                     }
                 }}
+                onSwiper={(swiper) => { swiperRef.current = swiper; }}
             >
                 {slides.map((slide, index) => (
                     <SwiperSlide
@@ -105,7 +141,7 @@ export const Carousel3: React.FC<Carousel3Props> = ({
                                 </>
                             ) : (
                                 <>
-                                    <p className="text-foreground text-sm mb-4 leading-relaxed line-clamp-4 font-normal">"{slide.description}"</p>
+                                    <p className="text-foreground text-sm mb-4 leading-relaxed line-clamp-4 font-normal">&quot;{slide.description}&quot;</p>
                                     <h2 className="text-foreground text-lg mt-auto">{slide.name}</h2>
                                     <span className="text-secondary-foreground text-xs font-semibold uppercase tracking-wider">Verified User</span>
                                 </>

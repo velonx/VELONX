@@ -169,8 +169,8 @@ export default function EventCard({
       aria-label={`Event: ${event.title}. ${registrationStatus.message}`}
       aria-describedby={`event-status-${event.id}`}
     >
-      {/* Top Section - Image or Gradient Header with optimized image */}
-      <div className={`relative h-24 sm:h-32 ${!event.imageUrl ? `bg-gradient-to-br ${getTypeColor()}` : 'bg-card'} flex items-center justify-center overflow-hidden`}>
+      {/* Top Section - 16:9 image / gradient header */}
+      <div className={`relative w-full aspect-video ${!event.imageUrl ? `bg-gradient-to-br ${getTypeColor()}` : 'bg-muted'} overflow-hidden`}>
         {/* Event Image (if available) */}
         {event.imageUrl ? (
           <>
@@ -178,24 +178,21 @@ export default function EventCard({
               src={event.imageUrl}
               alt={`Banner image for ${event.title} - ${event.type} event on ${dateString}`}
               fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-              quality={85}
+              className="object-cover object-center"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              quality={90}
               loading="lazy"
             />
-            {/* Dark overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+            {/* Subtle bottom overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
           </>
-        ) : (
-          /* Fallback gradient background when no image */
-          <div className="absolute inset-0 bg-gradient-to-br opacity-100" />
-        )}
+        ) : null}
 
         {/* Urgency Badges - WCAG AA Compliant Colors */}
         <div className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 flex flex-col gap-1 sm:gap-1.5 z-10 max-w-[calc(100%-3rem)]" role="status" aria-live="polite">
           {/* Registration Closed Badge - Requirements 4.1, 4.2, 4.3, 12.1, 12.2 */}
           {isRegistrationClosed && (
-            <Badge 
+            <Badge
               className={cn(
                 "text-white border-0 uppercase font-bold tracking-widest backdrop-blur-md flex items-center shadow-lg whitespace-nowrap",
                 // Mobile-optimized sizing - ensure visibility at 320px (Requirement 12.1, 12.2)
@@ -208,7 +205,7 @@ export default function EventCard({
               )}
               aria-label={`Registration closed: ${registrationStatus.message}`}
             >
-              <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" aria-hidden="true" /> 
+              <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" aria-hidden="true" />
               {registrationStatus.reason === 'capacity' && 'Full'}
               {registrationStatus.reason === 'deadline' && 'Closed'}
               {registrationStatus.reason === 'manual' && 'Closed'}
@@ -240,11 +237,14 @@ export default function EventCard({
 
         {/* Icon - Only show when no image available */}
         {!event.imageUrl && (
-          <div className="text-3xl sm:text-5xl icon-bounce z-10 group">
-            {getTypeIcon()}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-5xl sm:text-6xl icon-bounce z-10">
+              {getTypeIcon()}
+            </div>
           </div>
         )}
       </div>
+
 
       {/* Content Section - Adjusted padding for mobile */}
       <CardHeader className="p-3 sm:p-4 pb-0">
@@ -328,8 +328,8 @@ export default function EventCard({
 
       {/* Hidden status description for screen readers - Requirements 4.5, 11.1, 11.2, 11.3, 11.5 */}
       <div id={`event-status-${event.id}`} className="sr-only">
-        {isRegistrationClosed 
-          ? `Registration is closed. ${registrationStatus.message}` 
+        {isRegistrationClosed
+          ? `Registration is closed. ${registrationStatus.message}`
           : `Registration is open. ${registrationStatus.message}`}
       </div>
 

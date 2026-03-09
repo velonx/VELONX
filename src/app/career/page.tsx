@@ -111,7 +111,7 @@ export default function CareerPage() {
                             Launch Your <span className="text-[#219EBC]">Career</span>
                         </h1>
                         <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
-                            Practice interviews, explore internships, and discover job opportunities from top companies.
+                            Practice interviews, explore internships, and find job opportunities.
                         </p>
                     </div>
                 </div>
