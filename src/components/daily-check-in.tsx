@@ -2,103 +2,129 @@
 
 import { useEffect, useState } from 'react';
 import { useCheckIn, useUserStreak } from '@/lib/api/hooks';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Flame, Trophy, Calendar } from 'lucide-react';
+
+const DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+/** Returns [0..6] index where 0 = Monday */
+function getTodayIndex() {
+  const d = new Date().getDay(); // 0=Sun,1=Mon,...6=Sat
+  return d === 0 ? 6 : d - 1;
+}
 
 export function DailyCheckIn() {
-  const { checkIn, loading, data: checkInData } = useCheckIn();
+  const { checkIn, loading } = useCheckIn();
   const { data: streakData, refetch: refetchStreak } = useUserStreak();
-  const [message, setMessage] = useState<string>('');
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [checkedIn, setCheckedIn] = useState(false);
+  const [animating, setAnimating] = useState(false);
+  const [streak, setStreak] = useState(0);
 
-  // Auto check-in on component mount (optional)
+  const todayIndex = getTodayIndex();
+
   useEffect(() => {
-    const hasCheckedInToday = localStorage.getItem('lastCheckIn');
+    // Persist check-in state locally per day
+    const saved = localStorage.getItem('lastCheckIn');
     const today = new Date().toDateString();
-    
-    if (hasCheckedInToday !== today) {
-      handleCheckIn();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (saved === today) setCheckedIn(true);
   }, []);
 
+  useEffect(() => {
+    if (streakData?.currentStreak !== undefined) {
+      setStreak(streakData.currentStreak);
+    }
+  }, [streakData]);
+
   const handleCheckIn = async () => {
+    if (checkedIn || loading) return;
+    setAnimating(true);
     try {
-      const response = await checkIn();
-      setMessage(response.message || 'Check-in successful!');
-      setShowSuccess(true);
-      
-      // Store check-in date in localStorage
+      const res = await checkIn();
       localStorage.setItem('lastCheckIn', new Date().toDateString());
-      
-      // Refetch streak data
+      setCheckedIn(true);
+      if (res?.data?.currentStreak !== undefined) setStreak(res.data.currentStreak);
       await refetchStreak();
-      
-      // Hide success message after 5 seconds
-      setTimeout(() => setShowSuccess(false), 5000);
-    } catch (error) {
-      console.error('Check-in failed:', error);
+    } catch (e) {
+      console.error('Check-in failed:', e);
+    } finally {
+      setAnimating(false);
     }
   };
 
-  const currentStreak = checkInData?.currentStreak || streakData?.currentStreak || 0;
-  const longestStreak = checkInData?.longestStreak || streakData?.longestStreak || 0;
+  // Which day circles are "done": all days before today + today if checked in
+  const completedDays = Array.from({ length: 7 }, (_, i) =>
+    i < todayIndex || (i === todayIndex && checkedIn)
+  );
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Flame className="h-5 w-5 text-orange-500" />
-          Daily Streak
-        </CardTitle>
-        <CardDescription>
-          Keep your learning streak alive by checking in daily
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Current Streak</span>
+    <div className="w-full rounded-[20px] bg-gradient-to-br from-orange-500 to-amber-400 p-5 text-white shadow-lg">
+      {/* Streak count */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest opacity-80">Current Streak</p>
+          <div className="flex items-end gap-1">
+            <span className="text-5xl font-black leading-none">{streak}</span>
+            <span className="text-base font-bold opacity-90 mb-1">day{streak !== 1 ? 's' : ''}</span>
           </div>
-          <Badge variant="secondary" className="text-base sm:text-lg font-bold px-3 py-1">
-            <span className="tabular-nums">{currentStreak}</span> {currentStreak === 1 ? 'day' : 'days'}
-          </Badge>
         </div>
+        <div className="text-5xl select-none">🔥</div>
+      </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-          <div className="flex items-center gap-2">
-            <Trophy className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Longest Streak</span>
-          </div>
-          <Badge variant="outline" className="text-base sm:text-lg font-bold px-3 py-1">
-            <span className="tabular-nums">{longestStreak}</span> {longestStreak === 1 ? 'day' : 'days'}
-          </Badge>
-        </div>
+      {/* Day circles — Duolingo style */}
+      <div className="flex justify-between mb-5">
+        {DAYS.map((day, i) => {
+          const done = completedDays[i];
+          const isToday = i === todayIndex;
+          return (
+            <div key={day} className="flex flex-col items-center gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-wide opacity-75">{day}</span>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black transition-all duration-300
+                  ${done
+                    ? 'bg-white text-orange-500 shadow-md scale-110'
+                    : isToday
+                      ? 'bg-white/30 border-2 border-white/60 text-white'
+                      : 'bg-orange-700/40 text-orange-200'
+                  }`}
+              >
+                {done ? '✓' : ''}
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {showSuccess && (
-          <div className="rounded-lg bg-green-50 p-3 text-sm text-green-800 dark:bg-green-900/20 dark:text-green-400">
-            {message}
-          </div>
+      {/* Check-in button */}
+      <button
+        onClick={handleCheckIn}
+        disabled={checkedIn || loading || animating}
+        className={`w-full py-3 px-4 rounded-2xl font-black text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2
+          ${checkedIn
+            ? 'bg-white/20 text-white cursor-default border-2 border-white/40'
+            : 'bg-white text-orange-500 hover:bg-orange-50 active:scale-95 shadow-md hover:shadow-lg'
+          }`}
+      >
+        {loading || animating ? (
+          <>
+            <span className="w-4 h-4 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
+            Checking in…
+          </>
+        ) : checkedIn ? (
+          <>
+            <span className="text-base">✓</span>
+            Checked In Today
+          </>
+        ) : (
+          <>
+            <span className="text-base">🔥</span>
+            Check In
+          </>
         )}
+      </button>
 
-        <Button 
-          onClick={handleCheckIn} 
-          disabled={loading}
-          className="w-full"
-          aria-label={loading ? 'Checking in...' : 'Check in for today'}
-        >
-          {loading ? 'Checking in...' : 'Check In Today'}
-        </Button>
-
-        {currentStreak >= 2 && (
-          <p className="text-xs text-center text-muted-foreground">
-            🎉 You earn {20} XP for each day you maintain your streak!
-          </p>
-        )}
-      </CardContent>
-    </Card>
+      {checkedIn && (
+        <p className="text-center text-xs font-bold opacity-75 mt-3">
+          🎉 +20 XP earned · Come back tomorrow!
+        </p>
+      )}
+    </div>
   );
 }

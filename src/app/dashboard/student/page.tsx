@@ -761,12 +761,8 @@ function StudentDashboardContent() {
 
             {/* Right Sidebar - Calendar */}
             <aside className="hidden md:block md:w-96 bg-card p-10 border-l border-border md:fixed md:right-0 top-20 bottom-0 z-20 overflow-y-auto">
-                <div className="flex items-center justify-between mb-8">
+                <div className="mb-8">
                     <h2 className="text-2xl font-black text-[#023047]">Calendar</h2>
-                    <button className="w-10 h-10 rounded-xl bg-background shadow-sm border border-border flex items-center justify-center text-muted-foreground relative">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-                    </button>
                 </div>
 
                 {/* Daily Check-in Component */}
@@ -795,11 +791,7 @@ function StudentDashboardContent() {
                                 </div>
                             </div>
                         ))
-                    ) : (
-                        <div className="text-center py-12 text-muted-foreground">
-                            No upcoming meetings scheduled
-                        </div>
-                    )}
+                    ) : null}
                 </div>
             </aside>
 

@@ -96,11 +96,13 @@ export function useWebSocket(
   const connectRef = useRef<(() => void) | null>(null);
   const isMountedRef = useRef(true);
 
-  const fullConfig = useMemo(() => ({ ...DEFAULT_CONFIG, ...config }), [
-    config.url,
-    config.reconnectInterval,
-    config.maxReconnectAttempts,
-    config.heartbeatInterval,
+  const { url, reconnectInterval, maxReconnectAttempts, heartbeatInterval } = config;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fullConfig = useMemo<Required<WebSocketConfig>>(() => ({ ...DEFAULT_CONFIG, ...config }), [
+    url,
+    reconnectInterval,
+    maxReconnectAttempts,
+    heartbeatInterval,
   ]);
 
   /**
