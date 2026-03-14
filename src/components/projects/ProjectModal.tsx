@@ -270,13 +270,13 @@ export function ProjectModal({
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-2">
               {project.githubUrl && (
-                <Button variant="outline" onClick={() => openUrl(project.githubUrl!)} aria-label={`View GitHub for ${project.title}`}>
+                <Button variant="outline" onClick={() => openUrl(project.githubUrl!)} aria-label="View GitHub Repository">
                   <Github className="h-4 w-4 mr-2" aria-hidden="true" />
                   GitHub
                 </Button>
               )}
               {project.liveUrl && (
-                <Button variant="outline" onClick={() => openUrl(project.liveUrl!)} aria-label={`View live demo for ${project.title}`}>
+                <Button variant="outline" onClick={() => openUrl(project.liveUrl!)} aria-label="View Live Demo">
                   <ExternalLink className="h-4 w-4 mr-2" aria-hidden="true" />
                   Live Demo
                 </Button>

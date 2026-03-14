@@ -29,8 +29,8 @@ describe('Screen Reader Support', () => {
     id: '1',
     title: 'Web Development Workshop',
     description: 'Learn modern web development techniques',
-    date: '2024-12-25T10:00:00Z',
-    endDate: '2024-12-25T12:00:00Z',
+    date: '2099-12-25T10:00:00Z',
+    endDate: '2099-12-25T12:00:00Z',
     location: 'Google Meet',
     meetingLink: 'https://meet.google.com/abc-defg-hij',
     type: 'WORKSHOP',
@@ -190,6 +190,8 @@ describe('Screen Reader Support', () => {
     it('should have descriptive ARIA label for full event', () => {
       const fullEvent = {
         ...mockEvent,
+        date: '2099-12-25T10:00:00Z',
+        endDate: '2099-12-25T12:00:00Z',
         _count: {
           attendees: 50,
         },

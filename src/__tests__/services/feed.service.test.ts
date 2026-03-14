@@ -161,7 +161,13 @@ describe('FeedService', () => {
   describe('getUserFeed', () => {
     it('should return user feed with public posts', async () => {
       const { prisma } = await import('@/lib/prisma');
-      vi.mocked(prisma.user.findUnique).mockResolvedValue(testUser);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue({
+        ...testUser,
+        blocking: [],
+        blockedBy: [],
+        following: [],
+        groupMemberships: [],
+      } as any);
       vi.mocked(prisma.userBlock.findMany).mockResolvedValue([]);
       vi.mocked(prisma.communityPost.findMany).mockResolvedValue([{
         ...testPost,
@@ -224,7 +230,7 @@ describe('FeedService', () => {
 
     it('should exclude blocked users from search results', async () => {
       const { prisma } = await import('@/lib/prisma');
-      vi.mocked(prisma.userBlock.findMany).mockResolvedValue([{ blockerId: testUser.id, blockedId: testUser2.id, id: 'b1' }]);
+      vi.mocked(prisma.userBlock.findMany).mockResolvedValue([{ blockerId: testUser.id, blockedId: testUser2.id, id: 'b1', createdAt: new Date() }]);
       vi.mocked(prisma.communityPost.findMany).mockResolvedValue([]);
       vi.mocked(prisma.discussionRoom.findMany).mockResolvedValue([]);
 
