@@ -16,14 +16,14 @@ export default function WelcomeSection({ userName, searchQuery, onSearchChange }
   return (
     <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
       <div>
-        <h1 className="text-2xl md:text-3xl font-black text-[#023047] mb-2">Hello, {userName}</h1>
-        <p className="text-gray-400 font-medium tracking-tight text-sm md:text-base">
+        <h1 className="text-2xl md:text-3xl font-black text-foreground mb-2">Hello, {userName}</h1>
+        <p className="text-muted-foreground font-medium tracking-tight text-sm md:text-base">
           Today is {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
       </div>
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
         <div className="relative group flex-1 sm:flex-initial">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#219EBC] transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-[#219EBC] transition-colors" />
           <input
             type="text"
             placeholder="Search projects..."

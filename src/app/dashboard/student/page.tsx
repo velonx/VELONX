@@ -38,7 +38,6 @@ import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
 // Overview Components
 import WelcomeSection from "@/components/dashboard/student/Overview/WelcomeSection";
 import ProgressSummary from "@/components/dashboard/student/Overview/ProgressSummary";
-import QuickActions from "@/components/dashboard/student/Overview/QuickActions";
 
 // Mentorship Components
 import FindMentors from "@/components/dashboard/student/Mentorship/FindMentors";
@@ -446,9 +445,6 @@ function StudentDashboardContent() {
                         {session?.user?.id && (
                             <JoinRequests userId={session.user.id} />
                         )}
-
-                        {/* Statistics Section - Full Width */}
-                        <QuickActions userStats={userStats || {}} />
                     </>
                 )}
 
@@ -463,32 +459,10 @@ function StudentDashboardContent() {
                             <p className="text-muted-foreground font-medium tracking-tight">Monitor your progress and achievements</p>
                         </header>
 
-                        {/* Streak & XP Overview */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                            {/* Streak Card */}
-                            <Card className="bg-gradient-to-br from-orange-500 to-red-500 text-white border-0 rounded-[32px] p-8 shadow-xl">
-                                <div className="flex items-start justify-between mb-6">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Flame className="w-6 h-6" />
-                                            <h3 className="text-lg font-bold">Current Streak</h3>
-                                        </div>
-                                        <p className="text-5xl font-black mb-1">{user?.currentStreak || 0}</p>
-                                        <p className="text-sm opacity-90">days in a row</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <Trophy className="w-12 h-12 opacity-20 mb-2" />
-                                        <p className="text-xs opacity-75">Longest</p>
-                                        <p className="text-2xl font-black">{user?.longestStreak || 0}</p>
-                                    </div>
-                                </div>
-                                <div className="bg-background/20 rounded-xl p-4">
-                                    <p className="text-sm font-bold">Keep it up! Login daily to maintain your streak and earn bonus XP.</p>
-                                </div>
-                            </Card>
-
+                        {/* XP & Level Overview */}
+                        <div className="mb-12">
                             {/* XP & Level Card */}
-                            <Card className="bg-gradient-to-br from-[#219EBC] to-[#023047] text-white border-0 rounded-[32px] p-8 shadow-xl">
+                            <Card className="bg-gradient-to-br from-[#219EBC] to-[#023047] text-white border-0 rounded-[32px] p-8 shadow-xl max-w-2xl">
                                 <div className="flex items-start justify-between mb-6">
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
@@ -499,21 +473,39 @@ function StudentDashboardContent() {
                                         <p className="text-sm opacity-90">total XP earned</p>
                                     </div>
                                     <div className="text-right">
-                                        <TrendingUp className="w-12 h-12 opacity-20 mb-2" />
-                                        <p className="text-xs opacity-75">Next Level</p>
-                                        <p className="text-2xl font-black">
+                                        <Trophy className="w-16 h-16 opacity-20" />
+                                    </div>
+                                </div>
+
+                                {/* Progress Bar with Details */}
+                                <div className="bg-background/20 rounded-xl p-4 mb-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-bold opacity-90">
                                             {(() => {
                                                 const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
                                                 const currentLevel = user?.level || 1;
-                                                return currentLevel >= 10 ? 'MAX' : thresholds[currentLevel];
+                                                const currentXP = user?.xp || 0;
+                                                if (currentLevel >= 10) return 'Max Level Reached!';
+                                                const currentThreshold = thresholds[currentLevel - 1];
+                                                return `${currentXP - currentThreshold} XP`;
                                             })()}
-                                        </p>
+                                        </span>
+                                        <span className="text-xs font-bold opacity-90">
+                                            {(() => {
+                                                const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
+                                                const currentLevel = user?.level || 1;
+                                                const currentXP = user?.xp || 0;
+                                                if (currentLevel >= 10) return '';
+                                                const currentThreshold = thresholds[currentLevel - 1];
+                                                const nextThreshold = thresholds[currentLevel];
+                                                const remaining = nextThreshold - currentXP;
+                                                return `${remaining} XP to go`;
+                                            })()}
+                                        </span>
                                     </div>
-                                </div>
-                                <div className="bg-background/20 rounded-xl p-2">
                                     <div className="h-3 bg-background/30 rounded-full overflow-hidden">
                                         <div
-                                            className="h-full bg-background rounded-full transition-all duration-500"
+                                            className="h-full bg-background rounded-full transition-all duration-500 relative"
                                             style={{
                                                 width: `${(() => {
                                                     const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
@@ -526,9 +518,62 @@ function StudentDashboardContent() {
                                                     return Math.min(100, Math.max(0, progress));
                                                 })()}%`
                                             }}
-                                        />
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-center mt-2">
+                                        <span className="text-lg font-black">
+                                            {(() => {
+                                                const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
+                                                const currentLevel = user?.level || 1;
+                                                const currentXP = user?.xp || 0;
+                                                if (currentLevel >= 10) return '100%';
+                                                const currentThreshold = thresholds[currentLevel - 1];
+                                                const nextThreshold = thresholds[currentLevel];
+                                                const progress = ((currentXP - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
+                                                return `${Math.round(Math.min(100, Math.max(0, progress)))}%`;
+                                            })()}
+                                        </span>
+                                        <span className="text-xs opacity-75 ml-1">complete</span>
                                     </div>
                                 </div>
+
+                                {/* Level Milestones */}
+                                <div className="grid grid-cols-3 gap-3 mb-4">
+                                    <div className="bg-background/20 rounded-xl p-3 text-center">
+                                        <Flame className="w-5 h-5 mx-auto mb-1 opacity-75" />
+                                        <p className="text-xs opacity-75 mb-1">Current</p>
+                                        <p className="text-lg font-black">Lvl {user?.level || 1}</p>
+                                    </div>
+                                    <div className="bg-background/20 rounded-xl p-3 text-center">
+                                        <Target className="w-5 h-5 mx-auto mb-1 opacity-75" />
+                                        <p className="text-xs opacity-75 mb-1">Next</p>
+                                        <p className="text-lg font-black">
+                                            {(() => {
+                                                const currentLevel = user?.level || 1;
+                                                return currentLevel >= 10 ? 'MAX' : `Lvl ${currentLevel + 1}`;
+                                            })()}
+                                        </p>
+                                    </div>
+                                    <div className="bg-background/20 rounded-xl p-3 text-center">
+                                        <Trophy className="w-5 h-5 mx-auto mb-1 opacity-75" />
+                                        <p className="text-xs opacity-75 mb-1">Max</p>
+                                        <p className="text-lg font-black">Lvl 10</p>
+                                    </div>
+                                </div>
+
+                                {/* Action Button */}
+                                <button
+                                    onClick={() => router.push('/leaderboard')}
+                                    className="w-full bg-background/20 hover:bg-background/30 rounded-xl p-3 flex items-center justify-between transition-all group"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Trophy className="w-4 h-4" />
+                                        <span className="text-sm font-bold">View Leaderboard</span>
+                                    </div>
+                                    <TrendingUp className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </button>
                             </Card>
                         </div>
 
@@ -547,28 +592,28 @@ function StudentDashboardContent() {
                                     <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Target className="w-6 h-6 text-green-600" />
                                     </div>
-                                    <p className="text-2xl font-black text-[#023047] mb-1">100</p>
+                                    <p className="text-2xl font-black text-foreground mb-1">100</p>
                                     <p className="text-xs text-muted-foreground font-bold">Project Completion</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Users className="w-5 h-5 text-blue-600" />
                                     </div>
-                                    <p className="text-2xl font-black text-[#023047] mb-1">25</p>
+                                    <p className="text-2xl font-black text-foreground mb-1">25</p>
                                     <p className="text-xs text-muted-foreground font-bold">Mentor Session</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Flame className="w-6 h-6 text-orange-600" />
                                     </div>
-                                    <p className="text-2xl font-black text-[#023047] mb-1">20</p>
+                                    <p className="text-2xl font-black text-foreground mb-1">20</p>
                                     <p className="text-xs text-muted-foreground font-bold">Daily Streak</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Award className="w-5 h-5 text-teal-600" />
                                     </div>
-                                    <p className="text-2xl font-black text-[#023047] mb-1">30</p>
+                                    <p className="text-2xl font-black text-foreground mb-1">30</p>
                                     <p className="text-xs text-muted-foreground font-bold">Resource Share</p>
                                 </Card>
                             </div>
@@ -686,12 +731,37 @@ function StudentDashboardContent() {
                             ) : posts && posts.length > 0 ? (
                                 <div className="space-y-4">
                                     {posts.slice(0, 3).map((post) => (
-                                        <PostCard key={post.id} post={post} />
+                                        <PostCard 
+                                            key={post.id} 
+                                            post={post}
+                                            currentUserId={session?.user?.id}
+                                            onEdit={async (postId, content) => {
+                                                const { getCSRFToken } = await import('@/lib/utils/csrf');
+                                                const csrfToken = await getCSRFToken();
+                                                const res = await fetch(`/api/community/posts/${postId}`, {
+                                                    method: 'PATCH',
+                                                    headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+                                                    body: JSON.stringify({ content })
+                                                });
+                                                if (!res.ok) throw new Error('Failed to edit post');
+                                                router.refresh();
+                                            }}
+                                            onDelete={async (postId) => {
+                                                const { getCSRFToken } = await import('@/lib/utils/csrf');
+                                                const csrfToken = await getCSRFToken();
+                                                const res = await fetch(`/api/community/posts/${postId}`, {
+                                                    method: 'DELETE',
+                                                    headers: { 'x-csrf-token': csrfToken }
+                                                });
+                                                if (!res.ok) throw new Error('Failed to delete post');
+                                                router.refresh();
+                                            }}
+                                        />
                                     ))}
                                 </div>
                             ) : (
                                 <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
-                                    <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                                     <h3 className="text-xl font-bold text-foreground mb-2">No Posts Yet</h3>
                                     <p className="text-muted-foreground mb-6">
                                         Share your first post with the community
@@ -731,7 +801,7 @@ function StudentDashboardContent() {
                                 </div>
                             ) : (
                                 <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
-                                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                                     <h3 className="text-xl font-bold text-foreground mb-2">No Groups Yet</h3>
                                     <p className="text-muted-foreground mb-6">
                                         Join or create a group to connect with others
@@ -752,8 +822,8 @@ function StudentDashboardContent() {
 
                 {activeTab === "Setting" && (
                     <div className="text-center py-20">
-                        <Settings className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h2 className="text-2xl font-black text-[#023047] mb-2">Settings</h2>
+                        <Settings className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                        <h2 className="text-2xl font-black text-foreground mb-2">Settings</h2>
                         <p className="text-muted-foreground">Settings page coming soon...</p>
                     </div>
                 )}
@@ -762,7 +832,7 @@ function StudentDashboardContent() {
             {/* Right Sidebar - Calendar */}
             <aside className="hidden md:block md:w-96 bg-card p-10 border-l border-border md:fixed md:right-0 top-20 bottom-0 z-20 overflow-y-auto">
                 <div className="mb-8">
-                    <h2 className="text-2xl font-black text-[#023047]">Calendar</h2>
+                    <h2 className="text-2xl font-black text-foreground">Calendar</h2>
                 </div>
 
                 {/* Daily Check-in Component */}
@@ -776,14 +846,14 @@ function StudentDashboardContent() {
                             <div key={idx}>
                                 <div className="flex items-center justify-between mb-8">
                                     <h3 className="text-sm font-bold text-foreground">{section.date}</h3>
-                                    <button className="text-gray-300 hover:text-muted-foreground"><MoreHorizontal className="w-4 h-4" /></button>
+                                    <button className="text-muted-foreground hover:text-foreground"><MoreHorizontal className="w-4 h-4" /></button>
                                 </div>
                                 <div className="space-y-8">
                                     {section.items.map((item: any, i: number) => (
                                         <div key={i} className="flex gap-6 relative">
-                                            <div className="text-sm font-black text-[#023047] w-12">{item.time}</div>
+                                            <div className="text-sm font-black text-foreground w-12">{item.time}</div>
                                             <div className={`flex-1 border-l-4 ${item.color} pl-6 group cursor-pointer`}>
-                                                <h4 className="text-sm font-black text-[#023047] mb-1 group-hover:text-[#219EBC] transition-colors">{item.title}</h4>
+                                                <h4 className="text-sm font-black text-foreground mb-1 group-hover:text-primary transition-colors">{item.title}</h4>
                                                 <p className="text-muted-foreground text-xs font-bold">{item.sub}</p>
                                             </div>
                                         </div>

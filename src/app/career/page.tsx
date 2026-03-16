@@ -246,10 +246,10 @@ export default function CareerPage() {
                                                         <CardDescription className="text-muted-foreground font-medium text-sm md:text-base">{internship.company}</CardDescription>
                                                     </div>
                                                     {internship.imageUrl && (
-                                                        <>
+                                                        <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center">
                                                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                            <img src={internship.imageUrl} alt={internship.company} className="w-12 h-12 rounded-lg object-cover" />
-                                                        </>
+                                                            <img src={internship.imageUrl} alt={internship.company} className="w-full h-full object-contain" />
+                                                        </div>
                                                     )}
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mt-3">
@@ -318,10 +318,10 @@ export default function CareerPage() {
                                                         <CardDescription className="text-muted-foreground font-medium text-sm md:text-base">{job.company}</CardDescription>
                                                     </div>
                                                     {job.imageUrl && (
-                                                        <>
+                                                        <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center">
                                                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                            <img src={job.imageUrl} alt={job.company} className="w-12 h-12 rounded-lg object-cover" />
-                                                        </>
+                                                            <img src={job.imageUrl} alt={job.company} className="w-full h-full object-contain" />
+                                                        </div>
                                                     )}
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mt-3">

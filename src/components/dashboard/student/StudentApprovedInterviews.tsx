@@ -72,7 +72,7 @@ export default function StudentApprovedInterviews({ userId }: StudentApprovedInt
   if (loading) {
     return (
       <section className="mb-12">
-        <h3 className="text-2xl font-black text-[#023047] mb-6">Mock Interviews</h3>
+        <h3 className="text-2xl font-black text-foreground mb-6">Mock Interviews</h3>
         <div className="space-y-4">
           {[1, 2].map((i) => (
             <Card key={i} className="bg-background border-0 rounded-[24px] p-6 shadow-sm animate-pulse">
@@ -92,7 +92,7 @@ export default function StudentApprovedInterviews({ userId }: StudentApprovedInt
   if (error) {
     return (
       <section className="mb-12">
-        <h3 className="text-2xl font-black text-[#023047] mb-6">Mock Interviews</h3>
+        <h3 className="text-2xl font-black text-foreground mb-6">Mock Interviews</h3>
         <Card className="bg-background border-0 rounded-[24px] p-8 text-center shadow-sm">
           <p className="text-red-500 mb-4">{error}</p>
           <Button
@@ -111,9 +111,9 @@ export default function StudentApprovedInterviews({ userId }: StudentApprovedInt
   if (interviews.length === 0) {
     return (
       <section className="mb-12">
-        <h3 className="text-2xl font-black text-[#023047] mb-6">Mock Interviews</h3>
+        <h3 className="text-2xl font-black text-foreground mb-6">Mock Interviews</h3>
         <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
-          <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <Briefcase className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h4 className="text-xl font-bold text-foreground mb-2">No scheduled mock interviews</h4>
           <p className="text-muted-foreground mb-6">
             Request a mock interview to practice and improve your skills
@@ -171,7 +171,7 @@ export default function StudentApprovedInterviews({ userId }: StudentApprovedInt
 
   return (
     <section className="mb-12">
-      <h3 className="text-2xl font-black text-[#023047] mb-6">Mock Interviews</h3>
+      <h3 className="text-2xl font-black text-foreground mb-6">Mock Interviews</h3>
       <div className="space-y-4">
         {interviews.map((interview) => {
           return (
@@ -184,7 +184,7 @@ export default function StudentApprovedInterviews({ userId }: StudentApprovedInt
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h4 className="text-lg font-bold text-[#023047]">
+                      <h4 className="text-lg font-bold text-foreground">
                         {formatInterviewType(interview.interviewType)}
                       </h4>
                       <span className={`px-3 py-1 text-xs font-bold rounded-full ${getStatusColor(interview.status)}`}>

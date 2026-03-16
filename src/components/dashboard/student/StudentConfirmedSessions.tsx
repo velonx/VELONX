@@ -68,7 +68,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
   if (loading) {
     return (
       <section className="mb-12">
-        <h3 className="text-2xl font-black text-[#023047] mb-6">Upcoming Mentor Sessions</h3>
+        <h3 className="text-2xl font-black text-foreground mb-6">Upcoming Mentor Sessions</h3>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="bg-background border-0 rounded-[24px] p-6 shadow-sm animate-pulse">
@@ -91,7 +91,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
   if (error) {
     return (
       <section className="mb-12">
-        <h3 className="text-2xl font-black text-[#023047] mb-6">Upcoming Mentor Sessions</h3>
+        <h3 className="text-2xl font-black text-foreground mb-6">Upcoming Mentor Sessions</h3>
         <Card className="bg-background border-0 rounded-[24px] p-8 text-center shadow-sm">
           <p className="text-red-500 mb-4">{error}</p>
           <Button
@@ -110,9 +110,9 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
   if (sessions.length === 0) {
     return (
       <section className="mb-12">
-        <h3 className="text-2xl font-black text-[#023047] mb-6">Upcoming Mentor Sessions</h3>
+        <h3 className="text-2xl font-black text-foreground mb-6">Upcoming Mentor Sessions</h3>
         <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
-          <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h4 className="text-xl font-bold text-foreground mb-2">No upcoming mentor sessions</h4>
           <p className="text-muted-foreground mb-6">
             Book a session with a mentor to get personalized guidance
@@ -146,7 +146,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
 
   return (
     <section className="mb-12">
-      <h3 className="text-2xl font-black text-[#023047] mb-6">Upcoming Mentor Sessions</h3>
+      <h3 className="text-2xl font-black text-foreground mb-6">Upcoming Mentor Sessions</h3>
       <div className="space-y-4">
         {sessions.map((session) => {
           const { dateStr, timeStr } = formatDateTime(session.date);
@@ -173,7 +173,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div>
-                      <h4 className="text-lg font-bold text-[#023047] mb-1">
+                      <h4 className="text-lg font-bold text-foreground mb-1">
                         {session.title}
                       </h4>
                       <p className="text-sm text-muted-foreground font-medium">

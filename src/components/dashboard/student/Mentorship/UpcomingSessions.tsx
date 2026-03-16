@@ -46,7 +46,7 @@ export default function UpcomingSessions({ sessions, loading, onCancel, onReview
     return (
       <div className="text-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading sessions...</p>
+        <p className="text-muted-foreground">Loading sessions...</p>
       </div>
     );
   }
@@ -54,9 +54,9 @@ export default function UpcomingSessions({ sessions, loading, onCancel, onReview
   if (upcomingSessions.length === 0) {
     return (
       <Card className="bg-white border-0 rounded-[32px] p-12 text-center shadow-sm">
-        <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-gray-900 mb-2">No Upcoming Sessions</h3>
-        <p className="text-gray-500 mb-6">
+        <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-foreground mb-2">No Upcoming Sessions</h3>
+        <p className="text-muted-foreground mb-6">
           Book a mentorship session to get started
         </p>
         <Button
@@ -72,7 +72,7 @@ export default function UpcomingSessions({ sessions, loading, onCancel, onReview
 
   return (
     <div>
-      <h3 className="text-lg font-bold text-[#023047] mb-4">Upcoming Sessions</h3>
+      <h3 className="text-lg font-bold text-foreground mb-4">Upcoming Sessions</h3>
       <div className="space-y-4">
         {upcomingSessions.map(session => (
           <SessionCard

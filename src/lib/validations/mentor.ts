@@ -90,13 +90,28 @@ export const createMentorSchema = z.object({
   expertise: z.array(z.string()).min(1, "At least one expertise area is required").max(20, "Expertise cannot exceed 20 items"),
   company: z.string().min(2, "Company must be at least 2 characters").max(200, "Company must not exceed 200 characters"),
   bio: z.string().min(10, "Bio must be at least 10 characters"),
-  imageUrl: z.string().url("Invalid image URL").optional(),
-  rating: z.number().min(0, "Rating must be at least 0").max(5, "Rating must not exceed 5").optional(),
-  totalSessions: z.number().int("Total sessions must be an integer").min(0, "Total sessions must be non-negative").optional(),
-  available: z.boolean().optional(),
-  linkedinUrl: linkedinUrlSchema,
-  githubUrl: githubUrlSchema,
-  twitterUrl: twitterUrlSchema,
+  imageUrl: z.union([z.string().url(), z.literal(''), z.undefined()]).optional().transform(val => val === '' || !val ? undefined : val),
+  rating: z.number().min(0, "Rating must be at least 0").max(5, "Rating must not exceed 5").default(0),
+  totalSessions: z.number().int("Total sessions must be an integer").min(0, "Total sessions must be non-negative").default(0),
+  available: z.boolean().default(true),
+  linkedinUrl: z.union([z.string().url(), z.literal(''), z.null(), z.undefined()]).optional()
+    .transform(val => !val || val === '' ? null : val)
+    .refine(
+      (url) => !url || isValidLinkedInUrl(url),
+      { message: "Please enter a valid LinkedIn URL (e.g., https://linkedin.com/in/username)" }
+    ),
+  githubUrl: z.union([z.string().url(), z.literal(''), z.null(), z.undefined()]).optional()
+    .transform(val => !val || val === '' ? null : val)
+    .refine(
+      (url) => !url || isValidGitHubUrl(url),
+      { message: "Please enter a valid GitHub URL (e.g., https://github.com/username)" }
+    ),
+  twitterUrl: z.union([z.string().url(), z.literal(''), z.null(), z.undefined()]).optional()
+    .transform(val => !val || val === '' ? null : val)
+    .refine(
+      (url) => !url || isValidTwitterUrl(url),
+      { message: "Please enter a valid Twitter URL (e.g., https://twitter.com/username or https://x.com/username)" }
+    ),
 });
 
 /**
@@ -108,13 +123,28 @@ export const updateMentorSchema = z.object({
   expertise: z.array(z.string()).min(1, "At least one expertise area is required").max(20, "Expertise cannot exceed 20 items").optional(),
   company: z.string().min(2, "Company must be at least 2 characters").max(200, "Company must not exceed 200 characters").optional(),
   bio: z.string().min(10, "Bio must be at least 10 characters").optional(),
-  imageUrl: z.string().url("Invalid image URL").optional(),
+  imageUrl: z.union([z.string().url(), z.literal(''), z.undefined()]).optional().transform(val => val === '' || !val ? undefined : val),
   rating: z.number().min(0, "Rating must be at least 0").max(5, "Rating must not exceed 5").optional(),
   totalSessions: z.number().int("Total sessions must be an integer").min(0, "Total sessions must be non-negative").optional(),
   available: z.boolean().optional(),
-  linkedinUrl: linkedinUrlSchema,
-  githubUrl: githubUrlSchema,
-  twitterUrl: twitterUrlSchema,
+  linkedinUrl: z.union([z.string().url(), z.literal(''), z.null(), z.undefined()]).optional()
+    .transform(val => !val || val === '' ? null : val)
+    .refine(
+      (url) => !url || isValidLinkedInUrl(url),
+      { message: "Please enter a valid LinkedIn URL (e.g., https://linkedin.com/in/username)" }
+    ),
+  githubUrl: z.union([z.string().url(), z.literal(''), z.null(), z.undefined()]).optional()
+    .transform(val => !val || val === '' ? null : val)
+    .refine(
+      (url) => !url || isValidGitHubUrl(url),
+      { message: "Please enter a valid GitHub URL (e.g., https://github.com/username)" }
+    ),
+  twitterUrl: z.union([z.string().url(), z.literal(''), z.null(), z.undefined()]).optional()
+    .transform(val => !val || val === '' ? null : val)
+    .refine(
+      (url) => !url || isValidTwitterUrl(url),
+      { message: "Please enter a valid Twitter URL (e.g., https://twitter.com/username or https://x.com/username)" }
+    ),
 });
 
 /**

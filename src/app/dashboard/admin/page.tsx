@@ -47,6 +47,9 @@ const ResourceManagement = dynamic(() => import("@/components/admin/ContentManag
 const MentorApplications = dynamic(() => import("@/components/admin/MentorManagement").then(mod => ({ default: mod.MentorApplications })), {
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
 });
+const MentorCRUD = dynamic(() => import("@/components/admin/MentorManagement").then(mod => ({ default: mod.MentorCRUD })), {
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+});
 const EventManagement = dynamic(() => import("@/components/admin/EventManagement"), {
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
 });
@@ -238,6 +241,10 @@ export default function AdminDashboard() {
                     </TabsContent>
 
                     <TabsContent value="mentors" className="space-y-12">
+                        {/* Mentor CRUD Management */}
+                        <MentorCRUD />
+
+                        {/* Mentor Applications */}
                         <MentorApplications
                             applications={mentorApplications}
                             loading={loadingApplications}

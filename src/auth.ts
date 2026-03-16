@@ -17,17 +17,29 @@ declare module "next-auth" {
             email?: string | null
             image?: string | null
             role?: UserRole
+            xp?: number
+            level?: number
+            currentStreak?: number
+            longestStreak?: number
         }
     }
 
     interface User {
         role?: UserRole
+        xp?: number
+        level?: number
+        currentStreak?: number
+        longestStreak?: number
     }
 }
 
 declare module "@auth/core/jwt" {
     interface JWT {
         role?: UserRole
+        xp?: number
+        level?: number
+        currentStreak?: number
+        longestStreak?: number
     }
 }
 
@@ -81,6 +93,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 const userPromise = prisma.user.findUnique({
                     where: { email: credentials.email as string },
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                        image: true,
+                        password: true,
+                        role: true,
+                        xp: true,
+                        level: true,
+                        currentStreak: true,
+                        longestStreak: true,
+                    },
                 });
 
                 const [bruteForceCheck, user] = await Promise.all([
@@ -139,6 +163,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     name: user.name,
                     image: user.image,
                     role: user.role,
+                    xp: user.xp,
+                    level: user.level,
+                    currentStreak: user.currentStreak,
+                    longestStreak: user.longestStreak,
                 };
             },
         }),
@@ -152,10 +180,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         signOut: "/",
     },
     callbacks: {
+        async signIn({ user, account, profile }) {
+            // For OAuth providers, fetch additional user data
+            if (account?.provider === "google" || account?.provider === "github") {
+                if (user.email) {
+                    const dbUser = await prisma.user.findUnique({
+                        where: { email: user.email },
+                        select: {
+                            xp: true,
+                            level: true,
+                            currentStreak: true,
+                            longestStreak: true,
+                        },
+                    });
+                    if (dbUser) {
+                        user.xp = dbUser.xp;
+                        user.level = dbUser.level;
+                        user.currentStreak = dbUser.currentStreak;
+                        user.longestStreak = dbUser.longestStreak;
+                    }
+                }
+            }
+            return true;
+        },
         async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
                 token.role = user.role || "STUDENT";
+                token.xp = user.xp;
+                token.level = user.level;
+                token.currentStreak = user.currentStreak;
+                token.longestStreak = user.longestStreak;
             }
 
             // Fetch latest user data on session update
@@ -166,12 +221,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         role: true,
                         name: true,
                         image: true,
+                        xp: true,
+                        level: true,
+                        currentStreak: true,
+                        longestStreak: true,
                     },
                 });
                 if (dbUser) {
                     token.role = dbUser.role;
                     token.name = dbUser.name;
                     token.picture = dbUser.image;
+                    token.xp = dbUser.xp;
+                    token.level = dbUser.level;
+                    token.currentStreak = dbUser.currentStreak;
+                    token.longestStreak = dbUser.longestStreak;
                 }
             }
 
@@ -183,6 +246,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user.role = token.role as UserRole;
                 session.user.name = token.name as string | null;
                 session.user.image = token.picture as string | null;
+                session.user.xp = token.xp as number | undefined;
+                session.user.level = token.level as number | undefined;
+                session.user.currentStreak = token.currentStreak as number | undefined;
+                session.user.longestStreak = token.longestStreak as number | undefined;
             }
             return session;
         },

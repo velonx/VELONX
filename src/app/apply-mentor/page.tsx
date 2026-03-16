@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Loader2, CheckCircle2, Sparkles, Briefcase, GraduationCap, Link as LinkIcon, Github, Twitter } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle2, Sparkles, Briefcase, GraduationCap, Link as LinkIcon, Github, Twitter, Upload, Image as ImageIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { isValidGitHubUrl, isValidTwitterUrl, isValidLinkedInUrl } from "@/lib/validations/mentor";
 
@@ -17,12 +17,14 @@ export default function ApplyMentorPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: session?.user?.name || '',
     email: session?.user?.email || '',
     company: '',
     expertise: [] as string[],
     bio: '',
+    imageUrl: '',
     linkedinUrl: '',
     githubUrl: '',
     twitterUrl: '',
@@ -34,6 +36,47 @@ export default function ApplyMentorPage() {
     githubUrl: '',
     twitterUrl: '',
   });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB');
+      return;
+    }
+
+    setUploading(true);
+    const uploadFormData = new FormData();
+    uploadFormData.append('file', file);
+    uploadFormData.append('folder', 'velonx/mentors');
+
+    try {
+      const { getCSRFToken } = await import('@/lib/utils/csrf');
+      const csrfToken = await getCSRFToken();
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'x-csrf-token': csrfToken,
+        },
+        credentials: 'include',
+        body: uploadFormData,
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setFormData(prev => ({ ...prev, imageUrl: data.url }));
+        toast.success('Image uploaded successfully');
+      } else {
+        toast.error(data.error?.message || 'Failed to upload image');
+      }
+    } catch (error) {
+      toast.error('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleAddExpertise = () => {
     if (expertiseInput.trim() && formData.expertise.length < 10) {
@@ -123,6 +166,7 @@ export default function ApplyMentorPage() {
             company: formData.company,
             expertise: formData.expertise,
             bio: formData.bio,
+            imageUrl: formData.imageUrl || null,
             linkedinUrl: formData.linkedinUrl || null,
             githubUrl: formData.githubUrl || null,
             twitterUrl: formData.twitterUrl || null,
@@ -251,6 +295,58 @@ export default function ApplyMentorPage() {
             </CardHeader>
             <CardContent className="p-10">
               <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Profile Image Upload */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5 text-primary" />
+                    Profile Image
+                  </h3>
+
+                  <div className="flex items-center gap-6">
+                    <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center overflow-hidden border-4 border-border">
+                      {formData.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={formData.imageUrl}
+                          alt="Profile preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <ImageIcon className="w-12 h-12 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                        className="hidden"
+                        id="profile-image-upload"
+                      />
+                      <Label
+                        htmlFor="profile-image-upload"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-muted hover:bg-muted/80 rounded-xl cursor-pointer font-bold transition-colors"
+                      >
+                        {uploading ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-5 h-5" />
+                            Upload Profile Image
+                          </>
+                        )}
+                      </Label>
+                      <p className="text-xs text-muted-foreground mt-3">
+                        Optional. Max size: 5MB. Formats: JPG, PNG, WebP
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Personal Information */}
                 <div className="space-y-6">
                   <h3 className="text-lg font-bold text-foreground flex items-center gap-2">

@@ -41,7 +41,7 @@ export default function SessionHistory({ sessions, onCancel, onReview }: Session
 
   return (
     <div>
-      <h3 className="text-lg font-bold text-[#023047] mb-4">Past Sessions</h3>
+      <h3 className="text-lg font-bold text-foreground mb-4">Past Sessions</h3>
       <div className="space-y-4">
         {pastSessions.map(session => (
           <SessionCard

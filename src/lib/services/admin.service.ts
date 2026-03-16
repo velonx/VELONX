@@ -92,6 +92,43 @@ export class AdminService {
       throw new NotFoundError("User request");
     }
     
+    // Handle mentor application approval
+    if (request.type === 'MENTOR_APPLICATION' && request.reason) {
+      try {
+        // Parse mentor application data from reason field
+        const mentorData = JSON.parse(request.reason);
+        
+        // Create mentor record
+        await prisma.mentor.create({
+          data: {
+            name: mentorData.name || request.user.name || 'Unknown',
+            email: mentorData.email || request.user.email,
+            company: mentorData.company || 'Not specified',
+            expertise: mentorData.expertise || [],
+            bio: mentorData.bio || '',
+            imageUrl: mentorData.imageUrl || request.user.image,
+            linkedinUrl: mentorData.linkedinUrl || null,
+            githubUrl: mentorData.githubUrl || null,
+            twitterUrl: mentorData.twitterUrl || null,
+            rating: 0,
+            totalSessions: 0,
+            available: true,
+          },
+        });
+        
+        // Create success notification
+        await notificationService.createNotification({
+          userId: request.userId,
+          title: 'Mentor Application Approved',
+          description: 'Congratulations! Your mentor application has been approved. You can now start accepting mentorship sessions.',
+          type: 'SUCCESS',
+        });
+      } catch (error) {
+        console.error('Failed to create mentor record:', error);
+        throw new Error('Failed to process mentor application approval');
+      }
+    }
+    
     // Update request status to APPROVED
     const updatedRequest = await prisma.userRequest.update({
       where: { id: requestId },
@@ -112,10 +149,6 @@ export class AdminService {
         },
       },
     });
-    
-    // If this is an account approval request, activate the user account
-    // (In this implementation, users are already active by default)
-    // You could add additional logic here if needed
     
     return updatedRequest;
   }

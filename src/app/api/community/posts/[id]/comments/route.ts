@@ -153,13 +153,10 @@ export const GET = withErrorHandler(async (
 
   // Parse query parameters
   const searchParams = request.nextUrl.searchParams;
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
+  const limit = parseInt(searchParams.get("limit") || "20", 10);
+  const cursor = searchParams.get("cursor");
 
-  // Calculate skip for pagination
-  const skip = (page - 1) * pageSize;
-
-  // Get comments from database with pagination
+  // Get comments from database
   const { prisma } = await import("@/lib/prisma");
 
   // First check if post exists
@@ -181,52 +178,56 @@ export const GET = withErrorHandler(async (
     );
   }
 
-  const [comments, total] = await Promise.all([
-    prisma.postComment.findMany({
-      where: {
-        postId,
-        parentId: null // Only fetch top-level comments initially
-      },
-      skip,
-      take: pageSize,
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
+  // Build where clause
+  const whereClause: any = {
+    postId,
+    parentId: null,
+  };
+
+  // Add cursor condition if provided
+  if (cursor) {
+    whereClause.createdAt = { lt: new Date(cursor) };
+  }
+
+  const comments = await prisma.postComment.findMany({
+    where: whereClause,
+    take: limit + 1,
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
         },
-        replies: {
-          include: {
-            author: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
-              },
+      },
+      replies: {
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
             },
           },
-          orderBy: { createdAt: "asc" },
-        }
-      },
-      orderBy: [
-        { upvotes: "desc" }, // Sort by upvotes first (top voted)
-        { createdAt: "desc" }
-      ],
-    }),
-    prisma.postComment.count({ where: { postId, parentId: null } }),
-  ]);
+        },
+        orderBy: { createdAt: "asc" },
+      }
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const hasMore = comments.length > limit;
+  const resultComments = hasMore ? comments.slice(0, limit) : comments;
+  const nextCursor = hasMore ? resultComments[resultComments.length - 1].createdAt.toISOString() : null;
 
   return NextResponse.json(
     {
       success: true,
-      data: comments,
+      data: resultComments,
       pagination: {
-        page,
-        pageSize,
-        total,
-        totalPages: Math.ceil(total / pageSize),
+        cursor: nextCursor,
+        limit,
+        hasMore,
       },
     },
     { status: 200 }
