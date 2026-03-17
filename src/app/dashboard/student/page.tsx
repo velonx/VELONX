@@ -287,19 +287,21 @@ function StudentDashboardContent() {
             </div>
 
             {/* Left Sidebar */}
-            <aside className="hidden md:block md:w-80 bg-background border-r border-border flex flex-col p-8 md:fixed md:left-0 top-20 bottom-0 z-20">
-                <div className="mb-12">
-                    <div className="relative inline-block mb-4">
-                        <div className="w-20 h-20 rounded-full border-2 border-[#219EBC] p-1">
+            <aside className="hidden md:flex flex-col md:w-24 hover:md:w-80 bg-background border-r border-border p-6 md:fixed md:left-0 top-20 bottom-0 z-50 transition-all duration-300 group overflow-hidden">
+                <div className="mb-12 flex items-center gap-4">
+                    <div className="relative shrink-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={session.user?.image || "/avatars/default.png"} alt="User" className="w-full h-full rounded-full object-cover" />
                         </div>
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-background rounded-full flex items-center justify-center shadow-md">
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
                             <Clock className="w-3 h-3 text-[#219EBC]" />
                         </div>
                     </div>
-                    <h2 className="text-xl font-bold text-foreground mb-1">{session.user?.name}</h2>
-                    <p className="text-muted-foreground text-sm font-medium">{session.user?.email}</p>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity w-48 shrink-0">
+                        <h2 className="text-xl font-bold text-foreground mb-1 truncate">{session.user?.name}</h2>
+                        <p className="text-muted-foreground text-sm font-medium truncate">{session.user?.email}</p>
+                    </div>
                 </div>
 
                 <nav className="flex-1 space-y-2">
@@ -307,25 +309,28 @@ function StudentDashboardContent() {
                         <button
                             key={item.label}
                             onClick={() => setActiveTab(item.label)}
-                            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold ${activeTab === item.label
+                            className={`w-full flex items-center gap-4 px-3 py-4 rounded-2xl transition-all font-bold group-hover:px-6 ${activeTab === item.label
                                 ? "bg-[#219EBC]/10 text-[#219EBC]"
                                 : "text-muted-foreground hover:bg-muted hover:text-muted-foreground"
                                 }`}
+                            title={item.label}
                         >
-                            <item.icon className="w-5 h-5" />
-                            {item.label}
+                            <item.icon className="w-6 h-6 shrink-0" />
+                            <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                {item.label}
+                            </span>
                         </button>
                     ))}
                 </nav>
 
-                <div className="mt-auto relative">
+                <div className="mt-auto relative opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/dashboard-pattern.png" alt="" className="absolute bottom-0 left-0 w-full opacity-10" />
+                    <img src="/dashboard-pattern.png" alt="" className="absolute bottom-0 left-0 w-80 max-w-none opacity-10" />
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-80 md:mr-96 p-4 md:p-12 pb-24 md:pb-12">
+            <main className="flex-1 md:ml-24 md:mr-96 p-4 md:p-12 pb-24 md:pb-12 transition-all duration-300">
                 {/* Mobile Header - Visible only on mobile */}
                 <div className="md:hidden mb-6 flex items-center justify-between">
                     <div className="flex items-center gap-3">

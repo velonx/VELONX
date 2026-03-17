@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSession } from 'next-auth/react';
 import { ApiClientError } from '@/lib/api/client';
 import { getCSRFToken } from '@/lib/utils/csrf';
 import type { CommunityGroupData } from '@/lib/types/community.types';
@@ -103,6 +104,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
 
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const { status } = useSession();
 
   const isMountedRef = useRef(true);
 
@@ -111,7 +113,14 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
    */
   const fetchGroups = useCallback(async () => {
     if (!isMountedRef.current) return;
+    
+    // Do not attempt to fetch if explicitly unauthenticated
+    if (status === 'unauthenticated') {
+      setState(prev => ({ ...prev, isLoading: false, error: null }));
+      return;
+    }
 
+    // Only set loading if not already loading or if there's an error to clear
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
@@ -157,17 +166,23 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
   }, []);
 
   /**
-   * Fetch groups on mount
+   * Fetch groups on mount and when authentication status changes
    * Also handles isMountedRef lifecycle to support React 18 Strict Mode
    */
   useEffect(() => {
     isMountedRef.current = true;
-    fetchGroups();
+    
+    // Only fetch when authenticated
+    if (status === 'authenticated') {
+      fetchGroups();
+    } else if (status === 'unauthenticated') {
+      setState(prev => ({ ...prev, isLoading: false }));
+    }
 
     return () => {
       isMountedRef.current = false;
     };
-  }, [fetchGroups]);
+  }, [fetchGroups, status]);
 
   /**
    * Refetch function for manual refresh

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { ArrowRight, Quote, Star, Briefcase, Lightbulb, Users, Code, Eye, Smartphone, Palette } from "lucide-react";
@@ -53,7 +53,7 @@ export default function Home() {
                                 <div
                                     className="group relative rounded-[24px] overflow-hidden transition-all duration-500 hover:-translate-y-3"
                                     style={{
-                                        height: '520px',
+                                        height: '640px',
                                         border: '1px solid #925B3A30',
                                         boxShadow: '0 0 0 1px #925B3A10, 0 8px 32px #925B3A15',
                                     }}
@@ -86,10 +86,10 @@ export default function Home() {
 
                                     {/* Text pinned to bottom-center */}
                                     <div className="absolute bottom-0 left-0 w-full px-6 pb-6 text-center">
-                                        <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-white tracking-wide">
+                                        <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-foreground tracking-wide">
                                             Expert Mentors
                                         </h3>
-                                        <p className="text-xs sm:text-sm leading-relaxed mb-4" style={{ color: '#9CA0A5' }}>
+                                        <p className="text-xs sm:text-sm leading-relaxed mb-4 text-muted-foreground">
                                             Learn from industry professionals who've been there. Get personalized guidance and expertise.
                                         </p>
                                         <Link href="/mentors" className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2 rounded-full transition-all duration-300 hover:gap-3"
@@ -105,7 +105,7 @@ export default function Home() {
                                 <div
                                     className="group relative rounded-[24px] overflow-hidden transition-all duration-500 hover:-translate-y-3"
                                     style={{
-                                        height: '520px',
+                                        height: '640px',
                                         border: '1px solid #C47A4A30',
                                         boxShadow: '0 0 0 1px #C47A4A10, 0 8px 32px #C47A4A15',
                                     }}
@@ -136,10 +136,10 @@ export default function Home() {
                                     <div className="absolute bottom-0 left-0 w-full h-2/5" style={{ background: 'linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.7) 60%, transparent 100%)' }} />
 
                                     <div className="absolute bottom-0 left-0 w-full px-6 pb-6 text-center">
-                                        <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-white tracking-wide">
+                                        <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-foreground tracking-wide">
                                             Real Projects
                                         </h3>
-                                        <p className="text-xs sm:text-sm leading-relaxed mb-4" style={{ color: '#9CA0A5' }}>
+                                        <p className="text-xs sm:text-sm leading-relaxed mb-4 text-muted-foreground">
                                             Build your portfolio with hands-on projects that matter. Work on real-world challenges and create impact.
                                         </p>
                                         <Link href="/projects" className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2 rounded-full transition-all duration-300 hover:gap-3"
@@ -155,7 +155,7 @@ export default function Home() {
                                 <div
                                     className="group relative rounded-[24px] overflow-hidden transition-all duration-500 hover:-translate-y-3"
                                     style={{
-                                        height: '520px',
+                                        height: '640px',
                                         border: '1px solid #E8A87C30',
                                         boxShadow: '0 0 0 1px #E8A87C10, 0 8px 32px #E8A87C15',
                                     }}
@@ -186,10 +186,10 @@ export default function Home() {
                                     <div className="absolute bottom-0 left-0 w-full h-2/5" style={{ background: 'linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.7) 60%, transparent 100%)' }} />
 
                                     <div className="absolute bottom-0 left-0 w-full px-6 pb-6 text-center">
-                                        <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-white tracking-wide">
+                                        <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-foreground tracking-wide">
                                             Career Growth
                                         </h3>
-                                        <p className="text-xs sm:text-sm leading-relaxed mb-4" style={{ color: '#9CA0A5' }}>
+                                        <p className="text-xs sm:text-sm leading-relaxed mb-4 text-muted-foreground">
                                             Launch your dream career with confidence. Access exclusive opportunities and connections to top companies.
                                         </p>
                                         <Link href="/career" className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2 rounded-full transition-all duration-300 hover:gap-3"
@@ -206,8 +206,8 @@ export default function Home() {
             </ScrollReveal>
 
 
-            {/* Community Showcase Section - Parallax Gallery */}
-            <div className="w-full py-16 sm:py-20 md:py-24 lg:py-28 bg-gradient-to-b from-background via-[#1a1a2e] to-background overflow-hidden">
+            {/* Community Showcase Section - GSAP Gallery */}
+            <div className="w-full bg-gradient-to-b from-background via-[#1a1a2e] to-background">
                 <ParallaxGallery
                     title="Community Showcase"
                     description="Discover amazing projects built by our talented community members"
@@ -217,14 +217,12 @@ export default function Home() {
                         { name: "HealthTrack", src: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop" },
                         { name: "DesignHub", src: "https://images.unsplash.com/photo-1513519107127-1bed33748e4c?q=80&w=2070&auto=format&fit=crop" },
                         { name: "EcoTracker", src: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2070&auto=format&fit=crop" },
-                        { name: "DevConnect", src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=2070&auto=format&fit=crop" },
-                        { name: "StudyFlow", src: "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?q=80&w=2070&auto=format&fit=crop" },
                     ]}
                 />
             </div>
 
             {/* What People Say - Testimonials Carousel */}
-            <div className="relative w-full py-16 sm:py-20 md:py-24 lg:py-28 bg-background overflow-hidden">
+            <div className="relative w-full py-4 sm:py-6 md:py-8 lg:py-10 bg-background overflow-hidden">
                 {/* Subtle pattern overlay */}
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-5 pointer-events-none">
                     <div className="absolute inset-0" style={{
@@ -250,11 +248,11 @@ export default function Home() {
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent my-2 sm:my-4" />
 
             {/* CTA Section */}
             <ScrollReveal>
-                <section className="relative py-6 sm:py-10 md:py-12 lg:py-14 overflow-hidden bg-background">
+                <section className="relative pt-0 pb-6 sm:pt-2 sm:pb-10 md:pt-4 md:pb-12 lg:pt-6 lg:pb-14 overflow-hidden bg-background">
                     {/* Subtle pattern overlay */}
                     <div className="absolute inset-0 opacity-[0.03] dark:opacity-5">
                         <div className="absolute inset-0" style={{

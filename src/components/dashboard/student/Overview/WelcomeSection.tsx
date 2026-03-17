@@ -16,8 +16,8 @@ export default function WelcomeSection({ userName, searchQuery, onSearchChange }
   return (
     <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
       <div>
-        <h1 className="text-2xl md:text-3xl font-black text-foreground mb-2">Hello, {userName}</h1>
-        <p className="text-muted-foreground font-medium tracking-tight text-sm md:text-base">
+        <h1 className="text-xl md:text-2xl font-bold text-foreground mb-1">Hello, {userName}</h1>
+        <p className="text-muted-foreground font-medium tracking-tight text-xs md:text-sm">
           Today is {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
       </div>

@@ -1,9 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Twitter, Linkedin, Github, Facebook, Share2 } from "lucide-react";
 import SocialFlipButton from "@/components/ui/social-flip-button";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+    const pathname = usePathname();
+    const isAuth = pathname?.startsWith("/auth");
+
+    if (isAuth) {
+        return null; // Do not render footer on auth pages
+    }
+
     return (
         <footer className="relative border-t border-border py-20 bg-background">
             <div className="container mx-auto px-4">

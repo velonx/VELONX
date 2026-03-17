@@ -141,7 +141,14 @@ export function useCommunityPosts(
       const response = await fetch(`/api/community/posts?${params.toString()}`);
 
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData: any = {};
+        try {
+          errorData = await response.json();
+        } catch (e) {
+          // If response is not JSON (e.g., HTML auth redirect)
+          errorData = { error: { message: response.statusText } };
+        }
+        
         throw new ApiClientError(
           response.status,
           errorData.error?.code || 'FETCH_ERROR',
@@ -166,7 +173,11 @@ export function useCommunityPosts(
 
       cursorRef.current = nextCursor;
     } catch (err) {
-      console.error('[useCommunityPosts] Fetch error:', err);
+      const isAuthError = err instanceof ApiClientError && err.statusCode === 401;
+      
+      if (!isAuthError) {
+        console.error('[useCommunityPosts] Fetch error:', err);
+      }
 
       if (!isMountedRef.current) return;
 

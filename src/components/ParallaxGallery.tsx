@@ -1,7 +1,13 @@
 "use client";
 
-import React, { useRef, useEffect, useLayoutEffect, useCallback } from "react";
+import React, { useRef, useLayoutEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./ParallaxGallery.css";
+
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+}
 
 interface SlideData {
     name: string;
@@ -14,159 +20,87 @@ interface ParallaxGalleryProps {
     slides?: SlideData[];
 }
 
-function lerp(p1: number, p2: number, t: number): number {
-    return p1 + (p2 - p1) * t;
-}
-
-function clamp(min: number, max: number, value: number): number {
-    return Math.max(min, Math.min(max, value));
-}
-
 export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
     title,
     description,
     slides = [],
 }) => {
-    const wrapperRef = useRef<HTMLDivElement>(null);
+    const sectionRef = useRef<HTMLElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const imagesRef = useRef<HTMLImageElement[]>([]);
-    const rafRef = useRef<number | null>(null);
-    const renderRef = useRef<(() => void) | null>(null);
-    const scrollRef = useRef({ current: 0, target: 0, ease: 0.07 });
-    const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
-    const isHoveredRef = useRef(false);
-    const autoScrollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-    const getLimit = useCallback(() => {
-        if (!containerRef.current || !wrapperRef.current) return 0;
-        return containerRef.current.scrollWidth - wrapperRef.current.clientWidth;
-    }, []);
-
-    // Auto-scroll: advance by ~280px every 1500ms, loop back smoothly at end
-    const startAutoScroll = useCallback(() => {
-        if (autoScrollRef.current) clearInterval(autoScrollRef.current);
-        autoScrollRef.current = setInterval(() => {
-            if (isHoveredRef.current) return;
-            const limit = getLimit();
-            if (limit <= 0) return;
-            const next = scrollRef.current.target + 280;
-            scrollRef.current.target = next > limit ? 0 : next;
-        }, 1500);
-    }, [getLimit]);
-
-    const applyParallax = useCallback(() => {
-        if (!wrapperRef.current) return;
-        const vw = wrapperRef.current.clientWidth;
-        const viewportCenter = vw * 0.5;
-        imagesRef.current.forEach((img) => {
-            if (!img || !img.parentElement) return;
-            const rect = img.parentElement.getBoundingClientRect();
-            const elemCenter = rect.left + rect.width * 0.5;
-            const t = clamp(-1, 1, (elemCenter - viewportCenter) / viewportCenter);
-            img.style.transform = `translate3d(${-t * 10}%, 0, 0)`;
-        });
-    }, []);
-
-    const render = useCallback(() => {
-        const s = scrollRef.current;
-        s.target = clamp(0, getLimit(), s.target);
-        s.current = lerp(s.current, s.target, s.ease);
-        if (containerRef.current) {
-            containerRef.current.style.transform = `translateX(${-s.current}px)`;
-        }
-        applyParallax();
-        if (renderRef.current) {
-            rafRef.current = requestAnimationFrame(renderRef.current);
-        }
-    }, [applyParallax, getLimit]);
 
     useLayoutEffect(() => {
-        renderRef.current = render;
-    });
+        const ctx = gsap.context(() => {
+            if (!containerRef.current || !sectionRef.current) return;
 
-    useEffect(() => {
-        const wrapper = wrapperRef.current;
-        if (!wrapper) return;
+            const container = containerRef.current;
 
-        const onWheel = (e: WheelEvent) => {
-            scrollRef.current.target += e.deltaY;
-        };
-        const onMouseDown = (e: MouseEvent) => {
-            dragRef.current = { active: true, startX: e.clientX, startScroll: scrollRef.current.target };
-        };
-        const onMouseMove = (e: MouseEvent) => {
-            if (!dragRef.current.active) return;
-            scrollRef.current.target = dragRef.current.startScroll - (e.clientX - dragRef.current.startX);
-        };
-        const onMouseUp = () => { dragRef.current.active = false; };
-        const onTouchStart = (e: TouchEvent) => {
-            dragRef.current = { active: true, startX: e.touches[0].clientX, startScroll: scrollRef.current.target };
-        };
-        const onTouchMove = (e: TouchEvent) => {
-            if (!dragRef.current.active) return;
-            scrollRef.current.target = dragRef.current.startScroll - (e.touches[0].clientX - dragRef.current.startX);
-        };
-        const onTouchEnd = () => { dragRef.current.active = false; };
+            // Calculate total scroll distance needed
+            const totalWidth = container.scrollWidth;
+            const viewportWidth = window.innerWidth;
+            const moveDistance = totalWidth - viewportWidth;
 
-        const onMouseEnter = () => { isHoveredRef.current = true; };
-        const onMouseLeave = () => { isHoveredRef.current = false; };
+            gsap.to(container, {
+                x: -moveDistance,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top top",
+                    end: () => `+=${totalWidth}`,
+                    pin: true,
+                    scrub: 1, // Smooth scrub effect (1 second catchup)
+                    invalidateOnRefresh: true,
+                    anticipatePin: 1
+                }
+            });
 
-        wrapper.addEventListener("wheel", onWheel, { passive: true });
-        wrapper.addEventListener("mousedown", onMouseDown);
-        wrapper.addEventListener("mouseenter", onMouseEnter);
-        wrapper.addEventListener("mouseleave", onMouseLeave);
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
-        wrapper.addEventListener("touchstart", onTouchStart, { passive: true });
-        window.addEventListener("touchmove", onTouchMove, { passive: true });
-        window.addEventListener("touchend", onTouchEnd);
+        }, sectionRef);
 
-        rafRef.current = requestAnimationFrame(render);
-        startAutoScroll();
-
-        return () => {
-            wrapper.removeEventListener("wheel", onWheel);
-            wrapper.removeEventListener("mousedown", onMouseDown);
-            wrapper.removeEventListener("mouseenter", onMouseEnter);
-            wrapper.removeEventListener("mouseleave", onMouseLeave);
-            window.removeEventListener("mousemove", onMouseMove);
-            window.removeEventListener("mouseup", onMouseUp);
-            wrapper.removeEventListener("touchstart", onTouchStart);
-            window.removeEventListener("touchmove", onTouchMove);
-            window.removeEventListener("touchend", onTouchEnd);
-            if (rafRef.current) cancelAnimationFrame(rafRef.current);
-            if (autoScrollRef.current) clearInterval(autoScrollRef.current);
-        };
-    }, [render, startAutoScroll]);
+        return () => ctx.revert();
+    }, [slides]);
 
     return (
-        <section className="parallax-gallery-section">
-            {(title || description) && (
-                <div className="parallax-gallery-header">
-                    {title && <h2 style={{ fontWeight: 700 }}>{title}</h2>}
-                    {description && <p className="font-normal">{description}</p>}
-                    <p className="parallax-gallery-hint">Scroll or drag to explore →</p>
-                </div>
-            )}
+        <section ref={sectionRef} className="cinematic-gallery-section text-foreground relative h-[80vh] min-h-[500px] overflow-hidden flex flex-col justify-center py-12">
+            <div className="cinematic-gallery-container flex items-center h-min w-max px-4 md:px-12 gap-6 md:gap-10 will-change-transform" ref={containerRef}>
 
-            <div className="parallax-gallery__wrapper" ref={wrapperRef}>
-                <div className="parallax-gallery__container" ref={containerRef}>
-                    {slides.map((slide, i) => (
-                        <div key={`${slide.name}-${i}`} className="parallax-gallery__media">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                ref={(el) => { if (el) imagesRef.current[i] = el; }}
-                                src={slide.src}
-                                alt={slide.name}
-                                className="parallax-gallery__image"
-                                draggable={false}
-                            />
-                            <div className="parallax-gallery__label">
-                                <span>{slide.name}</span>
-                            </div>
-                        </div>
-                    ))}
+                {/* Intro Slide */}
+                <div className="cinematic-slide flex-shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] flex flex-col justify-center relative">
+                    <div className="max-w-2xl z-10 relative">
+                        <div className="w-16 h-1 bg-primary mb-6 rounded-full"></div>
+                        {title && <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none mb-4">{title}</h2>}
+                        {description && <p className="text-lg md:text-xl text-muted-foreground font-light leading-relaxed">{description}</p>}
+                    </div>
                 </div>
+
+                {/* Image Slides */}
+                {slides.map((slide, i) => (
+                    <div key={`${slide.name}-${i}`} className="cinematic-slide flex-shrink-0 aspect-[4/3] h-[55vh] min-h-[260px] max-h-[480px] rounded-xl relative overflow-hidden group bg-[#050505] shadow-2xl border border-white/10">
+
+                        {/* High-Contrast / Cinematic Filter Overlays */}
+                        <div className="absolute inset-0 bg-red-900/10 mix-blend-color-burn z-10 pointer-events-none transition-opacity duration-700 group-hover:opacity-0" />
+
+                        {/* Image */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={slide.src}
+                            alt={slide.name}
+                            className="absolute inset-0 w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-[2s] ease-out grayscale-[0.2] contrast-[1.1] brightness-90 group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100"
+                        />
+
+                        {/* Gradients for Text Legibility & Mood */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent z-10 w-1/2" />
+
+                        {/* Content */}
+                        <div className="absolute bottom-6 md:bottom-10 left-6 md:left-10 right-6 md:right-10 z-20 flex justify-between items-end">
+                            <h3 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase tracking-tighter text-white drop-shadow-2xl translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                                {slide.name}
+                            </h3>
+                            <span className="text-primary font-mono text-xl tracking-widest font-bold">
+                                {(i + 1).toString().padStart(2, '0')}
+                            </span>
+                        </div>
+                    </div>
+                ))}
             </div>
         </section>
     );

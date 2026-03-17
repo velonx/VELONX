@@ -73,13 +73,15 @@ export const TelescopeHero = () => {
                 ref={contentRef}
                 className="relative z-10 w-full max-w-6xl mx-auto px-4 text-center opacity-0 translate-y-20 pt-24"
             >
-                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-[1.1] text-foreground mb-8" style={{ fontFamily: "var(--font-girassol), serif", fontWeight: 400 }}>Empowering the Gen</h1>
+                <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight leading-[1.1] text-black dark:text-foreground mb-4 drop-shadow-md" style={{ fontFamily: "var(--font-girassol), serif", fontWeight: 400 }}>Empowering the Gen</h1>
 
-                <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-12 font-normal">
-                    Join a thriving community where students turn potential into impact Build projects, learn from mentors, and launch your career.
-                </p>
+                <div className="max-w-3xl mx-auto p-4 sm:p-6 rounded-2xl bg-white/40 dark:bg-black/50 backdrop-blur-md border border-white/30 dark:border-white/10 shadow-lg mb-12">
+                    <p className="text-gray-900 dark:text-gray-200 text-lg sm:text-xl md:text-2xl leading-relaxed font-medium drop-shadow-sm">
+                        Join a thriving community where students turn potential into impact Build projects, learn from mentors, and launch your career.
+                    </p>
+                </div>
 
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center ">
                     <Link href="/auth/signup">
                         <button
                             className="touch-target bg-foreground text-background hover:opacity-90 font-bold rounded-full px-10 py-5 text-lg flex items-center justify-center gap-2 transition-all shadow-xl hover:scale-105 active:scale-95 backdrop-blur-sm border border-border/50"
