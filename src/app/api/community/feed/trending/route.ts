@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { withErrorHandler } from "@/lib/utils/errors";
 import { feedService } from "@/lib/services/feed.service";
+import { cacheService, CacheKeys, CacheTTL } from "@/lib/services/cache.service";
 import { z } from "zod";
 
 /**
@@ -12,30 +13,8 @@ const trendingQuerySchema = z.object({
 });
 
 /**
- * @swagger
- * /api/community/feed/trending:
- *   get:
- *     summary: Get trending posts
- *     description: Retrieve trending posts based on engagement (reactions and comments)
- *     tags:
- *       - Community - Feed
- *     security:
- *       - sessionAuth: []
- *     parameters:
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 10
- *           maximum: 50
- *         description: Number of trending posts to return
- *     responses:
- *       200:
- *         description: Trending posts retrieved successfully
- *       400:
- *         description: Bad request - Invalid query parameters
- *       401:
- *         description: Unauthorized - Authentication required
+ * GET /api/community/feed/trending
+ * Returns trending posts (cached for 5 minutes)
  */
 export const GET = withErrorHandler(async (request: NextRequest) => {
   // Require authentication
@@ -46,20 +25,28 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   // Parse and validate query parameters
   const searchParams = request.nextUrl.searchParams;
-  const queryParams = {
+  const validatedQuery = trendingQuerySchema.parse({
     limit: searchParams.get("limit") || undefined,
+  });
+  const limit = validatedQuery.limit || 10;
+
+  // Try cache first — trending posts change slowly, 5 min TTL is fine
+  const cacheKey = CacheKeys.feed.trending(limit);
+  const cached = await cacheService.get(cacheKey);
+  if (cached) {
+    return NextResponse.json(cached, { status: 200 });
+  }
+
+  // Cache miss — fetch from database
+  const trendingPosts = await feedService.getTrendingPosts(limit);
+
+  const response = {
+    success: true,
+    data: trendingPosts,
   };
 
-  const validatedQuery = trendingQuerySchema.parse(queryParams);
+  // Store in cache for 5 minutes
+  await cacheService.set(cacheKey, response, CacheTTL.FEED_TRENDING);
 
-  // Get trending posts via service
-  const trendingPosts = await feedService.getTrendingPosts(validatedQuery.limit);
-
-  return NextResponse.json(
-    {
-      success: true,
-      data: trendingPosts,
-    },
-    { status: 200 }
-  );
+  return NextResponse.json(response, { status: 200 });
 });

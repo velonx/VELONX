@@ -6,17 +6,31 @@ import { Loader2Icon, MessageCircleIcon, SendIcon } from 'lucide-react';
 import { usePostComments } from '@/lib/hooks/usePostComments';
 import { CommentItem } from './CommentItem';
 
-/**
- * Comment Section Props Interface
- */
 export interface CommentSectionProps {
   postId: string;
   limit?: number;
 }
 
+/** Skeleton placeholder shown while comments are loading */
+function CommentSkeleton() {
+  return (
+    <div className="space-y-4 py-2 animate-pulse">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex gap-3">
+          <div className="size-8 rounded-full bg-muted/60 shrink-0" />
+          <div className="flex-1 space-y-2 pt-1">
+            <div className="h-3 w-24 rounded-full bg-muted/60" />
+            <div className="h-3 w-full rounded-full bg-muted/40" />
+            <div className="h-3 w-3/4 rounded-full bg-muted/40" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /**
  * CommentSection Component
- * 
  * Displays comments with threaded replies. Input bar at bottom (Reddit-style).
  */
 export function CommentSection({ postId, limit = 10 }: CommentSectionProps) {
@@ -44,14 +58,10 @@ export function CommentSection({ postId, limit = 10 }: CommentSectionProps) {
     }
   };
 
-  const handleLoadMore = async () => {
-    await loadMore();
-  };
-
   return (
     <div className="flex flex-col pt-4">
-      {/* Comment count header */}
-      {comments.length > 0 && (
+      {/* Comment count header — shown once loaded */}
+      {!isLoading && comments.length > 0 && (
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm font-semibold text-foreground">
             {comments.length} Comment{comments.length !== 1 ? 's' : ''}
@@ -64,9 +74,7 @@ export function CommentSection({ postId, limit = 10 }: CommentSectionProps) {
 
       {/* Comments List */}
       {isLoading && comments.length === 0 ? (
-        <div className="flex justify-center py-8">
-          <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
-        </div>
+        <CommentSkeleton />
       ) : error ? (
         <div className="text-center py-6 text-sm text-muted-foreground">
           Failed to load comments. Please try again.
@@ -93,7 +101,7 @@ export function CommentSection({ postId, limit = 10 }: CommentSectionProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleLoadMore}
+                onClick={loadMore}
                 className="text-primary hover:text-primary/80 font-medium text-xs"
                 disabled={isLoading}
               >
@@ -111,7 +119,7 @@ export function CommentSection({ postId, limit = 10 }: CommentSectionProps) {
         </div>
       )}
 
-      {/* Comment Input — at the BOTTOM */}
+      {/* Comment Input — always visible at the bottom */}
       <form onSubmit={handleSubmit} className="mt-4 pt-4 border-t border-border/30">
         <div className="flex items-start gap-3">
           <textarea
@@ -133,9 +141,7 @@ export function CommentSection({ postId, limit = 10 }: CommentSectionProps) {
             {isCreating ? (
               <Loader2Icon className="animate-spin size-4" />
             ) : (
-              <>
-                Send <SendIcon className="size-3.5" />
-              </>
+              <>Send <SendIcon className="size-3.5" /></>
             )}
           </Button>
         </div>

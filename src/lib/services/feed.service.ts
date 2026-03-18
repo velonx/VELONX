@@ -30,6 +30,9 @@ export interface FeedItemData {
     isPinned: boolean;
     reactionCount: number;
     commentCount: number;
+    upvotes: number;
+    downvotes: number;
+    score: number;
     createdAt: Date;
     updatedAt: Date;
   };
@@ -82,32 +85,21 @@ export class FeedService {
     const limit = query.limit && query.limit > 0 ? Math.min(query.limit, 100) : 20;
     const filter = query.filter || "ALL";
 
-    // Single round-trip: fetch all relationship data needed for feed filtering
-    const userData = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        // Users this person has blocked (@relation "Blocking")
-        blocking: { select: { blockedId: true } },
-        // Users who have blocked this person (@relation "BlockedBy")
-        blockedBy: { select: { blockerId: true } },
-        // Users this person follows (@relation "Following")
-        following: { select: { followingId: true } },
-        // Groups this person belongs to (@relation "GroupMemberships")
-        groupMemberships: { select: { groupId: true } },
-      },
-    });
-
-    if (!userData) {
-      throw new NotFoundError("User");
-    }
+    // Run all 4 relationship lookups in parallel on indexed junction tables
+    // (much faster than a single User.findUnique loading 4 nested relation arrays)
+    const [blockingRows, blockedByRows, followingRows, groupRows] = await Promise.all([
+      prisma.userBlock.findMany({ where: { blockerId: userId }, select: { blockedId: true } }),
+      prisma.userBlock.findMany({ where: { blockedId: userId }, select: { blockerId: true } }),
+      prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } }),
+      prisma.groupMember.findMany({ where: { userId }, select: { groupId: true } }),
+    ]);
 
     const blockedUserIds = [
-      ...userData.blocking.map((b) => b.blockedId),
-      ...userData.blockedBy.map((b) => b.blockerId),
+      ...blockingRows.map((b) => b.blockedId),
+      ...blockedByRows.map((b) => b.blockerId),
     ];
-    const followingIds = userData.following.map((f) => f.followingId);
-    const groupIds = userData.groupMemberships.map((g) => g.groupId);
+    const followingIds = followingRows.map((f) => f.followingId);
+    const groupIds = groupRows.map((g) => g.groupId);
 
     // Build the where clause based on filter
     let whereClause: any = {
@@ -157,6 +149,8 @@ export class FeedService {
         linkUrls: true,
         isEdited: true,
         isPinned: true,
+        upvotes: true,
+        downvotes: true,
         createdAt: true,
         updatedAt: true,
         author: { select: { id: true, name: true, image: true } },
@@ -271,6 +265,8 @@ export class FeedService {
         linkUrls: true,
         isEdited: true,
         isPinned: true,
+        upvotes: true,
+        downvotes: true,
         createdAt: true,
         updatedAt: true,
         author: {
@@ -333,6 +329,8 @@ export class FeedService {
         linkUrls: true,
         isEdited: true,
         isPinned: true,
+        upvotes: true,
+        downvotes: true,
         createdAt: true,
         updatedAt: true,
         author: {
@@ -545,6 +543,8 @@ export class FeedService {
    * Format post data as feed item
    */
   private formatFeedItem(post: any): FeedItemData {
+    const upvotes = post.upvotes || 0;
+    const downvotes = post.downvotes || 0;
     return {
       type: "POST",
       post: {
@@ -562,6 +562,9 @@ export class FeedService {
         isPinned: post.isPinned,
         reactionCount: post._count?.reactions || 0,
         commentCount: post._count?.comments || 0,
+        upvotes,
+        downvotes,
+        score: upvotes - downvotes,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
       },

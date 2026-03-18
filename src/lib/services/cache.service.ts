@@ -56,27 +56,27 @@ export class CacheService {
       const value = await this.client!.get<T>(key)
       const duration = Date.now() - startTime
 
-      // Track cache operation
-      await performanceMonitor.trackCacheOperation({
+      // Track cache operation — fire-and-forget so it never blocks the response
+      performanceMonitor.trackCacheOperation({
         operation: 'get',
         key,
         hit: value !== null,
         duration,
         timestamp: startTime,
-      })
+      }).catch(() => {})
 
       return value
     } catch (error) {
       const duration = Date.now() - startTime
 
-      // Track failed operation
-      await performanceMonitor.trackCacheOperation({
+      // Track failed operation — fire-and-forget
+      performanceMonitor.trackCacheOperation({
         operation: 'get',
         key,
         hit: false,
         duration,
         timestamp: startTime,
-      })
+      }).catch(() => {})
 
       console.error(`[Cache] Error getting key ${key}:`, error)
       return null
@@ -96,25 +96,25 @@ export class CacheService {
       await this.client!.set(key, value, { ex: expirationTime })
       const duration = Date.now() - startTime
 
-      // Track cache operation
-      await performanceMonitor.trackCacheOperation({
+      // Track cache operation — fire-and-forget
+      performanceMonitor.trackCacheOperation({
         operation: 'set',
         key,
         hit: true,
         duration,
         timestamp: startTime,
-      })
+      }).catch(() => {})
     } catch (error) {
       const duration = Date.now() - startTime
 
-      // Track failed operation
-      await performanceMonitor.trackCacheOperation({
+      // Track failed operation — fire-and-forget
+      performanceMonitor.trackCacheOperation({
         operation: 'set',
         key,
         hit: false,
         duration,
         timestamp: startTime,
-      })
+      }).catch(() => {})
 
       console.error(`[Cache] Error setting key ${key}:`, error)
       throw error
@@ -138,25 +138,25 @@ export class CacheService {
 
       const duration = Date.now() - startTime
 
-      // Track cache operation
-      await performanceMonitor.trackCacheOperation({
+      // Track cache operation — fire-and-forget
+      performanceMonitor.trackCacheOperation({
         operation: 'invalidate',
         key: pattern,
         hit: true,
         duration,
         timestamp: startTime,
-      })
+      }).catch(() => {})
     } catch (error) {
       const duration = Date.now() - startTime
 
-      // Track failed operation
-      await performanceMonitor.trackCacheOperation({
+      // Track failed operation — fire-and-forget
+      performanceMonitor.trackCacheOperation({
         operation: 'invalidate',
         key: pattern,
         hit: false,
         duration,
         timestamp: startTime,
-      })
+      }).catch(() => {})
 
       console.error(`[Cache] Error invalidating pattern ${pattern}:`, error)
       throw error
@@ -204,25 +204,25 @@ export class CacheService {
       await this.client!.del(key)
       const duration = Date.now() - startTime
 
-      // Track cache operation
-      await performanceMonitor.trackCacheOperation({
+      // Track cache operation — fire-and-forget
+      performanceMonitor.trackCacheOperation({
         operation: 'delete',
         key,
         hit: true,
         duration,
         timestamp: startTime,
-      })
+      }).catch(() => {})
     } catch (error) {
       const duration = Date.now() - startTime
 
-      // Track failed operation
-      await performanceMonitor.trackCacheOperation({
+      // Track failed operation — fire-and-forget
+      performanceMonitor.trackCacheOperation({
         operation: 'delete',
         key,
         hit: false,
         duration,
         timestamp: startTime,
-      })
+      }).catch(() => {})
 
       console.error(`[Cache] Error deleting key ${key}:`, error)
       throw error

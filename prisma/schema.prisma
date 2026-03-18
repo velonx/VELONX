@@ -1056,6 +1056,7 @@ model PostComment {
   parent  PostComment?  @relation("ThreadedComments", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   replies PostComment[] @relation("ThreadedComments")
 
+  @@index([postId, parentId, createdAt])
   @@index([postId, createdAt])
   @@index([authorId])
   @@map("post_comments")

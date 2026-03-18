@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { withErrorHandler } from "@/lib/utils/errors";
-import { postService } from "@/lib/services/post.service";
+import { cacheService } from "@/lib/services/cache.service";
 import { z } from "zod";
 
 /**
@@ -12,45 +12,18 @@ const createCommentSchema = z.object({
   parentId: z.string().optional(),
 });
 
+/** Cache key for a post's comments page */
+const commentsCacheKey = (postId: string, limit: number, cursor: string | null) =>
+  `comments:${postId}:${limit}:${cursor ?? "initial"}`;
+
+/** Invalidate all cached comment pages for a post */
+async function invalidateCommentsCache(postId: string) {
+  cacheService.invalidate(`comments:${postId}:*`).catch(() => {});
+}
+
 /**
- * @swagger
- * /api/community/posts/{id}/comments:
- *   post:
- *     summary: Comment on a post
- *     description: Add a comment to a community post
- *     tags:
- *       - Community - Posts
- *     security:
- *       - sessionAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Post ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - content
- *             properties:
- *               content:
- *                 type: string
- *                 description: Comment content
- *                 example: "Great post! Thanks for sharing."
- *     responses:
- *       201:
- *         description: Comment created successfully
- *       400:
- *         description: Bad request - Invalid input
- *       401:
- *         description: Unauthorized - Authentication required
- *       404:
- *         description: Post not found
+ * POST /api/community/posts/[id]/comments
+ * Create a new comment on a post
  */
 export const POST = withErrorHandler(async (
   request: NextRequest,
@@ -71,7 +44,6 @@ export const POST = withErrorHandler(async (
   const body = await request.json();
   const validatedData = createCommentSchema.parse(body);
 
-  // Create comment via service or prisma directly since postService might not have parentId
   const { prisma } = await import("@/lib/prisma");
   const comment = await prisma.postComment.create({
     data: {
@@ -90,7 +62,9 @@ export const POST = withErrorHandler(async (
       },
     },
   });
-  // Comment count is derived from _count.comments aggregation, no manual update needed
+
+  // Invalidate cached comments for this post so next GET reflects new comment
+  await invalidateCommentsCache(postId);
 
   return NextResponse.json(
     {
@@ -103,41 +77,8 @@ export const POST = withErrorHandler(async (
 });
 
 /**
- * @swagger
- * /api/community/posts/{id}/comments:
- *   get:
- *     summary: Get post comments
- *     description: Retrieve all comments for a community post with pagination
- *     tags:
- *       - Community - Posts
- *     security:
- *       - sessionAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Post ID
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *         description: Page number for pagination
- *       - in: query
- *         name: pageSize
- *         schema:
- *           type: integer
- *           default: 20
- *         description: Number of items per page
- *     responses:
- *       200:
- *         description: Comments retrieved successfully
- *       401:
- *         description: Unauthorized - Authentication required
- *       404:
- *         description: Post not found
+ * GET /api/community/posts/[id]/comments
+ * Get comments for a post with cursor-based pagination (cached 30 seconds)
  */
 export const GET = withErrorHandler(async (
   request: NextRequest,
@@ -156,35 +97,22 @@ export const GET = withErrorHandler(async (
   const limit = parseInt(searchParams.get("limit") || "20", 10);
   const cursor = searchParams.get("cursor");
 
-  // Get comments from database
-  const { prisma } = await import("@/lib/prisma");
-
-  // First check if post exists
-  const post = await prisma.communityPost.findUnique({
-    where: { id: postId },
-    select: { id: true },
-  });
-
-  if (!post) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "NOT_FOUND",
-          message: "Post not found",
-        },
-      },
-      { status: 404 }
-    );
+  // Try cache first (30-second TTL — fast enough to feel live, avoids DB on every open)
+  const cacheKey = commentsCacheKey(postId, limit, cursor);
+  const cached = await cacheService.get(cacheKey);
+  if (cached) {
+    return NextResponse.json(cached, { status: 200 });
   }
 
-  // Build where clause
+  // Cache miss — query DB
+  const { prisma } = await import("@/lib/prisma");
+
+  // Build where clause (parentId: null fetches only top-level comments)
   const whereClause: any = {
     postId,
     parentId: null,
   };
 
-  // Add cursor condition if provided
   if (cursor) {
     whereClause.createdAt = { lt: new Date(cursor) };
   }
@@ -194,24 +122,16 @@ export const GET = withErrorHandler(async (
     take: limit + 1,
     include: {
       author: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
-        },
+        select: { id: true, name: true, image: true },
       },
       replies: {
         include: {
           author: {
-            select: {
-              id: true,
-              name: true,
-              image: true,
-            },
+            select: { id: true, name: true, image: true },
           },
         },
         orderBy: { createdAt: "asc" },
-      }
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -220,16 +140,18 @@ export const GET = withErrorHandler(async (
   const resultComments = hasMore ? comments.slice(0, limit) : comments;
   const nextCursor = hasMore ? resultComments[resultComments.length - 1].createdAt.toISOString() : null;
 
-  return NextResponse.json(
-    {
-      success: true,
-      data: resultComments,
-      pagination: {
-        cursor: nextCursor,
-        limit,
-        hasMore,
-      },
+  const response = {
+    success: true,
+    data: resultComments,
+    pagination: {
+      cursor: nextCursor,
+      limit,
+      hasMore,
     },
-    { status: 200 }
-  );
+  };
+
+  // Cache for 30 seconds — fire-and-forget so we don't block the response
+  cacheService.set(cacheKey, response, 30).catch(() => {});
+
+  return NextResponse.json(response, { status: 200 });
 });

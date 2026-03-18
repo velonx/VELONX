@@ -103,14 +103,20 @@ export function usePostComments(
 
   const [isCreating, setIsCreating] = useState(false);
 
+  // isMountedRef is only used by createComment (not the main fetch effect)
   const isMountedRef = useRef(true);
   const cursorRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
 
   /**
    * Fetch comments from API
    */
-  const fetchComments = useCallback(async (cursor?: string | null) => {
-    if (!postId || !isMountedRef.current) return;
+  const fetchComments = useCallback(async (cursor?: string | null, signal?: AbortSignal) => {
+    if (!postId) return;
 
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
@@ -119,7 +125,12 @@ export function usePostComments(
       params.append('limit', limit.toString());
       if (cursor) params.append('cursor', cursor);
 
-      const response = await fetch(`/api/community/posts/${postId}/comments?${params.toString()}`);
+      const response = await fetch(`/api/community/posts/${postId}/comments?${params.toString()}`, {
+        credentials: 'include',
+        signal,
+      });
+
+      if (signal?.aborted) return;
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -132,7 +143,7 @@ export function usePostComments(
 
       const data = await response.json();
 
-      if (!isMountedRef.current) return;
+      if (signal?.aborted) return;
 
       const newComments = data.data || [];
       const nextCursor = data.pagination?.cursor || null;
@@ -147,38 +158,35 @@ export function usePostComments(
 
       cursorRef.current = nextCursor;
     } catch (err) {
+      // Ignore abort errors — they're intentional cleanup
+      if (err instanceof Error && err.name === 'AbortError') return;
+
       console.error('[usePostComments] Fetch error:', err);
-
-      if (!isMountedRef.current) return;
-
-      const error = err instanceof ApiClientError
-        ? err
-        : new ApiClientError(500, 'NETWORK_ERROR', getErrorMessage(err));
 
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error,
+        error: err instanceof ApiClientError
+          ? err
+          : new ApiClientError(500, 'NETWORK_ERROR', getErrorMessage(err)),
       }));
     }
   }, [postId, limit]);
 
   /**
-   * Fetch comments on mount and when postId changes
+   * Fetch comments on mount and when postId changes.
+   * Uses AbortController so cleanup correctly cancels in-flight requests
+   * (works correctly in React Strict Mode double-invoke).
    */
   useEffect(() => {
+    if (!postId) return;
+    const controller = new AbortController();
     cursorRef.current = null;
-    fetchComments();
-  }, [fetchComments]);
+    fetchComments(null, controller.signal);
+    return () => controller.abort();
+  }, [postId, limit, fetchComments]);
 
-  /**
-   * Cleanup on unmount
-   */
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+
 
   /**
    * Refetch function for manual refresh

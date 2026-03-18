@@ -67,20 +67,30 @@ export function PostCard({
       toast.error('You must be signed in to vote');
       return;
     }
+    // Optimistic update
     setLocalScore(prev => action === 'upvote' ? prev + 1 : prev - 1);
     try {
       const { getCSRFToken } = await import('@/lib/utils/csrf');
       const csrfToken = await getCSRFToken();
       const res = await fetch(`/api/community/posts/${post.id}/vote`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
-        body: JSON.stringify({ action })
+        body: JSON.stringify({ action }),
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || 'Failed to vote');
-      if (data.data?.score !== undefined) setLocalScore(data.data.score);
+
+      if (!res.ok) throw new Error(data.error?.message || 'Failed to vote');
+
+      // Server returns the real score after voting — sync local state
+      if (data.data?.score !== undefined) {
+        setLocalScore(data.data.score);
+      }
+      // If already voted in same direction, server returns success=true with a message but
+      // no score change needed — just keep the optimistic update as-is
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.message || 'Failed to vote');
+      // Revert optimistic update on real errors
       setLocalScore(prev => action === 'upvote' ? prev - 1 : prev + 1);
     }
   };

@@ -28,82 +28,85 @@ export const POST = withErrorHandler(async (
 
     const { prisma } = await import("@/lib/prisma");
 
-    // Run the vote action transaction
-    const result = await prisma.$transaction(async (tx) => {
+    // Run the vote action transaction — always returns the final post score
+    const post = await prisma.$transaction(async (tx) => {
         // Check for existing vote reaction
         const existingVote = await tx.postReaction.findUnique({
-            where: {
-                postId_userId: {
-                    postId,
-                    userId,
-                }
-            }
+            where: { postId_userId: { postId, userId } },
         });
 
         let incrementUp = 0;
         let incrementDown = 0;
 
-        let currentAction = 'none';
-        if (existingVote) {
-            if (existingVote.type === 'LIKE') currentAction = 'upvote';
-            if (existingVote.type === 'CELEBRATE') currentAction = 'downvote';
-        }
+        const currentAction = existingVote
+            ? existingVote.type === "LIKE" ? "upvote" : "downvote"
+            : "none";
 
-        if (action === 'upvote') {
-            if (currentAction === 'upvote') return { message: 'Already upvoted' };
-            if (currentAction === 'downvote') {
-                incrementDown = -1;
+        if (action === "upvote") {
+            if (currentAction !== "upvote") {
+                // Switch from downvote → upvote, or new upvote
                 incrementUp = 1;
-                await tx.postReaction.update({ where: { id: existingVote!.id }, data: { type: 'LIKE' } });
-            } else {
-                incrementUp = 1;
+                if (currentAction === "downvote") incrementDown = -1;
+
                 if (existingVote) {
-                    await tx.postReaction.update({ where: { id: existingVote.id }, data: { type: 'LIKE' } });
+                    await tx.postReaction.update({ where: { id: existingVote.id }, data: { type: "LIKE" } });
                 } else {
-                    await tx.postReaction.create({ data: { postId, userId, type: 'LIKE' } });
+                    await tx.postReaction.create({ data: { postId, userId, type: "LIKE" } });
                 }
             }
-        } else if (action === 'downvote') {
-            if (currentAction === 'downvote') return { message: 'Already downvoted' };
-            if (currentAction === 'upvote') {
-                incrementUp = -1;
+            // If already upvoted, no change — fall through, no increments
+        } else if (action === "downvote") {
+            if (currentAction !== "downvote") {
+                // Switch from upvote → downvote, or new downvote
                 incrementDown = 1;
-                await tx.postReaction.update({ where: { id: existingVote!.id }, data: { type: 'CELEBRATE' } });
-            } else {
-                incrementDown = 1;
+                if (currentAction === "upvote") incrementUp = -1;
+
                 if (existingVote) {
-                    await tx.postReaction.update({ where: { id: existingVote.id }, data: { type: 'CELEBRATE' } });
+                    await tx.postReaction.update({ where: { id: existingVote.id }, data: { type: "CELEBRATE" } });
                 } else {
-                    await tx.postReaction.create({ data: { postId, userId, type: 'CELEBRATE' } });
+                    await tx.postReaction.create({ data: { postId, userId, type: "CELEBRATE" } });
                 }
             }
-        } else if (action === 'remove') {
-            if (currentAction === 'upvote') incrementUp = -1;
-            if (currentAction === 'downvote') incrementDown = -1;
+            // If already downvoted, no change — fall through
+        } else if (action === "remove") {
+            if (currentAction === "upvote") incrementUp = -1;
+            if (currentAction === "downvote") incrementDown = -1;
             if (existingVote) {
                 await tx.postReaction.delete({ where: { id: existingVote.id } });
             }
         }
 
-        // Update post counts
+        // Always update post counts if something changed
         if (incrementUp !== 0 || incrementDown !== 0) {
             await tx.communityPost.update({
                 where: { id: postId },
                 data: {
                     upvotes: { increment: incrementUp },
-                    downvotes: { increment: incrementDown }
-                }
+                    downvotes: { increment: incrementDown },
+                },
             });
         }
 
-        return await tx.communityPost.findUnique({ where: { id: postId } });
+        // Always return the authoritative score
+        return tx.communityPost.findUnique({
+            where: { id: postId },
+            select: { id: true, upvotes: true, downvotes: true },
+        });
     });
+
+    const upvotes = post?.upvotes ?? 0;
+    const downvotes = post?.downvotes ?? 0;
 
     return NextResponse.json(
         {
             success: true,
-            data: result,
-            message: "Vote toggled successfully",
+            data: {
+                id: post?.id,
+                upvotes,
+                downvotes,
+                score: upvotes - downvotes,
+            },
+            message: "Vote processed successfully",
         },
         { status: 200 }
     );
