@@ -18,6 +18,13 @@ import { describe, it, expect, vi } from 'vitest'
 import { POST as signupHandler } from '@/app/api/auth/signup/route'
 import { createMockNextRequest } from '../utils/api-test-helpers'
 
+// Mock EmailService to prevent sending real emails during tests
+vi.mock('@/lib/services/email.service', () => ({
+  EmailService: {
+    sendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),
+  },
+}))
+
 // Mock Prisma to prevent real MongoDB connections
 vi.mock('@/lib/prisma', () => ({
   prisma: {
@@ -41,6 +48,11 @@ vi.mock('@/lib/prisma', () => ({
     },
     xpTransaction: {
       create: vi.fn().mockResolvedValue({}),
+    },
+    verificationToken: {
+      create: vi.fn().mockResolvedValue({}),
+      delete: vi.fn().mockResolvedValue({}),
+      findUnique: vi.fn().mockResolvedValue(null),
     },
   },
 }))

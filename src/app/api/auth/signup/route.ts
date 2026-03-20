@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { handleError } from "@/lib/utils/errors";
 import { generateReferralCode, validateReferralCode, createReferralRelationship } from "@/lib/services/referral.service";
+import crypto from "crypto";
+import { EmailService } from "@/lib/services/email.service";
 
 // Signup validation schema
 const signupSchema = z.object({
@@ -85,6 +87,24 @@ export async function POST(request: NextRequest) {
         console.error('Failed to create referral relationship:', error);
       }
     }
+
+    // Generate verification token
+    const token = crypto.randomBytes(32).toString("hex");
+    await prisma.verificationToken.create({
+      data: {
+        identifier: user.email,
+        token,
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      },
+    });
+
+    // Send verification email
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const verificationUrl = `${appUrl}/auth/verify?token=${token}&email=${encodeURIComponent(user.email)}`;
+    await EmailService.sendVerificationEmail(
+      { email: user.email, name: user.name },
+      verificationUrl
+    ).catch(e => console.error("Failed to send verification email:", e));
 
     return NextResponse.json(
       {

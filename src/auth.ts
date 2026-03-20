@@ -101,6 +101,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         image: true,
                         password: true,
                         role: true,
+                        emailVerified: true,
                         xp: true,
                         level: true,
                         currentStreak: true,
@@ -129,6 +130,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     // Fire-and-forget: don't block login response
                     BruteForceProtection.recordFailedAttempt(identifier).catch(() => { });
                     return null;
+                }
+
+                // Check for email verification
+                if (!user.emailVerified) {
+                    console.log("❌ Email not verified");
+                    // Do not block brute force as missing verification isn't a malicious attack
+                    throw new Error("Please verify your email address before logging in.");
                 }
 
                 // Verify password

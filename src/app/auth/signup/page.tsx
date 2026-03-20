@@ -28,6 +28,7 @@ function SignupPage() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [verificationSent, setVerificationSent] = useState(false);
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -97,14 +98,7 @@ function SignupPage() {
             if (referralCode.trim()) signupData.referralCode = referralCode.trim();
 
             await authApi.signup(signupData);
-
-            const result = await signIn("credentials", { email, password, redirect: false });
-            if (result?.error) {
-                setError("Account created but login failed. Please try logging in manually.");
-            } else {
-                await new Promise(resolve => setTimeout(resolve, 500));
-                router.push("/dashboard/student");
-            }
+            setVerificationSent(true);
         } catch (err: any) {
             console.error("Signup error:", err);
             if (err.code === "USER_EXISTS") setError("An account with this email already exists");
@@ -150,7 +144,26 @@ function SignupPage() {
                             </p>
                         </div>
 
-                        <form onSubmit={handleSignup} className="space-y-3">
+                        {verificationSent ? (
+                            <div className="text-center py-8 transition-all animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Mail className="w-8 h-8" />
+                                </div>
+                                <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Check your email</h2>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                                    We've sent a verification link to <span className="font-semibold text-slate-700 dark:text-slate-300">{email}</span>. Please click the link to verify your account.
+                                </p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-6">
+                                    Once verified, you can {" "}
+                                    <Link href="/auth/login" className="text-[#219EBC] hover:underline font-semibold transition-colors">
+                                        sign in
+                                    </Link>
+                                    {" "}to continue.
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                <form onSubmit={handleSignup} className="space-y-3">
                             {error && (
                                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-xl px-3 py-2 text-red-600 dark:text-red-400 text-xs">
                                     {error}
@@ -337,13 +350,8 @@ function SignupPage() {
                             </button>
                         </div>
 
-                        {/* Sign in link */}
-                        <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
-                            Already have an account?{" "}
-                            <Link href="/auth/login" className="text-[#219EBC] hover:text-[#1a7a94] font-semibold transition-colors">
-                                Sign In
-                            </Link>
-                        </p>
+                            </>
+                        )}
 
                     </div>
                 </div>
