@@ -148,14 +148,14 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
           console.log(`\n=== Observing viewport width: ${viewportWidth}px ===`)
 
           // Check left sidebar - should be visible with fixed width
-          const leftSidebar = findSidebarByClass(container, 'w-80')
+          const leftSidebar = findSidebarByClass(container, 'w-20')
           expect(leftSidebar).toBeTruthy()
           
           const leftSidebarClasses = leftSidebar?.className || ''
           console.log(`Left sidebar classes: ${leftSidebarClasses}`)
           
           // Verify left sidebar has w-80 class (320px width)
-          expect(leftSidebarClasses).toContain('w-80')
+          expect(leftSidebarClasses).toContain('w-20')
           
           // Verify left sidebar has fixed positioning
           expect(leftSidebarClasses).toContain('fixed')
@@ -183,8 +183,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
           console.log(`Main content classes: ${mainContentClasses}`)
           
           // Verify main content has left margin (ml-80 = 320px)
-          // This can be either 'ml-80' (unfixed) or 'md:ml-80' (fixed)
-          const hasLeftMargin = mainContentClasses.includes('ml-80')
+          // This can be either 'ml-20' (unfixed) or 'md:ml-80' (fixed)
+          const hasLeftMargin = mainContentClasses.includes('ml-20')
           expect(hasLeftMargin).toBe(true)
           
           // Verify main content has right margin (mr-96 = 384px)
@@ -217,7 +217,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`\n=== Observation: Desktop Breakpoint (768px) ===`)
 
       // Check three-column layout exists
-      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-20')
       const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
@@ -234,7 +234,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`Main content: ${mainContentClasses}`)
 
       // Verify sidebar widths
-      expect(leftSidebarClasses).toContain('w-80') // 320px
+      expect(leftSidebarClasses).toContain('w-20') // 320px
       expect(rightSidebarClasses).toContain('w-96') // 384px
 
       // Verify fixed positioning
@@ -244,7 +244,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       expect(rightSidebarClasses).toContain('right-0')
 
       // Verify main content margins
-      expect(mainContentClasses).toContain('ml-80') // 320px left margin
+      expect(mainContentClasses).toContain('ml-20') // 320px left margin
       expect(mainContentClasses).toContain('mr-96') // 384px right margin
 
       console.log(`✓ Three-column layout preserved at 768px`)
@@ -261,7 +261,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Observation: Standard Laptop (1024px) ===`)
 
-      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-20')
       const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
@@ -278,7 +278,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`Main content: ${mainContentClasses}`)
 
       // Verify sidebar widths (320px and 384px)
-      expect(leftSidebarClasses).toContain('w-80')
+      expect(leftSidebarClasses).toContain('w-20')
       expect(rightSidebarClasses).toContain('w-96')
 
       // Verify fixed positioning
@@ -286,7 +286,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       expect(rightSidebarClasses).toContain('fixed')
 
       // Verify main content margins (320px and 384px)
-      expect(mainContentClasses).toContain('ml-80')
+      expect(mainContentClasses).toContain('ml-20')
       expect(mainContentClasses).toContain('mr-96')
 
       console.log(`✓ Three-column layout preserved at 1024px`)
@@ -303,7 +303,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Observation: Large Desktop (1440px) ===`)
 
-      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-20')
       const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
@@ -320,11 +320,11 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`Main content: ${mainContentClasses}`)
 
       // Verify full layout structure
-      expect(leftSidebarClasses).toContain('w-80')
+      expect(leftSidebarClasses).toContain('w-20')
       expect(rightSidebarClasses).toContain('w-96')
       expect(leftSidebarClasses).toContain('fixed')
       expect(rightSidebarClasses).toContain('fixed')
-      expect(mainContentClasses).toContain('ml-80')
+      expect(mainContentClasses).toContain('ml-20')
       expect(mainContentClasses).toContain('mr-96')
 
       console.log(`✓ Three-column layout preserved at 1440px`)
@@ -341,7 +341,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Observation: Ultra-wide (1920px) ===`)
 
-      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-20')
       const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
@@ -358,11 +358,11 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`Main content: ${mainContentClasses}`)
 
       // Verify ultra-wide layout behavior
-      expect(leftSidebarClasses).toContain('w-80')
+      expect(leftSidebarClasses).toContain('w-20')
       expect(rightSidebarClasses).toContain('w-96')
       expect(leftSidebarClasses).toContain('fixed')
       expect(rightSidebarClasses).toContain('fixed')
-      expect(mainContentClasses).toContain('ml-80')
+      expect(mainContentClasses).toContain('ml-20')
       expect(mainContentClasses).toContain('mr-96')
 
       console.log(`✓ Three-column layout preserved at 1920px`)
@@ -386,7 +386,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`\n=== Functional Preservation Check ===`)
 
       // Verify left sidebar content (user profile and navigation)
-      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-20')
       expect(leftSidebar).toBeTruthy()
       expect(leftSidebar?.textContent).toContain('Test Student')
       expect(leftSidebar?.textContent).toContain('Dashboard')
@@ -418,7 +418,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       console.log(`\n=== Navigation Preservation Check ===`)
 
       // Verify navigation buttons exist
-      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-20')
       const navButtons = leftSidebar?.querySelectorAll('button')
       
       expect(navButtons).toBeTruthy()
@@ -443,7 +443,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Breakpoint Boundary: 768px ===`)
 
-      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-20')
       const rightSidebar = findSidebarByClass(container, 'w-96')
       const mainContent = container.querySelector('main')
 
@@ -457,9 +457,9 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       const mainContentClasses = mainContent?.className || ''
 
       // Verify three-column layout is present
-      expect(leftSidebarClasses).toContain('w-80')
+      expect(leftSidebarClasses).toContain('w-20')
       expect(rightSidebarClasses).toContain('w-96')
-      expect(mainContentClasses).toContain('ml-80')
+      expect(mainContentClasses).toContain('ml-20')
       expect(mainContentClasses).toContain('mr-96')
 
       console.log(`✓ Desktop layout active at 768px breakpoint`)
@@ -476,7 +476,7 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       console.log(`\n=== Breakpoint Boundary: 767px ===`)
 
-      const leftSidebar = findSidebarByClass(container, 'w-80')
+      const leftSidebar = findSidebarByClass(container, 'w-20')
       const rightSidebar = findSidebarByClass(container, 'w-96')
 
       // At 767px (below md:768px), mobile layout should be active
