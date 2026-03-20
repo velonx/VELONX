@@ -287,7 +287,7 @@ function StudentDashboardContent() {
             </div>
 
             {/* Left Sidebar */}
-            <aside className="hidden md:flex flex-col md:w-24 hover:md:w-80 bg-background border-r border-border p-6 md:fixed md:left-0 top-20 bottom-0 z-50 transition-all duration-300 group overflow-hidden">
+            <aside className="hidden md:block md:w-80 bg-background border-r border-border p-6 md:fixed md:left-0 top-20 bottom-0 z-50 overflow-y-auto">
                 <div className="mb-12 flex items-center gap-4">
                     <div className="relative shrink-0 flex items-center justify-center">
                         <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
@@ -323,14 +323,11 @@ function StudentDashboardContent() {
                     ))}
                 </nav>
 
-                <div className="mt-auto relative opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/dashboard-pattern.png" alt="" className="absolute bottom-0 left-0 w-80 max-w-none opacity-10" />
-                </div>
+
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-24 md:mr-96 p-4 md:p-12 pb-24 md:pb-12 transition-all duration-300">
+            <main className="flex-1 md:ml-80 md:mr-96 p-4 md:p-12 pb-24 md:pb-12 transition-all duration-300">
                 {/* Mobile Header - Visible only on mobile */}
                 <div className="md:hidden mb-6 flex items-center justify-between">
                     <div className="flex items-center gap-3">

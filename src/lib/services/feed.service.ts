@@ -85,6 +85,12 @@ export class FeedService {
     const limit = query.limit && query.limit > 0 ? Math.min(query.limit, 100) : 20;
     const filter = query.filter || "ALL";
 
+    // Lean existence check — select only id to verify the user exists before building feed
+    const userExists = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
+    if (!userExists) {
+      throw new NotFoundError("User not found");
+    }
+
     // Run all 4 relationship lookups in parallel on indexed junction tables
     // (much faster than a single User.findUnique loading 4 nested relation arrays)
     const [blockingRows, blockedByRows, followingRows, groupRows] = await Promise.all([

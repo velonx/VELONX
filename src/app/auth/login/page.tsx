@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -68,8 +69,20 @@ export default function LoginPage() {
     };
 
     return (
-        /* Full viewport, never scroll — clears the fixed floating navbar (top-6 + ~50px height ≈ 80px) */
-        <div className="h-screen overflow-hidden flex items-center justify-center bg-slate-100 dark:bg-[#0f1624] font-outfit transition-colors duration-300 pt-20 pb-4 px-4">
+        /* Full viewport, never scroll — clears the fixed floating navbar */
+        <div className="h-screen overflow-hidden flex items-center justify-center relative bg-slate-100 dark:bg-[#0f1624] font-outfit transition-colors duration-300 pt-20 pb-4 px-4">
+            
+            {/* Full Background Image */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <Image
+                    src="/login-image.jpg"
+                    alt="Login Background"
+                    fill
+                    className="object-cover"
+                    priority
+                />
+                <div className="absolute inset-0 bg-black/40 z-[1]" />
+            </div>
 
             {/* Card */}
             <div className="w-full max-w-5xl h-full max-h-[calc(100vh-6rem)] flex rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-[#1e2d45]">

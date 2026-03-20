@@ -44,6 +44,7 @@ declare module "@auth/core/jwt" {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+    trustHost: true,
     adapter: PrismaAdapter(prisma),
     providers: [
         Google({
