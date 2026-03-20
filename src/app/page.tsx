@@ -106,7 +106,7 @@ export default function Home() {
                                     className="group relative rounded-[24px] overflow-hidden transition-all duration-500 hover:-translate-y-3"
                                     style={{
                                         height: '640px',
-                                        border: '1px solid #C47A4A30',
+                                        border: '1px solid #190f0830',
                                         boxShadow: '0 0 0 1px #C47A4A10, 0 8px 32px #C47A4A15',
                                     }}
                                     onMouseEnter={e => {
@@ -143,7 +143,7 @@ export default function Home() {
                                             Build your portfolio with hands-on projects that matter. Work on real-world challenges and create impact.
                                         </p>
                                         <Link href="/projects" className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2 rounded-full transition-all duration-300 hover:gap-3"
-                                            style={{ background: '#C47A4A15', color: '#C47A4A', border: '1px solid #C47A4A40', boxShadow: '0 0 12px #C47A4A20' }}>
+                                            style={{ background: '#C47A4A15', color: '#0f0e0eff', border: '1px solid #47281340', boxShadow: '0 0 12px #C47A4A20' }}>
                                             Browse Projects <ArrowRight className="w-4 h-4" />
                                         </Link>
                                     </div>
