@@ -78,7 +78,7 @@ export default function LoginPage() {
             {/* Full Background Image */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <Image
-                    src="/ocean-bg.jpg"
+                    src="/login-image.jpg"
                     alt="Login Background"
                     fill
                     className="object-cover"
