@@ -142,8 +142,8 @@ export default function Home() {
                                         <p className="text-xs sm:text-sm leading-relaxed mb-4 text-muted-foreground">
                                             Build your portfolio with hands-on projects that matter. Work on real-world challenges and create impact.
                                         </p>
-                                        <Link href="/projects" className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2 rounded-full transition-all duration-300 hover:gap-3"
-                                            style={{ background: '#C47A4A15', color: '#0f0e0eff', border: '1px solid #47281340', boxShadow: '0 0 12px #C47A4A20' }}>
+                                        <Link href="/projects" className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2 rounded-full transition-all duration-300 hover:gap-3 text-[#0f0e0e] dark:text-[#C47A4A] border border-[#472813]/40 dark:border-[#C47A4A]/40"
+                                            style={{ background: '#C47A4A15', boxShadow: '0 0 12px #C47A4A20' }}>
                                             Browse Projects <ArrowRight className="w-4 h-4" />
                                         </Link>
                                     </div>
