@@ -77,7 +77,7 @@ export const TelescopeHero = () => {
 
                 <div className="max-w-3xl mx-auto p-4 sm:p-6 rounded-2xl bg-white/40 dark:bg-black/50 backdrop-blur-md border border-white/30 dark:border-white/10 shadow-lg mb-12">
                     <p className="text-gray-900 dark:text-gray-200 text-lg sm:text-xl md:text-2xl leading-relaxed font-medium drop-shadow-sm">
-                        Join a thriving community where students turn potential into impact Build projects, learn from mentors, and launch your career.
+                        Join a thriving Velonx community where students turn potential into impact. Build projects, learn from mentors, and launch your career.
                     </p>
                 </div>
 

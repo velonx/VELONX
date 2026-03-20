@@ -2,12 +2,14 @@ import { Metadata } from 'next';
 
 // Base site configuration
 export const siteConfig = {
-    name: 'VELONX',
-    title: 'VELONX - Empowering the Next Gen',
-    description: 'Build Real Projects, Connect with Mentors, and Launch Your Tech Career. Join 1000+ students learning by doing on the VELONX platform.',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com',
+    name: 'Velonx',
+    title: 'Velonx - Empowering the Next Gen',
+    description: 'Join a thriving Velonx community where students turn potential into impact. Build projects, learn from mentors, and launch your career.',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in',
     ogImage: '/og/default.png',
     keywords: [
+        'velonx',
+        'velonx community',
         'student platform',
         'tech education',
         'project-based learning',
