@@ -286,8 +286,8 @@ function StudentDashboardContent() {
                 </nav>
             </div>
 
-            {/* Left Sidebar */}
-            <aside className="hidden md:block md:w-80 bg-background border-r border-border p-6 md:fixed md:left-0 top-20 bottom-0 z-50 overflow-y-auto">
+            {/* Left Sidebar — collapsed by default, expands on hover */}
+            <aside className="group hidden md:flex flex-col md:w-20 hover:md:w-80 bg-background border-r border-border p-4 hover:p-6 md:fixed md:left-0 top-20 bottom-0 z-50 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out">
                 <div className="mb-12 flex items-center gap-4">
                     <div className="relative shrink-0 flex items-center justify-center">
                         <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
@@ -298,7 +298,7 @@ function StudentDashboardContent() {
                             <Clock className="w-3 h-3 text-[#219EBC]" />
                         </div>
                     </div>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity w-48 shrink-0">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-0 group-hover:w-48 overflow-hidden shrink-0">
                         <h2 className="text-xl font-bold text-foreground mb-1 truncate">{session.user?.name}</h2>
                         <p className="text-muted-foreground text-sm font-medium truncate">{session.user?.email}</p>
                     </div>
@@ -309,14 +309,14 @@ function StudentDashboardContent() {
                         <button
                             key={item.label}
                             onClick={() => setActiveTab(item.label)}
-                            className={`w-full flex items-center gap-4 px-3 py-4 rounded-2xl transition-all font-bold group-hover:px-6 ${activeTab === item.label
+                            className={`w-full flex items-center gap-4 px-3 py-4 rounded-2xl transition-all font-bold ${activeTab === item.label
                                 ? "bg-[#219EBC]/10 text-[#219EBC]"
                                 : "text-muted-foreground hover:bg-muted hover:text-muted-foreground"
                                 }`}
                             title={item.label}
                         >
                             <item.icon className="w-6 h-6 shrink-0" />
-                            <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap overflow-hidden">
                                 {item.label}
                             </span>
                         </button>
@@ -327,7 +327,7 @@ function StudentDashboardContent() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-80 md:mr-96 p-4 md:p-12 pb-24 md:pb-12 transition-all duration-300">
+            <main className="flex-1 md:ml-20 md:mr-96 p-4 md:p-12 pb-24 md:pb-12 transition-all duration-300">
                 {/* Mobile Header - Visible only on mobile */}
                 <div className="md:hidden mb-6 flex items-center justify-between">
                     <div className="flex items-center gap-3">

@@ -212,11 +212,11 @@ export default function Home() {
                     title="Community Showcase"
                     description="Discover amazing projects built by our talented community members"
                     slides={[
-                        { name: "KeyRacer", src: "https://images.unsplash.com/photo-1524492707947-54b025f190d7?q=80&w=2070&auto=format&fit=crop" },
-                        { name: "AI Code Assistant", src: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop" },
+                        { name: "KeyRacer", src: "/keyracer.png" },
+                        { name: "AI Career Agent", src: "/ai-career-agent.png" },
                         { name: "HealthTrack", src: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop" },
-                        { name: "DesignHub", src: "https://images.unsplash.com/photo-1513519107127-1bed33748e4c?q=80&w=2070&auto=format&fit=crop" },
-                        { name: "EcoTracker", src: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2070&auto=format&fit=crop" },
+                        { name: "Tiffo", src: "https://images.unsplash.com/photo-1513519107127-1bed33748e4c?q=80&w=2070&auto=format&fit=crop" },
+                        { name: "local Mania", src: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2070&auto=format&fit=crop" },
                     ]}
                 />
             </div>
