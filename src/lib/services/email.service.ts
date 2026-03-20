@@ -15,8 +15,8 @@ function getResendClient(): Resend {
 }
 
 // Email configuration
-const EMAIL_FROM = process.env.EMAIL_FROM || 'VELONX <onboarding@resend.dev>';
-const EMAIL_REPLY_TO = process.env.EMAIL_REPLY_TO || 'support@velonx.com';
+const EMAIL_FROM = process.env.EMAIL_FROM || 'VELONX <noreply@velonx.in>';
+const EMAIL_REPLY_TO = process.env.EMAIL_REPLY_TO || 'support@velonx.in';
 
 // Email service class
 export class EmailService {
