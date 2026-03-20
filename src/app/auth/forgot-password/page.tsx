@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Mail, AlertCircle } from "lucide-react";
+import { authApi } from "@/lib/api/client";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -19,22 +20,11 @@ export default function ForgotPasswordPage() {
     setErrorMessage("");
 
     try {
-      const res = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      if (res.ok) {
-        setStatus("success");
-      } else {
-        const data = await res.json();
-        setStatus("error");
-        setErrorMessage(data.error || "Failed to request password reset.");
-      }
-    } catch (err) {
+      await authApi.forgotPassword({ email });
+      setStatus("success");
+    } catch (err: any) {
       setStatus("error");
-      setErrorMessage("An unexpected error occurred. Please try again later.");
+      setErrorMessage(err.message || "An unexpected error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }

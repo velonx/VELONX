@@ -447,6 +447,21 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  verify: (data: { token: string; email: string }) =>
+    fetchApi<ApiResponse<{ message: string }>>('/api/auth/verify', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  forgotPassword: (data: { email: string }) =>
+    fetchApi<ApiResponse<{ message: string }>>('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  resetPassword: (data: { email: string; token: string; password: string }) =>
+    fetchApi<ApiResponse<{ message: string }>>('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };
 
 // Notifications API

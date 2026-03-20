@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { authApi } from "@/lib/api/client";
 
 function VerifyContent() {
   const searchParams = useSearchParams();
@@ -23,26 +24,16 @@ function VerifyContent() {
 
     const verifyEmail = async () => {
       try {
-        const res = await fetch("/api/auth/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token, email }),
-        });
-
-        const data = await res.json();
-        if (data.success) {
-          setStatus("success");
-          // Redirect to login after a few seconds
-          setTimeout(() => {
-            router.push("/auth/login?verified=true");
-          }, 3000);
-        } else {
-          setStatus("error");
-          setErrorMessage(data.error || "Verification failed.");
-        }
-      } catch (err) {
+        await authApi.verify({ token, email });
+        
+        setStatus("success");
+        // Redirect to login after a few seconds
+        setTimeout(() => {
+          router.push("/auth/login?verified=true");
+        }, 3000);
+      } catch (err: any) {
         setStatus("error");
-        setErrorMessage("An error occurred during verification.");
+        setErrorMessage(err.message || "An error occurred during verification.");
       }
     };
 

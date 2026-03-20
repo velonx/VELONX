@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, Lock, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { authApi } from "@/lib/api/client";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -41,22 +42,11 @@ function ResetPasswordForm() {
     setErrorMessage("");
 
     try {
-      const res = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, email, password }),
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setStatus("success");
-      } else {
-        setStatus("error");
-        setErrorMessage(data.error || "Failed to reset password.");
-      }
-    } catch (err) {
+      await authApi.resetPassword({ token, email, password });
+      setStatus("success");
+    } catch (err: any) {
       setStatus("error");
-      setErrorMessage("An unexpected error occurred. Please try again later.");
+      setErrorMessage(err.message || "An unexpected error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
