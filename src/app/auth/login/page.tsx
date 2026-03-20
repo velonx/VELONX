@@ -140,9 +140,6 @@ export default function LoginPage() {
                                                 <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                                                     Password
                                                 </label>
-                                                <Link href="#" className="text-xs text-[#219EBC] hover:text-[#1a7a94] transition-colors font-medium">
-                                                    Forgot password?
-                                                </Link>
                                             </div>
                                             <div className="relative">
                                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
