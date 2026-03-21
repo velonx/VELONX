@@ -12,11 +12,11 @@ export const securityHeaders = {
   // Content Security Policy - Prevents XSS attacks
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://api.cloudinary.com",
+    "img-src 'self' data: https: blob: https://www.google-analytics.com https://*.analytics.google.com",
+    "connect-src 'self' https://api.cloudinary.com https://www.google-analytics.com https://*.analytics.google.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
