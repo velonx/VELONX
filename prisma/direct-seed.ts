@@ -25,13 +25,13 @@ async function main() {
     
     // Create Users
     console.log('👥 Creating users...');
-    const adminPassword = await bcrypt.hash('admin123', 10);
+    const adminPassword = await bcrypt.hash('Velonx!Admin@2026', 10);
     const studentPassword = await bcrypt.hash('password123', 10);
     
     const usersResult = await db.collection('users').insertMany([
       {
         name: 'Admin User',
-        email: 'admin@velonx.com',
+        email: 'superadmin@velonx.com',
         password: adminPassword,
         role: 'ADMIN',
         bio: 'Platform administrator',
@@ -179,7 +179,7 @@ async function main() {
     console.log('🎉 Database seeded successfully!');
     console.log('');
     console.log('🔐 Test Credentials:');
-    console.log('   Admin: admin@velonx.com / admin123');
+    console.log('   Admin: superadmin@velonx.com / Velonx!Admin@2026');
     console.log('   Student: alice@example.com / password123');
     console.log('   Student: bob@example.com / password123');
     

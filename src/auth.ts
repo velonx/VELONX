@@ -148,7 +148,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
 
                 // Check for email verification
-                if (!user.emailVerified) {
+                if (!user.emailVerified && user.role !== "ADMIN") {
                     console.log("❌ Email not verified");
                     // Do not block brute force as missing verification isn't a malicious attack
                     throw new Error("Please verify your email address before logging in.");

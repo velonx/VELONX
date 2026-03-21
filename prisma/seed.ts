@@ -17,12 +17,13 @@ async function main() {
   // Create Users
   console.log('👥 Creating users...');
   const hashedPassword = await bcrypt.hash('password123', 10);
+  const adminHashedPassword = await bcrypt.hash('Velonx!Admin@2026', 10);
 
   const admin = await prisma.user.create({
     data: {
       name: 'Admin User',
-      email: 'admin@velonx.com',
-      password: hashedPassword,
+      email: 'superadmin@velonx.com',
+      password: adminHashedPassword,
       role: 'ADMIN',
       bio: 'Platform administrator',
       xp: 5000,
@@ -455,7 +456,7 @@ async function main() {
   console.log(`   - Meetings: ${meetings.length}`);
   console.log('');
   console.log('🔐 Test Credentials:');
-  console.log('   Admin: admin@velonx.com / password123');
+  console.log('   Admin: superadmin@velonx.com / Velonx!Admin@2026');
   console.log('   Student: alice@example.com / password123');
 }
 
