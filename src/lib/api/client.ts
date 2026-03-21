@@ -392,10 +392,15 @@ export const usersApi = {
 
   getStats: (id: string) =>
     fetchApi<ApiResponse<{
-      eventsAttended: number;
-      projectsOwned: number;
-      projectsMember: number;
-      blogPosts: number;
+      user: any;
+      stats: {
+        projectsOwned: number;
+        projectsJoined: number;
+        totalProjects: number;
+        eventsAttending: number;
+        blogPostsAuthored: number;
+        meetingsCreated: number;
+      }
     }>>(`/api/users/${id}/stats`),
 
   checkIn: () =>

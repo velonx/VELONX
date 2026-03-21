@@ -183,7 +183,12 @@ export class UserService {
             where: { userId: id },
           }),
           prisma.eventAttendee.count({
-            where: { userId: id },
+            where: { 
+              userId: id,
+              status: {
+                not: "CANCELLED"
+              }
+            },
           }),
           prisma.blogPost.count({
             where: { authorId: id },

@@ -49,10 +49,20 @@ export function DailyCheckIn() {
     }
   };
 
-  // Which day circles are "done": all days before today + today if checked in
-  const completedDays = Array.from({ length: 7 }, (_, i) =>
-    i < todayIndex || (i === todayIndex && checkedIn)
-  );
+  // Calculate which day circles should be highlighted based on the actual streak
+  const completedDays = Array.from({ length: 7 }, (_, i) => {
+    // Future days in the current week are never completed
+    if (i > todayIndex) return false;
+    
+    const effectiveStreak = Math.max(streak, checkedIn ? 1 : 0);
+    if (effectiveStreak === 0) return false;
+    
+    // Determine where the streak ends and begins within the current week [0..6]
+    const streakEndIndex = checkedIn ? todayIndex : todayIndex - 1;
+    const streakStartIndex = streakEndIndex - effectiveStreak + 1;
+    
+    return i <= streakEndIndex && i >= streakStartIndex;
+  });
 
   return (
     <div className="w-full rounded-[20px] bg-gradient-to-br from-orange-500 to-amber-400 p-5 text-white shadow-lg">

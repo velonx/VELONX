@@ -587,35 +587,35 @@ function StudentDashboardContent() {
                                     <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Calendar className="w-6 h-6 text-purple-600" />
                                     </div>
-                                    <p className="text-2xl font-bold text-foreground mb-1">50</p>
+                                    <p className="text-2xl font-bold text-foreground mb-1">{(userStats?.stats?.eventsAttending || 0) * 50}</p>
                                     <p className="text-xs text-muted-foreground font-bold">Event Attendance</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Target className="w-6 h-6 text-green-600" />
                                     </div>
-                                    <p className="text-2xl font-black text-foreground mb-1">100</p>
+                                    <p className="text-2xl font-black text-foreground mb-1">{projectCounts.completed * 100}</p>
                                     <p className="text-xs text-muted-foreground font-bold">Project Completion</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Users className="w-5 h-5 text-blue-600" />
                                     </div>
-                                    <p className="text-2xl font-black text-foreground mb-1">25</p>
-                                    <p className="text-xs text-muted-foreground font-bold">Mentor Session</p>
+                                    <p className="text-2xl font-black text-foreground mb-1">{mentorSessions.filter(s => s.status === 'COMPLETED').length * 25}</p>
+                                    <p className="text-xs text-muted-foreground font-bold">Mentor Sessions</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Flame className="w-6 h-6 text-orange-600" />
                                     </div>
-                                    <p className="text-2xl font-black text-foreground mb-1">20</p>
-                                    <p className="text-xs text-muted-foreground font-bold">Daily Streak</p>
+                                    <p className="text-2xl font-black text-foreground mb-1">{(user?.currentStreak || 0) * 20}</p>
+                                    <p className="text-xs text-muted-foreground font-bold">Streak Bonus</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Award className="w-5 h-5 text-teal-600" />
                                     </div>
-                                    <p className="text-2xl font-black text-foreground mb-1">30</p>
+                                    <p className="text-2xl font-black text-foreground mb-1">{(userStats?.stats?.blogPostsAuthored || 0) * 30}</p>
                                     <p className="text-xs text-muted-foreground font-bold">Resource Share</p>
                                 </Card>
                             </div>
@@ -632,7 +632,7 @@ function StudentDashboardContent() {
                                         </div>
                                         <TrendingUp className="w-5 h-5 text-green-500" />
                                     </div>
-                                    <p className="text-3xl font-bold text-foreground mb-1">{userStats?.projectsOwned || 0}</p>
+                                    <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.projectsOwned || 0}</p>
                                     <p className="text-sm text-muted-foreground font-bold">Projects Created</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
@@ -642,7 +642,7 @@ function StudentDashboardContent() {
                                         </div>
                                         <TrendingUp className="w-5 h-5 text-green-500" />
                                     </div>
-                                    <p className="text-3xl font-bold text-foreground mb-1">{userStats?.projectsMember || 0}</p>
+                                    <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.projectsJoined || 0}</p>
                                     <p className="text-sm text-muted-foreground font-bold">Projects Joined</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
@@ -652,7 +652,7 @@ function StudentDashboardContent() {
                                         </div>
                                         <TrendingUp className="w-5 h-5 text-green-500" />
                                     </div>
-                                    <p className="text-3xl font-bold text-foreground mb-1">{userStats?.eventsAttended || 0}</p>
+                                    <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.eventsAttending || 0}</p>
                                     <p className="text-sm text-muted-foreground font-bold">Events Attended</p>
                                 </Card>
                                 <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">

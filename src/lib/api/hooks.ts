@@ -343,12 +343,17 @@ export function useUserStats(id: string) {
   const shouldFetch = id && id !== 'skip' && id.length === 24;
   
   return useApiResource<{
-    eventsAttended: number;
-    projectsOwned: number;
-    projectsMember: number;
-    blogPosts: number;
+    user: any;
+    stats: {
+      projectsOwned: number;
+      projectsJoined: number;
+      totalProjects: number;
+      eventsAttending: number;
+      blogPostsAuthored: number;
+      meetingsCreated: number;
+    }
   }>(
-    () => shouldFetch ? usersApi.getStats(id) : Promise.resolve({ success: true as const, data: { eventsAttended: 0, projectsOwned: 0, projectsMember: 0, blogPosts: 0 } }),
+    () => shouldFetch ? usersApi.getStats(id) : Promise.resolve({ success: true as const, data: { user: {}, stats: { projectsOwned: 0, projectsJoined: 0, totalProjects: 0, eventsAttending: 0, blogPostsAuthored: 0, meetingsCreated: 0 } } }),
     [id, shouldFetch]
   );
 }
