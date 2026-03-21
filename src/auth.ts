@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import type { UserRole } from "@prisma/client"
 import { BruteForceProtection, createBruteForceIdentifier, type BruteForceCheckResult } from "@/lib/services/brute-force-protection.service"
+import { generateReferralCode } from "@/lib/services/referral.service"
 
 // Extend the session type to include custom properties
 declare module "next-auth" {
@@ -45,7 +46,18 @@ declare module "@auth/core/jwt" {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     trustHost: true,
-    adapter: PrismaAdapter(prisma),
+    adapter: {
+        ...PrismaAdapter(prisma),
+        createUser: async (user) => {
+            const referralCode = await generateReferralCode();
+            return prisma.user.create({
+                data: {
+                    ...user,
+                    referralCode,
+                },
+            }) as any;
+        },
+    },
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID,
