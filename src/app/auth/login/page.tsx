@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Shield, Mail, Lock, Eye, EyeOff, Github, ArrowRight } from "lucide-react";
+import { User, Shield, Mail, Lock, Eye, EyeOff, Github, ArrowRight, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -15,6 +15,20 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isRedirecting, setIsRedirecting] = useState(false);
+    const [authError, setAuthError] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Read URL errors on mount (such as NextAuth provider errors)
+        const searchParams = new URLSearchParams(window.location.search);
+        const error = searchParams.get("error");
+        if (error === "OAuthAccountNotLinked") {
+            setAuthError("An account with this email already exists. Please log in with the method you originally used to sign up.");
+        } else if (error === "AccessDenied") {
+            setAuthError("Access denied. You do not have permission to sign in.");
+        } else if (error) {
+            setAuthError("An error occurred during authentication.");
+        }
+    }, []);
 
     useEffect(() => {
         if (status === "authenticated" && session?.user && !isRedirecting) {
@@ -90,6 +104,16 @@ export default function LoginPage() {
                                 Sign in to continue your learning journey
                             </p>
                         </div>
+
+                        {/* Error Banner */}
+                        {authError && (
+                            <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 dark:bg-rose-900/20 dark:border-rose-800 flex items-start gap-2.5 animate-in fade-in zoom-in duration-300">
+                                <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                                <p className="text-xs text-rose-700 dark:text-rose-300 font-medium">
+                                    {authError}
+                                </p>
+                            </div>
+                        )}
 
                         {/* Tabs — Student / Admin */}
                         <Tabs defaultValue="student" className="w-full">

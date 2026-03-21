@@ -50,9 +50,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         ...PrismaAdapter(prisma),
         createUser: async (user) => {
             const referralCode = await generateReferralCode();
+            const { id, ...userData } = user; // NextAuth passes a UUID, but MongoDB needs a 24-char hex. Destructuring removes it.
             return prisma.user.create({
                 data: {
-                    ...user,
+                    ...userData,
                     referralCode,
                 },
             }) as any;
