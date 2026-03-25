@@ -3,15 +3,21 @@
 import React, { useRef, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ShowcaseModal, ProjectData } from "./ShowcaseModal";
 import "./ParallaxGallery.css";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 }
 
-interface SlideData {
+export interface SlideData {
     name: string;
     src: string;
+    category?: string;
+    dateMonth?: string;
+    dateDay?: string;
+    description?: string;
+    link?: string;
 }
 
 interface ParallaxGalleryProps {
@@ -27,6 +33,13 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
 }) => {
     const sectionRef = useRef<HTMLElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [selectedProject, setSelectedProject] = React.useState<SlideData | null>(null);
+
+    const handleProjectClick = (project: SlideData) => {
+        setSelectedProject(project);
+        setIsModalOpen(true);
+    };
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -73,7 +86,11 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
 
                 {/* Image Slides */}
                 {slides.map((slide, i) => (
-                    <div key={`${slide.name}-${i}`} className="cinematic-slide flex-shrink-0 aspect-[4/3] h-[55vh] min-h-[260px] max-h-[480px] rounded-xl relative overflow-hidden group bg-[#050505] shadow-2xl border border-white/10">
+                    <div 
+                        key={`${slide.name}-${i}`} 
+                        className="cinematic-slide flex-shrink-0 aspect-[4/3] h-[55vh] min-h-[260px] max-h-[480px] rounded-xl relative overflow-hidden group bg-[#050505] shadow-2xl border border-white/10 cursor-pointer"
+                        onClick={() => handleProjectClick(slide)}
+                    >
 
                         {/* High-Contrast / Cinematic Filter Overlays */}
                         <div className="absolute inset-0 bg-red-900/10 mix-blend-color-burn z-10 pointer-events-none transition-opacity duration-700 group-hover:opacity-0" />
@@ -102,6 +119,12 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
                     </div>
                 ))}
             </div>
+
+            <ShowcaseModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                project={selectedProject as ProjectData | null} 
+            />
         </section>
     );
 };

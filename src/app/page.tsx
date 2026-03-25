@@ -212,11 +212,11 @@ export default function Home() {
                     title="Community Showcase"
                     description="Discover amazing projects built by our talented community members"
                     slides={[
-                        { name: "KeyRacer", src: "/keyracer.png" },
-                        { name: "AI Career Agent", src: "/ai-career-agent.png" },
-                        { name: "HealthTrack", src: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop" },
-                        { name: "Tiffo", src: "https://images.unsplash.com/photo-1513519107127-1bed33748e4c?q=80&w=2070&auto=format&fit=crop" },
-                        { name: "local Mania", src: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2070&auto=format&fit=crop" },
+                        { name: "KeyRacer", src: "/keyracer.png", category: "Game Dev", dateMonth: "AUG", dateDay: "12", description: "A multiplayer typing racing game built to test and improve your typing speed against others in real-time.", link: "#" },
+                        { name: "AI Career Agent", src: "/ai-career-agent.png", category: "AI Tools", dateMonth: "SEP", dateDay: "05", description: "An intelligent career assistant that provides personalized job recommendations and interview preparation.", link: "#" },
+                        { name: "HealthTrack", src: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop", category: "Health & Fitness", dateMonth: "OCT", dateDay: "22", description: "A comprehensive dashboard for tracking daily activities, nutrition, and overall wellness goals seamlessly.", link: "#" },
+                        { name: "Tiffo", src: "https://images.unsplash.com/photo-1513519107127-1bed33748e4c?q=80&w=2070&auto=format&fit=crop", category: "Food Delivery", dateMonth: "NOV", dateDay: "15", description: "A localized food delivery ecosystem connecting talented home chefs directly with local food enthusiasts.", link: "#" },
+                        { name: "local Mania", src: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2070&auto=format&fit=crop", category: "Community", dateMonth: "DEC", dateDay: "01", description: "A community platform focused on discovering, organizing, and participating in vibrant local events.", link: "#" },
                     ]}
                 />
             </div>
