@@ -83,7 +83,15 @@ export default function EventManagement() {
       resetForm();
       fetchEvents();
     } catch (error: any) {
-      toast.error(error.message || "Failed to save event");
+      // Show field-level validation errors if available
+      if (error.details?.errors && Array.isArray(error.details.errors) && error.details.errors.length > 0) {
+        const fieldErrors = error.details.errors
+          .map((e: { field: string; message: string }) => `${e.field}: ${e.message}`)
+          .join('\n');
+        toast.error(fieldErrors);
+      } else {
+        toast.error(error.message || 'Failed to save event');
+      }
     }
   };
 
@@ -373,8 +381,9 @@ export default function EventManagement() {
                                   const data = await response.json();
 
                                   if (data.success) {
-                                    setImagePreview(data.data.url);
-                                    setFormData({ ...formData, imageUrl: data.data.url });
+                                    const uploadedUrl = data.data?.url || data.url;
+                                    setImagePreview(uploadedUrl);
+                                    setFormData(prev => ({ ...prev, imageUrl: uploadedUrl }));
                                     toast.success("Image uploaded successfully!");
                                   } else {
                                     toast.error(data.error?.message || "Failed to upload image");

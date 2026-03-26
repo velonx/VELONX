@@ -28,6 +28,16 @@ import { createMockSession } from '../mocks/session.mock'
 vi.mock('@/lib/middleware/auth.middleware', () => ({
   requireAuth: vi.fn(async () => createMockSession({ user: { id: 'test-user-id', role: 'STUDENT' } })),
 }))
+// Mock cache service to prevent Redis connection attempts in tests
+vi.mock('@/lib/services/cache.service', () => ({
+  cacheService: {
+    get: vi.fn().mockResolvedValue(null),
+    set: vi.fn().mockResolvedValue(undefined),
+    delete: vi.fn().mockResolvedValue(undefined),
+    invalidate: vi.fn().mockResolvedValue(undefined),
+    getOrSet: vi.fn().mockImplementation(async (_key: string, fetcher: () => Promise<unknown>) => fetcher()),
+  },
+}))
 // Mock Prisma to prevent real MongoDB connections
 vi.mock('@/lib/prisma', () => ({
   prisma: {
@@ -46,6 +56,7 @@ vi.mock('@/lib/prisma', () => ({
     },
   },
 }))
+
 
 describe('Notification Endpoints Integration Tests', () => {
   describe('GET /api/notifications', () => {

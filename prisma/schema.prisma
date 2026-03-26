@@ -539,7 +539,7 @@ model MentorSession {
   updatedAt   DateTime      @updatedAt
 
   // Relations
-  mentor  Mentor        @relation(fields: [mentorId], references: [id])
+  mentor  Mentor        @relation(fields: [mentorId], references: [id], onDelete: Cascade)
   student User          @relation("StudentSessions", fields: [studentId], references: [id])
   review  MentorReview?
 
@@ -558,7 +558,7 @@ model MentorReview {
 
   // Relations
   session MentorSession @relation(fields: [sessionId], references: [id])
-  mentor  Mentor        @relation(fields: [mentorId], references: [id])
+  mentor  Mentor        @relation(fields: [mentorId], references: [id], onDelete: Cascade)
   student User          @relation("StudentReviews", fields: [studentId], references: [id])
 
   @@map("mentor_reviews")
@@ -622,7 +622,7 @@ model ResourceVisit {
 
   // Relations
   user     User     @relation(fields: [userId], references: [id])
-  resource Resource @relation(fields: [resourceId], references: [id])
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 
   @@unique([userId, resourceId])
   @@index([userId])

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { secureFetch } from "@/lib/utils/csrf";
+import { secureFetch, fetchCSRFToken } from "@/lib/utils/csrf";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,8 @@ export default function BlogManagement() {
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Pre-fetch CSRF token to ensure the csrf-token cookie is set before any form submission
+    fetchCSRFToken().catch(() => {});
     fetchBlogs();
   }, []);
 
@@ -377,10 +379,11 @@ export default function BlogManagement() {
                                 const data = await response.json();
 
                                 if (data.success) {
-                                  setBlogImagePreview(data.data.url);
+                                  const uploadedUrl = data.data?.url || data.url;
+                                  setBlogImagePreview(uploadedUrl);
                                   const imageUrlInput = document.querySelector('input[name="imageUrl"]') as HTMLInputElement;
                                   if (imageUrlInput) {
-                                    imageUrlInput.value = data.data.url;
+                                    imageUrlInput.value = uploadedUrl;
                                   }
                                   toast.success("Image uploaded successfully!");
                                 } else {
