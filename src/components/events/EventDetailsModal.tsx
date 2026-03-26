@@ -388,38 +388,38 @@ export default function EventDetailsModal({
               </div>
 
               {/* Time */}
-              <div className="flex items-start gap-3 p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10">
+              <div className="flex items-start gap-3 p-3 sm:p-4 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10">
                 <div className="p-2 bg-[#219EBC]/20 rounded-lg flex-shrink-0">
                   <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-[#219EBC]" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs text-gray-300 uppercase tracking-wider font-semibold mb-1">Time</p>
-                  <p className="text-white font-medium text-sm sm:text-base">{timeString}</p>
+                  <p className="text-xs text-muted-foreground dark:text-gray-300 uppercase tracking-wider font-semibold mb-1">Time</p>
+                  <p className="text-foreground dark:text-white font-medium text-sm sm:text-base">{timeString}</p>
                 </div>
               </div>
 
               {/* Duration */}
               {duration && (
-                <div className="flex items-start gap-3 p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="flex items-start gap-3 p-3 sm:p-4 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10">
                   <div className="p-2 bg-purple-500/20 rounded-lg flex-shrink-0">
                     <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-gray-300 uppercase tracking-wider font-semibold mb-1">Duration</p>
-                    <p className="text-white font-medium text-sm sm:text-base">{duration} {duration === 1 ? 'hour' : 'hours'}</p>
+                    <p className="text-xs text-muted-foreground dark:text-gray-300 uppercase tracking-wider font-semibold mb-1">Duration</p>
+                    <p className="text-foreground dark:text-white font-medium text-sm sm:text-base">{duration} {duration === 1 ? 'hour' : 'hours'}</p>
                   </div>
                 </div>
               )}
 
               {/* Platform/Location */}
               {platformInfo && (
-                <div className="flex items-start gap-3 p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="flex items-start gap-3 p-3 sm:p-4 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10">
                   <div className={cn("p-2 rounded-lg flex-shrink-0", platformInfo.color.replace('text-', 'bg-') + '/20')}>
                     <platformInfo.icon className={cn("w-4 h-4 sm:w-5 sm:h-5", platformInfo.color)} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-gray-300 uppercase tracking-wider font-semibold mb-1">Platform</p>
-                    <p className="text-white font-medium text-sm sm:text-base break-words">{platformInfo.name}</p>
+                    <p className="text-xs text-muted-foreground dark:text-gray-300 uppercase tracking-wider font-semibold mb-1">Platform</p>
+                    <p className="text-foreground dark:text-white font-medium text-sm sm:text-base break-words">{platformInfo.name}</p>
                   </div>
                 </div>
               )}
@@ -430,14 +430,14 @@ export default function EventDetailsModal({
                   <Users className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-gray-300 uppercase tracking-wider font-semibold mb-2">Attendees</p>
+                  <p className="text-xs text-muted-foreground dark:text-gray-300 uppercase tracking-wider font-semibold mb-2">Attendees</p>
                   <div className="flex items-center justify-between mb-2 gap-2">
-                    <p className="text-white font-medium text-sm sm:text-base">{attendeeCount} / {event.maxSeats} registered</p>
+                    <p className="text-foreground dark:text-white font-medium text-sm sm:text-base">{attendeeCount} / {event.maxSeats} registered</p>
                     {!isFull && (
-                      <p className="text-xs sm:text-sm text-gray-300 flex-shrink-0">{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground dark:text-gray-300 flex-shrink-0">{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left</p>
                     )}
                   </div>
-                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-2 bg-muted/50 dark:bg-white/5 rounded-full overflow-hidden">
                     <div
                       className={cn(
                         "h-full rounded-full transition-all duration-500",
@@ -465,14 +465,14 @@ export default function EventDetailsModal({
                     <h3 className="text-base sm:text-lg font-bold text-red-400 mb-2 flex items-center gap-2">
                       Registration Closed
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-200 leading-relaxed">
+                    <p className="text-sm sm:text-base text-muted-foreground dark:text-gray-200 leading-relaxed">
                       {registrationStatus.message}
                     </p>
 
                     {/* Additional context based on closure reason - Mobile optimized (Requirement 12.3, 12.5) */}
                     {registrationStatus.reason === 'capacity' && (
-                      <div className="mt-3 p-2.5 sm:p-3 bg-white/5 rounded-lg border border-white/10">
-                        <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                      <div className="mt-3 p-2.5 sm:p-3 bg-muted/50 dark:bg-white/5 rounded-lg border border-border dark:border-white/10">
+                        <p className="text-xs sm:text-sm text-muted-foreground dark:text-gray-300 leading-relaxed">
                           This event has reached maximum capacity of {event.maxSeats} attendees.
                           {registrationStatus.canReopen && " Registration may reopen if spots become available."}
                         </p>
@@ -480,10 +480,10 @@ export default function EventDetailsModal({
                     )}
 
                     {registrationStatus.reason === 'deadline' && event.registrationDeadline && (
-                      <div className="mt-3 p-2.5 sm:p-3 bg-white/5 rounded-lg border border-white/10">
-                        <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                      <div className="mt-3 p-2.5 sm:p-3 bg-muted/50 dark:bg-white/5 rounded-lg border border-border dark:border-white/10">
+                        <p className="text-xs sm:text-sm text-muted-foreground dark:text-gray-300 leading-relaxed">
                           Registration deadline:{' '}
-                          <span className="font-semibold text-white block sm:inline mt-1 sm:mt-0">
+                          <span className="font-semibold text-foreground dark:text-white block sm:inline mt-1 sm:mt-0">
                             {new Date(event.registrationDeadline).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -497,8 +497,8 @@ export default function EventDetailsModal({
                     )}
 
                     {registrationStatus.reason === 'manual' && (
-                      <div className="mt-3 p-2.5 sm:p-3 bg-white/5 rounded-lg border border-white/10">
-                        <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                      <div className="mt-3 p-2.5 sm:p-3 bg-muted/50 dark:bg-white/5 rounded-lg border border-border dark:border-white/10">
+                        <p className="text-xs sm:text-sm text-muted-foreground dark:text-gray-300 leading-relaxed">
                           Registration temporarily closed by organizer. Check back later or contact organizer for info.
                         </p>
                       </div>
@@ -508,40 +508,40 @@ export default function EventDetailsModal({
               </div>
             )}
 
-            <Separator className="bg-white/10" />
+            <Separator className="bg-border dark:bg-white/10" />
 
             {/* Description Section - WCAG AA Compliant */}
             <div>
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
+              <h3 className="text-lg sm:text-xl font-bold text-foreground dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
                 <span className="text-xl sm:text-2xl">📝</span>
                 About This Event
               </h3>
               <div className="prose prose-invert max-w-none">
-                <p className="text-gray-200 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
+                <p className="text-muted-foreground dark:text-gray-200 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
                   {event.description}
                 </p>
               </div>
             </div>
 
-            <Separator className="bg-white/10" />
+            <Separator className="bg-border dark:bg-white/10" />
 
             {/* Creator Information Section - responsive layout */}
             {event.creator && (
               <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
                   <span className="text-xl sm:text-2xl">👤</span>
                   Event Organizer
                 </h3>
-                <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10">
                   <Avatar className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-[#219EBC] flex-shrink-0">
                     <AvatarImage src={event.creator.image || undefined} alt={event.creator.name || 'Organizer'} />
-                    <AvatarFallback className="bg-[#219EBC] text-white text-lg sm:text-xl font-bold">
+                    <AvatarFallback className="bg-[#219EBC] text-foreground dark:text-white text-lg sm:text-xl font-bold">
                       {event.creator.name?.[0]?.toUpperCase() || <User className="w-6 h-6 sm:w-8 sm:h-8" />}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
-                    <p className="text-white font-semibold text-base sm:text-lg truncate">{event.creator.name || 'Anonymous'}</p>
-                    <p className="text-gray-400 text-xs sm:text-sm">Event Organizer</p>
+                    <p className="text-foreground dark:text-white font-semibold text-base sm:text-lg truncate">{event.creator.name || 'Anonymous'}</p>
+                    <p className="text-muted-foreground dark:text-gray-400 text-xs sm:text-sm">Event Organizer</p>
                   </div>
                 </div>
               </div>
@@ -550,17 +550,17 @@ export default function EventDetailsModal({
             {/* Meeting Link Section (Only for Registered Users) - responsive layout */}
             {isRegistered && event.meetingLink && (
               <>
-                <Separator className="bg-white/10" />
+                <Separator className="bg-border dark:bg-white/10" />
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-foreground dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
                     <span className="text-xl sm:text-2xl">🔗</span>
                     Meeting Link
                   </h3>
-                  <div className="p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10 space-y-3">
-                    <p className="text-gray-400 text-xs sm:text-sm">
+                  <div className="p-3 sm:p-4 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10 space-y-3">
+                    <p className="text-muted-foreground dark:text-gray-400 text-xs sm:text-sm">
                       You're registered! Use the link below to join the event.
                     </p>
-                    <div className="flex items-center gap-2 p-2 sm:p-3 bg-[#0a0f1a] rounded-lg border border-white/5">
+                    <div className="flex items-center gap-2 p-2 sm:p-3 bg-muted/30 dark:bg-[#0a0f1a] rounded-lg border border-border dark:border-white/5">
                       <Video className="w-4 h-4 sm:w-5 sm:h-5 text-[#219EBC] flex-shrink-0" />
                       <code className="text-[#219EBC] text-xs sm:text-sm flex-1 truncate">
                         {event.meetingLink}
@@ -572,7 +572,7 @@ export default function EventDetailsModal({
                           navigator.clipboard.writeText(event.meetingLink!);
                           // Show toast notification
                           const toast = document.createElement('div');
-                          toast.className = 'fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-in slide-in-from-bottom-5';
+                          toast.className = 'fixed bottom-4 right-4 bg-green-600 text-foreground dark:text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-in slide-in-from-bottom-5';
                           toast.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Meeting link copied to clipboard!</span>';
                           document.body.appendChild(toast);
                           setTimeout(() => {
@@ -580,7 +580,7 @@ export default function EventDetailsModal({
                           }, 3000);
                         }}
                         variant="outline"
-                        className="w-full h-11 sm:h-auto border-2 border-white/10 hover:border-[#219EBC] text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
+                        className="w-full h-11 sm:h-auto border-2 border-border dark:border-white/10 hover:border-[#219EBC] text-foreground dark:text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -591,7 +591,7 @@ export default function EventDetailsModal({
                         onClick={() => {
                           window.open(event.meetingLink!, '_blank', 'noopener,noreferrer');
                         }}
-                        className="w-full h-11 sm:h-auto bg-gradient-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20"
+                        className="w-full h-11 sm:h-auto bg-gradient-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] text-foreground dark:text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20"
                       >
                         <ExternalLink className="w-4 h-4 mr-2" />
                         Join Meeting
@@ -605,9 +605,9 @@ export default function EventDetailsModal({
             {/* Attendee List Section (Admin Only) - responsive grid */}
             {isAdmin && (
               <>
-                <Separator className="bg-white/10" />
+                <Separator className="bg-border dark:bg-white/10" />
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-foreground dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
                     <span className="text-xl sm:text-2xl">👥</span>
                     Registered Attendees
                     <Badge className="bg-[#219EBC]/20 text-[#219EBC] border-0 ml-2 text-xs">
@@ -619,7 +619,7 @@ export default function EventDetailsModal({
                     <div className="flex items-center justify-center p-6 sm:p-8">
                       <div className="flex flex-col items-center gap-3">
                         <div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
-                        <p className="text-gray-400 text-xs sm:text-sm">Loading attendees...</p>
+                        <p className="text-muted-foreground dark:text-gray-400 text-xs sm:text-sm">Loading attendees...</p>
                       </div>
                     </div>
                   ) : attendeesError ? (
@@ -632,8 +632,8 @@ export default function EventDetailsModal({
                   ) : attendees.length === 0 ? (
                     <div className="flex items-center justify-center p-6 sm:p-8">
                       <div className="flex flex-col items-center gap-3 text-center">
-                        <Users className="w-10 h-10 sm:w-12 sm:h-12 text-gray-500" />
-                        <p className="text-gray-400 text-xs sm:text-sm">No attendees registered yet</p>
+                        <Users className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground dark:text-gray-500" />
+                        <p className="text-muted-foreground dark:text-gray-400 text-xs sm:text-sm">No attendees registered yet</p>
                       </div>
                     </div>
                   ) : (
@@ -646,18 +646,18 @@ export default function EventDetailsModal({
                         ).map((attendee) => (
                           <div
                             key={attendee.id}
-                            className="flex flex-col items-center gap-2 p-2.5 sm:p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors"
+                            className="flex flex-col items-center gap-2 p-2.5 sm:p-3 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10 hover:bg-border dark:bg-white/10 transition-colors"
                           >
                             <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-[#219EBC]">
                               <AvatarImage
                                 src={attendee.user.image || undefined}
                                 alt={attendee.user.name || 'Attendee'}
                               />
-                              <AvatarFallback className="bg-[#219EBC] text-white text-xs sm:text-sm font-bold">
+                              <AvatarFallback className="bg-[#219EBC] text-foreground dark:text-white text-xs sm:text-sm font-bold">
                                 {attendee.user.name?.[0]?.toUpperCase() || <User className="w-5 h-5 sm:w-6 sm:h-6" />}
                               </AvatarFallback>
                             </Avatar>
-                            <p className="text-white text-[11px] sm:text-xs font-medium text-center line-clamp-2 w-full px-1">
+                            <p className="text-foreground dark:text-white text-[11px] sm:text-xs font-medium text-center line-clamp-2 w-full px-1">
                               {attendee.user.name || 'Anonymous'}
                             </p>
                           </div>
@@ -670,7 +670,7 @@ export default function EventDetailsModal({
                           <Button
                             onClick={() => setShowAllAttendees(!showAllAttendees)}
                             variant="outline"
-                            className="h-11 sm:h-auto border-2 border-white/10 hover:border-[#219EBC] text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
+                            className="h-11 sm:h-auto border-2 border-border dark:border-white/10 hover:border-[#219EBC] text-foreground dark:text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
                           >
                             {showAllAttendees ? (
                               <>
@@ -695,14 +695,14 @@ export default function EventDetailsModal({
         </ScrollArea>
 
         {/* Footer - Action Buttons - responsive layout with touch-friendly targets (Requirement 12.4) */}
-        <div className="p-4 sm:p-6 bg-[#0a0f1a] border-t border-white/10 flex flex-col gap-2.5 sm:gap-3">
+        <div className="p-4 sm:p-6 bg-muted/30 dark:bg-[#0a0f1a] border-t border-border dark:border-white/10 flex flex-col gap-2.5 sm:gap-3">
           {/* Calendar Export Button - full width on mobile with min 44px height */}
           <CalendarExportMenu
             event={event}
             isRegistered={isRegistered}
             variant="outline"
             size="default"
-            className="w-full min-h-[44px] h-12 sm:h-12 border-2 border-white/10 hover:border-[#219EBC] text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
+            className="w-full min-h-[44px] h-12 sm:h-12 border-2 border-border dark:border-white/10 hover:border-[#219EBC] text-foreground dark:text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
           />
 
           {/* Register/Unregister Button - full width on mobile with min 44px height */}
@@ -710,7 +710,7 @@ export default function EventDetailsModal({
             <Button
               onClick={() => onUnregister?.(event.id)}
               disabled={isLoading}
-              className="w-full min-h-[44px] h-12 sm:h-12 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
+              className="w-full min-h-[44px] h-12 sm:h-12 bg-green-600 hover:bg-green-700 text-foreground dark:text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
               aria-label="You are registered for this event. Click to unregister."
             >
               <CheckCircle2 className="w-5 h-5" />
