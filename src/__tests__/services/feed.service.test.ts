@@ -181,10 +181,11 @@ describe('FeedService', () => {
       expect(Array.isArray(feed)).toBe(true);
     });
 
-    it('should throw NotFoundError for non-existent user', async () => {
+    it('should return empty array for non-existent user', async () => {
       const { prisma } = await import('@/lib/prisma');
       vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
-      await expect(feedService.getUserFeed('non-existent-id')).rejects.toThrow(NotFoundError);
+      const feed = await feedService.getUserFeed('non-existent-id');
+      expect(feed).toEqual([]);
     });
   });
 

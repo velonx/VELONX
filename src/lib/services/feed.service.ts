@@ -88,8 +88,10 @@ export class FeedService {
     // Lean existence check — select only id to verify the user exists before building feed
     const userExists = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
     if (!userExists) {
-      throw new NotFoundError("User not found");
+      // User was deleted but session is still active — return empty feed gracefully
+      return [];
     }
+
 
     // Run all 4 relationship lookups in parallel on indexed junction tables
     // (much faster than a single User.findUnique loading 4 nested relation arrays)
