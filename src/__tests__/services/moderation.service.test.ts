@@ -43,6 +43,9 @@ vi.mock("@/lib/prisma", () => ({
     moderationLog: {
       create: vi.fn(),
     },
+    notification: {
+      create: vi.fn(),
+    },
   },
 }));
 
