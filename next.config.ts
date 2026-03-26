@@ -32,6 +32,16 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      // Google OAuth profile images
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      // GitHub OAuth profile images
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
     ],
     // Device sizes for responsive images
     deviceSizes: [320, 420, 640, 750, 828, 1080, 1200, 1920],
