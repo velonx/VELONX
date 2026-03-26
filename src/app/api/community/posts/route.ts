@@ -106,8 +106,14 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   // Create post via service
   const post = await postService.createPost(validatedData, userId);
 
-  // Invalidate user feed cache
+  // Invalidate the author's own cached feed (all filters/cursors)
   await cacheService.invalidate(CacheKeys.feed.userAll(userId));
+
+  // For public posts: flush every user's "ALL" feed cache so the post
+  // appears immediately for everyone, not just after the 5-min TTL.
+  if (validatedData.visibility === "PUBLIC") {
+    await cacheService.invalidate("feed:*:ALL:*");
+  }
 
   // If post is in a group, invalidate group feed cache
   if (validatedData.groupId) {

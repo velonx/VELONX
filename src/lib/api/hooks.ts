@@ -338,10 +338,12 @@ export function useUser(id: string) {
   );
 }
 
+const EMPTY_STATS = { success: true as const, data: { user: {}, stats: { projectsOwned: 0, projectsJoined: 0, totalProjects: 0, eventsAttending: 0, blogPostsAuthored: 0, meetingsCreated: 0 } } };
+
 export function useUserStats(id: string) {
   // Skip API call if ID is invalid
   const shouldFetch = id && id !== 'skip' && id.length === 24;
-  
+
   return useApiResource<{
     user: any;
     stats: {
@@ -353,7 +355,16 @@ export function useUserStats(id: string) {
       meetingsCreated: number;
     }
   }>(
-    () => shouldFetch ? usersApi.getStats(id) : Promise.resolve({ success: true as const, data: { user: {}, stats: { projectsOwned: 0, projectsJoined: 0, totalProjects: 0, eventsAttending: 0, blogPostsAuthored: 0, meetingsCreated: 0 } } }),
+    () => {
+      if (!shouldFetch) return Promise.resolve(EMPTY_STATS);
+      return usersApi.getStats(id).catch((err) => {
+        // If the user no longer exists (stale session ID), return empty stats silently
+        if (err instanceof ApiClientError && err.statusCode === 404) {
+          return EMPTY_STATS;
+        }
+        throw err;
+      });
+    },
     [id, shouldFetch]
   );
 }

@@ -179,8 +179,13 @@ export const PATCH = withErrorHandler(async (
   // Edit post via service
   const post = await postService.editPost(postId, validatedData.content, userId);
 
-  // Invalidate user feed cache
+  // Invalidate author's own feed cache
   await cacheService.invalidate(CacheKeys.feed.userAll(userId));
+
+  // For public posts: flush all users' ALL-filter caches so everyone sees the edit immediately
+  if (post.visibility === "PUBLIC") {
+    await cacheService.invalidate("feed:*:ALL:*");
+  }
 
   // If post is in a group, invalidate group feed cache
   if (post.groupId) {
@@ -249,10 +254,13 @@ export const DELETE = withErrorHandler(async (
   // Delete post via service
   await postService.deletePost(postId, userId);
 
-  // Invalidate user feed cache for the post author
+  // Invalidate author's feed cache
   if (post?.authorId) {
     await cacheService.invalidate(CacheKeys.feed.userAll(post.authorId));
   }
+
+  // For public posts: flush all users' ALL-filter caches so the deletion is reflected immediately
+  await cacheService.invalidate("feed:*:ALL:*");
 
   // If post was in a group, invalidate group feed cache
   if (post?.groupId) {

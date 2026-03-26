@@ -50,8 +50,8 @@ export async function updateLoginStreak(userId: string) {
   }
 
   const now = new Date();
-  let currentStreak = user.currentStreak;
-  let longestStreak = user.longestStreak;
+  let currentStreak = user.currentStreak ?? 0;
+  let longestStreak = user.longestStreak ?? 0;
   let streakBonusAwarded = false;
   let xpAwarded = 0;
 
