@@ -117,9 +117,10 @@ export function generateSignedCloudinaryUrl(
     const expirationTimestamp = Math.floor(Date.now() / 1000) + expiresIn;
 
     // Generate signed URL using Cloudinary's utils
-    const signedUrl = cloudinary.utils.private_download_url(publicId, 'pdf', {
+    const signedUrl = cloudinary.utils.private_download_url(publicId, '', {
       expires_at: expirationTimestamp,
       attachment: false, // Set to true to force download
+      resource_type: 'raw',
     });
 
     return signedUrl;
