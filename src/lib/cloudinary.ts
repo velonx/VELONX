@@ -113,14 +113,13 @@ export function generateSignedCloudinaryUrl(
   expiresIn: number = 3600
 ): string {
   try {
-    // Calculate expiration timestamp (current time + expiresIn seconds)
-    const expirationTimestamp = Math.floor(Date.now() / 1000) + expiresIn;
-
-    // Generate signed URL using Cloudinary's utils
-    const signedUrl = cloudinary.utils.private_download_url(publicId, '', {
-      expires_at: expirationTimestamp,
-      attachment: false, // Set to true to force download
+    // Assets are currently stored as 'upload' delivery type.
+    // 'private_download_url' only works for 'authenticated' types.
+    // We generate a secure URL with signature for validation.
+    const signedUrl = cloudinary.utils.url(publicId, {
+      secure: true,
       resource_type: 'raw',
+      sign_url: true, // Generate signature
     });
 
     return signedUrl;
