@@ -67,7 +67,8 @@ export async function uploadPDFToCloudinary(
     const result = await cloudinary.uploader.upload(base64PDF, {
       folder,
       resource_type: 'raw',
-      public_id: fileName.replace(/\.pdf$/i, ''), // Remove .pdf extension if present
+      // Ensure the public_id retains the .pdf extension to set the correct MIME type
+      public_id: fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`,
       use_filename: true,
       unique_filename: true,
     });
