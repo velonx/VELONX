@@ -108,16 +108,16 @@ function StudentDashboardContent() {
 
     // Fetch projects based on status filter
     const projectFilters = projectStatusFilter === 'ALL'
-        ? { pageSize: 100 }
-        : { pageSize: 100, status: projectStatusFilter as 'IN_PROGRESS' | 'COMPLETED' };
+        ? { pageSize: 100, memberId: session?.user?.id }
+        : { pageSize: 100, status: projectStatusFilter as 'IN_PROGRESS' | 'COMPLETED', memberId: session?.user?.id };
 
     // Fetch real data from API
     const { data: projects, loading: projectsLoading } = useProjects(projectFilters);
 
     // Fetch all projects for counts
-    const { data: allProjects } = useProjects({ pageSize: 100 });
-    const { data: inProgressProjects } = useProjects({ pageSize: 100, status: 'IN_PROGRESS' });
-    const { data: completedProjects } = useProjects({ pageSize: 100, status: 'COMPLETED' });
+    const { data: allProjects } = useProjects({ pageSize: 100, memberId: session?.user?.id });
+    const { data: inProgressProjects } = useProjects({ pageSize: 100, status: 'IN_PROGRESS', memberId: session?.user?.id });
+    const { data: completedProjects } = useProjects({ pageSize: 100, status: 'COMPLETED', memberId: session?.user?.id });
 
     const { data: meetings, loading: meetingsLoading } = useMeetings({
         pageSize: 10,

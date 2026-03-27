@@ -321,7 +321,7 @@ export interface EventFilters extends PaginationParams {
 export interface ProjectFilters extends PaginationParams {
   status?: ProjectStatus;
   techStack?: string;
-  member?: string;
+  memberId?: string;
   // Extended filters for project page UI improvements
   category?: ProjectCategory;
   difficulty?: ProjectDifficulty;
