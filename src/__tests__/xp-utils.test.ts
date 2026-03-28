@@ -48,7 +48,7 @@ describe("XP Utilities", () => {
 
   describe("XP_REWARDS", () => {
     it("should have defined rewards for all actions", () => {
-      expect(XP_REWARDS.EVENT_ATTENDANCE).toBe(50);
+      expect(XP_REWARDS.EVENT_ATTENDANCE).toBe(25);
       expect(XP_REWARDS.PROJECT_COMPLETION).toBe(100);
       expect(XP_REWARDS.MENTOR_SESSION).toBe(25);
       expect(XP_REWARDS.RESOURCE_CONTRIBUTION).toBe(30);

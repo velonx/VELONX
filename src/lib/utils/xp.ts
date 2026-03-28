@@ -25,7 +25,7 @@ export const XP_THRESHOLDS = [
  * XP rewards for different actions
  */
 export const XP_REWARDS = {
-  EVENT_ATTENDANCE: 50,
+  EVENT_ATTENDANCE: 25,
   PROJECT_COMPLETION: 100,
   MENTOR_SESSION: 25,
   RESOURCE_VISIT: 10,

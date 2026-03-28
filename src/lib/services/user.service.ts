@@ -147,6 +147,9 @@ export class UserService {
    * Get user statistics
    */
   async getUserStats(id: string) {
+    // Process pending event XP asynchronously to award XP for passed events
+    this.processPendingEventXP(id).catch((err) => console.error(err));
+
     // Try to get from cache first
     const cacheKey = CacheKeys.user.stats(id);
     
@@ -217,6 +220,70 @@ export class UserService {
       },
       CacheTTL.USER_STATS
     );
+  }
+
+  /**
+   * Process pending XP for past events the user attended
+   * This is called lazily when user stats are fetched
+   */
+  async processPendingEventXP(userId: string) {
+    try {
+      // Find all event registrations for this user where the event has passed
+      // and XP hasn't been awarded yet, and status is not CANCELLED
+      const now = new Date();
+      const pendingRegistrations = await prisma.eventAttendee.findMany({
+        where: {
+          userId,
+          xpAwarded: false,
+          status: { not: "CANCELLED" },
+          event: {
+            OR: [
+              { endDate: { lte: now } },
+              { 
+                AND: [
+                  { endDate: null },
+                  { date: { lte: now } }
+                ]
+              }
+            ]
+          }
+        },
+        include: {
+          event: {
+            select: {
+              title: true
+            }
+          }
+        }
+      });
+
+      if (pendingRegistrations.length === 0) {
+        return;
+      }
+
+      // Process each pending registration
+      const { awardXP, XP_REWARDS } = await import("@/lib/utils/xp");
+      
+      for (const reg of pendingRegistrations) {
+        // Award 25 XP
+        await awardXP(
+          userId,
+          XP_REWARDS.EVENT_ATTENDANCE,
+          `Attended event: ${reg.event.title}`
+        );
+
+        // Mark as awarded
+        await prisma.eventAttendee.update({
+          where: { id: reg.id },
+          data: { xpAwarded: true }
+        });
+      }
+      
+      // Invalidate user caches since their XP changed
+      await cacheService.invalidate(CacheKeys.user.all(userId));
+    } catch (error) {
+      console.error("Failed to process pending event XP:", error);
+    }
   }
 }
 

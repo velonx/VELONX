@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NotFoundError, ConflictError, ValidationError, AppError } from "@/lib/utils/errors";
 import { notificationService } from "./notification.service";
-import { awardXP, XP_REWARDS } from "@/lib/utils/xp";
 import { computeRegistrationStatus } from "@/lib/utils/event-helpers";
 import { eventAnalyticsService } from "./event-analytics.service";
 
@@ -644,17 +643,7 @@ export class EventService {
         });
       }
       
-      // Award XP for event registration
-      try {
-        await awardXP(
-          userId,
-          XP_REWARDS.EVENT_ATTENDANCE,
-          `Registered for event: ${registration.event.title}`
-        );
-      } catch (error) {
-        console.error('Failed to award XP for event registration:', error);
-        // Don't fail the registration if XP award fails
-      }
+      // XP for event registration is now awarded lazily when the event has passed
 
       // Check and award first activity milestone (async, don't block response)
       const { checkAndAwardFirstActivity } = await import('@/lib/services/referral.service');

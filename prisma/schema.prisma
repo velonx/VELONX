@@ -370,6 +370,7 @@ model EventAttendee {
   eventId   String         @db.ObjectId
   userId    String         @db.ObjectId
   status    AttendeeStatus @default(REGISTERED)
+  xpAwarded Boolean        @default(false)
   createdAt DateTime       @default(now())
 
   event Event @relation(fields: [eventId], references: [id])
