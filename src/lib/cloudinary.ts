@@ -57,25 +57,16 @@ export async function uploadPDFToCloudinary(
 ): Promise<{ url: string; publicId: string }> {
   try {
     console.log('[Cloudinary] Starting PDF upload...');
-    console.log('[Cloudinary] Config check:', {
-      hasCloudName: !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-      hasApiKey: !!process.env.CLOUDINARY_API_KEY,
-      hasApiSecret: !!process.env.CLOUDINARY_API_SECRET,
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-    });
+    
+    // Remove .pdf extension for public_id as image delivery appends it automatically
+    const basePublicId = fileName.replace(/\.pdf$/i, '');
     
     const result = await cloudinary.uploader.upload(base64PDF, {
       folder,
-      resource_type: 'raw',
-      // Ensure the public_id retains the .pdf extension to set the correct MIME type
-      public_id: fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`,
+      resource_type: 'image', // Use image resource type for PDFs to bypass strict raw delivery blocks
+      public_id: basePublicId,
       use_filename: true,
       unique_filename: true,
-    });
-    
-    console.log('[Cloudinary] Upload successful:', {
-      publicId: result.public_id,
-      url: result.secure_url,
     });
     
     return {
@@ -84,10 +75,6 @@ export async function uploadPDFToCloudinary(
     };
   } catch (error) {
     console.error('[Cloudinary] PDF upload error:', error);
-    console.error('[Cloudinary] Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : 'No stack trace',
-    });
     throw new Error('Failed to upload PDF to Cloudinary');
   }
 }
@@ -98,13 +85,10 @@ export async function deletePDFFromCloudinary(
 ): Promise<void> {
   try {
     await cloudinary.uploader.destroy(publicId, {
-      resource_type: 'raw',
+      resource_type: 'image', // Match the upload resource type
     });
   } catch (error) {
-    // Log error but don't throw - graceful degradation
     console.error('Cloudinary PDF deletion error:', error);
-    // We log but don't throw to prevent blocking resource deletion
-    // Orphaned files can be cleaned up by a background job
   }
 }
 
@@ -114,11 +98,10 @@ export function generateSignedCloudinaryUrl(
   expiresIn: number = 3600
 ): string {
   try {
-    // Assets are currently stored as 'upload' delivery type.
-    // We generate a secure URL with signature for validation.
     const signedUrl = cloudinary.utils.url(publicId, {
       secure: true,
-      resource_type: 'raw',
+      resource_type: 'image', // Match the upload resource type
+      format: 'pdf', // Explicitly request PDF format
       sign_url: true, // Generate signature
       analytics: false, // Disable analytics to prevent _a parameter from breaking the signature
     });
