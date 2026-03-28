@@ -24,6 +24,8 @@ const bebasNeue = Bebas_Neue({
   weight: "400",
   variable: "--font-bebas",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 const outfit = Outfit({
@@ -35,36 +37,48 @@ const greatVibes = Great_Vibes({
   weight: "400",
   variable: "--font-great-vibes",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 const dancingScript = Dancing_Script({
   weight: ["400", "600", "700"],
   variable: "--font-dancing-script",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 const amaticSC = Amatic_SC({
   weight: ["400", "700"],
   variable: "--font-amatic-sc",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 const indieFlower = Indie_Flower({
   weight: "400",
   variable: "--font-indie-flower",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 const sniglet = Sniglet({
   weight: ["400", "800"],
   variable: "--font-sniglet",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 const girassol = Girassol({
   weight: "400",
   variable: "--font-girassol",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 import { defaultMetadata } from "@/lib/seo.config";
