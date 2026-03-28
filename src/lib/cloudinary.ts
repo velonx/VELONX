@@ -115,12 +115,12 @@ export function generateSignedCloudinaryUrl(
 ): string {
   try {
     // Assets are currently stored as 'upload' delivery type.
-    // 'private_download_url' only works for 'authenticated' types.
     // We generate a secure URL with signature for validation.
     const signedUrl = cloudinary.utils.url(publicId, {
       secure: true,
       resource_type: 'raw',
       sign_url: true, // Generate signature
+      analytics: false, // Disable analytics to prevent _a parameter from breaking the signature
     });
 
     return signedUrl;
