@@ -127,22 +127,22 @@ export const Carousel3: React.FC<Carousel3Props> = ({
             >
                 {slides.map((slide, index) => (
                     <SwiperSlide
-                        key={`${slide.name}-${index}`}
+                        key={`${slide?.name}-${index}`}
                         style={{
-                            backgroundImage: type === 'showcase' ? `url(${slide.src})` : 'none',
+                            backgroundImage: type === 'showcase' ? `url(${slide?.src})` : 'none',
                         }}
                         className={type === 'testimonial' ? 'bg-card border border-border' : ''}
                     >
                         <div className={`slide-content ${type === 'testimonial' ? 'p-8 flex flex-col justify-center items-center h-full' : ''}`}>
                             {type === 'showcase' ? (
                                 <>
-                                    <h2 className="text-white drop-shadow-lg">{slide.name}</h2>
+                                    <h2 className="text-white drop-shadow-lg">{slide?.name || 'Untitled'}</h2>
                                     <a href="#" className="explore-btn">explore</a>
                                 </>
                             ) : (
                                 <>
-                                    <p className="text-foreground text-sm mb-4 leading-relaxed line-clamp-4 font-normal">&quot;{slide.description}&quot;</p>
-                                    <h2 className="text-foreground text-lg mt-auto">{slide.name}</h2>
+                                    <p className="text-foreground text-sm mb-4 leading-relaxed line-clamp-4 font-normal">&quot;{slide?.description || 'No description'}&quot;</p>
+                                    <h2 className="text-foreground text-lg mt-auto">{slide?.name || 'Anonymous'}</h2>
                                     <span className="text-secondary-foreground text-xs font-semibold uppercase tracking-wider">Verified User</span>
                                 </>
                             )}

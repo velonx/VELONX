@@ -87,7 +87,7 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
                 {/* Image Slides */}
                 {slides.map((slide, i) => (
                     <div 
-                        key={`${slide.name}-${i}`} 
+                        key={`${slide?.name}-${i}`} 
                         className="cinematic-slide flex-shrink-0 aspect-[4/3] h-[55vh] min-h-[260px] max-h-[480px] rounded-xl relative overflow-hidden group bg-[#050505] shadow-2xl border border-white/10 cursor-pointer"
                         onClick={() => handleProjectClick(slide)}
                     >
@@ -98,8 +98,8 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
                         {/* Image */}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                            src={slide.src}
-                            alt={slide.name}
+                            src={slide?.src}
+                            alt={slide?.name || 'Showcase Image'}
                             className="absolute inset-0 w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-[2s] ease-out grayscale-[0.2] contrast-[1.1] brightness-90 group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100"
                         />
 
@@ -110,7 +110,7 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
                         {/* Content */}
                         <div className="absolute bottom-6 md:bottom-10 left-6 md:left-10 right-6 md:right-10 z-20 flex justify-between items-end">
                             <h3 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase tracking-tighter text-white drop-shadow-2xl translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                                {slide.name}
+                                {slide?.name || 'Untitled'}
                             </h3>
                             <span className="text-primary font-mono text-xl tracking-widest font-bold">
                                 {(i + 1).toString().padStart(2, '0')}

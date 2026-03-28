@@ -230,11 +230,11 @@ export default function GroupSettings({
                           alt={member.user.name || "User"} 
                         />
                         <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-xs">
-                          {getInitials(member.user.name)}
+                          {getInitials(member.user?.name)}
                         </AvatarFallback>
                       </Avatar>
                       <span className="text-sm font-medium flex-1">
-                        {member.user.name || "Anonymous User"}
+                        {member.user?.name || "Anonymous User"}
                       </span>
                       <Badge variant="secondary" className="bg-blue-600/10 text-blue-700 dark:text-blue-400 border-blue-600/20">
                         <Shield className="w-3 h-3 mr-1" aria-hidden="true" />
@@ -258,7 +258,7 @@ export default function GroupSettings({
                   <SelectContent>
                     {eligibleMembers.map(member => (
                       <SelectItem key={member.userId} value={member.userId}>
-                        {member.user.name || member.user.email}
+                        {member.user?.name || member.user?.email || "Anonymous User"}
                       </SelectItem>
                     ))}
                   </SelectContent>
