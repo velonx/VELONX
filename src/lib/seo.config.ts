@@ -44,6 +44,15 @@ export const defaultMetadata: Metadata = {
     creator: siteConfig.creator,
     publisher: siteConfig.publisher,
     formatDetection: siteConfig.formatDetection,
+    icons: {
+        icon: [
+            {
+                url: '/favicon.png',
+                sizes: '48x48',
+                type: 'image/png',
+            },
+        ],
+    },
     openGraph: {
         type: 'website',
         locale: 'en_US',
