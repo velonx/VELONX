@@ -83,6 +83,8 @@ export default function EventsToolbar({
         <div className="relative flex-1 w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" aria-hidden="true" />
           <Input
+            id="events-search"
+            name="events-search"
             type="text"
             placeholder="Search events..."
             value={searchQuery}

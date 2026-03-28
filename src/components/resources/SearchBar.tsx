@@ -125,6 +125,8 @@ const SearchBarComponent = ({
       
       {/* Search Input */}
       <Input
+        id="resources-search"
+        name="resources-search"
         type="text"
         value={localValue}
         onChange={handleInputChange}
