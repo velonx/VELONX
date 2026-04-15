@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Star, Loader2, CheckCircle2 } from "lucide-react";
@@ -80,6 +80,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
               <DialogTitle className="text-2xl font-black text-[#023047]">
                 Rate Your Session
               </DialogTitle>
+              <DialogDescription className="sr-only">Provide feedback for your mentor session</DialogDescription>
             </DialogHeader>
 
             {/* Session Info */}

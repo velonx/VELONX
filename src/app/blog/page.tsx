@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Calendar, Clock, User, ArrowRight, Search, Tag, Share2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useBlogPosts } from "@/lib/api/hooks";
 
@@ -250,6 +250,7 @@ export default function BlogPage() {
                                     <DialogTitle className="text-4xl font-black text-foreground leading-tight">
                                         {selectedBlog.title}
                                     </DialogTitle>
+                                    <DialogDescription className="sr-only">Blog Post Detail</DialogDescription>
                                 </DialogHeader>
 
                                 {/* Meta Info */}

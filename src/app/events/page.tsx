@@ -391,9 +391,7 @@ function EventsPage() {
                         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                             <LogIn className="w-8 h-8 text-primary" />
                         </div>
-                        <DialogTitle className="text-2xl font-black text-foreground">
-                            Login Required
-                        </DialogTitle>
+                        <DialogTitle className="text-2xl font-bold tracking-tight text-foreground text-center">Sign In Required</DialogTitle>
                         <DialogDescription className="text-muted-foreground mt-2">
                             You need to be logged in to register for events. Please sign in or create an account to continue.
                         </DialogDescription>

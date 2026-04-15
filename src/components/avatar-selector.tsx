@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Check, Sparkles } from "lucide-react";
 
 // Available avatar options
@@ -59,6 +59,7 @@ export default function AvatarSelector({ currentAvatar, onSelectAvatar, trigger 
                         <Sparkles className="w-6 h-6 text-yellow-400" />
                         Choose Your Avatar
                     </DialogTitle>
+                    <DialogDescription className="sr-only">Select your profile avatar</DialogDescription>
                 </DialogHeader>
 
                 <div className="grid grid-cols-3 md:grid-cols-5 gap-4 py-6">

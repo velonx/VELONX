@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Video, Briefcase, GraduationCap, Plus, Edit, Trash2, CheckCircle, XCircle, Calendar, Clock, Mail, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { getCSRFToken } from "@/lib/utils/csrf";
@@ -505,6 +505,7 @@ export default function CareerManagement() {
                         <DialogTitle>
                             {editingOpportunity ? "Edit" : "Create"} {opportunityForm.type === "INTERNSHIP" ? "Internship" : "Job"}
                         </DialogTitle>
+                        <DialogDescription className="sr-only">Opportunity details</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={editingOpportunity ? handleUpdateOpportunity : handleCreateOpportunity} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
@@ -629,6 +630,7 @@ export default function CareerManagement() {
                 <DialogContent className="max-w-lg">
                     <DialogHeader>
                         <DialogTitle>Manage Mock Interview</DialogTitle>
+                        <DialogDescription className="sr-only">Update mock interview</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleUpdateInterview} className="space-y-4">
                         <div className="space-y-2">
