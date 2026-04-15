@@ -35,7 +35,7 @@ export default function BlogPage() {
     };
 
     const handleShare = async (post: any) => {
-        const url = `${window.location.origin}/blog/${post.id}`;
+        const url = `${window.location.origin}/blog?id=${post.id}`;
         const shareData = {
             title: post.title,
             text: `Check out this article: ${post.title}`,

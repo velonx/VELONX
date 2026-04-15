@@ -129,7 +129,7 @@ export function PostCard({
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = `${window.location.origin}/community/post/${post.id}`;
+    const url = `${window.location.origin}/community/feed?postId=${post.id}`;
     const shareData = {
       title: 'Community Post',
       text: `Check out this post: ${post.content.substring(0, 50)}...`,

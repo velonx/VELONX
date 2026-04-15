@@ -67,7 +67,7 @@ export default function EventCard({
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/events/${event.id}`;
+    const url = `${window.location.origin}/events?id=${event.id}`;
     const shareData = {
       title: event.title,
       text: `Check out this event: ${event.title}`,

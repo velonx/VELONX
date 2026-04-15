@@ -166,7 +166,7 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
   const [copied, setCopied] = React.useState(false);
 
   const handleShare = async () => {
-    const url = resource.url || `${window.location.origin}/resources/${resource.id}`;
+    const url = resource.url || `${window.location.origin}/resources?id=${resource.id}`;
     const shareData = {
       title: resource.title,
       text: `Check out this resource: ${resource.title}`,

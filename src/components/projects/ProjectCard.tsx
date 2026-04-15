@@ -96,7 +96,7 @@ const ProjectCardComponent = ({
 
     const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        const url = `${window.location.origin}/projects/${project.id}`;
+        const url = `${window.location.origin}/projects?id=${project.id}`;
         const shareData = {
             title: project.title,
             text: `Check out this project: ${project.title}`,
