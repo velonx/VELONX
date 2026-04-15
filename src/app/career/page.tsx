@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, Video, Calendar, CheckCircle, Clock, Briefcase, GraduationCap, ArrowRight, Loader2, Search, ChevronRight, ExternalLink, MapPin, DollarSign, Sparkles, FileText, Users } from "lucide-react";
+import { Upload, Video, Calendar, CheckCircle, Clock, Briefcase, GraduationCap, ArrowRight, Loader2, Search, ChevronRight, ExternalLink, MapPin, DollarSign, Sparkles, FileText, Users, Share2, Check } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function CareerPage() {
@@ -16,6 +16,23 @@ export default function CareerPage() {
     const [internships, setInternships] = useState<any[]>([]);
     const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    const handleShare = async (id: string, title: string, type: 'internship' | 'job') => {
+        const url = `${window.location.origin}/career?tab=${type}&id=${id}`;
+        const shareData = {
+            title,
+            text: `Check out this ${type}: ${title}`,
+            url,
+        };
+        if (navigator.share) {
+            try { await navigator.share(shareData); } catch { /* cancelled */ }
+        } else {
+            await navigator.clipboard.writeText(url);
+            setCopiedId(id);
+            setTimeout(() => setCopiedId(null), 2000);
+        }
+    };
 
     const [mockFormData, setMockFormData] = useState({
         email: "",
@@ -282,12 +299,24 @@ export default function CareerPage() {
                                                     </ul>
                                                 </div>
                                             </CardContent>
-                                            <CardFooter className="px-6 sm:px-8 pb-8">
+                                            <CardFooter className="px-6 sm:px-8 pb-8 flex gap-3">
                                                 <Button
                                                     onClick={() => handleApply(internship.applyUrl, internship.title)}
-                                                    className="w-full bg-gradient-to-r from-orange-400 to-[#FFB703] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#FFB703]/20 border border-orange-300 transition-all"
+                                                    className="flex-1 bg-gradient-to-r from-orange-400 to-[#FFB703] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#FFB703]/20 border border-orange-300 transition-all"
                                                 >
                                                     Apply Now <ExternalLink className="w-5 h-5 ml-2" />
+                                                </Button>
+                                                <Button
+                                                    onClick={() => handleShare(internship.id, internship.title, 'internship')}
+                                                    variant="outline"
+                                                    title={copiedId === internship.id ? 'Link copied!' : 'Share'}
+                                                    className="h-12 w-12 rounded-xl shrink-0"
+                                                >
+                                                    {copiedId === internship.id ? (
+                                                        <Check className="w-5 h-5 text-green-500" />
+                                                    ) : (
+                                                        <Share2 className="w-5 h-5 text-muted-foreground" />
+                                                    )}
                                                 </Button>
                                             </CardFooter>
                                         </Card>
@@ -349,12 +378,24 @@ export default function CareerPage() {
                                                     </ul>
                                                 </div>
                                             </CardContent>
-                                            <CardFooter className="px-6 sm:px-8 pb-8">
+                                            <CardFooter className="px-6 sm:px-8 pb-8 flex gap-3">
                                                 <Button
                                                     onClick={() => handleApply(job.applyUrl, job.title)}
-                                                    className="w-full bg-gradient-to-r from-teal-400 to-[#219EBC] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#219EBC]/20 border border-teal-300 transition-all"
+                                                    className="flex-1 bg-gradient-to-r from-teal-400 to-[#219EBC] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#219EBC]/20 border border-teal-300 transition-all"
                                                 >
                                                     Apply Now <ExternalLink className="w-5 h-5 ml-2" />
+                                                </Button>
+                                                <Button
+                                                    onClick={() => handleShare(job.id, job.title, 'job')}
+                                                    variant="outline"
+                                                    title={copiedId === job.id ? 'Link copied!' : 'Share'}
+                                                    className="h-12 w-12 rounded-xl shrink-0"
+                                                >
+                                                    {copiedId === job.id ? (
+                                                        <Check className="w-5 h-5 text-green-500" />
+                                                    ) : (
+                                                        <Share2 className="w-5 h-5 text-muted-foreground" />
+                                                    )}
                                                 </Button>
                                             </CardFooter>
                                         </Card>
