@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Clock, User, ArrowRight, Search, Tag, Sparkles, X } from "lucide-react";
+import { Calendar, Clock, User, ArrowRight, Search, Tag, Share2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -14,6 +14,7 @@ export default function BlogPage() {
     const [selectedCategory, setSelectedCategory] = useState("All Posts");
     const [selectedBlog, setSelectedBlog] = useState<any | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
 
     // Fetch blog posts from API
     const { data: blogPosts, loading } = useBlogPosts({
@@ -31,6 +32,22 @@ export default function BlogPage() {
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
         setTimeout(() => setSelectedBlog(null), 300);
+    };
+
+    const handleShare = async (post: any) => {
+        const url = `${window.location.origin}/blog/${post.id}`;
+        const shareData = {
+            title: post.title,
+            text: `Check out this article: ${post.title}`,
+            url,
+        };
+        if (navigator.share) {
+            try { await navigator.share(shareData); } catch { /* cancelled */ }
+        } else {
+            await navigator.clipboard.writeText(url);
+            setCopiedPostId(post.id);
+            setTimeout(() => setCopiedPostId(null), 2000);
+        }
     };
 
     if (loading) {
@@ -150,12 +167,29 @@ export default function BlogPage() {
                                                         <p className="text-[10px] font-bold text-muted-foreground tracking-wider">AUTHOR</p>
                                                     </div>
                                                 </div>
-                                                <button
-                                                    onClick={() => handleReadMore(post)}
-                                                    className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
-                                                >
-                                                    <ArrowRight className="w-5 h-5" />
-                                                </button>
+                                                <div className="flex items-center gap-2">
+                                                    {/* Share Button */}
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleShare(post); }}
+                                                        title={copiedPostId === post.id ? 'Link copied!' : 'Share'}
+                                                        className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
+                                                        aria-label={`Share ${post.title}`}
+                                                    >
+                                                        {copiedPostId === post.id ? (
+                                                            <Check className="w-5 h-5 text-green-500" />
+                                                        ) : (
+                                                            <Share2 className="w-5 h-5" />
+                                                        )}
+                                                    </button>
+                                                    {/* Read More Button */}
+                                                    <button
+                                                        onClick={() => handleReadMore(post)}
+                                                        className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
+                                                        aria-label={`Read more about ${post.title}`}
+                                                    >
+                                                        <ArrowRight className="w-5 h-5" />
+                                                    </button>
+                                                </div>
                                             </CardFooter>
                                         </Card>
                                     </motion.div>

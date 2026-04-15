@@ -12,7 +12,9 @@ import {
   Video,
   CheckCircle2,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Share2,
+  Check
 } from "lucide-react";
 import { Event } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
@@ -25,6 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useState } from "react";
 
 interface EventCardProps {
   event: Event;
@@ -61,6 +64,23 @@ export default function EventCard({
   isRegistered = false,
   className
 }: EventCardProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/events/${event.id}`;
+    const shareData = {
+      title: event.title,
+      text: `Check out this event: ${event.title}`,
+      url,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch { /* cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
   // Calculate attendee percentage
   const attendeeCount = event._count?.attendees || 0;
   const attendeePercentage = (attendeeCount / event.maxSeats) * 100;
@@ -387,14 +407,40 @@ export default function EventCard({
           )}
         </div>
 
-        {/* Calendar Export Button - Touch-friendly (min 44x44px) */}
-        <CalendarExportMenu
-          event={event}
-          isRegistered={isRegistered}
-          variant="outline"
-          size="default"
-          className="w-full min-h-[44px] h-10 sm:h-9 border border-border hover:border-primary hover:bg-primary/5 text-foreground hover:text-primary font-semibold rounded-lg transition-all touch-manipulation active:scale-95 text-xs sm:text-sm"
-        />
+        {/* Calendar Export + Share Row */}
+        <div className="flex gap-2">
+          <CalendarExportMenu
+            event={event}
+            isRegistered={isRegistered}
+            variant="outline"
+            size="default"
+            className="flex-1 min-h-[44px] h-10 sm:h-9 border border-border hover:border-primary hover:bg-primary/5 text-foreground hover:text-primary font-semibold rounded-lg transition-all touch-manipulation active:scale-95 text-xs sm:text-sm"
+          />
+
+          {/* Share Button */}
+          <TooltipProvider>
+            <Tooltip open={copied}>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handleShare}
+                  variant="outline"
+                  size="icon"
+                  className="min-h-[44px] h-10 w-10 sm:h-9 sm:w-9 border border-border hover:border-primary hover:bg-primary/5 text-foreground hover:text-primary rounded-lg transition-all touch-manipulation active:scale-95 flex-shrink-0"
+                  aria-label={`Share ${event.title}`}
+                >
+                  {copied ? (
+                    <Check className="w-4 h-4 text-green-500" aria-hidden="true" />
+                  ) : (
+                    <Share2 className="w-4 h-4" aria-hidden="true" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Link copied!</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </CardFooter>
     </Card>
   );

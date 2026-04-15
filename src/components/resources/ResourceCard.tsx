@@ -48,7 +48,9 @@ import {
   FileText,
   FileDown,
   ExternalLink,
-  Download
+  Download,
+  Share2,
+  Check
 } from 'lucide-react';
 
 export interface ResourceCardProps {
@@ -161,6 +163,23 @@ function formatFileSize(bytes: number): string {
 const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
   const [imageError, setImageError] = React.useState(false);
   const [isVisiting, setIsVisiting] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+
+  const handleShare = async () => {
+    const url = resource.url || `${window.location.origin}/resources/${resource.id}`;
+    const shareData = {
+      title: resource.title,
+      text: `Check out this resource: ${resource.title}`,
+      url,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch { /* cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const category = resource.category as ResourceCategory;
   const type = resource.type as ResourceType;
@@ -398,18 +417,34 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
           )}
         </div>
 
-        {/* Footer: Category and Access Count */}
+        {/* Footer: Category, Access Count, Share */}
         <footer className="flex items-center justify-between gap-2 pt-2 border-t border-border">
           <Badge variant="outline" className="text-xs border-border font-medium">
             {getCategoryDisplayName(category)}
           </Badge>
 
-          <div
-            className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium"
-            aria-label={`${resource.accessCount} views`}
-          >
-            <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>{formattedAccessCount}</span>
+          <div className="flex items-center gap-2">
+            <div
+              className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium"
+              aria-label={`${resource.accessCount} views`}
+            >
+              <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>{formattedAccessCount}</span>
+            </div>
+
+            {/* Share Button */}
+            <button
+              onClick={handleShare}
+              title={copied ? 'Link copied!' : 'Share'}
+              className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all"
+              aria-label={`Share ${resource.title}`}
+            >
+              {copied ? (
+                <Check className="h-3.5 w-3.5 text-green-500" aria-hidden="true" />
+              ) : (
+                <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
+              )}
+            </button>
           </div>
         </footer>
       </article>

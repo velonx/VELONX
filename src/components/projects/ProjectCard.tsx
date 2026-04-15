@@ -17,7 +17,7 @@ import {
     ExtendedProject,
     UserProjectRelationship,
 } from '@/lib/types/project-page.types';
-import { Github, ExternalLink, Loader2, Users, CheckCircle2, Trophy, ArrowRight } from 'lucide-react';
+import { Github, ExternalLink, Loader2, Users, CheckCircle2, Trophy, ArrowRight, Share2, Check } from 'lucide-react';
 
 export interface ProjectCardProps {
     project: ExtendedProject;
@@ -92,6 +92,24 @@ const ProjectCardComponent = ({
     const joinConfig = getJoinButtonConfig(joinRequestStatus);
     const gradient = getCategoryGradient(project.category);
     const icon = getCategoryIcon(project.category);
+    const [copied, setCopied] = React.useState(false);
+
+    const handleShare = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const url = `${window.location.origin}/projects/${project.id}`;
+        const shareData = {
+            title: project.title,
+            text: `Check out this project: ${project.title}`,
+            url,
+        };
+        if (navigator.share) {
+            try { await navigator.share(shareData); } catch { /* cancelled */ }
+        } else {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
 
     const displayTech = project.techStack.slice(0, 4);
     const remaining = Math.max(0, project.techStack.length - 4);
@@ -246,8 +264,20 @@ const ProjectCardComponent = ({
 
             {/* ── Footer ── */}
             <div className="flex items-center gap-2 px-4 pb-4 pt-0">
-                {/* GitHub / Demo quick links */}
+                {/* Quick links & Share */}
                 <div className="flex items-center gap-1 mr-auto">
+                    <button
+                        onClick={handleShare}
+                        title={copied ? 'Link copied!' : 'Share'}
+                        aria-label={`Share ${project.title}`}
+                        className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                        {copied ? (
+                            <Check className="h-4 w-4 text-green-500" aria-hidden="true" />
+                        ) : (
+                            <Share2 className="h-4 w-4" aria-hidden="true" />
+                        )}
+                    </button>
                     {hasGithub && (
                         <button
                             onClick={(e) => { stop(e); window.open(project.githubUrl!, '_blank', 'noopener,noreferrer'); }}

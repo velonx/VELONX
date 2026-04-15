@@ -13,6 +13,8 @@ import {
   LinkIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  Share2,
+  Check,
 } from 'lucide-react';
 import { formatDistanceToNow } from '@/lib/utils/date-helpers';
 import type { CommunityPostData } from '@/lib/types/community.types';
@@ -53,6 +55,7 @@ export function PostCard({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const [localScore, setLocalScore] = useState(post.score || 0);
+  const [copied, setCopied] = useState(false);
 
   const { data: session } = useSession();
   const loggedInUserId = session?.user?.id;
@@ -121,6 +124,23 @@ export function PostCard({
       else if (!post.isPinned && onPin) await onPin(post.id);
     } catch (error) {
       console.error('[PostCard] Pin toggle error:', error);
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/community/post/${post.id}`;
+    const shareData = {
+      title: 'Community Post',
+      text: `Check out this post: ${post.content.substring(0, 50)}...`,
+      url,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch { /* cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -322,6 +342,26 @@ export function PostCard({
             >
               <MessageCircleIcon className="size-4" />
               <span className="text-sm">{post.commentCount} Comments</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleShare}
+              title={copied ? 'Link copied!' : 'Share'}
+              className="text-muted-foreground hover:text-foreground gap-1.5 h-8 px-3 rounded-full ml-auto"
+            >
+              {copied ? (
+                <>
+                  <Check className="size-4 text-green-500" />
+                  <span className="text-sm text-green-500">Copied</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="size-4" />
+                  <span className="text-sm">Share</span>
+                </>
+              )}
             </Button>
           </div>
 

@@ -4,9 +4,10 @@ import { CommunityGroupData } from "@/lib/types/community.types";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, Lock, Globe, MessageSquare } from "lucide-react";
+import { Users, Lock, Globe, MessageSquare, Share2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useState } from "react";
 
 interface GroupCardProps {
   group: CommunityGroupData;
@@ -35,6 +36,8 @@ export function GroupCard({
   hasPendingRequest = false,
   className
 }: GroupCardProps) {
+  const [copied, setCopied] = useState(false);
+
   const handleJoinClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (group.isPrivate && onRequest) {
@@ -47,6 +50,23 @@ export function GroupCard({
   const handleCardClick = () => {
     if (onViewDetails) {
       onViewDetails(group);
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/community/groups/${group.id}`;
+    const shareData = {
+      title: group.name,
+      text: `Check out the ${group.name} group!`,
+      url,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch { /* cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -126,11 +146,11 @@ export function GroupCard({
         </div>
       </CardContent>
 
-      <CardFooter className="pt-3 border-t border-border/50">
+      <CardFooter className="pt-3 border-t border-border/50 flex gap-2">
         {isMember ? (
           <Button
             variant="outline"
-            className="w-full"
+            className="flex-1"
             disabled
             aria-label="Already a member of this group"
           >
@@ -140,7 +160,7 @@ export function GroupCard({
         ) : hasPendingRequest ? (
           <Button
             variant="outline"
-            className="w-full"
+            className="flex-1"
             disabled
             aria-label="Join request pending approval"
           >
@@ -151,7 +171,7 @@ export function GroupCard({
           <Button
             onClick={handleJoinClick}
             className={cn(
-              "w-full font-semibold transition-all",
+              "flex-1 font-semibold transition-all",
               group.isPrivate
                 ? "bg-amber-600 hover:bg-amber-700 text-white"
                 : "bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 text-white"
@@ -171,6 +191,21 @@ export function GroupCard({
             )}
           </Button>
         )}
+        
+        <Button
+          onClick={handleShare}
+          variant="outline"
+          size="icon"
+          title={copied ? 'Link copied!' : 'Share'}
+          className="shrink-0"
+          aria-label={`Share ${group.name}`}
+        >
+          {copied ? (
+            <Check className="h-4 w-4 text-green-500" aria-hidden="true" />
+          ) : (
+            <Share2 className="h-4 w-4" aria-hidden="true" />
+          )}
+        </Button>
       </CardFooter>
     </Card>
   );
