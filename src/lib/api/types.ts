@@ -217,7 +217,9 @@ export interface LeaderboardEntry {
   level: number;
   role: 'STUDENT' | 'ADMIN';
   rank: number;
-  projectCount: number;
+  projects: number;
+  badges: number;
+  currentStreak: number;
 }
 
 export interface Meeting {

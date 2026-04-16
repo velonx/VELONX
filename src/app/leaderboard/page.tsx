@@ -219,9 +219,21 @@ export default function LeaderboardPage() {
                                                     <Badge variant="outline" className="text-[10px] uppercase font-bold text-muted-foreground py-0 px-2 rounded-md">Lvl {user.level}</Badge>
                                                 </div>
                                             </div>
-                                            <div className="col-span-3 text-center">
-                                                <p className="text-sm font-bold text-foreground">{user.projectCount} Projects</p>
-                                                <p className="text-[11px] text-muted-foreground">Successfully Built</p>
+                                            <div className="col-span-3 flex items-center justify-center gap-4">
+                                                <div className="text-center">
+                                                    <p className="text-sm font-bold text-foreground">{user.projects ?? 0}</p>
+                                                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Projects</p>
+                                                </div>
+                                                <div className="w-px h-6 bg-border"></div>
+                                                <div className="text-center">
+                                                    <p className="text-sm font-bold text-foreground">{user.badges ?? 0}</p>
+                                                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Badges</p>
+                                                </div>
+                                                <div className="w-px h-6 bg-border"></div>
+                                                <div className="text-center">
+                                                    <p className="text-sm font-bold text-foreground">{user.currentStreak ?? 0}</p>
+                                                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Streak</p>
+                                                </div>
                                             </div>
                                             <div className="col-span-3 text-right">
                                                 <div className="flex items-center justify-end gap-1.5 font-black text-foreground text-lg">
