@@ -73,12 +73,10 @@ export async function updateLoginStreak(userId: string) {
       longestStreak = currentStreak;
     }
 
-    // Award streak bonus XP (only if streak is 2 or more days)
-    if (currentStreak >= 2) {
-      await awardXP(userId, XP_REWARDS.STREAK_BONUS, `Daily login streak: ${currentStreak} days`);
-      streakBonusAwarded = true;
-      xpAwarded = XP_REWARDS.STREAK_BONUS;
-    }
+    // Award daily login XP for check-in regardless of streak length
+    await awardXP(userId, XP_REWARDS.STREAK_BONUS, `Daily login: ${currentStreak} day${currentStreak > 1 ? 's' : ''} streak`);
+    streakBonusAwarded = true;
+    xpAwarded = XP_REWARDS.STREAK_BONUS;
 
     // Update user's streak and last login date
     await prisma.user.update({

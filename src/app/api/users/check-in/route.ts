@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
         success: true,
         data: streakInfo,
         message: streakInfo.streakBonusAwarded
-          ? `Streak bonus! You've earned ${streakInfo.xpAwarded} XP for ${streakInfo.currentStreak} days in a row!`
+          ? `Streak bonus! You've earned ${streakInfo.xpAwarded} XP for ${streakInfo.currentStreak} day${streakInfo.currentStreak > 1 ? 's' : ''} in a row!`
           : `Welcome back! Current streak: ${streakInfo.currentStreak} day(s)`,
       },
       { status: 200 }
