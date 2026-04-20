@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import {
   Mail,
@@ -81,6 +81,19 @@ export default function ContactPage() {
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
     message.trim().length >= 10;
 
+  // Fetch CSRF token on mount and keep it in a ref (no re-render needed)
+  const csrfTokenRef = useRef<string | null>(null);
+  useEffect(() => {
+    fetch("/api/csrf")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.data?.csrfToken) csrfTokenRef.current = data.data.csrfToken;
+      })
+      .catch(() => {
+        // Non-critical — submission will prompt a retry
+      });
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid || loading) return;
@@ -89,9 +102,23 @@ export default function ContactPage() {
     setError("");
 
     try {
+      // If we don't have a token yet, fetch one now (fallback)
+      if (!csrfTokenRef.current) {
+        try {
+          const tokenRes = await fetch("/api/csrf");
+          const tokenData = await tokenRes.json();
+          csrfTokenRef.current = tokenData?.data?.csrfToken ?? null;
+        } catch {
+          // proceed anyway — server will reject with a clear error
+        }
+      }
+
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrfTokenRef.current ? { "x-csrf-token": csrfTokenRef.current } : {}),
+        },
         body: JSON.stringify({ name, email, subject, message }),
       });
 

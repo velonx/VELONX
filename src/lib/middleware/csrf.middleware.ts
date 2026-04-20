@@ -85,17 +85,21 @@ function requiresCSRFProtection(method: string): boolean {
  * Check if endpoint should skip CSRF protection
  */
 function shouldSkipCSRFProtection(pathname: string): boolean {
-  // Skip CSRF for authentication endpoints (they have their own protection)
+  // Skip CSRF only for:
+  // 1. NextAuth internal endpoints (manage their own security)
+  // 2. The CSRF token endpoint itself
+  // 3. Health check
+  // All other auth endpoints (forgot-password, reset-password, signup, verify) go through
+  // fetchApi which automatically attaches the x-csrf-token header.
   const skipPaths = [
     '/api/auth/signin',
     '/api/auth/signout',
     '/api/auth/callback',
     '/api/auth/session',
     '/api/auth/csrf',
-    '/api/auth/signup',
     '/api/health',
   ]
-  
+
   return skipPaths.some(path => pathname.startsWith(path))
 }
 
@@ -161,16 +165,11 @@ export async function csrfProtection(request: NextRequest): Promise<NextResponse
     return NextResponse.json(
       {
         success: false,
-        error: {
-          code: 'CSRF_TOKEN_INVALID',
-          message: 'Invalid or missing CSRF token. Please refresh the page and try again.',
-        },
+        error: 'Invalid or missing CSRF token. Please refresh the page and try again.',
       },
       {
         status: 403,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       }
     )
   }
