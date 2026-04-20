@@ -51,35 +51,35 @@ function deleteUser(id: string) {
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
-    communityRoom: {
-      create: vi.fn(({ data }) => { const r = { ...data, id: `room-${Date.now()}` }; rooms.push(r); return Promise.resolve(r); }),
-      delete: vi.fn(({ where }) => { deleteRoom(where.id); return Promise.resolve({}); }),
+    discussionRoom: {
+      create: vi.fn(({ data }: any) => { const r = { ...data, id: `room-${Date.now()}` }; rooms.push(r); return Promise.resolve(r); }),
+      delete: vi.fn(({ where }: any) => { deleteRoom(where.id); return Promise.resolve({}); }),
       count: vi.fn(() => Promise.resolve(rooms.length)),
     },
-    communityRoomMember: {
-      create: vi.fn(({ data }) => { const m = { ...data, id: `rm-${Date.now()}` }; roomMembers.push(m); return Promise.resolve(m); }),
-      count: vi.fn(({ where }) => Promise.resolve(roomMembers.filter(m => where?.roomId ? m.roomId === where.roomId : true).length)),
+    roomMember: {
+      create: vi.fn(({ data }: any) => { const m = { ...data, id: `rm-${Date.now()}` }; roomMembers.push(m); return Promise.resolve(m); }),
+      count: vi.fn(({ where }: any) => Promise.resolve(roomMembers.filter((m: any) => where?.roomId ? m.roomId === where.roomId : true).length)),
     },
-    communityMessage: {
-      create: vi.fn(({ data }) => { const m = { ...data, id: `msg-${Date.now()}` }; messages.push(m); return Promise.resolve(m); }),
-      count: vi.fn(({ where }) => Promise.resolve(messages.filter(m => where?.roomId ? m.roomId === where.roomId : true).length)),
+    chatMessage: {
+      create: vi.fn(({ data }: any) => { const m = { ...data, id: `msg-${Date.now()}` }; messages.push(m); return Promise.resolve(m); }),
+      count: vi.fn(({ where }: any) => Promise.resolve(messages.filter((m: any) => where?.roomId ? m.roomId === where.roomId : true).length)),
     },
     communityGroup: {
-      create: vi.fn(({ data }) => { const g = { ...data, id: `grp-${Date.now()}` }; groups.push(g); return Promise.resolve(g); }),
-      delete: vi.fn(({ where }) => { deleteGroup(where.id); return Promise.resolve({}); }),
+      create: vi.fn(({ data }: any) => { const g = { ...data, id: `grp-${Date.now()}` }; groups.push(g); return Promise.resolve(g); }),
+      delete: vi.fn(({ where }: any) => { deleteGroup(where.id); return Promise.resolve({}); }),
     },
     communityPost: {
-      create: vi.fn(({ data }) => { const p = { ...data, id: `post-${Date.now()}` }; posts.push(p); return Promise.resolve(p); }),
-      delete: vi.fn(({ where }) => { deletePost(where.id); return Promise.resolve({}); }),
+      create: vi.fn(({ data }: any) => { const p = { ...data, id: `post-${Date.now()}` }; posts.push(p); return Promise.resolve(p); }),
+      delete: vi.fn(({ where }: any) => { deletePost(where.id); return Promise.resolve({}); }),
       count: vi.fn(() => Promise.resolve(posts.length)),
     },
-    communityComment: {
-      create: vi.fn(({ data }) => { const c = { ...data, id: `cmt-${Date.now()}` }; comments.push(c); return Promise.resolve(c); }),
-      count: vi.fn(({ where }) => Promise.resolve(comments.filter(c => where?.postId ? c.postId === where.postId : true).length)),
+    postComment: {
+      create: vi.fn(({ data }: any) => { const c = { ...data, id: `cmt-${Date.now()}` }; comments.push(c); return Promise.resolve(c); }),
+      count: vi.fn(({ where }: any) => Promise.resolve(comments.filter((c: any) => where?.postId ? c.postId === where.postId : true).length)),
     },
     user: {
-      create: vi.fn(({ data }) => { const u = { ...data, id: `user-${Date.now()}` }; users.push(u); return Promise.resolve(u); }),
-      delete: vi.fn(({ where }) => { deleteUser(where.id); return Promise.resolve({}); }),
+      create: vi.fn(({ data }: any) => { const u = { ...data, id: `user-${Date.now()}` }; users.push(u); return Promise.resolve(u); }),
+      delete: vi.fn(({ where }: any) => { deleteUser(where.id); return Promise.resolve({}); }),
     },
   },
 }));
@@ -91,43 +91,43 @@ describe('Schema Referential Integrity (Mocked)', () => {
 
   describe('Room cascade delete', () => {
     it('should delete room members when room is deleted', async () => {
-      const room = await prisma.communityRoom.create({ data: { name: 'Test Room', creatorId: 'user1' } });
-      await prisma.communityRoomMember.create({ data: { roomId: room.id, userId: 'user1' } });
-      await prisma.communityRoomMember.create({ data: { roomId: room.id, userId: 'user2' } });
+      const room = await (prisma as any).discussionRoom.create({ data: { name: 'Test Room', creatorId: 'user1' } });
+      await (prisma as any).roomMember.create({ data: { roomId: room.id, userId: 'user1' } });
+      await (prisma as any).roomMember.create({ data: { roomId: room.id, userId: 'user2' } });
 
       expect(roomMembers.length).toBe(2);
-      await prisma.communityRoom.delete({ where: { id: room.id } });
+      await (prisma as any).discussionRoom.delete({ where: { id: room.id } });
       expect(roomMembers.length).toBe(0);
     });
 
     it('should delete messages when room is deleted', async () => {
-      const room = await prisma.communityRoom.create({ data: { name: 'Test Room', creatorId: 'user1' } });
-      await prisma.communityMessage.create({ data: { roomId: room.id, userId: 'user1', content: 'Hello' } });
+      const room = await (prisma as any).discussionRoom.create({ data: { name: 'Test Room', creatorId: 'user1' } });
+      await (prisma as any).chatMessage.create({ data: { roomId: room.id, authorId: 'user1', content: 'Hello' } });
 
       expect(messages.length).toBe(1);
-      await prisma.communityRoom.delete({ where: { id: room.id } });
+      await (prisma as any).discussionRoom.delete({ where: { id: room.id } });
       expect(messages.length).toBe(0);
     });
   });
 
   describe('Post cascade delete', () => {
     it('should delete comments when post is deleted', async () => {
-      const post = await prisma.communityPost.create({ data: { authorId: 'user1', content: 'Post' } });
-      await prisma.communityComment.create({ data: { postId: post.id, authorId: 'user2', content: 'Comment' } });
+      const post = await (prisma as any).communityPost.create({ data: { authorId: 'user1', content: 'Post' } });
+      await (prisma as any).postComment.create({ data: { postId: post.id, authorId: 'user2', content: 'Comment' } });
 
       expect(comments.length).toBe(1);
-      await prisma.communityPost.delete({ where: { id: post.id } });
+      await (prisma as any).communityPost.delete({ where: { id: post.id } });
       expect(comments.length).toBe(0);
     });
   });
 
   describe('User cascade', () => {
     it('should remove user from room members when user is deleted', async () => {
-      const user = await prisma.user.create({ data: { email: 'x@test.com', name: 'X', role: 'STUDENT' } });
+      const user = await prisma.user.create({ data: { email: 'x@test.com', name: 'X', role: 'STUDENT' } } as any);
       roomMembers.push({ roomId: 'room1', userId: user.id });
 
       await prisma.user.delete({ where: { id: user.id } });
-      expect(roomMembers.filter(m => m.userId === user.id).length).toBe(0);
+      expect(roomMembers.filter((m: any) => m.userId === user.id).length).toBe(0);
     });
   });
 });

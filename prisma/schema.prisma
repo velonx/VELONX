@@ -173,6 +173,9 @@ model User {
   referralsMade  ReferralRelationship[] @relation("ReferralsMade")
   referredByUser ReferralRelationship[] @relation("ReferredBy")
 
+  // Report relations
+  reports           Report[]
+
   // Community relations
   roomsCreated      DiscussionRoom[]   @relation("RoomCreator")
   roomMemberships   RoomMember[]       @relation("RoomMemberships")
@@ -1156,4 +1159,48 @@ model ReferralRelationship {
   @@index([referrerId])
   @@index([refereeId])
   @@map("referral_relationships")
+}
+
+// ============================================
+// REPORT SYSTEM MODELS
+// ============================================
+
+enum ReportCategory {
+  BUG
+  CONTENT_VIOLATION
+  HARASSMENT
+  SPAM
+  TECHNICAL_ISSUE
+  FEATURE_REQUEST
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+model Report {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String         @db.ObjectId
+  category    ReportCategory
+  title       String
+  description String
+  status      ReportStatus   @default(OPEN)
+  photoUrls   String[]       // Cloudinary URLs for uploaded photos
+  videoUrls   String[]       // Cloudinary URLs for uploaded videos
+  adminNotes  String?
+  resolvedBy  String?        @db.ObjectId
+  resolvedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@index([category, createdAt])
+  @@map("reports")
 }

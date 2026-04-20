@@ -112,3 +112,39 @@ export function generateSignedCloudinaryUrl(
     throw new Error('Failed to generate signed URL for PDF access');
   }
 }
+
+// Helper function to upload a video from base64
+export async function uploadVideoToCloudinary(
+  base64Video: string,
+  folder: string = 'velonx/reports/videos'
+): Promise<{ url: string; publicId: string; duration?: number }> {
+  try {
+    const result = await cloudinary.uploader.upload(base64Video, {
+      folder,
+      resource_type: 'video',
+      chunk_size: 6_000_000, // 6MB chunks for large files
+      eager: [
+        { width: 1280, height: 720, crop: 'limit', format: 'mp4', quality: 'auto' }
+      ],
+      eager_async: true,
+    });
+
+    return {
+      url: result.secure_url,
+      publicId: result.public_id,
+      duration: result.duration,
+    };
+  } catch (error) {
+    console.error('[Cloudinary] Video upload error:', error);
+    throw new Error('Failed to upload video to Cloudinary');
+  }
+}
+
+// Helper function to delete a video from Cloudinary
+export async function deleteVideoFromCloudinary(publicId: string): Promise<void> {
+  try {
+    await cloudinary.uploader.destroy(publicId, { resource_type: 'video' });
+  } catch (error) {
+    console.error('[Cloudinary] Video deletion error:', error);
+  }
+}

@@ -21,7 +21,10 @@ import {
     Target,
     FolderOpen,
     CheckCircle2,
-    Loader2
+    Loader2,
+    Flag,
+    AlertCircle,
+    XCircle,
 } from "lucide-react";
 import { useProjects, useMeetings, useUserStats } from "@/lib/api/hooks";
 import { DailyCheckIn } from "@/components/daily-check-in";
@@ -48,6 +51,9 @@ import StudentApprovedInterviews from "@/components/dashboard/student/StudentApp
 
 // Project Components
 import JoinRequests from "@/components/dashboard/student/Projects/JoinRequests";
+
+// Report Components
+import { ReportDialog } from "@/components/ReportDialog";
 
 // TypeScript interface for mentor sessions
 interface MentorSession {
@@ -133,6 +139,31 @@ function StudentDashboardContent() {
     const [showReviewDialog, setShowReviewDialog] = useState(false);
     const [showFollowersDialog, setShowFollowersDialog] = useState(false);
     const [showFollowingDialog, setShowFollowingDialog] = useState(false);
+
+    // Report state
+    const [showReportDialog, setShowReportDialog] = useState(false);
+    const [myReports, setMyReports] = useState<any[]>([]);
+    const [reportsLoading, setReportsLoading] = useState(false);
+
+    const fetchMyReports = useCallback(async () => {
+        if (!session?.user?.id) return;
+        setReportsLoading(true);
+        try {
+            const res = await fetch('/api/reports?pageSize=20');
+            const data = await res.json();
+            if (data.success) setMyReports(data.data);
+        } catch (err) {
+            console.error('Failed to fetch reports:', err);
+        } finally {
+            setReportsLoading(false);
+        }
+    }, [session?.user?.id]);
+
+    useEffect(() => {
+        if (activeTab === 'Report' && session?.user?.id) {
+            fetchMyReports();
+        }
+    }, [activeTab, session?.user?.id, fetchMyReports]);
 
     // Fetch user's community posts
     const { posts, isLoading: postsLoading } = useCommunityPosts({
@@ -224,6 +255,7 @@ function StudentDashboardContent() {
         { icon: LayoutDashboard, label: "Dashboard" },
         { icon: Users, label: "Community" },
         { icon: Timer, label: "Tracking" },
+        { icon: Flag, label: "Report" },
         { icon: Settings, label: "Setting" },
     ];
 
@@ -822,6 +854,115 @@ function StudentDashboardContent() {
                     </>
                 )}
 
+                {activeTab === "Report" && (
+                    <>
+                        {/* Report Header */}
+                        <header className="mb-8">
+                            <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
+                                <Flag className="w-8 h-8 text-red-500" />
+                                Reports
+                            </h1>
+                            <p className="text-muted-foreground font-medium">Submit issues, bugs, or violations with photo & video evidence</p>
+                        </header>
+
+                        {/* Submit button */}
+                        <div className="mb-8">
+                            <button
+                                id="open-report-dialog-btn"
+                                onClick={() => setShowReportDialog(true)}
+                                className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold rounded-2xl shadow-lg shadow-red-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                                <Flag className="w-5 h-5" />
+                                Submit a Report
+                            </button>
+                        </div>
+
+                        {/* My Reports */}
+                        <section>
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-bold text-foreground">My Reports</h2>
+                                <button
+                                    onClick={fetchMyReports}
+                                    className="text-sm text-[#219EBC] hover:underline font-medium"
+                                >
+                                    Refresh
+                                </button>
+                            </div>
+
+                            {reportsLoading ? (
+                                <div className="flex items-center justify-center py-16">
+                                    <Loader2 className="w-10 h-10 animate-spin text-[#219EBC]" />
+                                </div>
+                            ) : myReports.length === 0 ? (
+                                <div className="bg-muted/40 border border-border rounded-[24px] p-12 text-center">
+                                    <Flag className="w-14 h-14 text-muted-foreground mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold text-foreground mb-2">No reports yet</h3>
+                                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                                        Use the button above to report bugs, violations, or any platform issue.
+                                        Attach photos and videos as evidence.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {myReports.map((report) => {
+                                        const STATUS_STYLE = {
+                                            OPEN: { label: 'Open', icon: AlertCircle, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+                                            IN_REVIEW: { label: 'In Review', icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/30' },
+                                            RESOLVED: { label: 'Resolved', icon: CheckCircle2, color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30' },
+                                            DISMISSED: { label: 'Dismissed', icon: XCircle, color: 'text-gray-500', bg: 'bg-gray-100 dark:bg-gray-800' },
+                                        };
+                                        const s = STATUS_STYLE[report.status as keyof typeof STATUS_STYLE];
+                                        const SIcon = s?.icon || AlertCircle;
+                                        return (
+                                            <div
+                                                key={report.id}
+                                                className="bg-card border border-border rounded-[24px] p-6 hover:shadow-md transition-shadow"
+                                            >
+                                                <div className="flex items-start gap-4">
+                                                    <div className={`mt-1 w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${s?.bg || 'bg-muted'}`}>
+                                                        <SIcon className={`w-5 h-5 ${s?.color || 'text-muted-foreground'}`} />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                            <span className="text-xs px-2 py-0.5 bg-muted rounded-full text-muted-foreground font-bold">
+                                                                {report.category?.replace(/_/g, ' ')}
+                                                            </span>
+                                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s?.bg || 'bg-muted'} ${s?.color || ''}` }>
+                                                                {s?.label || report.status}
+                                                            </span>
+                                                            {report.photoUrls?.length > 0 && (
+                                                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                                                    📷 {report.photoUrls.length}
+                                                                </span>
+                                                            )}
+                                                            {report.videoUrls?.length > 0 && (
+                                                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                                                    🎥 {report.videoUrls.length}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <h3 className="font-bold text-foreground">{report.title}</h3>
+                                                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{report.description}</p>
+                                                        {report.adminNotes && (
+                                                            <div className="mt-3 bg-muted/50 rounded-xl p-3">
+                                                                <p className="text-xs font-bold text-muted-foreground mb-1">Admin Response:</p>
+                                                                <p className="text-sm text-foreground">{report.adminNotes}</p>
+                                                            </div>
+                                                        )}
+                                                        <p className="text-xs text-muted-foreground mt-2">
+                                                            Submitted {new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </section>
+                    </>
+                )}
+
                 {activeTab === "Setting" && (
                     <div className="text-center py-20">
                         <Settings className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
@@ -876,6 +1017,16 @@ function StudentDashboardContent() {
                     onSuccess={handleReviewSuccess}
                 />
             )}
+
+            {/* Report Dialog */}
+            <ReportDialog
+                open={showReportDialog}
+                onOpenChange={setShowReportDialog}
+                onSuccess={() => {
+                    setShowReportDialog(false);
+                    fetchMyReports();
+                }}
+            />
 
             {/* Followers Dialog */}
             <FollowersList

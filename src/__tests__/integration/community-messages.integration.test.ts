@@ -20,46 +20,46 @@ const dbRoomMembers: any[] = [
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
-    communityRoom: {
-      findUnique: vi.fn(({ where }) =>
-        Promise.resolve(dbRooms.find(r => r.id === where.id) || null),
+    discussionRoom: {
+      findUnique: vi.fn(({ where }: any) =>
+        Promise.resolve(dbRooms.find((r: any) => r.id === where.id) || null),
       ),
     },
-    communityRoomMember: {
-      findFirst: vi.fn(({ where }) =>
-        Promise.resolve(dbRoomMembers.find(m => m.roomId === where.roomId && m.userId === where.userId) || null),
+    roomMember: {
+      findFirst: vi.fn(({ where }: any) =>
+        Promise.resolve(dbRoomMembers.find((m: any) => m.roomId === where.roomId && m.userId === where.userId) || null),
       ),
     },
-    communityMessage: {
-      create: vi.fn(({ data }) => {
+    chatMessage: {
+      create: vi.fn(({ data }: any) => {
         const m = { ...data, id: `msg-${Date.now()}-${Math.random()}`, createdAt: new Date(), updatedAt: new Date() };
         dbMessages.push(m);
         return Promise.resolve(m);
       }),
-      findMany: vi.fn(({ where, take = 50 }) => {
+      findMany: vi.fn(({ where, take = 50 }: any) => {
         let result = [...dbMessages];
-        if (where?.roomId) result = result.filter(m => m.roomId === where.roomId);
-        if (where?.groupId) result = result.filter(m => m.groupId === where.groupId);
+        if (where?.roomId) result = result.filter((m: any) => m.roomId === where.roomId);
+        if (where?.groupId) result = result.filter((m: any) => m.groupId === where.groupId);
         return Promise.resolve(result.slice(0, take));
       }),
-      findUnique: vi.fn(({ where }) =>
-        Promise.resolve(dbMessages.find(m => m.id === where.id) || null),
+      findUnique: vi.fn(({ where }: any) =>
+        Promise.resolve(dbMessages.find((m: any) => m.id === where.id) || null),
       ),
-      update: vi.fn(({ where, data }) => {
-        const idx = dbMessages.findIndex(m => m.id === where.id);
+      update: vi.fn(({ where, data }: any) => {
+        const idx = dbMessages.findIndex((m: any) => m.id === where.id);
         if (idx === -1) return Promise.reject(new Error('not found'));
         Object.assign(dbMessages[idx], data);
         return Promise.resolve(dbMessages[idx]);
       }),
-      delete: vi.fn(({ where }) => {
-        const idx = dbMessages.findIndex(m => m.id === where.id);
+      delete: vi.fn(({ where }: any) => {
+        const idx = dbMessages.findIndex((m: any) => m.id === where.id);
         if (idx !== -1) dbMessages.splice(idx, 1);
         return Promise.resolve({});
       }),
     },
     user: {
-      findUnique: vi.fn(({ where }) =>
-        Promise.resolve(dbUsers.find(u => u.id === where.id) || null),
+      findUnique: vi.fn(({ where }: any) =>
+        Promise.resolve(dbUsers.find((u: any) => u.id === where.id) || null),
       ),
     },
   },
@@ -85,8 +85,8 @@ describe('Community Messages API (Integration - Mocked)', () => {
 
   describe('Send Message', () => {
     it('should create a message in a room', async () => {
-      const msg = await prisma.communityMessage.create({
-        data: { roomId: 'room1', userId: 'user1', content: 'Hello room!' },
+      const msg = await (prisma as any).chatMessage.create({
+        data: { roomId: 'room1', authorId: 'user1', content: 'Hello room!' },
       });
       expect(msg.content).toBe('Hello room!');
       expect(msg.roomId).toBe('room1');
@@ -100,34 +100,34 @@ describe('Community Messages API (Integration - Mocked)', () => {
 
   describe('Get Messages', () => {
     it('should return messages for a room', async () => {
-      await prisma.communityMessage.create({
-        data: { roomId: 'room1', userId: 'user1', content: 'Msg1' },
+      await (prisma as any).chatMessage.create({
+        data: { roomId: 'room1', authorId: 'user1', content: 'Msg1' },
       });
-      await prisma.communityMessage.create({
-        data: { roomId: 'room1', userId: 'user2', content: 'Msg2' },
+      await (prisma as any).chatMessage.create({
+        data: { roomId: 'room1', authorId: 'user2', content: 'Msg2' },
       });
 
-      const messages = await prisma.communityMessage.findMany({ where: { roomId: 'room1' } });
+      const messages = await (prisma as any).chatMessage.findMany({ where: { roomId: 'room1' } });
       expect(messages.length).toBe(2);
     });
 
     it('should respect take limit', async () => {
       for (let i = 0; i < 10; i++) {
-        await prisma.communityMessage.create({
-          data: { roomId: 'room1', userId: 'user1', content: `Msg${i}` },
+        await (prisma as any).chatMessage.create({
+          data: { roomId: 'room1', authorId: 'user1', content: `Msg${i}` },
         });
       }
-      const messages = await prisma.communityMessage.findMany({ where: { roomId: 'room1' }, take: 5 });
+      const messages = await (prisma as any).chatMessage.findMany({ where: { roomId: 'room1' }, take: 5 });
       expect(messages.length).toBe(5);
     });
   });
 
   describe('Edit Message', () => {
     it('should edit own message', async () => {
-      const msg = await prisma.communityMessage.create({
-        data: { roomId: 'room1', userId: 'user1', content: 'Original' },
+      const msg = await (prisma as any).chatMessage.create({
+        data: { roomId: 'room1', authorId: 'user1', content: 'Original' },
       });
-      const updated = await prisma.communityMessage.update({
+      const updated = await (prisma as any).chatMessage.update({
         where: { id: msg.id },
         data: { content: 'Edited', editedAt: new Date() },
       });
@@ -138,11 +138,11 @@ describe('Community Messages API (Integration - Mocked)', () => {
 
   describe('Delete Message', () => {
     it('should delete own message', async () => {
-      const msg = await prisma.communityMessage.create({
-        data: { roomId: 'room1', userId: 'user1', content: 'To delete' },
+      const msg = await (prisma as any).chatMessage.create({
+        data: { roomId: 'room1', authorId: 'user1', content: 'To delete' },
       });
-      await prisma.communityMessage.delete({ where: { id: msg.id } });
-      const found = await prisma.communityMessage.findUnique({ where: { id: msg.id } });
+      await (prisma as any).chatMessage.delete({ where: { id: msg.id } });
+      const found = await (prisma as any).chatMessage.findUnique({ where: { id: msg.id } });
       expect(found).toBeNull();
     });
   });
