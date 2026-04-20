@@ -10,12 +10,27 @@ const contactSchema = z.object({
   message: z.string().min(10, 'Message must be at least 10 characters').max(5000),
 });
 
+/** Always extract a plain string — never return an object as the error field. */
+function safeStr(val: unknown, fallback: string): string {
+  if (typeof val === 'string' && val) return val;
+  if (val && typeof (val as any).message === 'string') return (val as any).message;
+  return fallback;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { name, email, subject, message } = contactSchema.parse(body);
 
-    // Build the HTML email to send to the VELONX team
+    // Guard: require API key before attempting to send
+    if (!process.env.RESEND_API_KEY) {
+      console.error('[Contact] RESEND_API_KEY is not set');
+      return NextResponse.json(
+        { success: false, error: 'Email service is not configured. Please reach out directly at hello@velonx.com' },
+        { status: 503 }
+      );
+    }
+
     const teamHtml = `
       <!DOCTYPE html>
       <html>
@@ -29,35 +44,34 @@ export async function POST(request: NextRequest) {
             <div style="padding:32px;">
               <table style="width:100%;border-collapse:collapse;">
                 <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;width:120px;">From</td>
+                  <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;width:120px;">From</td>
                   <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:15px;color:#111827;font-weight:700;">${name}</td>
                 </tr>
                 <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Email</td>
+                  <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;">Email</td>
                   <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:15px;color:#219EBC;">${email}</td>
                 </tr>
                 <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Subject</td>
+                  <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;">Subject</td>
                   <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:15px;color:#111827;">${subject}</td>
                 </tr>
               </table>
               <div style="margin-top:24px;">
-                <p style="font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 12px;">Message</p>
+                <p style="font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;margin:0 0 12px;">Message</p>
                 <div style="background:#f9fafb;border-radius:12px;padding:20px;font-size:15px;color:#374151;line-height:1.7;white-space:pre-wrap;">${message}</div>
               </div>
               <div style="margin-top:24px;padding:16px;background:#fef3c7;border-radius:12px;font-size:13px;color:#92400e;">
-                ⏰ Reply to: <a href="mailto:${email}" style="color:#219EBC;font-weight:700;">${email}</a>
+                Reply to: <a href="mailto:${email}" style="color:#219EBC;font-weight:700;">${email}</a>
               </div>
             </div>
             <div style="padding:20px;border-top:1px solid #e5e7eb;text-align:center;font-size:12px;color:#9ca3af;">
-              © ${new Date().getFullYear()} VELONX. All rights reserved.
+              &copy; ${new Date().getFullYear()} VELONX. All rights reserved.
             </div>
           </div>
         </body>
       </html>
     `;
 
-    // Auto-reply HTML to the sender
     const replyHtml = `
       <!DOCTYPE html>
       <html>
@@ -71,31 +85,26 @@ export async function POST(request: NextRequest) {
             <div style="padding:36px 32px;">
               <h2 style="font-size:22px;font-weight:800;color:#023047;margin:0 0 16px;">Hey ${name} 👋</h2>
               <p style="font-size:15px;color:#374151;line-height:1.7;margin:0 0 16px;">
-                Thanks for reaching out to us. We've received your message about <strong>${subject}</strong> and our team will get back to you within <strong>1–2 business days</strong>.
+                Thanks for reaching out. We have received your message about <strong>${subject}</strong> and our team will get back to you within <strong>1-2 business days</strong>.
               </p>
               <div style="background:#f0f9ff;border-left:4px solid #219EBC;border-radius:0 12px 12px 0;padding:16px 20px;margin:24px 0;">
-                <p style="font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px;">Your message</p>
-                <p style="font-size:14px;color:#374151;line-height:1.6;margin:0;white-space:pre-wrap;">${message.slice(0, 300)}${message.length > 300 ? '…' : ''}</p>
+                <p style="font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;margin:0 0 8px;">Your message</p>
+                <p style="font-size:14px;color:#374151;line-height:1.6;margin:0;white-space:pre-wrap;">${message.slice(0, 300)}${message.length > 300 ? '...' : ''}</p>
               </div>
-              <p style="font-size:15px;color:#374151;line-height:1.7;margin:0;">
-                In the meantime, check out our <a href="https://velonx.com/about" style="color:#219EBC;font-weight:700;">About page</a> or explore the <a href="https://velonx.com/resources" style="color:#219EBC;font-weight:700;">resources</a> we have for you.
-              </p>
             </div>
             <div style="padding:20px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;text-align:center;">
-              <p style="font-size:12px;color:#9ca3af;margin:0;">© ${new Date().getFullYear()} VELONX • <a href="https://velonx.com/privacy" style="color:#9ca3af;">Privacy Policy</a></p>
+              <p style="font-size:12px;color:#9ca3af;margin:0;">&copy; ${new Date().getFullYear()} VELONX</p>
             </div>
           </div>
         </body>
       </html>
     `;
 
-    // Import Resend lazily (server-side only)
     const { Resend } = await import('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
     const emailFrom = process.env.EMAIL_FROM || 'VELONX <onboarding@resend.dev>';
     const teamEmail = process.env.EMAIL_REPLY_TO || 'support@velonx.com';
 
-    // Send notification to team + auto-reply to sender (in parallel)
     const [teamResult, replyResult] = await Promise.allSettled([
       resend.emails.send({
         from: emailFrom,
@@ -107,35 +116,32 @@ export async function POST(request: NextRequest) {
       resend.emails.send({
         from: emailFrom,
         to: email,
-        subject: `We received your message, ${name}! ✉️`,
+        subject: `We received your message, ${name}!`,
         html: replyHtml,
       }),
     ]);
 
-    // If team email failed, return error
     if (teamResult.status === 'rejected' || teamResult.value?.error) {
-      const err = teamResult.status === 'rejected'
+      const raw = teamResult.status === 'rejected'
         ? teamResult.reason
         : teamResult.value.error;
-      console.error('[Contact] Team email failed:', err);
+      console.error('[Contact] Team email failed:', raw);
       return NextResponse.json(
-        { success: false, error: 'Failed to send your message. Please try again.' },
+        { success: false, error: 'Failed to send your message. Please try again later.' },
         { status: 500 }
       );
     }
 
-    // Auto-reply failure is non-critical — log but still return success
     if (replyResult.status === 'rejected') {
       console.warn('[Contact] Auto-reply failed (non-critical):', replyResult.reason);
     }
 
     return NextResponse.json({ success: true, message: 'Message sent successfully!' });
+
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: error.issues[0]?.message || 'Invalid form data' },
-        { status: 400 }
-      );
+      const msg = safeStr(error.issues?.[0]?.message, 'Invalid form data');
+      return NextResponse.json({ success: false, error: msg }, { status: 400 });
     }
     console.error('[Contact] Error:', error);
     return NextResponse.json(

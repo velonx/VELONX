@@ -19,7 +19,8 @@ import {
     Lightbulb,
     Activity,
     Briefcase,
-    BookOpen
+    BookOpen,
+    Flag
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useUserRequests, usePlatformStats } from "@/lib/api/hooks";
@@ -54,6 +55,9 @@ const EventManagement = dynamic(() => import("@/components/admin/EventManagement
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
 });
 const AdminBookingApprovalPanel = dynamic(() => import("@/components/admin/AdminBookingApprovalPanel"), {
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+});
+const ReportsAdmin = dynamic(() => import("@/components/admin/ReportsAdmin").then(mod => ({ default: mod.ReportsAdmin })), {
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
 });
 
@@ -145,6 +149,7 @@ export default function AdminDashboard() {
         { icon: Layout, label: "Management", value: "management" },
         { icon: Users, label: "Mentors", value: "mentors" },
         { icon: Calendar, label: "Events", value: "events" },
+        { icon: Flag, label: "Reports", value: "reports" },
         { icon: PenTool, label: "Blog Authoring", value: "blog" },
         { icon: Activity, label: "Performance", value: "performance" },
         { icon: Settings, label: "Platform Info", value: "platform" },
@@ -218,6 +223,9 @@ export default function AdminDashboard() {
                     <div className="flex justify-between items-center mb-8">
                         <TabsList className="bg-background p-1 rounded-2xl border border-border shadow-sm">
                             <TabsTrigger value="management" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Review Center</TabsTrigger>
+                            <TabsTrigger value="reports" className="px-8 py-3 rounded-xl data-[state=active]:bg-red-500 data-[state=active]:text-white font-bold text-sm flex items-center gap-2">
+                                <Flag className="w-4 h-4" />Reports
+                            </TabsTrigger>
                             <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Post Blog</TabsTrigger>
                             <TabsTrigger value="career" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Career</TabsTrigger>
                             <TabsTrigger value="resources" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Resources</TabsTrigger>
@@ -255,6 +263,10 @@ export default function AdminDashboard() {
 
                     <TabsContent value="events" className="space-y-12">
                         <EventManagement />
+                    </TabsContent>
+
+                    <TabsContent value="reports" className="space-y-8">
+                        <ReportsAdmin />
                     </TabsContent>
 
                     <TabsContent value="blog">

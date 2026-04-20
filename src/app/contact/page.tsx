@@ -95,15 +95,33 @@ export default function ContactPage() {
         body: JSON.stringify({ name, email, subject, message }),
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        // Response body was not valid JSON (e.g. 502 from gateway)
+      }
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to send message.");
+        // data.error may be a string, an object {message:...}, or undefined
+        const errMsg =
+          typeof data.error === "string"
+            ? data.error
+            : typeof data.error?.message === "string"
+            ? data.error.message
+            : res.status === 500
+            ? "Server error — please try again later."
+            : "Failed to send message. Please try again.";
+        throw new Error(errMsg);
       }
 
       setSent(true);
     } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
+      setError(
+        typeof err.message === "string" && err.message
+          ? err.message
+          : "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }

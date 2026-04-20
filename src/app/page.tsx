@@ -8,7 +8,19 @@ import FloatingNavDemo from "@/components/floating-navbar-demo";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { OrganizationSchema } from "@/components/structured-data";
 import { FlipText } from "@/components/ui/flip-text";
-import { Carousel3 } from "@/components/Carousel3";
+import dynamic from "next/dynamic";
+
+const Carousel3 = dynamic(
+    () => import("@/components/Carousel3").then(mod => ({ default: mod.Carousel3 })),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="w-full flex items-center justify-center py-24">
+                <div className="w-10 h-10 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+            </div>
+        ),
+    }
+);
 import { TelescopeHero } from "@/components/TelescopeHero";
 import { ParallaxGallery } from "@/components/ParallaxGallery";
 
