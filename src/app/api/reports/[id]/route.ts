@@ -6,9 +6,10 @@ import { ReportStatus } from '@prisma/client';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -18,7 +19,7 @@ export async function GET(
     }
 
     const report = await prisma.report.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: { select: { id: true, name: true, email: true, image: true } },
       },
@@ -53,9 +54,10 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -93,7 +95,7 @@ export async function PATCH(
       }
     }
 
-    const existing = await prisma.report.findUnique({ where: { id: params.id } });
+    const existing = await prisma.report.findUnique({ where: { id } });
     if (!existing) {
       return NextResponse.json(
         { success: false, error: { code: 'NOT_FOUND', message: 'Report not found' } },
@@ -114,7 +116,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.report.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         user: { select: { id: true, name: true, email: true, image: true } },
