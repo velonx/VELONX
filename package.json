@@ -6,7 +6,7 @@
     "dev": "NODE_OPTIONS='--max-old-space-size=4096' tsx server.js",
     "dev:next": "next dev",
     "dev:legacy": "NODE_OPTIONS='--openssl-legacy-provider --max-old-space-size=4096' tsx server.js",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "postbuild": "next-sitemap",
     "build:analyze": "ANALYZE=true next build",
     "start": "NODE_ENV=production tsx server.js",
