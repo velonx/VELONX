@@ -1,10 +1,11 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, Extension } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import { TextStyle } from "@tiptap/extension-text-style";
 import { 
   Bold, 
   Italic, 
@@ -15,9 +16,48 @@ import {
   Heading1, 
   Heading2, 
   Type,
-  Unlink
+  Unlink,
+  Plus,
+  Minus
 } from "lucide-react";
 import { useEffect } from "react";
+
+// Custom Font Size Extension
+const FontSize = Extension.create({
+  name: 'fontSize',
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    }
+  },
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          fontSize: {
+            default: null,
+            parseHTML: element => element.style.fontSize,
+            renderHTML: attributes => {
+              if (!attributes.fontSize) return {}
+              return { style: `font-size: ${attributes.fontSize}` }
+            },
+          },
+        },
+      },
+    ]
+  },
+  addCommands() {
+    return {
+      setFontSize: (fontSize: string) => ({ chain }: { chain: any }) => {
+        return chain().setMark('textStyle', { fontSize }).run()
+      },
+      unsetFontSize: () => ({ chain }: { chain: any }) => {
+        return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run()
+      },
+    }
+  },
+});
 
 interface RichTextEditorProps {
   content: string;
@@ -33,19 +73,11 @@ const MenuBar = ({ editor }: { editor: any }) => {
   const setLink = () => {
     const previousUrl = editor.getAttributes("link").href;
     const url = window.prompt("URL", previousUrl);
-
-    // cancelled
-    if (url === null) {
-      return;
-    }
-
-    // empty
+    if (url === null) return;
     if (url === "") {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
       return;
     }
-
-    // update link
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   };
 
@@ -55,6 +87,28 @@ const MenuBar = ({ editor }: { editor: any }) => {
         ? "bg-[#219EBC] text-white" 
         : "text-gray-600 hover:bg-gray-100"
     }`;
+
+  const fontSizes = ['12px', '14px', '16px', '18px', '20px', '24px', '30px', '36px', '48px'];
+  
+  const getCurrentFontSize = () => {
+    return editor.getAttributes('textStyle').fontSize || '16px';
+  };
+
+  const changeFontSize = (direction: 'up' | 'down') => {
+    const currentSize = getCurrentFontSize();
+    const currentIndex = fontSizes.indexOf(currentSize);
+    
+    let newIndex;
+    if (direction === 'up') {
+      newIndex = Math.min(currentIndex + 1, fontSizes.length - 1);
+      if (currentIndex === -1) newIndex = 5; // Default to 24px if unknown
+    } else {
+      newIndex = Math.max(currentIndex - 1, 0);
+      if (currentIndex === -1) newIndex = 1; // Default to 14px if unknown
+    }
+    
+    editor.chain().focus().setFontSize(fontSizes[newIndex]).run();
+  };
 
   return (
     <div className="flex flex-wrap items-center gap-1 p-2 mb-4 bg-gray-50 border border-gray-100 rounded-2xl">
@@ -87,11 +141,36 @@ const MenuBar = ({ editor }: { editor: any }) => {
       
       <div className="w-px h-6 bg-gray-200 mx-1" />
 
+      {/* Font Size Controls */}
+      <div className="flex items-center gap-1 bg-white rounded-xl border border-gray-100 p-1">
+        <button
+          type="button"
+          onClick={() => changeFontSize('down')}
+          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+          title="Decrease Size"
+        >
+          <Minus className="w-3.5 h-3.5" />
+        </button>
+        <span className="text-[10px] font-bold w-10 text-center text-[#023047]">
+          {getCurrentFontSize()}
+        </span>
+        <button
+          type="button"
+          onClick={() => changeFontSize('up')}
+          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+          title="Increase Size"
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      <div className="w-px h-6 bg-gray-200 mx-1" />
+
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={btnClass(editor.isActive("heading", { level: 1 }))}
-        title="Large Size"
+        title="H1"
       >
         <Heading1 className="w-4 h-4" />
       </button>
@@ -99,7 +178,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={btnClass(editor.isActive("heading", { level: 2 }))}
-        title="Medium Size"
+        title="H2"
       >
         <Heading2 className="w-4 h-4" />
       </button>
@@ -107,7 +186,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
         type="button"
         onClick={() => editor.chain().focus().setParagraph().run()}
         className={btnClass(editor.isActive("paragraph"))}
-        title="Normal Size"
+        title="Normal Text"
       >
         <Type className="w-4 h-4" />
       </button>
@@ -159,6 +238,8 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
   const editor = useEditor({
     extensions: [
       StarterKit,
+      TextStyle,
+      FontSize,
       Underline,
       Link.configure({
         openOnClick: false,
@@ -181,7 +262,6 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
     },
   });
 
-  // Sync content when it changes externally (e.g. when editing a blog)
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content);
@@ -212,3 +292,4 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
     </div>
   );
 }
+
