@@ -44,6 +44,14 @@
     "@react-email/components": "^1.0.7",
     "@splinetool/react-spline": "^4.1.0",
     "@tabler/icons-react": "^3.36.1",
+    "@tailwindcss/typography": "^0.5.19",
+    "@tiptap/extension-link": "^3.22.5",
+    "@tiptap/extension-placeholder": "^3.22.5",
+    "@tiptap/extension-text-style": "^3.22.5",
+    "@tiptap/extension-underline": "^3.22.5",
+    "@tiptap/pm": "^3.22.5",
+    "@tiptap/react": "^3.22.5",
+    "@tiptap/starter-kit": "^3.22.5",
     "@types/react-window": "^1.8.8",
     "@upstash/redis": "^1.36.1",
     "bcryptjs": "^3.0.3",
@@ -75,9 +83,9 @@
     "swiper": "^12.1.2",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.21.0",
     "ws": "^8.18.0",
-    "zod": "^4.3.5",
-    "tsx": "^4.21.0"
+    "zod": "^4.3.5"
   },
   "overrides": {
     "dompurify": "^3.2.4",

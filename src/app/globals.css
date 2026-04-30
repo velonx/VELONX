@@ -1,6 +1,29 @@
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
+
+@layer utilities {
+  .rich-text-content {
+    @apply prose prose-lg max-w-none transition-colors duration-300;
+    @apply prose-headings:font-black prose-headings:tracking-tight prose-headings:text-[#023047];
+    @apply prose-p:text-gray-700 prose-p:leading-[1.8] prose-p:mb-8;
+    @apply prose-a:text-[#219EBC] prose-a:no-underline hover:prose-a:underline prose-a:font-bold;
+    @apply prose-strong:text-[#023047] prose-strong:font-black;
+    @apply prose-ul:list-disc prose-ol:list-decimal prose-li:mb-2;
+    @apply prose-img:rounded-[32px] prose-img:shadow-2xl prose-img:my-12;
+    @apply prose-blockquote:border-l-4 prose-blockquote:border-[#219EBC] prose-blockquote:bg-[#219EBC]/5 prose-blockquote:p-8 prose-blockquote:rounded-r-2xl prose-blockquote:italic prose-blockquote:text-[#023047];
+    
+    /* Dark Mode Overrides */
+    @apply dark:prose-invert;
+    @apply dark:prose-headings:text-white;
+    @apply dark:prose-p:text-gray-300;
+    @apply dark:prose-strong:text-white;
+    @apply dark:prose-blockquote:bg-white/5 dark:prose-blockquote:text-white;
+    @apply dark:prose-li:text-gray-300;
+    @apply dark:prose-ol:text-gray-300 dark:prose-ul:text-gray-300;
+  }
+}
 
 
 @custom-variant dark (&:is(.dark *));

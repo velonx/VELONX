@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { PenTool, Edit, Trash2, XCircle, Download, Send } from "lucide-react";
 import toast from "react-hot-toast";
+import RichTextEditor from "../RichTextEditor";
 
 interface Blog {
   id: string;
@@ -26,6 +27,7 @@ export default function BlogManagement() {
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
   const [blogImagePreview, setBlogImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [blogContent, setBlogContent] = useState("");
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -73,6 +75,7 @@ export default function BlogManagement() {
 
   const handleEditBlog = (blog: Blog) => {
     setEditingBlog(blog);
+    setBlogContent(blog.content);
     setBlogImagePreview(blog.imageUrl || null);
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -81,11 +84,13 @@ export default function BlogManagement() {
 
   const handleCancelEdit = () => {
     setEditingBlog(null);
+    setBlogContent("");
     setBlogImagePreview(null);
   };
 
   const handleNewPost = () => {
     setEditingBlog(null);
+    setBlogContent("");
     setBlogImagePreview(null);
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -146,7 +151,7 @@ export default function BlogManagement() {
                         <div>
                           <h4 className="text-lg font-bold text-[#023047] mb-1">{blog.title}</h4>
                           <p className="text-sm text-gray-500">
-                            {blog.excerpt || blog.content?.substring(0, 100) + '...'}
+                            {blog.excerpt || blog.content?.replace(/<[^>]*>/g, '').substring(0, 100) + '...'}
                           </p>
                         </div>
                         <Badge className={`${blog.status === 'PUBLISHED' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'} border-0 font-bold`}>
@@ -213,12 +218,13 @@ export default function BlogManagement() {
                   .map(tag => tag.trim())
                   .filter(tag => tag.length > 0);
 
-                const content = formData.get('content') as string;
-                const excerpt = content.substring(0, 150) + (content.length > 150 ? '...' : '');
+                // Strip HTML tags for excerpt
+                const plainText = blogContent.replace(/<[^>]*>/g, '');
+                const excerpt = plainText.substring(0, 150) + (plainText.length > 150 ? '...' : '');
 
                 const blogData = {
                   title: formData.get('title') as string,
-                  content: content,
+                  content: blogContent,
                   excerpt: excerpt,
                   imageUrl: formData.get('imageUrl') as string || null,
                   tags: tags,
@@ -242,6 +248,7 @@ export default function BlogManagement() {
                     form.reset();
                   }
                   setBlogImagePreview(null);
+                  setBlogContent("");
                   setEditingBlog(null);
                   fetchBlogs();
                 } else {
@@ -425,13 +432,10 @@ export default function BlogManagement() {
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Article Content</label>
-                <textarea
-                  name="content"
-                  required
-                  className="w-full bg-gray-50 border-0 rounded-[32px] p-8 min-h-[300px] outline-none focus:ring-2 focus:ring-[#219EBC] transition-all"
-                  placeholder="Write something inspiring..."
-                  defaultValue={editingBlog?.content || ''}
-                ></textarea>
+                <RichTextEditor 
+                  content={blogContent}
+                  onChange={setBlogContent}
+                />
               </div>
               <Button type="submit" className="w-full h-16 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-[24px] text-lg shadow-xl shadow-[#219EBC]/20">
                 {editingBlog ? 'Update Article' : 'Publish Live'} <Send className="w-5 h-5 ml-2" />

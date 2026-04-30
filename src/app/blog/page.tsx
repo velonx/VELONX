@@ -5,15 +5,11 @@ import { motion } from "framer-motion";
 import { Calendar, Clock, User, ArrowRight, Search, Tag, Share2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useBlogPosts } from "@/lib/api/hooks";
 
 export default function BlogPage() {
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("All Posts");
-    const [selectedBlog, setSelectedBlog] = useState<any | null>(null);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
 
     // Fetch blog posts from API
@@ -24,18 +20,8 @@ export default function BlogPage() {
 
     const categories = ["All Posts", "Technology", "Development", "Design", "Career"];
 
-    const handleReadMore = (post: any) => {
-        setSelectedBlog(post);
-        setIsDialogOpen(true);
-    };
-
-    const handleCloseDialog = () => {
-        setIsDialogOpen(false);
-        setTimeout(() => setSelectedBlog(null), 300);
-    };
-
     const handleShare = async (post: any) => {
-        const url = `${window.location.origin}/blog?id=${post.id}`;
+        const url = `${window.location.origin}/blog/${post.id}`;
         const shareData = {
             title: post.title,
             text: `Check out this article: ${post.title}`,
@@ -158,14 +144,11 @@ export default function BlogPage() {
                                                 </p>
                                             </CardContent>
                                             <CardFooter className="px-8 pb-10 mt-auto border-t border-gray-50 pt-8 flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white shadow-sm">
-                                                        <User className="w-5 h-5 text-muted-foreground" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-xs font-black text-foreground">{post.author?.name || 'Anonymous'}</p>
-                                                        <p className="text-[10px] font-bold text-muted-foreground tracking-wider">AUTHOR</p>
-                                                    </div>
+                                                <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                                                    <span className="flex items-center gap-1.5">
+                                                        <Clock className="w-3.5 h-3.5 text-[#219EBC]" />
+                                                        {Math.ceil(post.content.split(' ').length / 200)} min read
+                                                    </span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     {/* Share Button */}
@@ -182,13 +165,15 @@ export default function BlogPage() {
                                                         )}
                                                     </button>
                                                     {/* Read More Button */}
-                                                    <button
-                                                        onClick={() => handleReadMore(post)}
+                                                    <Link
+                                                        href={`/blog/${post.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
                                                         className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
                                                         aria-label={`Read more about ${post.title}`}
                                                     >
                                                         <ArrowRight className="w-5 h-5" />
-                                                    </button>
+                                                    </Link>
                                                 </div>
                                             </CardFooter>
                                         </Card>
@@ -214,89 +199,6 @@ export default function BlogPage() {
                 </div>
             </section>
 
-            {/* Blog Detail Modal */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background rounded-[48px] p-0">
-                    {selectedBlog && (
-                        <div className="relative">
-                            {/* Header Image */}
-                            {selectedBlog.imageUrl && (
-                                <div className="aspect-[21/9] overflow-hidden relative bg-gradient-to-br from-[#219EBC] to-[#023047] rounded-t-[48px]">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                        src={selectedBlog.imageUrl}
-                                        alt={selectedBlog.title}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                            )}
-
-
-                            {/* Content */}
-                            <div className="p-12">
-                                {/* Tags */}
-                                {selectedBlog.tags && selectedBlog.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mb-6">
-                                        {selectedBlog.tags.map((tag: string, idx: number) => (
-                                            <Badge key={idx} className="bg-[#219EBC]/10 text-[#219EBC] hover:bg-[#219EBC]/20 border-0 py-1.5 px-4 rounded-xl font-bold text-xs">
-                                                {tag}
-                                            </Badge>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {/* Title */}
-                                <DialogHeader className="mb-6">
-                                    <DialogTitle className="text-4xl font-black text-foreground leading-tight">
-                                        {selectedBlog.title}
-                                    </DialogTitle>
-                                    <DialogDescription className="sr-only">Blog Post Detail</DialogDescription>
-                                </DialogHeader>
-
-                                {/* Meta Info */}
-                                <div className="flex items-center gap-6 text-sm font-bold text-muted-foreground uppercase tracking-widest mb-8 pb-8 border-b border-border">
-                                    <span className="flex items-center gap-2">
-                                        <Calendar className="w-4 h-4" />
-                                        {new Date(selectedBlog.publishedAt || selectedBlog.createdAt).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric'
-                                        })}
-                                    </span>
-                                    <span className="flex items-center gap-2">
-                                        <User className="w-4 h-4" />
-                                        {selectedBlog.author?.name || 'Anonymous'}
-                                    </span>
-                                    <span className="flex items-center gap-2">
-                                        <Clock className="w-4 h-4" />
-                                        {Math.ceil(selectedBlog.content.split(' ').length / 200)} min read
-                                    </span>
-                                </div>
-
-                                {/* Content */}
-                                <div className="prose prose-lg max-w-none">
-                                    <div className="text-foreground leading-relaxed whitespace-pre-wrap">
-                                        {selectedBlog.content}
-                                    </div>
-                                </div>
-
-                                {/* Author Info */}
-                                <div className="mt-12 pt-8 border-t border-border">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#219EBC] to-[#023047] flex items-center justify-center text-white font-black text-xl shadow-lg">
-                                            {selectedBlog.author?.name?.[0] || 'A'}
-                                        </div>
-                                        <div>
-                                            <p className="text-lg font-black text-foreground">{selectedBlog.author?.name || 'Anonymous'}</p>
-                                            <p className="text-sm text-muted-foreground">Author</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }
