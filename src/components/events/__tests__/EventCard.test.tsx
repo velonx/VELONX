@@ -180,17 +180,12 @@ describe('EventCard', () => {
   });
 
   describe('Action Buttons', () => {
-    it('should render View Details button when handler provided', () => {
-      const onViewDetails = vi.fn();
-      render(<EventCard event={mockEvent} onViewDetails={onViewDetails} />);
-      expect(screen.getByText('View Details')).toBeInTheDocument();
-    });
-
-    it('should call onViewDetails when button clicked', () => {
-      const onViewDetails = vi.fn();
-      render(<EventCard event={mockEvent} onViewDetails={onViewDetails} />);
-      fireEvent.click(screen.getByText('View Details'));
-      expect(onViewDetails).toHaveBeenCalledWith(mockEvent);
+    it('should render View Details link with correct href', () => {
+      render(<EventCard event={mockEvent} />);
+      const link = screen.getByRole('link', { name: `View details for ${mockEvent.title}` });
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute('href', `/events/${mockEvent.id}`);
+      expect(link).toHaveAttribute('target', '_blank');
     });
 
     it('should render Register button when not registered', () => {
