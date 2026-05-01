@@ -214,8 +214,8 @@ export class EventService {
     location?: string;
     imageUrl?: string;
     maxSeats?: number | null;
-    whoCanParticipate?: string;
-    howItWorks?: string;
+    whoCanParticipate?: string | null;
+    howItWorks?: string | null;
     status?: string;
     creatorId: string;
   }) {
@@ -377,7 +377,7 @@ export class EventService {
         closureReason: 'manual',
         closureTimestamp: new Date(),
         attendeeCount: existingEvent._count.attendees,
-        maxSeats: event.maxSeats,
+        maxSeats: event.maxSeats ?? undefined,
       }).catch((error) => {
         console.error('Failed to send manual closure notification:', error);
         // Don't fail the update if notification fails
@@ -411,7 +411,7 @@ export class EventService {
           closureReason: 'deadline',
           closureTimestamp: deadline,
           attendeeCount: existingEvent._count.attendees,
-          maxSeats: event.maxSeats,
+          maxSeats: event.maxSeats ?? undefined,
         }).catch((error) => {
           console.error('Failed to send deadline closure notification:', error);
           // Don't fail the update if notification fails

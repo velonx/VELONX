@@ -323,7 +323,7 @@ export default function EventCalendar({
                                                         {event._count && (
                                                             <div className="flex items-center gap-1 text-gray-400 mt-0.5">
                                                                 <Users className="w-3 h-3" />
-                                                                <span>{event._count.attendees}/{event.maxSeats}</span>
+                                                                <span>{event._count.attendees}{event.maxSeats ? `/${event.maxSeats}` : ' registered'}</span>
                                                             </div>
                                                         )}
                                                         <Badge 

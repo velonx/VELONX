@@ -154,10 +154,10 @@ export default function EventDetailsModal({
 
   // Calculate attendee information
   const attendeeCount = event._count?.attendees || 0;
-  const attendeePercentage = (attendeeCount / event.maxSeats) * 100;
-  const isFull = attendeeCount >= event.maxSeats;
-  const isAlmostFull = attendeePercentage >= 80;
-  const spotsLeft = event.maxSeats - attendeeCount;
+  const attendeePercentage = event.maxSeats ? (attendeeCount / event.maxSeats) * 100 : 0;
+  const isFull = event.maxSeats ? attendeeCount >= event.maxSeats : false;
+  const isAlmostFull = event.maxSeats ? attendeePercentage >= 80 : false;
+  const spotsLeft = event.maxSeats ? event.maxSeats - attendeeCount : null;
 
   // Compute registration status
   const registrationStatus = computeRegistrationStatus(event, attendeeCount);
@@ -432,8 +432,8 @@ export default function EventDetailsModal({
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-muted-foreground dark:text-gray-300 uppercase tracking-wider font-semibold mb-2">Attendees</p>
                   <div className="flex items-center justify-between mb-2 gap-2">
-                    <p className="text-foreground dark:text-white font-medium text-sm sm:text-base">{attendeeCount} / {event.maxSeats} registered</p>
-                    {!isFull && (
+                    <p className="text-foreground dark:text-white font-medium text-sm sm:text-base">{attendeeCount} {event.maxSeats ? `/ ${event.maxSeats}` : '(No Limit)'} registered</p>
+                    {event.maxSeats && !isFull && (
                       <p className="text-xs sm:text-sm text-muted-foreground dark:text-gray-300 flex-shrink-0">{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left</p>
                     )}
                   </div>
@@ -470,7 +470,7 @@ export default function EventDetailsModal({
                     </p>
 
                     {/* Additional context based on closure reason - Mobile optimized (Requirement 12.3, 12.5) */}
-                    {registrationStatus.reason === 'capacity' && (
+                    {registrationStatus.reason === 'capacity' && event.maxSeats && (
                       <div className="mt-3 p-2.5 sm:p-3 bg-muted/50 dark:bg-white/5 rounded-lg border border-border dark:border-white/10">
                         <p className="text-xs sm:text-sm text-muted-foreground dark:text-gray-300 leading-relaxed">
                           This event has reached maximum capacity of {event.maxSeats} attendees.

@@ -32,7 +32,7 @@ export async function GET(
     if (session?.user?.id) {
       // Check if user is registered for this event
       const registration = event.attendees?.find(
-        (attendee) => attendee.userId === session.user.id
+        (attendee: any) => attendee.userId === session.user.id
       );
       isRegistered = !!registration;
     }

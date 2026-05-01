@@ -108,7 +108,7 @@ export default function EventAnalytics({ events }: EventAnalyticsProps) {
     const upcomingEvents = filteredEvents.filter((e) => e.status === "UPCOMING").length;
     const completedEvents = filteredEvents.filter((e) => e.status === "COMPLETED").length;
     const totalAttendees = filteredEvents.reduce((sum, e) => sum + (e._count?.attendees || 0), 0);
-    const totalCapacity = filteredEvents.reduce((sum, e) => sum + e.maxSeats, 0);
+    const totalCapacity = filteredEvents.reduce((sum, e) => sum + (e.maxSeats || 0), 0);
     const avgAttendance = totalCapacity > 0 ? (totalAttendees / totalCapacity) * 100 : 0;
 
     // Event type distribution for pie chart
@@ -149,7 +149,7 @@ export default function EventAnalytics({ events }: EventAnalyticsProps) {
                 typeAttendance[event.type] = { total: 0, capacity: 0 };
             }
             typeAttendance[event.type].total += event._count?.attendees || 0;
-            typeAttendance[event.type].capacity += event.maxSeats;
+            typeAttendance[event.type].capacity += (event.maxSeats || 0);
         });
         
         return Object.entries(typeAttendance).map(([type, data]) => ({
@@ -193,10 +193,10 @@ export default function EventAnalytics({ events }: EventAnalyticsProps) {
             new Date(event.date).toLocaleDateString(),
             event.status,
             event._count?.attendees || 0,
-            event.maxSeats,
-            event.maxSeats > 0 
-                ? `${Math.round(((event._count?.attendees || 0) / event.maxSeats) * 100)}%` 
-                : "0%",
+            event.maxSeats || "Unlimited",
+            (event.maxSeats || 0) > 0 
+                ? `${Math.round(((event._count?.attendees || 0) / (event.maxSeats || 1)) * 100)}%` 
+                : "N/A",
         ]);
 
         const csvContent = [

@@ -123,7 +123,7 @@ export default function RegistrationConfirmDialog({
 
   // Calculate spots left
   const attendeeCount = event._count?.attendees || 0;
-  const spotsLeft = event.maxSeats - attendeeCount;
+  const spotsLeft = event.maxSeats ? event.maxSeats - attendeeCount : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -245,7 +245,7 @@ export default function RegistrationConfirmDialog({
                 </h4>
                 <p className="text-gray-300 text-sm leading-relaxed">
                   By registering, you're committing to attend this event. 
-                  {spotsLeft <= 5 && spotsLeft > 0 && (
+                  {spotsLeft !== null && spotsLeft <= 5 && spotsLeft > 0 && (
                     <span className="text-orange-400 font-medium">
                       {' '}Only {spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left!
                     </span>
