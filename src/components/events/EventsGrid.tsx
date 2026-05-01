@@ -49,11 +49,6 @@ export interface EventsGridProps {
   skeletonCount?: number;
   
   /**
-   * Callback when user clicks "View Details" on an event
-   */
-  onViewDetails?: (event: Event) => void;
-  
-  /**
    * Callback when user registers for an event
    */
   onRegister?: (eventId: string) => void;
@@ -89,7 +84,6 @@ export default function EventsGrid({
   events,
   isLoading = false,
   skeletonCount = 6,
-  onViewDetails,
   onRegister,
   onUnregister,
   isRegistered,
@@ -156,7 +150,6 @@ export default function EventsGrid({
           >
             <EventCard
               event={event}
-              onViewDetails={onViewDetails}
               onRegister={onRegister}
               onUnregister={onUnregister}
               isRegistered={isRegistered ? isRegistered(event.id) : false}

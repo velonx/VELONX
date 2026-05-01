@@ -27,6 +27,8 @@ export default function EventManagement() {
     location: '',
     type: 'WORKSHOP' as 'WORKSHOP' | 'HACKATHON' | 'WEBINAR',
     maxSeats: '',
+    whoCanParticipate: '',
+    howItWorks: '',
     meetingLink: '',
     imageUrl: '',
   });
@@ -67,7 +69,9 @@ export default function EventManagement() {
         date: dateTime.toISOString(),
         location: formData.location || null,
         type: formData.type,
-        maxSeats: formData.maxSeats ? parseInt(formData.maxSeats) : 100,
+        maxSeats: formData.maxSeats ? parseInt(formData.maxSeats) : null,
+        whoCanParticipate: formData.whoCanParticipate || null,
+        howItWorks: formData.howItWorks || null,
         meetingLink: formData.meetingLink || null,
         imageUrl: formData.imageUrl || null,
       };
@@ -107,6 +111,8 @@ export default function EventManagement() {
       location: event.location || '',
       type: event.type,
       maxSeats: event.maxSeats?.toString() || '',
+      whoCanParticipate: event.whoCanParticipate || '',
+      howItWorks: event.howItWorks || '',
       meetingLink: event.meetingLink || '',
       imageUrl: event.imageUrl || '',
     });
@@ -136,6 +142,8 @@ export default function EventManagement() {
       location: '',
       type: 'WORKSHOP',
       maxSeats: '',
+      whoCanParticipate: '',
+      howItWorks: '',
       meetingLink: '',
       imageUrl: '',
     });
@@ -276,16 +284,41 @@ export default function EventManagement() {
 
                 <div>
                   <Label htmlFor="maxSeats" className="text-sm font-bold text-foreground">
-                    Max Seats *
+                    Max Seats
                   </Label>
                   <Input
                     id="maxSeats"
                     type="number"
-                    required
                     value={formData.maxSeats}
                     onChange={(e) => setFormData({ ...formData, maxSeats: e.target.value })}
                     className="h-12 bg-background border-border rounded-xl mt-2"
-                    placeholder="e.g., 100"
+                    placeholder="Unlimited if empty"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <Label htmlFor="whoCanParticipate" className="text-sm font-bold text-foreground">
+                    Who Can Participate
+                  </Label>
+                  <textarea
+                    id="whoCanParticipate"
+                    value={formData.whoCanParticipate}
+                    onChange={(e) => setFormData({ ...formData, whoCanParticipate: e.target.value })}
+                    className="w-full h-24 bg-background border border-border rounded-xl p-4 mt-2 outline-none focus:ring-2 focus:ring-primary resize-none"
+                    placeholder="Describe eligibility..."
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <Label htmlFor="howItWorks" className="text-sm font-bold text-foreground">
+                    How It Works
+                  </Label>
+                  <textarea
+                    id="howItWorks"
+                    value={formData.howItWorks}
+                    onChange={(e) => setFormData({ ...formData, howItWorks: e.target.value })}
+                    className="w-full h-24 bg-background border border-border rounded-xl p-4 mt-2 outline-none focus:ring-2 focus:ring-primary resize-none"
+                    placeholder="Step by step process..."
                   />
                 </div>
 
@@ -508,7 +541,7 @@ export default function EventManagement() {
                         {event._count && (
                           <div className="flex items-center gap-2">
                             <Users className="w-4 h-4" />
-                            {event._count.attendees} registered / {event.maxSeats} seats
+                            {event._count.attendees} registered {event.maxSeats ? `/ ${event.maxSeats} seats` : '(Unlimited)'}
                           </div>
                         )}
                       </div>

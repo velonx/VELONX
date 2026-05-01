@@ -28,10 +28,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useState } from "react";
+import Link from "next/link";
 
 interface EventCardProps {
   event: Event;
-  onViewDetails?: (event: Event) => void;
   onRegister?: (eventId: string) => void;
   onUnregister?: (eventId: string) => void;
   isRegistered?: boolean;
@@ -58,7 +58,6 @@ interface EventCardProps {
  */
 export default function EventCard({
   event,
-  onViewDetails,
   onRegister,
   onUnregister,
   isRegistered = false,
@@ -83,9 +82,10 @@ export default function EventCard({
   };
   // Calculate attendee percentage
   const attendeeCount = event._count?.attendees || 0;
-  const attendeePercentage = (attendeeCount / event.maxSeats) * 100;
-  const isFull = attendeeCount >= event.maxSeats;
-  const isAlmostFull = attendeePercentage >= 80;
+  const hasMaxSeats = event.maxSeats !== null && event.maxSeats !== undefined;
+  const attendeePercentage = hasMaxSeats ? (attendeeCount / (event.maxSeats || 1)) * 100 : 0;
+  const isFull = hasMaxSeats && attendeeCount >= (event.maxSeats || 0);
+  const isAlmostFull = hasMaxSeats && attendeePercentage >= 80;
 
   // Compute registration status using utility function
   const registrationStatus = computeRegistrationStatus(event, attendeeCount);
@@ -330,7 +330,10 @@ export default function EventCard({
             <span className="text-muted-foreground flex items-center gap-0.5 sm:gap-1">
               <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3" aria-hidden="true" /> Attendees
             </span>
-            <span className="text-foreground" aria-label={`${attendeeCount} out of ${event.maxSeats} attendees registered`}>{attendeeCount}/{event.maxSeats}</span>
+            <span className="text-foreground" aria-label={`${attendeeCount} ${hasMaxSeats ? `out of ${event.maxSeats}` : ''} attendees registered`}>
+              {attendeeCount}
+              {hasMaxSeats ? `/${event.maxSeats}` : ' registered'}
+            </span>
           </div>
           <div className="h-1 sm:h-1.5 bg-muted rounded-full overflow-hidden" role="progressbar" aria-valuenow={attendeePercentage} aria-valuemin={0} aria-valuemax={100} aria-label="Event capacity">
             <div
@@ -358,16 +361,15 @@ export default function EventCard({
         {/* Primary Actions Row - Touch targets minimum 44px (Requirement 12.4) */}
         <div className="flex gap-2">
           {/* View Details Button - Touch-friendly (min 44x44px) */}
-          {onViewDetails && (
-            <Button
-              onClick={() => onViewDetails(event)}
-              variant="outline"
-              className="flex-1 min-h-[44px] h-11 sm:h-10 border border-border hover:border-primary hover:bg-primary/5 text-foreground hover:text-primary font-semibold rounded-lg transition-all touch-manipulation active:scale-95 text-xs sm:text-sm"
-              aria-label={`View details for ${event.title}`}
-            >
-              View Details
-            </Button>
-          )}
+          <Link
+            href={`/events/${event.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 min-h-[44px] h-11 sm:h-10 border border-border hover:border-primary hover:bg-primary/5 text-foreground hover:text-primary font-semibold rounded-lg transition-all touch-manipulation active:scale-95 text-xs sm:text-sm flex items-center justify-center"
+            aria-label={`View details for ${event.title}`}
+          >
+            View Details
+          </Link>
 
           {/* Register/Unregister Button - Touch-friendly (min 44x44px) */}
           {isRegistered ? (

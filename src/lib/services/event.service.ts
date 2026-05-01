@@ -109,6 +109,8 @@ export class EventService {
           location: true,
           imageUrl: true,
           maxSeats: true,
+          whoCanParticipate: true,
+          howItWorks: true,
           meetingLink: true,
           createdAt: true,
           registrationDeadline: true,
@@ -126,7 +128,7 @@ export class EventService {
               attendees: true,
             },
           },
-        },
+        } as any,
         skip: (page - 1) * pageSize,
         take: pageSize,
         orderBy: {
@@ -136,11 +138,10 @@ export class EventService {
       prisma.event.count({ where }),
     ]);
     
-    // Add available seats to each event
-    const eventsWithSeats = events.map((event) => ({
+    const eventsWithSeats = (events as any[]).map((event) => ({
       ...event,
-      attendeeCount: event._count.attendees,
-      availableSeats: event.maxSeats - event._count.attendees,
+      attendeeCount: event._count?.attendees || 0,
+      availableSeats: event.maxSeats !== null && event.maxSeats !== undefined ? event.maxSeats - (event._count?.attendees || 0) : null,
     }));
     
     return {
@@ -193,11 +194,11 @@ export class EventService {
       throw new NotFoundError("Event");
     }
     
-    // Add available seats
+    const eventData = event as any;
     return {
-      ...event,
-      attendeeCount: event._count.attendees,
-      availableSeats: event.maxSeats - event._count.attendees,
+      ...eventData,
+      attendeeCount: eventData._count?.attendees || 0,
+      availableSeats: eventData.maxSeats !== null && eventData.maxSeats !== undefined ? eventData.maxSeats - (eventData._count?.attendees || 0) : null,
     };
   }
   
@@ -212,7 +213,9 @@ export class EventService {
     endDate?: string;
     location?: string;
     imageUrl?: string;
-    maxSeats: number;
+    maxSeats?: number | null;
+    whoCanParticipate?: string;
+    howItWorks?: string;
     status?: string;
     creatorId: string;
   }) {
@@ -225,10 +228,12 @@ export class EventService {
         endDate: data.endDate ? new Date(data.endDate) : null,
         location: data.location,
         imageUrl: data.imageUrl,
-        maxSeats: data.maxSeats,
+        maxSeats: data.maxSeats as any,
+        whoCanParticipate: data.whoCanParticipate as any,
+        howItWorks: data.howItWorks as any,
         status: (data.status as any) || "UPCOMING",
         creatorId: data.creatorId,
-      },
+      } as any,
       include: {
         creator: {
           select: {
@@ -246,10 +251,11 @@ export class EventService {
       },
     });
     
+    const eventData = event as any;
     return {
-      ...event,
-      attendeeCount: event._count.attendees,
-      availableSeats: event.maxSeats - event._count.attendees,
+      ...eventData,
+      attendeeCount: eventData._count?.attendees || 0,
+      availableSeats: eventData.maxSeats !== null && eventData.maxSeats !== undefined ? eventData.maxSeats - (eventData._count?.attendees || 0) : null,
     };
   }
   
@@ -266,8 +272,10 @@ export class EventService {
       endDate?: string;
       location?: string;
       imageUrl?: string;
-      maxSeats?: number;
+      maxSeats?: number | null;
       status?: string;
+      whoCanParticipate?: string | null;
+      howItWorks?: string | null;
       registrationDeadline?: string;
       registrationManuallyClosedAt?: string;
     }
@@ -303,7 +311,9 @@ export class EventService {
     if (data.endDate !== undefined) updateData.endDate = data.endDate ? new Date(data.endDate) : null;
     if (data.location !== undefined) updateData.location = data.location;
     if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
-    if (data.maxSeats !== undefined) updateData.maxSeats = data.maxSeats;
+    if (data.maxSeats !== undefined) (updateData as any).maxSeats = data.maxSeats;
+    if (data.whoCanParticipate !== undefined) (updateData as any).whoCanParticipate = data.whoCanParticipate;
+    if (data.howItWorks !== undefined) (updateData as any).howItWorks = data.howItWorks;
     if (data.status !== undefined) updateData.status = data.status as any;
     if (data.registrationDeadline !== undefined) {
       updateData.registrationDeadline = data.registrationDeadline ? new Date(data.registrationDeadline) : null;
@@ -439,10 +449,11 @@ export class EventService {
       }
     }
     
+    const eventData = event as any;
     return {
-      ...event,
-      attendeeCount: event._count.attendees,
-      availableSeats: event.maxSeats - event._count.attendees,
+      ...eventData,
+      attendeeCount: eventData._count?.attendees || 0,
+      availableSeats: eventData.maxSeats !== null && eventData.maxSeats !== undefined ? eventData.maxSeats - (eventData._count?.attendees || 0) : null,
     };
   }
   
@@ -612,7 +623,7 @@ export class EventService {
       // Check if this registration caused the event to reach capacity
       // Requirements: 10.1, 10.2, 10.5, 9.1, 9.2, 9.4, 9.5
       const newAttendeeCount = event._count.attendees + 1;
-      if (newAttendeeCount >= event.maxSeats) {
+      if (event.maxSeats !== null && newAttendeeCount >= event.maxSeats) {
         // Track capacity closure asynchronously
         eventAnalyticsService.hasClosureBeenTracked(eventId, 'capacity').then((tracked) => {
           if (!tracked) {

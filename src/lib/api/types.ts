@@ -57,7 +57,9 @@ export interface Event {
   location: string | null;
   meetingLink: string | null;
   imageUrl: string | null;
-  maxSeats: number;
+  maxSeats: number | null;
+  whoCanParticipate?: string | null;
+  howItWorks?: string | null;
   status: 'UPCOMING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED';
   creatorId: string;
   createdAt: string;

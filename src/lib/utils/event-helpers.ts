@@ -61,7 +61,7 @@ export function computeRegistrationStatus(
   }
 
   // Priority 3: Check capacity
-  if (attendeeCount >= event.maxSeats) {
+  if (event.maxSeats !== null && event.maxSeats !== undefined && attendeeCount >= event.maxSeats) {
     return {
       isOpen: false,
       reason: 'capacity',
@@ -71,9 +71,13 @@ export function computeRegistrationStatus(
   }
 
   // Registration is open
+  const availabilityMessage = (event.maxSeats !== null && event.maxSeats !== undefined)
+    ? `${event.maxSeats - attendeeCount} spots available`
+    : 'Registration Open';
+
   return {
     isOpen: true,
-    message: `${event.maxSeats - attendeeCount} spots available`,
+    message: availabilityMessage,
     canReopen: false
   };
 }

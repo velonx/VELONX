@@ -27,7 +27,6 @@ import { useKeyboardNavigation, useFocusReturn } from "@/lib/hooks/useKeyboardNa
 // Lazy load heavy components for better performance (Requirement 6.9, 6.10)
 const EventCalendar = lazy(() => import("@/components/events/EventCalendar"));
 const EventAnalytics = lazy(() => import("@/components/events/EventAnalytics"));
-const EventDetailsModal = lazy(() => import("@/components/events/EventDetailsModal"));
 const RegistrationConfirmDialog = lazy(() => import("@/components/events/RegistrationConfirmDialog"));
 const UnregisterConfirmDialog = lazy(() => import("@/components/events/UnregisterConfirmDialog"));
 
@@ -58,8 +57,6 @@ function EventsPage() {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
     const [showAddEventDialog, setShowAddEventDialog] = useState(false);
     const [showLoginDialog, setShowLoginDialog] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
-    const [showEventDetailsModal, setShowEventDetailsModal] = useState(false);
     const [showRegistrationDialog, setShowRegistrationDialog] = useState(false);
     const [showUnregisterDialog, setShowUnregisterDialog] = useState(false);
     const [eventToRegister, setEventToRegister] = useState<any | null>(null);
@@ -84,7 +81,6 @@ function EventsPage() {
     });
 
     // Focus return for modals
-    useFocusReturn(showEventDetailsModal);
     useFocusReturn(showRegistrationDialog);
     useFocusReturn(showUnregisterDialog);
     useFocusReturn(showLoginDialog);
@@ -109,9 +105,7 @@ function EventsPage() {
                 key: 'Escape',
                 handler: () => {
                     // Close any open modals
-                    if (showEventDetailsModal) {
-                        handleCloseEventDetails();
-                    } else if (showRegistrationDialog) {
+                    if (showRegistrationDialog) {
                         setShowRegistrationDialog(false);
                         setEventToRegister(null);
                     } else if (showUnregisterDialog) {
@@ -182,16 +176,6 @@ function EventsPage() {
         } catch (error) {
             // Error handling is done in the hook
         }
-    };
-
-    const handleViewDetails = (event: any) => {
-        setSelectedEvent(event);
-        setShowEventDetailsModal(true);
-    };
-
-    const handleCloseEventDetails = () => {
-        setShowEventDetailsModal(false);
-        setSelectedEvent(null);
     };
 
     const handleAddToCalendar = (eventTitle: string) => {
@@ -311,14 +295,13 @@ function EventsPage() {
                                         events={filteredEvents}
                                         isLoading={loading}
                                         skeletonCount={filters.pageSize}
-                                        onViewDetails={handleViewDetails}
-                                        onRegister={(eventId) => {
+                                        onRegister={(eventId: string) => {
                                             const event = upcomingEvents?.find(e => e.id === eventId);
                                             if (event) {
                                                 handleRegister(eventId, event.title);
                                             }
                                         }}
-                                        onUnregister={(eventId) => {
+                                        onUnregister={(eventId: string) => {
                                             const event = upcomingEvents?.find(e => e.id === eventId);
                                             handleUnregister(eventId, event?.title);
                                         }}
@@ -413,28 +396,6 @@ function EventsPage() {
                     </div>
                 </DialogContent>
             </Dialog>
-
-            {/* Event Details Modal */}
-            <Suspense fallback={null}>
-                <EventDetailsModal
-                    event={selectedEvent}
-                    isOpen={showEventDetailsModal}
-                    onClose={handleCloseEventDetails}
-                    onRegister={(eventId) => {
-                        const event = upcomingEvents?.find(e => e.id === eventId);
-                        if (event) {
-                            handleRegister(eventId, event.title);
-                        }
-                    }}
-                    onUnregister={(eventId) => {
-                        const event = upcomingEvents?.find(e => e.id === eventId);
-                        handleUnregister(eventId, event?.title);
-                    }}
-                    isRegistered={selectedEvent ? isUserRegistered(selectedEvent.id) : false}
-                    isLoading={isRegistering}
-                    userRole={session?.user?.role as 'STUDENT' | 'ADMIN' | undefined}
-                />
-            </Suspense>
 
             {/* Registration Confirmation Dialog */}
             <Suspense fallback={null}>

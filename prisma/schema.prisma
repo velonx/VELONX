@@ -345,7 +345,9 @@ model Event {
   location    String?
   meetingLink String?
   imageUrl    String?
-  maxSeats    Int
+  maxSeats    Int?
+  whoCanParticipate String?
+  howItWorks        String?
   status      EventStatus @default(UPCOMING)
   creatorId   String      @db.ObjectId
   createdAt   DateTime    @default(now())
