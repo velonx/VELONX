@@ -42,7 +42,7 @@ export const ProjectInviteEmail = ({
         </ul>
 
         <Link
-            href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/projects`}
+            href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/projects`}
             style={button}
         >
             View Project Invite

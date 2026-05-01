@@ -60,7 +60,7 @@ export const EventConfirmationEmail = ({
             )}
 
             <Link
-                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/events`}
+                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/events`}
                 style={button}
             >
                 View Event Details

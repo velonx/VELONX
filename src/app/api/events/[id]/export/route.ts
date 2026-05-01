@@ -117,7 +117,7 @@ function generateICSData(
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    `UID:${event.id}@velonx.com`,
+    `UID:${event.id}@velonx.in`,
     `DTSTAMP:${dtstamp}`,
     `DTSTART:${dtstart}`,
     `DTEND:${dtend}`,

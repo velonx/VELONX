@@ -8,8 +8,8 @@ export function OrganizationSchema() {
         name: 'VELONX',
         description:
             'A platform empowering students to build real projects, connect with mentors, and launch their tech careers.',
-        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com',
-        logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/logo.png`,
+        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in',
+        logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/logo.webp`,
         sameAs: [
             // Add your social media links here
             // 'https://twitter.com/velonx',
@@ -19,7 +19,7 @@ export function OrganizationSchema() {
         contactPoint: {
             '@type': 'ContactPoint',
             contactType: 'Customer Service',
-            email: 'support@velonx.com',
+            email: 'support@velonx.in',
         },
     };
 
@@ -72,7 +72,7 @@ export function EventSchema({ event }: EventSchemaProps) {
         organizer: {
             '@type': 'Organization',
             name: 'VELONX',
-            url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com',
+            url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in',
         },
     };
 
@@ -105,7 +105,7 @@ export function CourseSchema({ resource }: CourseSchemaProps) {
         provider: {
             '@type': 'Organization',
             name: 'VELONX',
-            url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com',
+            url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in',
         },
         url: resource.url,
     };
@@ -217,7 +217,7 @@ export function ArticleSchema({ article }: ArticleSchemaProps) {
             name: 'VELONX',
             logo: {
                 '@type': 'ImageObject',
-                url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/logo.png`,
+                url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/logo.webp`,
             },
         },
         mainEntityOfPage: {

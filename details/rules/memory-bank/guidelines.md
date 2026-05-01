@@ -391,7 +391,7 @@
   console.log('📊 Summary:');
   console.log(`   - Users: ${students.length + 1}`);
   console.log('🔐 Test Credentials:');
-  console.log('   Admin: admin@velonx.com / password123');
+  console.log('   Admin: admin@velonx.in / password123');
   ```
 
 ## Performance Optimization

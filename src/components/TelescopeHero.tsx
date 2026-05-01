@@ -45,7 +45,7 @@ export const TelescopeHero = () => {
 
             {/* Light-theme hero image */}
             <Image
-                src="/hero-light.jpeg"
+                src="/hero-light.webp"
                 alt=""
                 aria-hidden="true"
                 fill
@@ -56,7 +56,7 @@ export const TelescopeHero = () => {
 
             {/* Dark-theme hero image */}
             <Image
-                src="/hero-dark.jpeg"
+                src="/hero-dark.webp"
                 alt=""
                 aria-hidden="true"
                 fill

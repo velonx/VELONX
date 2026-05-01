@@ -84,7 +84,7 @@ export async function GET() {
     }
 
     // Format referral link
-    const referralLink = `https://velonx.com/register?ref=${user.referralCode}`;
+    const referralLink = `https://velonx.in/register?ref=${user.referralCode}`;
 
     return NextResponse.json(
       {

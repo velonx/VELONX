@@ -32,7 +32,7 @@ export const ResetPasswordEmail = ({
 
         <Text style={paragraph}>
             If you didn't request a password reset, please ignore this email or{' '}
-            <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/support`} style={linkStyle}>
+            <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/support`} style={linkStyle}>
                 contact support
             </Link>{' '}
             if you have concerns.

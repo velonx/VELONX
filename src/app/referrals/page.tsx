@@ -97,7 +97,7 @@ export default async function ReferralDashboardPage() {
   }
 
   // Generate referral link
-  const referralLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://velonx.com'}/register?ref=${user.referralCode}`;
+  const referralLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://velonx.in'}/register?ref=${user.referralCode}`;
 
   return (
     <div className="min-h-screen bg-background pt-20">

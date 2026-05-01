@@ -367,7 +367,7 @@ function SignupPage() {
                     <div className="relative z-10 w-full max-w-sm">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                            src="/signup-illustration.png"
+                            src="/signup-illustration.webp"
                             alt="Secure Signup Illustration"
                             className="w-full h-auto object-contain drop-shadow-xl"
                             style={{ maxHeight: "calc(100vh - 14rem)" }}

@@ -11,7 +11,7 @@ Disallow: /auth
 Disallow: /settings
 
 # Host
-Host: https://velonx.com
+Host: https://velonx.in
 
 # Sitemaps
-Sitemap: https://velonx.com/sitemap.xml
+Sitemap: https://velonx.in/sitemap.xml

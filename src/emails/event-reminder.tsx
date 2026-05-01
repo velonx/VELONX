@@ -64,7 +64,7 @@ export const EventReminderEmail = ({
                         Make sure to arrive a few minutes early!
                     </Text>
                     <Link
-                        href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/events`}
+                        href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/events`}
                         style={button}
                     >
                         View Event Details

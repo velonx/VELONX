@@ -64,7 +64,7 @@ export default function AddEventForm({
             maxAttendees: parseInt(formData.maxAttendees),
             currentAttendees: 0,
             status: "upcoming",
-            createdBy: "admin@velonx.com",
+            createdBy: "admin@velonx.in",
         });
 
         // Reset form

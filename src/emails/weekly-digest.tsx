@@ -52,7 +52,7 @@ export const WeeklyDigestEmail = ({
                     You have {upcomingEvents} event{upcomingEvents > 1 ? 's' : ''} coming up this week. Don't miss out!
                 </Text>
                 <Link
-                    href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/events`}
+                    href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/events`}
                     style={secondaryButton}
                 >
                     View Events
@@ -67,7 +67,7 @@ export const WeeklyDigestEmail = ({
                     {newProjects} new project{newProjects > 1 ? 's have' : ' has'} been added that match your interests. Check them out!
                 </Text>
                 <Link
-                    href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/projects`}
+                    href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/projects`}
                     style={secondaryButton}
                 >
                     Browse Projects
@@ -81,7 +81,7 @@ export const WeeklyDigestEmail = ({
         </Text>
 
         <Link
-            href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/dashboard`}
+            href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/dashboard`}
             style={button}
         >
             Go to Dashboard
@@ -96,7 +96,7 @@ export const WeeklyDigestEmail = ({
         <Text style={unsubscribeText}>
             Not interested in weekly updates?{' '}
             <Link
-                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/settings/notifications`}
+                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/settings/notifications`}
                 style={linkStyle}
             >
                 Update your preferences

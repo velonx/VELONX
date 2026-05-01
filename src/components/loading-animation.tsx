@@ -9,7 +9,7 @@ export default function LoadingAnimation() {
             <span className="sr-only">Loading, please wait...</span>
             <div className="relative w-64 h-16 animate-pulse">
                 <Image
-                    src="/logo.png"
+                    src="/logo.webp"
                     alt="Velonx Logo"
                     fill
                     sizes="256px"

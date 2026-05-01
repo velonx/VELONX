@@ -168,7 +168,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 50,
         currentAttendees: 32,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-2",
@@ -183,7 +183,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 30,
         currentAttendees: 18,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-3",
@@ -198,7 +198,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 100,
         currentAttendees: 67,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-4",
@@ -213,7 +213,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 40,
         currentAttendees: 25,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-5",
@@ -228,7 +228,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 60,
         currentAttendees: 42,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-6",
@@ -243,7 +243,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 200,
         currentAttendees: 156,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-7",
@@ -258,7 +258,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 80,
         currentAttendees: 45,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-8",
@@ -273,7 +273,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 50,
         currentAttendees: 22,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-9",
@@ -288,7 +288,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 150,
         currentAttendees: 89,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-10",
@@ -303,7 +303,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 100,
         currentAttendees: 76,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-11",
@@ -318,7 +318,7 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 120,
         currentAttendees: 94,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
     {
         id: "mtg-12",
@@ -333,6 +333,6 @@ export const SCHEDULED_MEETINGS = [
         status: "upcoming" as const,
         maxAttendees: 60,
         currentAttendees: 38,
-        createdBy: "admin@velonx.com",
+        createdBy: "admin@velonx.in",
     },
 ];

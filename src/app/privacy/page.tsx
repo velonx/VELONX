@@ -97,7 +97,7 @@ export default function PrivacyPage() {
                             <div>
                                 <h3 className="text-2xl font-bold text-foreground mb-3">Questions &amp; Contact</h3>
                                 <p className="text-muted-foreground mb-6">
-                                    If you have any questions about this Privacy Policy or our treatment of your personal data, please contact us at privacy@velonx.com.
+                                    If you have any questions about this Privacy Policy or our treatment of your personal data, please contact us at privacy@velonx.in.
                                 </p>
                                 <button className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl transition-all">
                                     Contact Support

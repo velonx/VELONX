@@ -423,10 +423,10 @@ export default function ContactPage() {
                     Email Us
                   </p>
                   <a
-                    href="mailto:hello@velonx.com"
+                    href="mailto:hello@velonx.in"
                     className="text-foreground font-black hover:text-[#219EBC] transition-colors"
                   >
-                    hello@velonx.com
+                    hello@velonx.in
                   </a>
                   <p className="text-xs text-muted-foreground mt-1">
                     We reply within 1–2 business days

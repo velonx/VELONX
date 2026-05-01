@@ -38,7 +38,7 @@ export const WelcomeEmail = ({ userName }: WelcomeEmailProps) => (
         </Text>
 
         <Link
-            href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/dashboard`}
+            href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/dashboard`}
             style={button}
         >
             Go to Dashboard
@@ -46,7 +46,7 @@ export const WelcomeEmail = ({ userName }: WelcomeEmailProps) => (
 
         <Text style={paragraph}>
             Need help getting started? Check out our{' '}
-            <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/resources`} style={link}>
+            <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/resources`} style={link}>
                 resources page
             </Link>{' '}
             or reach out to our community.

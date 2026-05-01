@@ -37,15 +37,15 @@ export const EmailLayout = ({ preview, children }: EmailLayoutProps) => (
                         © {new Date().getFullYear()} VELONX. All rights reserved.
                     </Text>
                     <Text style={footerLinks}>
-                        <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/about`} style={link}>
+                        <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/about`} style={link}>
                             About
                         </Link>
                         {' • '}
-                        <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/settings/notifications`} style={link}>
+                        <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/settings/notifications`} style={link}>
                             Email Preferences
                         </Link>
                         {' • '}
-                        <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/support`} style={link}>
+                        <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/support`} style={link}>
                             Support
                         </Link>
                     </Text>

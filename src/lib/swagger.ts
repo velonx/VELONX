@@ -11,7 +11,7 @@ export const getApiDocs = () => {
         description: 'Comprehensive API documentation for the VELONX educational platform',
         contact: {
           name: 'VELONX Support',
-          email: 'support@velonx.com',
+          email: 'support@velonx.in',
         },
       },
       servers: [

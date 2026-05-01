@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
             <h1>✓ Unsubscribed</h1>
             <p>You've been unsubscribed from all VELONX emails.</p>
             <p>You can update your preferences anytime from your account settings.</p>
-            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/settings/notifications">
+            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/settings/notifications">
               Manage Preferences
             </a>
           </div>
@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        const unsubscribeUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/api/email/unsubscribe?token=${token}`;
+        const unsubscribeUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/api/email/unsubscribe?token=${token}`;
 
         return NextResponse.json({
             success: true,

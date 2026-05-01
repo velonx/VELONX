@@ -118,9 +118,9 @@ MIT License Summary
 👥 Community
 Join our community and connect with fellow developers, mentors, and students!
 
-Website: velonx.com
+Website: velonx.in
 GitHub: velonx
-Email: contact@velonx.com
+Email: contact@velonx.in
 🙏 Acknowledgments
 Thank you to all our contributors, mentors, and community members making VELONX possible!
 

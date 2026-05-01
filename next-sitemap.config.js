@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com',
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in',
     generateRobotsTxt: true,
     generateIndexSitemap: false,
     exclude: [
@@ -22,7 +22,7 @@ module.exports = {
             },
         ],
         additionalSitemaps: [
-            `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.com'}/sitemap.xml`,
+            `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/sitemap.xml`,
         ],
     },
     transform: async (config, path) => {

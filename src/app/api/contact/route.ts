@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     if (!process.env.RESEND_API_KEY) {
       console.error('[Contact] RESEND_API_KEY is not set');
       return NextResponse.json(
-        { success: false, error: 'Email service is not configured. Please reach out directly at hello@velonx.com' },
+        { success: false, error: 'Email service is not configured. Please reach out directly at hello@velonx.in' },
         { status: 503 }
       );
     }
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     const { Resend } = await import('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
     const emailFrom = process.env.EMAIL_FROM || 'VELONX <onboarding@resend.dev>';
-    const teamEmail = process.env.EMAIL_REPLY_TO || 'support@velonx.com';
+    const teamEmail = process.env.EMAIL_REPLY_TO || 'support@velonx.in';
 
     const [teamResult, replyResult] = await Promise.allSettled([
       resend.emails.send({
