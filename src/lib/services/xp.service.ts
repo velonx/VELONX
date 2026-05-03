@@ -171,6 +171,7 @@ export class XPService {
             CHALLENGE_COMPLETION: 'Completed a challenge',
             PROJECT_COMPLETION: 'Completed a project',
             MANUAL: 'Manual XP adjustment',
+            SWAG_REDEMPTION: 'Redeemed points for swag',
         };
 
         return reasons[source] || 'Earned XP';

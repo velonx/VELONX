@@ -148,12 +148,12 @@ export const FloatingNav = ({
                 <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-card border-l border-border w-[300px]">
+            <SheetContent side="right" className="bg-card border-l border-border w-[300px] p-0">
               <VisuallyHidden>
                 <SheetTitle>Navigation Menu</SheetTitle>
               </VisuallyHidden>
-              <div className="flex flex-col gap-8 mt-10">
-                <Link href="/" onClick={() => setMobileMenuOpen(false)} className="px-4">
+              <div className="flex flex-col h-full overflow-y-auto custom-scrollbar p-6">
+                <Link href="/" onClick={() => setMobileMenuOpen(false)} className="mb-8">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#219EBC] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-3xl tracking-tight">
                     Velonx
                   </span>

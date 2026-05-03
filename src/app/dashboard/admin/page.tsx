@@ -20,7 +20,8 @@ import {
     Activity,
     Briefcase,
     BookOpen,
-    Flag
+    Flag,
+    ShoppingBag
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useUserRequests, usePlatformStats } from "@/lib/api/hooks";
@@ -58,6 +59,12 @@ const AdminBookingApprovalPanel = dynamic(() => import("@/components/admin/Admin
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
 });
 const ReportsAdmin = dynamic(() => import("@/components/admin/ReportsAdmin").then(mod => ({ default: mod.ReportsAdmin })), {
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+});
+const SwagItemManager = dynamic(() => import("@/components/swag/admin/SwagItemManager"), {
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+});
+const SwagOrderTable = dynamic(() => import("@/components/swag/admin/SwagOrderTable"), {
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
 });
 
@@ -149,6 +156,7 @@ export default function AdminDashboard() {
         { icon: Layout, label: "Management", value: "management" },
         { icon: Users, label: "Mentors", value: "mentors" },
         { icon: Calendar, label: "Events", value: "events" },
+        { icon: ShoppingBag, label: "Swag Store", value: "swag" },
         { icon: Flag, label: "Reports", value: "reports" },
         { icon: PenTool, label: "Blog Authoring", value: "blog" },
         { icon: Activity, label: "Performance", value: "performance" },
@@ -263,6 +271,20 @@ export default function AdminDashboard() {
 
                     <TabsContent value="events" className="space-y-12">
                         <EventManagement />
+                    </TabsContent>
+
+                    <TabsContent value="swag" className="space-y-10">
+                        <div>
+                            <h2 className="text-2xl font-bold text-foreground mb-1">Swag Store</h2>
+                            <p className="text-muted-foreground text-sm mb-8">Manage merchandise catalog and fulfill student orders</p>
+                            <div className="space-y-10">
+                                <SwagItemManager />
+                                <div className="border-t border-border pt-10">
+                                    <h3 className="text-xl font-bold text-foreground mb-6">Order Management</h3>
+                                    <SwagOrderTable />
+                                </div>
+                            </div>
+                        </div>
                     </TabsContent>
 
                     <TabsContent value="reports" className="space-y-8">

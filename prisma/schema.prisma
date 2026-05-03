@@ -99,6 +99,7 @@ enum XPSource {
   CHALLENGE_COMPLETION
   PROJECT_COMPLETION
   MANUAL
+  SWAG_REDEMPTION
 }
 
 enum LeaderboardPeriod {
@@ -195,6 +196,9 @@ model User {
   blocking          UserBlock[]        @relation("Blocking")
   blockedBy         UserBlock[]        @relation("BlockedBy")
   moderatorActions  ModerationLog[]    @relation("ModeratorActions")
+
+  // Swag relations
+  swagOrders        SwagOrder[]
 
   @@map("users")
 }
@@ -1226,4 +1230,76 @@ model Report {
   @@index([status, createdAt])
   @@index([category, createdAt])
   @@map("reports")
+}
+
+// ============================================================
+// Swag Store Models
+// ============================================================
+
+enum SwagCategory {
+  NOTEBOOK
+  DIARY
+  BOTTLE
+  BAG
+  PLANT
+  LAMP
+  STATIONERY
+  APPAREL
+  OTHER
+}
+
+enum SwagOrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// SwagItem — product catalog managed by admins
+model SwagItem {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  imageUrl    String?
+  category    SwagCategory
+  xpCost      Int
+  stock       Int          @default(-1) // -1 = unlimited
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  orders SwagOrder[]
+
+  @@index([isActive, category])
+  @@map("swag_items")
+}
+
+// SwagOrder — purchase records with delivery details
+model SwagOrder {
+  id       String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String          @db.ObjectId
+  itemId   String          @db.ObjectId
+  quantity Int             @default(1)
+  xpSpent  Int
+  status   SwagOrderStatus @default(PENDING)
+
+  // Delivery details
+  fullName String
+  phone    String
+  address  String
+  city     String
+  pincode  String
+  notes    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User     @relation(fields: [userId], references: [id])
+  item SwagItem @relation(fields: [itemId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("swag_orders")
 }

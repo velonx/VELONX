@@ -11,6 +11,7 @@ import {
   IconBriefcase,
   IconNews,
   IconTrophy,
+  IconShoppingBag,
 } from "@tabler/icons-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
@@ -57,6 +58,16 @@ export default function FloatingNavDemo() {
       name: "Leaderboard",
       link: "/leaderboard",
       icon: <IconTrophy className="h-4 w-4 text-muted-foreground" />,
+    },
+    {
+      name: "Swag",
+      link: "/swag",
+      icon: <IconShoppingBag className="h-4 w-4 text-muted-foreground" />,
+    },
+    {
+      name: "Community",
+      link: "/community",
+      icon: <IconUsers className="h-4 w-4 text-muted-foreground" />,
     },
   ];
 

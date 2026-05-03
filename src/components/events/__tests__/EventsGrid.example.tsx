@@ -74,7 +74,6 @@ export function BasicExample() {
       <EventsGrid
         events={sampleEvents}
         isLoading={false}
-        onViewDetails={(event) => console.log('View details:', event.title)}
         onRegister={(eventId) => console.log('Register for:', eventId)}
       />
     </div>
@@ -157,7 +156,6 @@ export function WithRegistrationExample() {
       <EventsGrid
         events={sampleEvents}
         isLoading={false}
-        onViewDetails={(event) => console.log('View details:', event.title)}
         onRegister={handleRegister}
         onUnregister={handleUnregister}
         isRegistered={isRegistered}
@@ -199,7 +197,6 @@ export function ResponsiveGridExample() {
       <EventsGrid
         events={sampleEvents}
         isLoading={false}
-        onViewDetails={(event) => console.log('View details:', event.title)}
         onRegister={(eventId) => console.log('Register for:', eventId)}
       />
     </div>
@@ -218,7 +215,6 @@ export function CustomClassesExample() {
         events={sampleEvents}
         isLoading={false}
         className="custom-events-grid"
-        onViewDetails={(event) => console.log('View details:', event.title)}
         onRegister={(eventId) => console.log('Register for:', eventId)}
       />
     </div>
@@ -242,7 +238,6 @@ export function LargeDatasetExample() {
       <EventsGrid
         events={manyEvents}
         isLoading={false}
-        onViewDetails={(event) => console.log('View details:', event.title)}
         onRegister={(eventId) => console.log('Register for:', eventId)}
       />
     </div>
@@ -281,7 +276,6 @@ export function APIIntegrationExample() {
         isLoading={isLoading}
         skeletonCount={6}
         emptyState={emptyState}
-        onViewDetails={(event) => console.log('View details:', event.title)}
         onRegister={(eventId) => console.log('Register for:', eventId)}
       />
     </div>

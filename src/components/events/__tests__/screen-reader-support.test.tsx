@@ -56,7 +56,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -72,7 +71,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -93,7 +91,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={newEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -108,7 +105,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -123,7 +119,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -138,7 +133,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -156,7 +150,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -174,7 +167,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={true}
@@ -200,7 +192,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={fullEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -217,7 +208,6 @@ describe('Screen Reader Support', () => {
       const { container } = render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -404,7 +394,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}
@@ -428,7 +417,6 @@ describe('Screen Reader Support', () => {
       render(
         <EventCard
           event={mockEvent}
-          onViewDetails={vi.fn()}
           onRegister={vi.fn()}
           onUnregister={vi.fn()}
           isRegistered={false}

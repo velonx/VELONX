@@ -90,9 +90,7 @@ const physicalEvent: Event = {
 };
 
 export function MobileEventCardExamples() {
-  const handleViewDetails = (event: Event) => {
-    console.log('View details:', event.title);
-  };
+
 
   const handleRegister = (eventId: string) => {
     console.log('Register for event:', eventId);
@@ -115,7 +113,6 @@ export function MobileEventCardExamples() {
           </h2>
           <EventCard
             event={eventWithImage}
-            onViewDetails={handleViewDetails}
             onRegister={handleRegister}
             isRegistered={false}
           />
@@ -127,7 +124,6 @@ export function MobileEventCardExamples() {
           </h2>
           <EventCard
             event={almostFullEvent}
-            onViewDetails={handleViewDetails}
             onRegister={handleRegister}
             isRegistered={false}
           />
@@ -139,7 +135,6 @@ export function MobileEventCardExamples() {
           </h2>
           <EventCard
             event={startingSoonEvent}
-            onViewDetails={handleViewDetails}
             onRegister={handleRegister}
             isRegistered={false}
           />
@@ -151,7 +146,6 @@ export function MobileEventCardExamples() {
           </h2>
           <EventCard
             event={fullEvent}
-            onViewDetails={handleViewDetails}
             onRegister={handleRegister}
             isRegistered={false}
           />
@@ -163,7 +157,6 @@ export function MobileEventCardExamples() {
           </h2>
           <EventCard
             event={newEvent}
-            onViewDetails={handleViewDetails}
             onRegister={handleRegister}
             isRegistered={false}
           />
@@ -175,7 +168,6 @@ export function MobileEventCardExamples() {
           </h2>
           <EventCard
             event={eventWithImage}
-            onViewDetails={handleViewDetails}
             onUnregister={handleUnregister}
             isRegistered={true}
           />
@@ -187,7 +179,6 @@ export function MobileEventCardExamples() {
           </h2>
           <EventCard
             event={eventWithoutImage}
-            onViewDetails={handleViewDetails}
             onRegister={handleRegister}
             isRegistered={false}
           />
@@ -199,7 +190,6 @@ export function MobileEventCardExamples() {
           </h2>
           <EventCard
             event={physicalEvent}
-            onViewDetails={handleViewDetails}
             onRegister={handleRegister}
             isRegistered={false}
           />

@@ -205,7 +205,6 @@ describe('EventsGrid', () => {
 
   describe('Callbacks', () => {
     it('should pass callbacks to EventCard components', () => {
-      const onViewDetails = vi.fn();
       const onRegister = vi.fn();
       const onUnregister = vi.fn();
       const isRegistered = vi.fn(() => false);
@@ -214,7 +213,6 @@ describe('EventsGrid', () => {
         <EventsGrid
           events={mockEvents}
           isLoading={false}
-          onViewDetails={onViewDetails}
           onRegister={onRegister}
           onUnregister={onUnregister}
           isRegistered={isRegistered}

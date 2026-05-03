@@ -28,6 +28,7 @@ const navLinks = [
     { href: "/career", label: "Career" },
     { href: "/blog", label: "Blog" },
     { href: "/leaderboard", label: "Leaderboard" },
+    { href: "/swag", label: "Swag 🛍️" },
 ];
 
 const communityLinks = [
@@ -179,6 +180,7 @@ export function Navbar() {
                         </div>
                     ) : (
                         <div className="flex items-center gap-2">
+                            <ThemeToggle />
                             <Link href="/auth/login">
                                 <button
                                     className="text-[#023047] border border-[#023047] hover:bg-[#023047]/5 font-semibold text-xs rounded-full px-4 py-2 transition-all"
@@ -209,6 +211,7 @@ export function Navbar() {
                             </Avatar>
                         </Link>
                     )}
+                    <ThemeToggle />
                     <Sheet open={open} onOpenChange={setOpen}>
                         <SheetTrigger asChild>
                             <Button
@@ -220,12 +223,12 @@ export function Navbar() {
                                 <Menu className="w-5 h-5" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right" className="bg-card border-l border-border w-[300px]">
+                        <SheetContent side="right" className="bg-card border-l border-border w-[300px] p-0">
                             <VisuallyHidden>
                                 <SheetTitle>Navigation Menu</SheetTitle>
                             </VisuallyHidden>
-                            <div className="flex flex-col gap-8 mt-10">
-                                <Link href="/" onClick={() => setOpen(false)} className="px-4">
+                            <div className="flex flex-col h-full overflow-y-auto custom-scrollbar p-6">
+                                <Link href="/" onClick={() => setOpen(false)} className="mb-8">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#219EBC] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-3xl tracking-tight">
                                         Velonx
                                     </span>

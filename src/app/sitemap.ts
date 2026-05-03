@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/community-guidelines",
     "/auth/login",
     "/auth/signup",
+    "/swag",
   ];
 
   const currentDate = new Date();

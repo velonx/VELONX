@@ -352,7 +352,6 @@ describe('Color Contrast - WCAG AA Compliance', () => {
       const { container } = render(
         <EventCard
           event={mockEvent}
-          onViewDetails={() => { }}
           isRegistered={false}
         />
       );

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Bebas_Neue, Outfit, Great_Vibes, Dancing_Script, Amatic_SC, Indie_Flower, Sniglet, Girassol } from "next/font/google";
+import { Geist, Geist_Mono, Bebas_Neue, Outfit, Great_Vibes, Dancing_Script, Amatic_SC, Indie_Flower, Sniglet, Girassol, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -81,6 +81,11 @@ const girassol = Girassol({
   preload: false,
 });
 
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+});
+
 import { defaultMetadata } from "@/lib/seo.config";
 
 export const metadata = defaultMetadata;
@@ -93,7 +98,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${outfit.variable} ${greatVibes.variable} ${dancingScript.variable} ${amaticSC.variable} ${indieFlower.variable} ${sniglet.variable} ${girassol.variable} antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${outfit.variable} ${greatVibes.variable} ${dancingScript.variable} ${amaticSC.variable} ${indieFlower.variable} ${sniglet.variable} ${girassol.variable} ${spaceGrotesk.variable} antialiased min-h-screen flex flex-col`}
       >
         <GoogleAnalytics />
         <Providers>

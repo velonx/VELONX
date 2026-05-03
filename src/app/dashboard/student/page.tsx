@@ -25,7 +25,9 @@ import {
     Flag,
     AlertCircle,
     XCircle,
+    ShoppingBag,
 } from "lucide-react";
+import SwagOrdersList from "@/components/dashboard/student/SwagOrdersList";
 import { useProjects, useMeetings, useUserStats } from "@/lib/api/hooks";
 import { DailyCheckIn } from "@/components/daily-check-in";
 import SessionCard from "@/components/dashboard/SessionCard";
@@ -255,6 +257,7 @@ function StudentDashboardContent() {
         { icon: LayoutDashboard, label: "Dashboard" },
         { icon: Users, label: "Community" },
         { icon: Timer, label: "Tracking" },
+        { icon: ShoppingBag, label: "Swag" },
         { icon: Flag, label: "Report" },
         { icon: Settings, label: "Setting" },
     ];
@@ -699,6 +702,19 @@ function StudentDashboardContent() {
                                 </Card>
                             </div>
                         </section>
+                    </>
+                )}
+
+                {activeTab === "Swag" && (
+                    <>
+                        <header className="mb-12">
+                            <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
+                                <ShoppingBag className="w-8 h-8 text-[#219EBC]" />
+                                My Redemptions
+                            </h1>
+                            <p className="text-muted-foreground font-medium tracking-tight">Your orders and swag history</p>
+                        </header>
+                        <SwagOrdersList />
                     </>
                 )}
 
