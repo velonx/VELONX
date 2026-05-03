@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, Edit, Trash2, Users, MapPin, Clock, Plus, X, Download, XCircle } from "lucide-react";
+import { Calendar, Edit, Trash2, Users, MapPin, Clock, Plus, X, Download, XCircle, Trophy } from "lucide-react";
 import toast from "react-hot-toast";
 import { eventsApi } from "@/lib/api/client";
 import type { Event } from "@/lib/api/types";
 import { secureFetch } from "@/lib/utils/csrf";
+import EventRewardManager from "@/components/admin/EventRewardManager";
 
 export default function EventManagement() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -19,6 +20,7 @@ export default function EventManagement() {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [expandedRewardEventId, setExpandedRewardEventId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -564,6 +566,24 @@ export default function EventManagement() {
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
+                  </div>
+                  {/* Rewards Manager - collapsible per event */}
+                  <div className="mt-4 border-t border-border pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedRewardEventId(
+                        expandedRewardEventId === event.id ? null : event.id
+                      )}
+                      className="flex items-center gap-2 text-sm font-semibold text-[#219EBC] hover:text-[#1a7a94] transition-colors"
+                    >
+                      <Trophy className="w-4 h-4" />
+                      {expandedRewardEventId === event.id ? 'Hide Rewards' : 'Manage Rewards'}
+                    </button>
+                    {expandedRewardEventId === event.id && (
+                      <div className="mt-4">
+                        <EventRewardManager eventId={event.id} />
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

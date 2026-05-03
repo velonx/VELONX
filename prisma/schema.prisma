@@ -360,6 +360,7 @@ model Event {
   // Relations
   creator   User            @relation("EventCreator", fields: [creatorId], references: [id])
   attendees EventAttendee[]
+  rewards   EventReward[]
 
   // Performance indexes for registration closure queries
   @@index([registrationDeadline])
@@ -385,6 +386,26 @@ model EventAttendee {
   @@index([eventId, status])
   @@index([userId])
   @@map("event_attendees")
+}
+
+// Event Reward Model
+// Admin-defined rewards/prizes shown on the event detail page
+model EventReward {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId     String   @db.ObjectId
+  title       String
+  description String
+  iconType    String   @default("trophy") // trophy | star | gift | certificate | medal | zap
+  rankRequired Int?    // e.g. top 3 finishers only; null = all attendees
+  quantity    Int?     // max winners; null = unlimited
+  order       Int      @default(0) // display order
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, order])
+  @@map("event_rewards")
 }
 
 // Event Registration Closure Analytics Model
