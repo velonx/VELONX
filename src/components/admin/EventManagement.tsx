@@ -6,12 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, Edit, Trash2, Users, MapPin, Clock, Plus, X, Download, XCircle, Trophy } from "lucide-react";
+import { Calendar, Edit, Trash2, Users, MapPin, Clock, Plus, X, Download, XCircle, Trophy, User } from "lucide-react";
 import toast from "react-hot-toast";
 import { eventsApi } from "@/lib/api/client";
 import type { Event } from "@/lib/api/types";
 import { secureFetch } from "@/lib/utils/csrf";
 import EventRewardManager from "@/components/admin/EventRewardManager";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 export default function EventManagement() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -21,6 +31,9 @@ export default function EventManagement() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [expandedRewardEventId, setExpandedRewardEventId] = useState<string | null>(null);
+  const [viewingAttendeesEvent, setViewingAttendeesEvent] = useState<Event | null>(null);
+  const [attendees, setAttendees] = useState<any[]>([]);
+  const [loadingAttendees, setLoadingAttendees] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -133,6 +146,47 @@ export default function EventManagement() {
     } catch (error) {
       toast.error("Failed to delete event");
     }
+  };
+
+  const handleViewAttendees = async (event: Event) => {
+    setViewingAttendeesEvent(event);
+    setLoadingAttendees(true);
+    setAttendees([]);
+    try {
+      const response = await eventsApi.getAttendees(event.id);
+      if (response.success) {
+        setAttendees(response.data.attendees);
+      }
+    } catch (error) {
+      toast.error("Failed to load attendees");
+    } finally {
+      setLoadingAttendees(false);
+    }
+  };
+
+  const exportAttendeesCSV = (event: Event, attendeeList: any[]) => {
+    const headers = ["Name", "Email", "Registration Date", "Status"];
+    const rows = attendeeList.map((a) => [
+      a.user.name || "Anonymous",
+      a.user.email,
+      new Date(a.createdAt).toLocaleDateString(),
+      a.status
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${event.title.replace(/\s+/g, '-').toLowerCase()}-attendees.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const resetForm = () => {
@@ -550,6 +604,15 @@ export default function EventManagement() {
                     </div>
                     <div className="flex gap-2">
                       <Button
+                        onClick={() => handleViewAttendees(event)}
+                        variant="outline"
+                        size="sm"
+                        className="h-10 px-4 rounded-xl border-[#219EBC] text-[#219EBC] hover:bg-[#219EBC]/10"
+                        title="View Attendees"
+                      >
+                        <Users className="w-4 h-4" />
+                      </Button>
+                      <Button
                         onClick={() => handleEdit(event)}
                         variant="outline"
                         size="sm"
@@ -591,6 +654,88 @@ export default function EventManagement() {
           )}
         </CardContent>
       </Card>
+      {/* Attendees Dialog */}
+      <Dialog open={!!viewingAttendeesEvent} onOpenChange={(open) => !open && setViewingAttendeesEvent(null)}>
+        <DialogContent className="max-w-2xl bg-background border-border rounded-3xl overflow-hidden p-0 gap-0">
+          <DialogHeader className="p-8 border-b border-border bg-muted/30">
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle className="text-2xl font-black text-[#023047]">Registered Attendees</DialogTitle>
+                <DialogDescription className="mt-1">
+                  {viewingAttendeesEvent?.title} · {attendees.length} people
+                </DialogDescription>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => viewingAttendeesEvent && exportAttendeesCSV(viewingAttendeesEvent, attendees)}
+                disabled={attendees.length === 0}
+                className="h-10 px-4 border-[#219EBC] text-[#219EBC] font-bold rounded-xl"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
+            </div>
+          </DialogHeader>
+
+          <ScrollArea className="max-h-[60vh]">
+            <div className="p-8">
+              {loadingAttendees ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-4">
+                  <div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                  <p className="text-muted-foreground font-medium">Loading attendee list...</p>
+                </div>
+              ) : attendees.length === 0 ? (
+                <div className="text-center py-12">
+                  <Users className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                  <p className="text-muted-foreground font-bold">No one has registered yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {attendees.map((attendee) => (
+                    <div
+                      key={attendee.id}
+                      className="flex items-center justify-between p-4 rounded-2xl border border-border bg-muted/10"
+                    >
+                      <div className="flex items-center gap-4">
+                        <Avatar className="w-12 h-12 border-2 border-[#219EBC]/20">
+                          <AvatarImage src={attendee.user.image} alt={attendee.user.name} />
+                          <AvatarFallback className="bg-[#219EBC] text-white font-bold">
+                            {attendee.user.name?.[0]?.toUpperCase() || <User className="w-5 h-5" />}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-bold text-foreground">{attendee.user.name || "Anonymous"}</p>
+                          <p className="text-sm text-muted-foreground">{attendee.user.email}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Registered On</p>
+                        <p className="text-sm font-medium">
+                          {new Date(attendee.createdAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+          
+          <div className="p-6 border-t border-border bg-muted/30 flex justify-end">
+            <Button
+              onClick={() => setViewingAttendeesEvent(null)}
+              className="h-11 px-8 bg-[#023047] text-white font-bold rounded-xl"
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

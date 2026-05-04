@@ -203,13 +203,13 @@ describe('EventCard', () => {
 
     it('should render Registered button when user is registered', () => {
       render(<EventCard event={mockEvent} isRegistered={true} />);
-      expect(screen.getByText('Registered')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /registered/i })).toBeInTheDocument();
     });
 
     it('should call onUnregister when Registered button clicked', () => {
       const onUnregister = vi.fn();
       render(<EventCard event={mockEvent} onUnregister={onUnregister} isRegistered={true} />);
-      fireEvent.click(screen.getByText('Registered'));
+      fireEvent.click(screen.getByRole('button', { name: /registered/i }));
       expect(onUnregister).toHaveBeenCalledWith('1');
     });
 
