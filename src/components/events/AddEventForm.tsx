@@ -94,7 +94,7 @@ export default function AddEventForm({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] bg-[#0a0a0f] border-white/10 max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-[600px] w-[calc(100%-2rem)] mx-auto bg-[#0a0a0f] border-white/10 max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
                         <Calendar className="w-6 h-6 text-cyan-400" />

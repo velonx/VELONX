@@ -249,10 +249,15 @@ export default function EventCard({
         </div>
 
         {/* Event Type Badge - WCAG AA Compliant */}
-        <div className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 z-10">
-          <Badge className="bg-white/30 text-white border-0 uppercase text-[8px] sm:text-[9px] font-bold tracking-widest px-1.5 sm:px-2 py-0.5 backdrop-blur-md shadow-lg">
+        <div className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 z-10 flex flex-col gap-2">
+          <Badge className="bg-white/30 text-white border-0 uppercase text-[8px] sm:text-[9px] font-bold tracking-widest px-1.5 sm:px-2 py-0.5 backdrop-blur-md shadow-lg w-fit">
             {event.type}
           </Badge>
+          {isRegistered && (
+            <Badge className="bg-green-500/80 text-white border-0 uppercase text-[8px] sm:text-[9px] font-bold tracking-widest px-1.5 sm:px-2 py-0.5 backdrop-blur-md shadow-lg flex items-center gap-1 w-fit animate-in fade-in zoom-in duration-300">
+              <CheckCircle2 className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Registered
+            </Badge>
+          )}
         </div>
 
         {/* Icon - Only show when no image available */}

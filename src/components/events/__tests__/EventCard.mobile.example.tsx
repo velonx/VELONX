@@ -31,6 +31,7 @@ const eventWithImage: Event = {
   createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
   updatedAt: new Date().toISOString(),
   _count: { attendees: 25 },
+  isRegistrationClosed: false,
   creator: {
     id: 'creator-1',
     name: 'Sarah Johnson',

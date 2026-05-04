@@ -234,6 +234,16 @@ export function Navbar() {
                                     </span>
                                 </Link>
                                 <nav className="flex flex-col gap-2">
+                                    {session && (
+                                        <Link
+                                            href={dashboardLink}
+                                            onClick={() => setOpen(false)}
+                                            className="px-6 py-4 text-lg font-black text-[#219EBC] bg-[#219EBC]/5 hover:bg-[#219EBC]/10 rounded-2xl transition-all uppercase tracking-wide flex items-center gap-3 mb-2"
+                                        >
+                                            <LayoutDashboard className="w-6 h-6" />
+                                            My Dashboard
+                                        </Link>
+                                    )}
                                     {navLinks.map((link) => (
                                         <Link
                                             key={link.href}
@@ -278,7 +288,12 @@ export function Navbar() {
                                     </div>
                                 )}
                                 {session && (
-                                    <div className="mt-auto p-4">
+                                    <div className="mt-auto p-4 space-y-3">
+                                        <Link href={dashboardLink} onClick={() => setOpen(false)} className="w-full">
+                                            <Button className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#219EBC]/20">
+                                                My Dashboard
+                                            </Button>
+                                        </Link>
                                         <Button
                                             onClick={handleLogout}
                                             variant="outline"

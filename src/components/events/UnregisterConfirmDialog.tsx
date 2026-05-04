@@ -126,15 +126,16 @@ export default function UnregisterConfirmDialog({
       <DialogContent
         className={cn(
           "bg-[#0f172a] border-0 text-white p-0 gap-0 overflow-hidden",
-          "max-w-2xl",
-          "sm:rounded-[24px]"
+          "max-w-2xl w-[calc(100%-2rem)] mx-auto",
+          "sm:rounded-[24px] rounded-2xl",
+          "max-h-[90vh] overflow-y-auto"
         )}
       >
         {/* Header with Gradient */}
         <div className={cn(
           "relative bg-gradient-to-br",
           getTypeColor(),
-          "p-6 pb-8"
+          "p-5 sm:p-6 pb-6 sm:pb-8"
         )}>
           {/* Event Type Badge */}
           <div className="flex justify-center mb-4">
@@ -144,25 +145,25 @@ export default function UnregisterConfirmDialog({
           </div>
 
           {/* Event Icon */}
-          <div className="flex justify-center mb-4">
-            <div className="text-6xl">
+          <div className="flex justify-center mb-3 sm:mb-4">
+            <div className="text-5xl sm:text-6xl">
               {getTypeIcon()}
             </div>
           </div>
 
           {/* Dialog Header */}
-          <DialogHeader className="text-center space-y-2">
-            <DialogTitle className="text-2xl font-bold text-white leading-tight">
+          <DialogHeader className="text-center space-y-1 sm:space-y-2">
+            <DialogTitle className="text-xl sm:text-2xl font-bold text-white leading-tight">
               Unregister from Event
             </DialogTitle>
-            <DialogDescription className="text-white/80 text-base">
+            <DialogDescription className="text-white/80 text-sm sm:text-base">
               Are you sure you want to unregister?
             </DialogDescription>
           </DialogHeader>
         </div>
 
         {/* Event Summary */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Event Title */}
           <div className="text-center">
             <h3 className="text-xl font-bold text-white mb-2">
@@ -250,7 +251,7 @@ export default function UnregisterConfirmDialog({
         </div>
 
         {/* Footer - Action Buttons */}
-        <DialogFooter className="p-6 pt-0 flex-col sm:flex-row gap-3">
+        <DialogFooter className="p-4 sm:p-6 pt-0 flex-col sm:flex-row gap-3">
           <Button
             onClick={onClose}
             disabled={isLoading}

@@ -144,18 +144,28 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         if (isRegistered) {
             return (
                 <button onClick={() => setShowUnregisterDialog(true)}
-                    className={`${base} rounded-full flex items-center gap-2 bg-green-500 text-white hover:bg-green-600 transition-colors`}>
+                    className={`${base} rounded-full flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/20 active:scale-[0.98]`}>
                     <CheckCircle2 className="w-4 h-4" /> Registered
                 </button>
             );
         }
         const bg = invert
-            ? "bg-white text-[#023047] hover:bg-gray-100"
-            : "bg-[#219EBC] text-white hover:bg-[#1a7a94]";
+            ? "bg-white text-[#023047] hover:bg-gray-100 shadow-xl shadow-black/10"
+            : "bg-gradient-to-r from-[#219EBC] to-[#023047] text-white hover:from-[#1a7a94] hover:to-[#012a3d] shadow-lg shadow-[#219EBC]/20";
         return (
             <button onClick={handleRegisterClick} disabled={!registrationStatus.isOpen || isRegistering}
-                className={`${base} ${bg} rounded-full transition-colors disabled:opacity-50`}>
-                {isRegistering ? 'Processing...' : buttonText}
+                className={`${base} ${bg} rounded-full transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}>
+                {isRegistering ? (
+                    <>
+                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        Processing...
+                    </>
+                ) : (
+                    <>
+                        {buttonText}
+                        {!registrationStatus.isOpen ? <AlertCircle className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+                    </>
+                )}
             </button>
         );
     };
@@ -176,6 +186,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                         <div className="inline-flex items-center gap-2 bg-white/20 text-white border border-white/30 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
                             {getTypeLabel()} · {event.status}
+                            {isRegistered && (
+                                <span className="ml-2 flex items-center gap-1 text-green-400">
+                                    <CheckCircle2 className="w-3 h-3" /> Registered
+                                </span>
+                            )}
                         </div>
                         <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight tracking-tight mb-6">
                             {event.title}
@@ -408,7 +423,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
             <UnregisterConfirmDialog event={event} isOpen={showUnregisterDialog} onClose={() => setShowUnregisterDialog(false)} onConfirm={handleConfirmUnregistration} isLoading={isRegistering} />
 
             <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
-                <DialogContent className="max-w-md bg-card border border-border text-card-foreground rounded-2xl">
+                <DialogContent className="max-w-md w-[calc(100%-2rem)] mx-auto bg-card border border-border text-card-foreground rounded-2xl">
                     <DialogHeader className="text-center">
                         <div className="w-16 h-16 rounded-full bg-[#219EBC]/10 flex items-center justify-center mx-auto mb-5">
                             <LogIn className="w-8 h-8 text-[#219EBC]" />

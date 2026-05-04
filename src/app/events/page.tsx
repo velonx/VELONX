@@ -369,7 +369,7 @@ function EventsPage() {
 
             {/* Login Required Dialog */}
             <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
-                <DialogContent className="max-w-md bg-background rounded-[32px]">
+                <DialogContent className="max-w-md w-[calc(100%-2rem)] mx-auto bg-background rounded-2xl">
                     <DialogHeader className="text-center">
                         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                             <LogIn className="w-8 h-8 text-primary" />

@@ -12,6 +12,7 @@ import {
   IconNews,
   IconTrophy,
   IconShoppingBag,
+  IconLayoutDashboard,
 } from "@tabler/icons-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
@@ -24,6 +25,11 @@ export default function FloatingNavDemo() {
     : "/dashboard/student";
 
   const navItems = [
+    ...(session?.user ? [{
+      name: "Dashboard",
+      link: dashboardLink,
+      icon: <IconLayoutDashboard className="h-4 w-4 text-[#219EBC]" />,
+    }] : []),
     {
       name: "Events",
       link: "/events",
