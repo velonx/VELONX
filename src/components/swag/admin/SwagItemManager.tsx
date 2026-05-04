@@ -5,6 +5,7 @@ import { Plus, Edit2, Trash2, Loader2, Package, Zap, Image as ImageIcon, ToggleL
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { getCSRFToken } from "@/lib/utils/csrf";
 
 const CATEGORIES = ["NOTEBOOK", "DIARY", "BOTTLE", "BAG", "PLANT", "LAMP", "STATIONERY", "APPAREL", "OTHER"];
 
@@ -58,7 +59,15 @@ export default function SwagItemManager() {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folder", "velonx/swag");
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      
+      const csrfToken = await getCSRFToken();
+      const res = await fetch("/api/upload", { 
+        method: "POST", 
+        body: fd,
+        headers: {
+          "x-csrf-token": csrfToken
+        }
+      });
       const json = await res.json();
       if (json.success) { setForm(f => ({ ...f, imageUrl: json.url })); toast.success("Image uploaded"); }
       else toast.error(json.error?.message || "Upload failed");
@@ -73,7 +82,16 @@ export default function SwagItemManager() {
       const url = editItem ? `/api/admin/swag/items/${editItem.id}` : "/api/admin/swag/items";
       const method = editItem ? "PUT" : "POST";
       const body = { ...form, imageUrl: form.imageUrl || null, stock: Number(form.stock), xpCost: Number(form.xpCost) };
-      const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      
+      const csrfToken = await getCSRFToken();
+      const res = await fetch(url, { 
+        method, 
+        headers: { 
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken
+        }, 
+        body: JSON.stringify(body) 
+      });
       const json = await res.json();
       if (json.success) {
         toast.success(editItem ? "Item updated!" : "Item created!");
@@ -86,9 +104,13 @@ export default function SwagItemManager() {
 
   const handleToggle = async (item: SwagItem) => {
     try {
+      const csrfToken = await getCSRFToken();
       const res = await fetch(`/api/admin/swag/items/${item.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken
+        },
         body: JSON.stringify({ isActive: !item.isActive }),
       });
       const json = await res.json();
