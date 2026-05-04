@@ -8,6 +8,7 @@ import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
+import Image from "next/image";
 import "./Carousel3.css";
 
 const defaultSlides = [
@@ -128,12 +129,18 @@ export const Carousel3: React.FC<Carousel3Props> = ({
                 {slides.map((slide, index) => (
                     <SwiperSlide
                         key={`${slide?.name}-${index}`}
-                        style={{
-                            backgroundImage: type === 'showcase' ? `url(${slide?.src})` : 'none',
-                        }}
-                        className={type === 'testimonial' ? 'bg-card border border-border' : ''}
+                        className={type === 'testimonial' ? 'bg-card border border-border overflow-hidden' : 'overflow-hidden'}
                     >
-                        <div className={`slide-content ${type === 'testimonial' ? 'p-8 flex flex-col justify-center items-center h-full' : ''}`}>
+                        {type === 'showcase' && (
+                            <Image
+                                src={slide?.src}
+                                alt={slide?.name}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                            />
+                        )}
+                        <div className={`slide-content ${type === 'testimonial' ? 'p-8 flex flex-col justify-center items-center h-full relative z-10' : 'relative z-10'}`}>
                             {type === 'showcase' ? (
                                 <>
                                     <h2 className="text-white drop-shadow-lg">{slide?.name || 'Untitled'}</h2>
@@ -141,9 +148,18 @@ export const Carousel3: React.FC<Carousel3Props> = ({
                                 </>
                             ) : (
                                 <>
-                                    <p className="text-foreground text-sm mb-4 leading-relaxed line-clamp-4 font-normal">&quot;{slide?.description || 'No description'}&quot;</p>
-                                    <h2 className="text-foreground text-lg mt-auto">{slide?.name || 'Anonymous'}</h2>
-                                    <span className="text-secondary-foreground text-xs font-semibold uppercase tracking-wider">Verified User</span>
+                                    <div className="w-16 h-16 rounded-full overflow-hidden mb-4 border-2 border-primary/20 shadow-md relative">
+                                        <Image
+                                            src={slide?.src}
+                                            alt={slide?.name}
+                                            fill
+                                            className="object-cover"
+                                            sizes="64px"
+                                        />
+                                    </div>
+                                    <p className="text-foreground text-sm mb-4 leading-relaxed line-clamp-4 font-normal text-center italic">&quot;{slide?.description || 'No description'}&quot;</p>
+                                    <h2 className="text-foreground text-lg mt-auto font-bold">{slide?.name || 'Anonymous'}</h2>
+                                    <span className="text-primary text-xs font-semibold uppercase tracking-wider">Verified User</span>
                                 </>
                             )}
                         </div>

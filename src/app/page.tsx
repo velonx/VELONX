@@ -9,6 +9,7 @@ import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { OrganizationSchema } from "@/components/structured-data";
 import { FlipText } from "@/components/ui/flip-text";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const Carousel3 = dynamic(
     () => import("@/components/Carousel3").then(mod => ({ default: mod.Carousel3 })),
@@ -78,19 +79,19 @@ export default function Home() {
                                         (e.currentTarget as HTMLDivElement).style.borderColor = '#925B3A30';
                                     }}
                                 >
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
+                                    <Image
                                         src="/illustrations/mentor-light.jpg"
                                         alt="Expert Mentors"
-                                        className="absolute inset-0 w-full h-full block dark:hidden"
-                                        style={{ objectFit: 'cover' }}
+                                        fill
+                                        className="absolute inset-0 block dark:hidden object-cover"
+                                        sizes="(max-width: 768px) 100vw, 33vw"
                                     />
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
+                                    <Image
                                         src="/illustrations/mentor-dark.jpg"
                                         alt="Expert Mentors"
-                                        className="absolute inset-0 w-full h-full hidden dark:block"
-                                        style={{ objectFit: 'cover' }}
+                                        fill
+                                        className="absolute inset-0 hidden dark:block object-cover"
+                                        sizes="(max-width: 768px) 100vw, 33vw"
                                     />
 
                                     {/* Bottom gradient overlay */}
@@ -130,19 +131,19 @@ export default function Home() {
                                         (e.currentTarget as HTMLDivElement).style.borderColor = '#C47A4A30';
                                     }}
                                 >
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
+                                    <Image
                                         src="/illustrations/project-light.jpg"
                                         alt="Real Projects"
-                                        className="absolute inset-0 w-full h-full block dark:hidden"
-                                        style={{ objectFit: 'cover' }}
+                                        fill
+                                        className="absolute inset-0 block dark:hidden object-cover"
+                                        sizes="(max-width: 768px) 100vw, 33vw"
                                     />
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
+                                    <Image
                                         src="/illustrations/project-dark.jpg"
                                         alt="Real Projects"
-                                        className="absolute inset-0 w-full h-full hidden dark:block"
-                                        style={{ objectFit: 'cover' }}
+                                        fill
+                                        className="absolute inset-0 hidden dark:block object-cover"
+                                        sizes="(max-width: 768px) 100vw, 33vw"
                                     />
 
                                     <div className="absolute bottom-0 left-0 w-full h-2/5" style={{ background: 'linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.7) 60%, transparent 100%)' }} />
@@ -180,19 +181,19 @@ export default function Home() {
                                         (e.currentTarget as HTMLDivElement).style.borderColor = '#E8A87C30';
                                     }}
                                 >
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
+                                    <Image
                                         src="/illustrations/community-light.jpg"
                                         alt="Career Growth"
-                                        className="absolute inset-0 w-full h-full block dark:hidden"
-                                        style={{ objectFit: 'cover' }}
+                                        fill
+                                        className="absolute inset-0 block dark:hidden object-cover"
+                                        sizes="(max-width: 768px) 100vw, 33vw"
                                     />
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
+                                    <Image
                                         src="/illustrations/community-dark.jpg"
                                         alt="Career Growth"
-                                        className="absolute inset-0 w-full h-full hidden dark:block"
-                                        style={{ objectFit: 'cover' }}
+                                        fill
+                                        className="absolute inset-0 hidden dark:block object-cover"
+                                        sizes="(max-width: 768px) 100vw, 33vw"
                                     />
 
                                     <div className="absolute bottom-0 left-0 w-full h-2/5" style={{ background: 'linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.7) 60%, transparent 100%)' }} />

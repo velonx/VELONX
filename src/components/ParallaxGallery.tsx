@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useLayoutEffect } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ShowcaseModal, ProjectData } from "./ShowcaseModal";
@@ -96,11 +97,12 @@ export const ParallaxGallery: React.FC<ParallaxGalleryProps> = ({
                         <div className="absolute inset-0 bg-red-900/10 mix-blend-color-burn z-10 pointer-events-none transition-opacity duration-700 group-hover:opacity-0" />
 
                         {/* Image */}
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                             src={slide?.src}
                             alt={slide?.name || 'Showcase Image'}
-                            className="absolute inset-0 w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-[2s] ease-out grayscale-[0.2] contrast-[1.1] brightness-90 group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100"
+                            fill
+                            className="absolute inset-0 object-cover scale-105 group-hover:scale-100 transition-transform duration-[2s] ease-out grayscale-[0.2] contrast-[1.1] brightness-90 group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
 
                         {/* Gradients for Text Legibility & Mood */}
