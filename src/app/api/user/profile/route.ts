@@ -83,6 +83,8 @@ export async function GET() {
           email: true,
           image: true,
           bio: true,
+          xp: true,
+          level: true,
         },
       });
     } catch (dbError) {
