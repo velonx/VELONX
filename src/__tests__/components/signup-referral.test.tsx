@@ -101,6 +101,11 @@ describe('Signup Page - Referral Code Functionality', () => {
     await waitFor(() => {
       expect(screen.getByText(/Invalid referral code/i)).toBeInTheDocument();
     });
+
+    // Wait for validation to complete
+    await waitFor(() => {
+      expect(document.querySelector('.animate-spin')).not.toBeInTheDocument();
+    });
   });
 
   it('should allow registration to proceed without referral code', async () => {
@@ -142,6 +147,12 @@ describe('Signup Page - Referral Code Functionality', () => {
       const spinner = document.querySelector('.animate-spin');
       expect(spinner).toBeInTheDocument();
     });
+
+    // Wait for validation to complete to prevent state updates after test teardown
+    await waitFor(() => {
+      const spinner = document.querySelector('.animate-spin');
+      expect(spinner).not.toBeInTheDocument();
+    });
   });
 
   it('should show success indicator for valid referral code', async () => {
@@ -167,6 +178,11 @@ describe('Signup Page - Referral Code Functionality', () => {
     // Wait for success message
     await waitFor(() => {
       expect(screen.getByText(/Valid referral code/i)).toBeInTheDocument();
+    });
+
+    // Wait for validation to complete
+    await waitFor(() => {
+      expect(document.querySelector('.animate-spin')).not.toBeInTheDocument();
     });
   });
 
