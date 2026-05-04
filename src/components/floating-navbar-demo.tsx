@@ -25,11 +25,6 @@ export default function FloatingNavDemo() {
     : "/dashboard/student";
 
   const navItems = [
-    ...(session?.user ? [{
-      name: "Dashboard",
-      link: dashboardLink,
-      icon: <IconLayoutDashboard className="h-4 w-4 text-[#219EBC]" />,
-    }] : []),
     {
       name: "Events",
       link: "/events",
@@ -120,7 +115,6 @@ export default function FloatingNavDemo() {
     </Link>
   ) : null;
 
-  // Mobile right side content (for Sheet drawer)
   const mobileRightContent = session?.user ? (
     <Link href={dashboardLink} className="w-full">
       <button className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#219EBC]/20">
@@ -142,12 +136,24 @@ export default function FloatingNavDemo() {
     </div>
   );
 
+  // Mobile nav header (for authenticated users)
+  const mobileNavHeader = session?.user ? (
+    <Link
+      href={dashboardLink}
+      className="px-6 py-4 text-lg font-black text-[#219EBC] bg-[#219EBC]/5 hover:bg-[#219EBC]/10 rounded-2xl transition-all uppercase tracking-wide flex items-center gap-3 mb-2"
+    >
+      <IconLayoutDashboard className="h-6 w-6" />
+      My Dashboard
+    </Link>
+  ) : null;
+
   return (
     <FloatingNav
       navItems={navItems}
       rightContent={rightContent}
       mobileRightContent={mobileRightContent}
       mobileAvatar={mobileAvatar}
+      mobileNavHeader={mobileNavHeader}
     />
   );
 }

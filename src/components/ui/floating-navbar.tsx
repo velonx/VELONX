@@ -20,6 +20,7 @@ export const FloatingNav = ({
   rightContent,
   mobileRightContent,
   mobileAvatar,
+  mobileNavHeader,
 }: {
   navItems: {
     name: string;
@@ -30,6 +31,7 @@ export const FloatingNav = ({
   rightContent?: React.ReactNode;
   mobileRightContent?: React.ReactNode;
   mobileAvatar?: React.ReactNode;
+  mobileNavHeader?: React.ReactNode;
 }) => {
   const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(false);
@@ -159,6 +161,7 @@ export const FloatingNav = ({
                   </span>
                 </Link>
                 <nav className="flex flex-col gap-2">
+                  {mobileNavHeader && mobileNavHeader}
                   {navItems.map((navItem: any, idx: number) => (
                     <Link
                       key={`mobile-link=${idx}`}
