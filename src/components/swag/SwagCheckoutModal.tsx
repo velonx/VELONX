@@ -5,6 +5,7 @@ import { X, Zap, MapPin, Phone, User, FileText, Loader2, Package } from "lucide-
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { secureFetch } from "@/lib/utils/csrf";
 
 interface SwagItem {
   id: string;
@@ -52,14 +53,14 @@ export default function SwagCheckoutModal({ item, userXp, onClose, onSuccess }: 
 
     setLoading(true);
     try {
-      const res = await fetch("/api/swag/orders", {
+      const res = await secureFetch("/api/swag/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemId: item.id, quantity: 1, ...form }),
       });
       const json = await res.json();
       if (!res.ok || !json.success) {
-        toast.error(json.error?.message || "Failed to place order");
+        toast.error(json.error?.message || json.error || "Failed to place order");
         return;
       }
       onSuccess(json.data);

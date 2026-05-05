@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Package, Zap, MapPin, Phone, User, ChevronDown, Loader2, Eye, X } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { secureFetch } from "@/lib/utils/csrf";
 
 const STATUSES = ["ALL", "PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
 
@@ -55,14 +56,14 @@ export default function SwagOrderTable() {
   const updateStatus = async (orderId: string, status: string) => {
     setUpdatingId(orderId);
     try {
-      const res = await fetch(`/api/admin/swag/orders/${orderId}/status`, {
+      const res = await secureFetch(`/api/admin/swag/orders/${orderId}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
       const json = await res.json();
       if (json.success) { toast.success(`Order marked as ${status}`); fetchOrders(); if (viewOrder?.id === orderId) setViewOrder(null); }
-      else toast.error(json.error?.message || "Update failed");
+      else toast.error(json.error?.message || json.error || "Update failed");
     } catch { toast.error("Update failed"); }
     finally { setUpdatingId(null); }
   };
