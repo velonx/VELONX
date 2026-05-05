@@ -5,7 +5,7 @@
 
 # Set your variables here or pass them as environment variables
 PROJECT_ID=${PROJECT_ID:-"velonx-495418"}
-REGION=${REGION:-"us-central1"}
+REGION=${REGION:-"asia-south2"}
 SERVICE_NAME=${SERVICE_NAME:-"velonx-platform"}
 IMAGE_NAME="gcr.io/$PROJECT_ID/$SERVICE_NAME"
 
