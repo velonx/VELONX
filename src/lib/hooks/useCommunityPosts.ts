@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ApiClientError } from '@/lib/api/client';
-import { getCSRFToken } from '@/lib/utils/csrf';
+import { getCSRFToken, secureFetch } from '@/lib/utils/csrf';
 import type { CommunityPostData } from '@/lib/types/community.types';
 import toast from 'react-hot-toast';
 
@@ -265,14 +265,11 @@ export function useCommunityPosts(
     }
 
     try {
-      const csrfToken = await getCSRFToken();
-      const response = await fetch('/api/community/posts', {
+      const response = await secureFetch('/api/community/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-csrf-token': csrfToken,
         },
-        credentials: 'include',
         body: JSON.stringify(data),
       });
 
@@ -345,14 +342,11 @@ export function useCommunityPosts(
     }
 
     try {
-      const csrfToken = await getCSRFToken();
-      const response = await fetch(`/api/community/posts/${postId}`, {
+      const response = await secureFetch(`/api/community/posts/${postId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-csrf-token': csrfToken,
         },
-        credentials: 'include',
         body: JSON.stringify({ content: content.trim() }),
       });
 
@@ -417,13 +411,8 @@ export function useCommunityPosts(
     }
 
     try {
-      const csrfToken = await getCSRFToken();
-      const response = await fetch(`/api/community/posts/${postId}`, {
+      const response = await secureFetch(`/api/community/posts/${postId}`, {
         method: 'DELETE',
-        headers: {
-          'x-csrf-token': csrfToken,
-        },
-        credentials: 'include',
       });
 
       if (!response.ok) {

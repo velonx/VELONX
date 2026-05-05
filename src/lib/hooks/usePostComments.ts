@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ApiClientError } from '@/lib/api/client';
-import { getCSRFToken } from '@/lib/utils/csrf';
+import { getCSRFToken, secureFetch } from '@/lib/utils/csrf';
 import toast from 'react-hot-toast';
 
 /**
@@ -262,12 +262,10 @@ export function usePostComments(
     }
 
     try {
-      const csrfToken = await getCSRFToken();
-      const response = await fetch(`/api/community/posts/${postId}/comments`, {
+      const response = await secureFetch(`/api/community/posts/${postId}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-csrf-token': csrfToken,
         },
         body: JSON.stringify({ content: content.trim(), parentId }),
       });

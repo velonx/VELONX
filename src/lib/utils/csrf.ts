@@ -71,19 +71,30 @@ export async function withCSRFToken(
 
 /**
  * Fetch wrapper that automatically includes CSRF token for state-changing requests
+ * Handles 403 Forbidden by refreshing token and retrying once
  */
 export async function secureFetch(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  isRetry = false
 ): Promise<Response> {
   const method = options.method?.toUpperCase() || 'GET'
+  const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)
   
   // Add CSRF token for state-changing requests
-  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
-    const secureOptions = await withCSRFToken(options)
-    return fetch(url, secureOptions)
+  let fetchOptions = options
+  if (isStateChanging) {
+    fetchOptions = await withCSRFToken(options)
   }
   
-  // For GET requests, just use regular fetch
-  return fetch(url, options)
+  const response = await fetch(url, fetchOptions)
+  
+  // If state-changing request fails with 403, retry once with a fresh token
+  if (response.status === 403 && isStateChanging && !isRetry) {
+    console.warn('[CSRF] 403 Forbidden detected in secureFetch. Retrying with fresh token...')
+    clearCSRFToken()
+    return secureFetch(url, options, true)
+  }
+  
+  return response
 }

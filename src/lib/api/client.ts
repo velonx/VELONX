@@ -23,7 +23,7 @@ import type {
   NotificationListResponse,
   NotificationFilters,
 } from './types';
-import { getCSRFToken } from '@/lib/utils/csrf';
+import { getCSRFToken, clearCSRFToken } from '@/lib/utils/csrf';
 
 // Custom error class for API errors
 export class ApiClientError extends Error {
@@ -41,7 +41,8 @@ export class ApiClientError extends Error {
 // Base fetch wrapper with error handling and CSRF token support
 async function fetchApi<T>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
+  isRetry = false
 ): Promise<T> {
   try {
     const method = options?.method?.toUpperCase() || 'GET';
@@ -75,15 +76,37 @@ async function fetchApi<T>(
       credentials: 'include', // Include cookies for CSRF token
     });
 
-    const data = await response.json();
+    // Check if we need to parse as JSON
+    const contentType = response.headers.get('content-type');
+    let data: any = {};
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      // Handle non-JSON responses (like empty bodies or errors)
+      if (!response.ok) {
+        throw new ApiClientError(
+          response.status,
+          'RESPONSE_ERROR',
+          `Server returned ${response.status} ${response.statusText}`
+        );
+      }
+      return {} as T;
+    }
 
     if (!response.ok) {
+      // Special handling for 403 Forbidden (likely CSRF failure)
+      if (response.status === 403 && !isRetry && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+        console.warn('[API Client] 403 Forbidden detected, possibly CSRF failure. Retrying with fresh token...');
+        clearCSRFToken();
+        return fetchApi<T>(url, options, true);
+      }
+
       const error = data as ApiError;
       throw new ApiClientError(
         response.status,
-        error.error.code,
-        error.error.message,
-        error.error.details
+        error?.error?.code || 'API_ERROR',
+        error?.error?.message || 'An error occurred during the request',
+        error?.error?.details
       );
     }
 

@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { ApiClientError } from '@/lib/api/client';
 import { CompletionCelebrationData, CompleteProjectResponse, ProjectCompletionError } from '@/lib/types/project.types';
+import { secureFetch } from '@/lib/utils/csrf';
 import toast from 'react-hot-toast';
 
 interface UseProjectCompletionReturn {
@@ -64,18 +65,12 @@ export function useProjectCompletion(): UseProjectCompletionReturn {
     const title = projectTitle || 'the project';
 
     try {
-      // Get CSRF token
-      const { getCSRFToken } = await import('@/lib/utils/csrf');
-      const csrfToken = await getCSRFToken();
-
       // Call API to complete project
-      const response = await fetch(`/api/projects/${projectId}/complete`, {
+      const response = await secureFetch(`/api/projects/${projectId}/complete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-csrf-token': csrfToken,
         },
-        credentials: 'include',
       });
 
       const data = await response.json();

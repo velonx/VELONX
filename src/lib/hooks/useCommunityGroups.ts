@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { ApiClientError } from '@/lib/api/client';
-import { getCSRFToken } from '@/lib/utils/csrf';
+import { getCSRFToken, secureFetch } from '@/lib/utils/csrf';
 import type { CommunityGroupData } from '@/lib/types/community.types';
 import toast from 'react-hot-toast';
 
@@ -198,16 +198,11 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     setIsCreating(true);
 
     try {
-      // Get CSRF token
-      const csrfToken = await getCSRFToken();
-
-      const response = await fetch('/api/community/groups', {
+      const response = await secureFetch('/api/community/groups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-csrf-token': csrfToken,
         },
-        credentials: 'include',
         body: JSON.stringify(data),
       });
 
@@ -249,15 +244,8 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     setIsJoining(true);
 
     try {
-      // Get CSRF token
-      const csrfToken = await getCSRFToken();
-
-      const response = await fetch(`/api/community/groups/${groupId}/join`, {
+      const response = await secureFetch(`/api/community/groups/${groupId}/join`, {
         method: 'POST',
-        headers: {
-          'x-csrf-token': csrfToken,
-        },
-        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -307,15 +295,8 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     setIsJoining(true);
 
     try {
-      // Get CSRF token
-      const csrfToken = await getCSRFToken();
-
-      const response = await fetch(`/api/community/groups/${groupId}/request`, {
+      const response = await secureFetch(`/api/community/groups/${groupId}/request`, {
         method: 'POST',
-        headers: {
-          'x-csrf-token': csrfToken,
-        },
-        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -344,15 +325,8 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     setIsJoining(true);
 
     try {
-      // Get CSRF token
-      const csrfToken = await getCSRFToken();
-
-      const response = await fetch(`/api/community/groups/${groupId}/leave`, {
+      const response = await secureFetch(`/api/community/groups/${groupId}/leave`, {
         method: 'POST',
-        headers: {
-          'x-csrf-token': csrfToken,
-        },
-        credentials: 'include',
       });
 
       if (!response.ok) {

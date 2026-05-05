@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { Redis } from '@upstash/redis'
 import { csrfProtection, addCSRFTokenToResponse } from '@/lib/middleware/csrf.middleware'
 import { addSecurityHeaders } from '@/lib/middleware/security-headers.middleware'
 // Note: Audit logging is disabled in middleware due to Edge Runtime limitations
@@ -14,26 +15,18 @@ import { addSecurityHeaders } from '@/lib/middleware/security-headers.middleware
  * Adds comprehensive security headers to all responses
  */
 
-// Note: We can't import the RateLimiter service directly in middleware
-// because middleware runs in Edge Runtime which has limitations.
-// Instead, we'll create a lightweight implementation here.
-
-interface RateLimitStore {
-  [key: string]: {
-    requests: number[]
-    resetAt: number
-  }
-}
-
-// In-memory store for rate limiting (for Edge Runtime compatibility)
-// In production, this should use Redis via API route or Edge-compatible Redis client
-const rateLimitStore: RateLimitStore = {}
-
 // Rate limit configurations
-const ANONYMOUS_LIMIT = 100 // requests per minute
-const AUTHENTICATED_LIMIT = 500 // requests per hour
-const ANONYMOUS_WINDOW = 60 * 1000 // 1 minute in ms
-const AUTHENTICATED_WINDOW = 60 * 60 * 1000 // 1 hour in ms
+const ANONYMOUS_LIMIT = 200 // requests per minute
+const AUTHENTICATED_LIMIT = 5000 // requests per hour
+const ANONYMOUS_WINDOW = 60 // 1 minute in seconds (Redis EX)
+const AUTHENTICATED_WINDOW = 3600 // 1 hour in seconds (Redis EX)
+
+// Initialize Upstash Redis client for Edge Runtime
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+})
+
 
 /**
  * Extract IP address from request
@@ -63,7 +56,7 @@ function getClientIdentifier(request: NextRequest): string {
 }
 
 /**
- * Check rate limit for a request
+ * Check rate limit for a request using Redis
  * Returns null if allowed, or a 429 response if rate limited
  */
 async function checkRateLimit(
@@ -72,100 +65,78 @@ async function checkRateLimit(
   isAuthenticated: boolean
 ): Promise<NextResponse | null> {
   const endpoint = request.nextUrl.pathname
-  const now = Date.now()
   
   // Determine limits based on authentication status
   const maxRequests = isAuthenticated ? AUTHENTICATED_LIMIT : ANONYMOUS_LIMIT
-  const windowMs = isAuthenticated ? AUTHENTICATED_WINDOW : ANONYMOUS_WINDOW
+  const windowSeconds = isAuthenticated ? AUTHENTICATED_WINDOW : ANONYMOUS_WINDOW
   
   // Create unique key for this identifier and endpoint
-  const key = `${identifier}:${endpoint}`
+  const key = `rate_limit:${identifier}:${endpoint}`
   
-  // Initialize store for this key if it doesn't exist
-  if (!rateLimitStore[key]) {
-    rateLimitStore[key] = {
-      requests: [],
-      resetAt: now + windowMs
-    }
-  }
-  
-  const store = rateLimitStore[key]
-  
-  // Remove expired requests (sliding window)
-  const windowStart = now - windowMs
-  store.requests = store.requests.filter(timestamp => timestamp > windowStart)
-  
-  // Check if limit exceeded
-  if (store.requests.length >= maxRequests) {
-    // Calculate retry after
-    const oldestRequest = store.requests[0]
-    const retryAfterMs = oldestRequest + windowMs - now
-    const retryAfterSeconds = Math.ceil(retryAfterMs / 1000)
+  try {
+    // Multi-command to increment and set expiry in one go (approximate)
+    // In Edge Runtime, we use simple increment for performance
+    const current = await redis.incr(key)
     
-    // Return 429 response with headers
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'RATE_LIMIT_EXCEEDED',
-          message: 'Too many requests. Please try again later.',
-        },
-      },
-      {
-        status: 429,
-        headers: {
-          'Retry-After': retryAfterSeconds.toString(),
-          'X-RateLimit-Limit': maxRequests.toString(),
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': new Date(now + windowMs).toISOString(),
-        },
-      }
-    )
-  }
-  
-  // Add current request
-  store.requests.push(now)
-  store.resetAt = now + windowMs
-  
-  // Clean up old entries periodically (simple cleanup)
-  if (Math.random() < 0.01) { // 1% chance to cleanup
-    cleanupExpiredEntries(now)
-  }
-  
-  return null // Request is allowed
-}
-
-/**
- * Clean up expired entries from the rate limit store
- */
-function cleanupExpiredEntries(now: number): void {
-  const keys = Object.keys(rateLimitStore)
-  for (const key of keys) {
-    const store = rateLimitStore[key]
-    if (store.resetAt < now && store.requests.length === 0) {
-      delete rateLimitStore[key]
+    if (current === 1) {
+      // First request in window, set expiration
+      await redis.expire(key, windowSeconds)
     }
+    
+    // Check if limit exceeded
+    if (current > maxRequests) {
+      const ttl = await redis.ttl(key)
+      const retryAfterSeconds = Math.max(0, ttl)
+      
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'RATE_LIMIT_EXCEEDED',
+            message: 'Too many requests. Please try again later.',
+          },
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': retryAfterSeconds.toString(),
+            'X-RateLimit-Limit': maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': new Date(Date.now() + retryAfterSeconds * 1000).toISOString(),
+          },
+        }
+      )
+    }
+    
+    return null // Request is allowed
+  } catch (error) {
+    console.error('[Middleware] Rate limiting error:', error)
+    return null // Fail open if Redis is down
   }
 }
 
 /**
  * Add rate limit headers to response
  */
-function addRateLimitHeaders(
+async function addRateLimitHeaders(
   response: NextResponse,
   identifier: string,
   endpoint: string,
   isAuthenticated: boolean
-): NextResponse {
+): Promise<NextResponse> {
   const maxRequests = isAuthenticated ? AUTHENTICATED_LIMIT : ANONYMOUS_LIMIT
-  const key = `${identifier}:${endpoint}`
-  const store = rateLimitStore[key]
+  const key = `rate_limit:${identifier}:${endpoint}`
   
-  if (store) {
-    const remaining = Math.max(0, maxRequests - store.requests.length)
+  try {
+    const current = await redis.get<number>(key) || 0
+    const ttl = await redis.ttl(key)
+    
+    const remaining = Math.max(0, maxRequests - current)
     response.headers.set('X-RateLimit-Limit', maxRequests.toString())
     response.headers.set('X-RateLimit-Remaining', remaining.toString())
-    response.headers.set('X-RateLimit-Reset', new Date(store.resetAt).toISOString())
+    response.headers.set('X-RateLimit-Reset', new Date(Date.now() + Math.max(0, ttl) * 1000).toISOString())
+  } catch (error) {
+    // Ignore header errors
   }
   
   return response
@@ -225,7 +196,7 @@ export async function middleware(request: NextRequest) {
       response = NextResponse.next()
       
       // Add rate limit headers
-      response = addRateLimitHeaders(response, identifier, pathname, isAuthenticated)
+      response = await addRateLimitHeaders(response, identifier, pathname, isAuthenticated)
       
       // Add CSRF token to response (for GET requests)
       response = addCSRFTokenToResponse(response, request)

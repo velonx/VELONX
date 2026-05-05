@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set('csrf-token', csrfToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60, // 24 hours
       path: '/',
     })

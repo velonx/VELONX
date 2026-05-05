@@ -195,7 +195,7 @@ export function addCSRFTokenToResponse(
     response.cookies.set(CSRF_COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: CSRF_TOKEN_EXPIRY / 1000, // Convert to seconds
       path: '/',
     })

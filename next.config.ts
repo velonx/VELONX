@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
   // Enable compression for all text-based assets
   compress: true,
 
+  // Output standalone build for optimized production deployment
+  output: 'standalone',
+
   // Enable React strict mode
   reactStrictMode: true,
 
