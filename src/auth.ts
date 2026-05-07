@@ -289,7 +289,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     cookies: {
         sessionToken: {
-            name: `__Secure-authjs.session-token`,
+            name: `authjs.session-token`,
             options: {
                 httpOnly: true,
                 sameSite: "lax",
@@ -298,7 +298,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         },
         callbackUrl: {
-            name: `__Secure-authjs.callback-url`,
+            name: `authjs.callback-url`,
             options: {
                 httpOnly: true,
                 sameSite: "lax",
@@ -307,7 +307,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         },
         csrfToken: {
-            name: `__Host-authjs.csrf-token`,
+            name: `authjs.csrf-token`,
             options: {
                 httpOnly: true,
                 sameSite: "lax",
@@ -316,7 +316,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         },
         pkceCodeVerifier: {
-            name: `__Secure-authjs.pkce.code_verifier`,
+            name: `authjs.pkce.code_verifier`,
             options: {
                 httpOnly: true,
                 sameSite: "lax",
@@ -326,7 +326,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         },
         state: {
-            name: `__Secure-authjs.state`,
+            name: `authjs.state`,
             options: {
                 httpOnly: true,
                 sameSite: "lax",
