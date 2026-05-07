@@ -278,13 +278,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return session;
         },
         async redirect({ url, baseUrl }) {
-            // Force the base URL to be your custom domain if NEXTAUTH_URL is set
-            const effectiveBaseUrl = process.env.NEXTAUTH_URL || baseUrl;
+            // Force your real domain to avoid any internal Cloud Run URLs
+            const customDomain = "https://velonx.in";
             
-            if (url.startsWith(effectiveBaseUrl)) return url;
-            if (url.startsWith("/")) return `${effectiveBaseUrl}${url}`;
+            if (url.startsWith(customDomain)) return url;
+            if (url.startsWith("/")) return `${customDomain}${url}`;
 
-            return `${effectiveBaseUrl}/dashboard/student`;
+            return `${customDomain}/dashboard/student`;
         },
     },
     cookies: {
@@ -295,6 +295,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 sameSite: "lax",
                 path: "/",
                 secure: true,
+                domain: ".velonx.in" // Sharing cookies across the domain
             },
         },
         callbackUrl: {
@@ -304,6 +305,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 sameSite: "lax",
                 path: "/",
                 secure: true,
+                domain: ".velonx.in"
             },
         },
         csrfToken: {
@@ -313,6 +315,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 sameSite: "lax",
                 path: "/",
                 secure: true,
+                domain: ".velonx.in"
             },
         },
         pkceCodeVerifier: {
@@ -323,6 +326,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 path: "/",
                 secure: true,
                 maxAge: 900,
+                domain: ".velonx.in"
             },
         },
         state: {
@@ -333,6 +337,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 path: "/",
                 secure: true,
                 maxAge: 900,
+                domain: ".velonx.in"
             },
         },
     },
