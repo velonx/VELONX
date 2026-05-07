@@ -278,12 +278,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return session;
         },
         async redirect({ url, baseUrl }) {
-            // After sign in, redirect based on role
-            if (url.startsWith(baseUrl)) return url;
-            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            // Force the base URL to be your custom domain if NEXTAUTH_URL is set
+            const effectiveBaseUrl = process.env.NEXTAUTH_URL || baseUrl;
+            
+            if (url.startsWith(effectiveBaseUrl)) return url;
+            if (url.startsWith("/")) return `${effectiveBaseUrl}${url}`;
 
-            // Default redirect - will be overridden by callback in signup/login
-            return `${baseUrl}/dashboard/student`;
+            return `${effectiveBaseUrl}/dashboard/student`;
         },
     },
     cookies: {
