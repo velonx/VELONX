@@ -100,11 +100,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             allowDangerousEmailAccountLinking: true,
+            authorization: {
+                params: {
+                    redirect_uri: "https://velonx.in/api/auth/callback/google",
+                },
+            },
         })] : []),
         ...(process.env.GITHUB_CLIENT_ID ? [GitHub({
             clientId: process.env.GITHUB_CLIENT_ID,
             clientSecret: process.env.GITHUB_CLIENT_SECRET,
             allowDangerousEmailAccountLinking: true,
+            authorization: {
+                params: {
+                    redirect_uri: "https://velonx.in/api/auth/callback/github",
+                },
+            },
         })] : []),
         Credentials({
             name: "Credentials",
