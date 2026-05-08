@@ -295,7 +295,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 sameSite: "lax",
                 path: "/",
                 secure: true,
-                domain: ".velonx.in" // Sharing cookies across the domain
             },
         },
         callbackUrl: {
@@ -305,7 +304,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 sameSite: "lax",
                 path: "/",
                 secure: true,
-                domain: ".velonx.in"
             },
         },
         csrfToken: {
@@ -315,7 +313,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 sameSite: "lax",
                 path: "/",
                 secure: true,
-                domain: ".velonx.in"
             },
         },
         pkceCodeVerifier: {
@@ -326,7 +323,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 path: "/",
                 secure: true,
                 maxAge: 900,
-                domain: ".velonx.in"
             },
         },
         state: {
@@ -337,7 +333,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 path: "/",
                 secure: true,
                 maxAge: 900,
-                domain: ".velonx.in"
             },
         },
     },

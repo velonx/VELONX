@@ -152,6 +152,14 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/api/health') {
     return NextResponse.next()
   }
+
+  // FIX: Prepare headers to force the host to be velonx.in
+  const requestHeaders = new Headers(request.headers);
+  const host = request.headers.get("host");
+  if (host?.includes("run.app")) {
+    requestHeaders.set("host", "velonx.in");
+    requestHeaders.set("x-forwarded-host", "velonx.in");
+  }
   
   try {
     let response: NextResponse
@@ -164,7 +172,7 @@ export async function middleware(request: NextRequest) {
       // Get authentication token first (needed for logging)
       token = await getToken({ 
         req: request,
-        secret: process.env.NEXTAUTH_SECRET 
+        secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
       })
       
       // 1. CSRF Protection (for state-changing requests)
@@ -192,8 +200,12 @@ export async function middleware(request: NextRequest) {
         return addSecurityHeaders(rateLimitResponse)
       }
       
-      // Continue with request
-      response = NextResponse.next()
+      // Continue with request and the modified headers
+      response = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        }
+      })
       
       // Add rate limit headers
       response = await addRateLimitHeaders(response, identifier, pathname, isAuthenticated)
@@ -201,8 +213,12 @@ export async function middleware(request: NextRequest) {
       // Add CSRF token to response (for GET requests)
       response = addCSRFTokenToResponse(response, request)
     } else {
-      // Non-API routes: Just continue
-      response = NextResponse.next()
+      // Non-API routes: Just continue with modified headers
+      response = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        }
+      })
     }
     
     // 3. Add security headers to all responses
@@ -214,7 +230,11 @@ export async function middleware(request: NextRequest) {
     console.error('[Middleware] Security middleware error:', error)
     
     // Fail open: allow request if middleware fails, but still add security headers
-    const response = NextResponse.next()
+    const response = NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      }
+    })
     return addSecurityHeaders(response)
   }
 }
