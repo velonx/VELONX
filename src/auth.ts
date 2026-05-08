@@ -49,14 +49,50 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: {
         ...PrismaAdapter(prisma),
         createUser: async (user) => {
-            const referralCode = await generateReferralCode();
-            const { id, ...userData } = user; // NextAuth passes a UUID, but MongoDB needs a 24-char hex. Destructuring removes it.
-            return prisma.user.create({
-                data: {
-                    ...userData,
-                    referralCode,
-                },
-            }) as any;
+            try {
+                console.log("[auth][db] Attempting to create user:", user.email);
+                const referralCode = await generateReferralCode();
+                const { id, ...userData } = user; // NextAuth passes a UUID, but MongoDB needs a 24-char hex. Destructuring removes it.
+                const newUser = await prisma.user.create({
+                    data: {
+                        ...userData,
+                        referralCode,
+                    },
+                });
+                console.log("[auth][db] User created successfully:", newUser.id);
+                return newUser as any;
+            } catch (dbError) {
+                console.error("🔥 [CRITICAL DATABASE ERROR in createUser] 🔥", dbError);
+                throw dbError; // Rethrow to let NextAuth handle the redirect
+            }
+        },
+        getUser: async (id) => {
+            try {
+                return await prisma.user.findUnique({ where: { id } }) as any;
+            } catch (dbError) {
+                console.error("🔥 [CRITICAL DATABASE ERROR in getUser] 🔥", dbError);
+                throw dbError;
+            }
+        },
+        getUserByEmail: async (email) => {
+            try {
+                return await prisma.user.findUnique({ where: { email } }) as any;
+            } catch (dbError) {
+                console.error("🔥 [CRITICAL DATABASE ERROR in getUserByEmail] 🔥", dbError);
+                throw dbError;
+            }
+        },
+        getUserByAccount: async (provider_providerAccountId) => {
+            try {
+                const account = await prisma.account.findUnique({
+                    where: { provider_providerAccountId },
+                    select: { user: true },
+                });
+                return (account?.user as any) ?? null;
+            } catch (dbError) {
+                console.error("🔥 [CRITICAL DATABASE ERROR in getUserByAccount] 🔥", dbError);
+                throw dbError;
+            }
         },
     },
     providers: [
