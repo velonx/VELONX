@@ -336,4 +336,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         },
     },
+    debug: true, // Enable debug messages in the console
+    logger: {
+        error(error) {
+            console.error(`[auth][error]`, error);
+        },
+        warn(code) {
+            console.warn(`[auth][warn] ${code}`);
+        },
+        debug(code, metadata) {
+            console.log(`[auth][debug] ${code}`, metadata);
+        },
+    },
 })
