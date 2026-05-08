@@ -156,9 +156,14 @@ export async function middleware(request: NextRequest) {
   // FIX: Prepare headers to force the host to be velonx.in
   const requestHeaders = new Headers(request.headers);
   const host = request.headers.get("host");
-  if (host?.includes("run.app")) {
+  
+  // Always enforce the external domain headers for NextAuth
+  if (host?.includes("run.app") || !requestHeaders.has("x-forwarded-host")) {
     requestHeaders.set("host", "velonx.in");
     requestHeaders.set("x-forwarded-host", "velonx.in");
+    requestHeaders.set("x-forwarded-proto", "https");
+    requestHeaders.set("x-forwarded-port", "443");
+    requestHeaders.set("origin", "https://velonx.in");
   }
   
   try {
