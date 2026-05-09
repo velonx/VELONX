@@ -45,6 +45,8 @@ declare module "@auth/core/jwt" {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+    trustHost: true,
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
     adapter: {
         ...PrismaAdapter(prisma),
         createUser: async (user) => {
@@ -99,21 +101,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             allowDangerousEmailAccountLinking: true,
-            authorization: {
-                params: {
-                    redirect_uri: "https://velonx.in/api/auth/callback/google",
-                },
-            },
         })] : []),
         ...(process.env.GITHUB_CLIENT_ID ? [GitHub({
             clientId: process.env.GITHUB_CLIENT_ID,
             clientSecret: process.env.GITHUB_CLIENT_SECRET,
             allowDangerousEmailAccountLinking: true,
-            authorization: {
-                params: {
-                    redirect_uri: "https://velonx.in/api/auth/callback/github",
-                },
-            },
         })] : []),
         Credentials({
             name: "Credentials",
@@ -250,12 +242,53 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     callbacks: {
         async signIn({ user, account, profile }) {
-            // For OAuth providers, fetch additional user data
-            if (account?.provider === "google" || account?.provider === "github") {
-                if (user.email) {
+            try {
+                // For OAuth providers, fetch additional user data
+                if (account?.provider === "google" || account?.provider === "github") {
+                    if (user.email) {
+                        const dbUser = await prisma.user.findUnique({
+                            where: { email: user.email },
+                            select: {
+                                xp: true,
+                                level: true,
+                                currentStreak: true,
+                                longestStreak: true,
+                            },
+                        });
+                        if (dbUser) {
+                            user.xp = dbUser.xp;
+                            user.level = dbUser.level;
+                            user.currentStreak = dbUser.currentStreak;
+                            user.longestStreak = dbUser.longestStreak;
+                        }
+                    }
+                }
+                return true;
+            } catch (error) {
+                console.error("🔥 [CRITICAL ERROR in signIn callback] 🔥", error);
+                // Return true anyway so we don't block login if it's just a missing field
+                return true; 
+            }
+        },
+        async jwt({ token, user, trigger, session }) {
+            try {
+                if (user) {
+                    token.id = user.id;
+                    token.role = user.role || "STUDENT";
+                    token.xp = user.xp;
+                    token.level = user.level;
+                    token.currentStreak = user.currentStreak;
+                    token.longestStreak = user.longestStreak;
+                }
+
+                // Fetch latest user data on session update
+                if (trigger === "update" && token.sub) {
                     const dbUser = await prisma.user.findUnique({
-                        where: { email: user.email },
+                        where: { id: token.sub },
                         select: {
+                            role: true,
+                            name: true,
+                            image: true,
                             xp: true,
                             level: true,
                             currentStreak: true,
@@ -263,51 +296,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         },
                     });
                     if (dbUser) {
-                        user.xp = dbUser.xp;
-                        user.level = dbUser.level;
-                        user.currentStreak = dbUser.currentStreak;
-                        user.longestStreak = dbUser.longestStreak;
+                        token.role = dbUser.role;
+                        token.name = dbUser.name;
+                        token.picture = dbUser.image;
+                        token.xp = dbUser.xp;
+                        token.level = dbUser.level;
+                        token.currentStreak = dbUser.currentStreak;
+                        token.longestStreak = dbUser.longestStreak;
                     }
                 }
-            }
-            return true;
-        },
-        async jwt({ token, user, trigger, session }) {
-            if (user) {
-                token.id = user.id;
-                token.role = user.role || "STUDENT";
-                token.xp = user.xp;
-                token.level = user.level;
-                token.currentStreak = user.currentStreak;
-                token.longestStreak = user.longestStreak;
-            }
 
-            // Fetch latest user data on session update
-            if (trigger === "update" && token.sub) {
-                const dbUser = await prisma.user.findUnique({
-                    where: { id: token.sub },
-                    select: {
-                        role: true,
-                        name: true,
-                        image: true,
-                        xp: true,
-                        level: true,
-                        currentStreak: true,
-                        longestStreak: true,
-                    },
-                });
-                if (dbUser) {
-                    token.role = dbUser.role;
-                    token.name = dbUser.name;
-                    token.picture = dbUser.image;
-                    token.xp = dbUser.xp;
-                    token.level = dbUser.level;
-                    token.currentStreak = dbUser.currentStreak;
-                    token.longestStreak = dbUser.longestStreak;
-                }
+                return token;
+            } catch (error) {
+                console.error("🔥 [CRITICAL ERROR in jwt callback] 🔥", error);
+                return token;
             }
-
-            return token;
         },
         async session({ session, token }) {
             if (session.user && token.sub) {
@@ -332,55 +335,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return `${customDomain}/dashboard/student`;
         },
     },
-    cookies: {
-        sessionToken: {
-            name: `authjs.session-token`,
-            options: {
-                httpOnly: true,
-                sameSite: "lax",
-                path: "/",
-                secure: true,
-            },
-        },
-        callbackUrl: {
-            name: `authjs.callback-url`,
-            options: {
-                httpOnly: true,
-                sameSite: "lax",
-                path: "/",
-                secure: true,
-            },
-        },
-        csrfToken: {
-            name: `authjs.csrf-token`,
-            options: {
-                httpOnly: true,
-                sameSite: "lax",
-                path: "/",
-                secure: true,
-            },
-        },
-        pkceCodeVerifier: {
-            name: `authjs.pkce.code_verifier`,
-            options: {
-                httpOnly: true,
-                sameSite: "lax",
-                path: "/",
-                secure: true,
-                maxAge: 900,
-            },
-        },
-        state: {
-            name: `authjs.state`,
-            options: {
-                httpOnly: true,
-                sameSite: "lax",
-                path: "/",
-                secure: true,
-                maxAge: 900,
-            },
-        },
-    },
+
     debug: true, // Enable debug messages in the console
     logger: {
         error(error) {

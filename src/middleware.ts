@@ -153,21 +153,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // FIX: Prepare headers to force the host to be velonx.in
-  const requestHeaders = new Headers(request.headers);
-  const host = request.headers.get("host");
-  
-  // Always enforce the external domain headers for NextAuth
-  if (host?.includes("run.app") || !requestHeaders.has("x-forwarded-host")) {
-    requestHeaders.set("host", "velonx.in");
-    requestHeaders.set("x-forwarded-host", "velonx.in");
-    requestHeaders.set("x-forwarded-proto", "https");
-    requestHeaders.set("x-forwarded-port", "443");
-    requestHeaders.set("origin", "https://velonx.in");
-  }
-  
   try {
-    let response: NextResponse
+    let response: NextResponse = NextResponse.next()
     let token: any = null
     
     // Apply different middleware based on route type
@@ -205,12 +192,8 @@ export async function middleware(request: NextRequest) {
         return addSecurityHeaders(rateLimitResponse)
       }
       
-      // Continue with request and the modified headers
-      response = NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        }
-      })
+      // Continue with request
+      response = NextResponse.next()
       
       // Add rate limit headers
       response = await addRateLimitHeaders(response, identifier, pathname, isAuthenticated)
@@ -219,11 +202,7 @@ export async function middleware(request: NextRequest) {
       response = addCSRFTokenToResponse(response, request)
     } else {
       // Non-API routes: Just continue with modified headers
-      response = NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        }
-      })
+      response = NextResponse.next()
     }
     
     // 3. Add security headers to all responses
@@ -235,11 +214,7 @@ export async function middleware(request: NextRequest) {
     console.error('[Middleware] Security middleware error:', error)
     
     // Fail open: allow request if middleware fails, but still add security headers
-    const response = NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      }
-    })
+    const response = NextResponse.next()
     return addSecurityHeaders(response)
   }
 }
