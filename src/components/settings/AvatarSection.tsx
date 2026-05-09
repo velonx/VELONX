@@ -5,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AvatarSelector from "@/components/avatar-selector";
 import { Upload, Loader2, User } from "lucide-react";
-
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 interface AvatarSectionProps {
   currentAvatar: string | null;
   onAvatarChange: (avatar: string) => void;
@@ -22,6 +22,14 @@ export default function AvatarSection({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { isDragging, dragHandlers } = useDragAndDrop((files) => {
+    if (isLoading || isUploading) return;
+    const file = files[0];
+    if (file) {
+      handleFileSelect({ target: { files: [file] } } as unknown as React.ChangeEvent<HTMLInputElement>);
+    }
+  });
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -109,7 +117,12 @@ export default function AvatarSection({
       </div>
 
       {/* Avatar Preview */}
-      <div className="flex items-center gap-6">
+      <div 
+        className={`flex items-center gap-6 p-4 rounded-xl transition-colors border-2 ${
+          isDragging ? "border-cyan-400 bg-cyan-400/10" : "border-transparent"
+        }`}
+        {...dragHandlers}
+      >
         <div className="relative">
           <Avatar className="w-24 h-24 border-2 border-white/10">
             <AvatarImage src={currentAvatar || undefined} alt="Profile avatar" />
@@ -159,6 +172,7 @@ export default function AvatarSection({
               </>
             )}
           </Button>
+          {isDragging && <p className="text-xs text-cyan-400 font-medium">Drop image here</p>}
 
           {/* Hidden File Input */}
           <input

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     siteName: "Velonx",
     images: [
       {
-        url: "/swag-hero.webp",
+        url: "/swag-hero-light.webp",
         width: 1200,
         height: 630,
         alt: "Velonx Swag Store",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Velonx Swag Store",
     description: "Redeem your XP for exclusive premium merchandise.",
-    images: ["/swag-hero.webp"],
+    images: ["/swag-hero-light.webp"],
   },
 };
 

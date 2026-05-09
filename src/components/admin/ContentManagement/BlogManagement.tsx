@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { PenTool, Edit, Trash2, XCircle, Download, Send } from "lucide-react";
 import toast from "react-hot-toast";
 import RichTextEditor from "../RichTextEditor";
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 
 interface Blog {
   id: string;
@@ -29,6 +30,21 @@ export default function BlogManagement() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [blogContent, setBlogContent] = useState("");
   const formRef = useRef<HTMLDivElement>(null);
+
+  const { isDragging, dragHandlers } = useDragAndDrop((files) => {
+    if (uploadingImage) return;
+    const file = files[0];
+    if (file) {
+      // Simulate file input change event
+      const input = document.getElementById("blogImageUpload") as HTMLInputElement;
+      if (input) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        input.files = dataTransfer.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+  });
 
   useEffect(() => {
     // Pre-fetch CSRF token to ensure the csrf-token cookie is set before any form submission
@@ -412,7 +428,8 @@ export default function BlogManagement() {
                     />
                     <label
                       htmlFor="blogImageUpload"
-                      className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      {...dragHandlers}
+                      className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''} ${isDragging ? 'border-[#219EBC] bg-[#219EBC]/10' : ''}`}
                     >
                       {uploadingImage ? (
                         <>
@@ -422,7 +439,7 @@ export default function BlogManagement() {
                       ) : (
                         <>
                           <Download className="w-4 h-4" />
-                          Or upload from computer
+                          {isDragging ? "Drop image here" : "Or click/drag to upload from computer"}
                         </>
                       )}
                     </label>

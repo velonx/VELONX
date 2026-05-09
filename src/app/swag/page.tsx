@@ -210,11 +210,20 @@ export default function SwagPage() {
               <div className="absolute -inset-4 bg-gradient-to-tr from-primary/5 to-transparent rounded-[3rem] blur-2xl opacity-50 pointer-events-none" />
               <div className="relative aspect-square w-full max-w-[500px] mx-auto rounded-[3rem] border border-border bg-card/50 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-muted/20 to-transparent" />
+                {/* Light Mode Image */}
                 <Image
-                  src="/swag-hero.webp" 
+                  src="/swag-hero-light.webp" 
                   alt="Swag Hero"
                   fill
-                  className="object-contain p-8 group-hover:scale-110 transition-transform duration-700"
+                  className="object-contain p-8 group-hover:scale-110 transition-transform duration-700 dark:hidden block"
+                  priority
+                />
+                {/* Dark Mode Image */}
+                <Image
+                  src="/swag-hero-dark.webp" 
+                  alt="Swag Hero"
+                  fill
+                  className="object-contain p-8 group-hover:scale-110 transition-transform duration-700 hidden dark:block"
                   priority
                 />
               </div>

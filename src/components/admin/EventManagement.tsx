@@ -12,6 +12,7 @@ import { eventsApi } from "@/lib/api/client";
 import type { Event } from "@/lib/api/types";
 import { secureFetch } from "@/lib/utils/csrf";
 import EventRewardManager from "@/components/admin/EventRewardManager";
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +47,20 @@ export default function EventManagement() {
     howItWorks: '',
     meetingLink: '',
     imageUrl: '',
+  });
+
+  const { isDragging, dragHandlers } = useDragAndDrop((files) => {
+    if (uploadingImage) return;
+    const file = files[0];
+    if (file) {
+      const input = document.getElementById("eventImageUpload") as HTMLInputElement;
+      if (input) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        input.files = dataTransfer.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
   });
 
   useEffect(() => {
@@ -493,7 +508,8 @@ export default function EventManagement() {
                       />
                       <label
                         htmlFor="eventImageUpload"
-                        className={`flex items-center justify-center gap-2 h-12 bg-background border-2 border-dashed border-border hover:border-primary rounded-xl cursor-pointer transition-all text-muted-foreground hover:text-primary font-medium ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        {...dragHandlers}
+                        className={`flex items-center justify-center gap-2 h-12 bg-background border-2 border-dashed border-border hover:border-primary rounded-xl cursor-pointer transition-all text-muted-foreground hover:text-primary font-medium ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''} ${isDragging ? 'border-primary bg-primary/10' : ''}`}
                       >
                         {uploadingImage ? (
                           <>
@@ -503,7 +519,7 @@ export default function EventManagement() {
                         ) : (
                           <>
                             <Download className="w-4 h-4" />
-                            Or upload from computer
+                            {isDragging ? "Drop image here" : "Or click/drag to upload from computer"}
                           </>
                         )}
                       </label>

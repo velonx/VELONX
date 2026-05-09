@@ -14,6 +14,7 @@ import {
   Loader2,
   FileText,
 } from "lucide-react";
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 
 /* ─── Types ─────────────────────────────────────────────── */
 type ReportCategory =
@@ -71,9 +72,12 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { isDragging, dragHandlers } = useDragAndDrop((files) => {
+    addFiles(files);
+  });
 
   /* ── Reset ── */
   const reset = () => {
@@ -83,7 +87,6 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
     setMediaPreviews([]);
     setSubmitError("");
     setSubmitted(false);
-    setDragOver(false);
   };
 
   const handleClose = () => {
@@ -251,11 +254,7 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
   };
 
   /* ── Drag-and-drop ── */
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    addFiles(e.dataTransfer.files);
-  };
+  // Replaced by useDragAndDrop hook
 
   /* ── Render ── */
   if (!open) return null;
@@ -402,17 +401,11 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
                   </span>
                 </label>
 
-                {/* Drop Zone */}
                 <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragOver(true);
-                  }}
-                  onDragLeave={() => setDragOver(false)}
-                  onDrop={onDrop}
+                  {...dragHandlers}
                   onClick={() => fileInputRef.current?.click()}
                   className={`relative border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${
-                    dragOver
+                    isDragging
                       ? "border-[#219EBC] bg-[#219EBC]/5"
                       : "border-border hover:border-[#219EBC]/50 hover:bg-muted/50"
                   }`}
@@ -428,7 +421,7 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
                     </div>
                     <div>
                       <p className="text-sm font-bold text-foreground">
-                        {dragOver ? "Drop files here" : "Drag & drop or click to upload"}
+                        {isDragging ? "Drop files here" : "Drag & drop or click to upload"}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Photos: JPEG, PNG, WebP, GIF (max 5 MB)

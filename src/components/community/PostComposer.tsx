@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import type { CreatePostData } from '@/lib/hooks/useCommunityPosts';
 import { secureFetch } from '@/lib/utils/csrf';
 import { CardImage } from '@/components/responsive-image';
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 
 /**
  * Post Composer Props Interface
@@ -61,6 +62,12 @@ export function PostComposer({
   const MAX_CONTENT_LENGTH = 5000;
   const MAX_IMAGES = 5;
   const MAX_LINKS = 3;
+
+  const { isDragging, dragHandlers } = useDragAndDrop((files) => {
+    if (isSubmitting || imageUrls.length >= MAX_IMAGES || isUploadingImage) return;
+    const mockEvent = { target: { files } } as unknown as React.ChangeEvent<HTMLInputElement>;
+    handleImageUpload(mockEvent);
+  });
 
   /**
    * Handle image file selection and upload
@@ -210,7 +217,10 @@ export function PostComposer({
   const canSubmit = content.trim().length > 0 && !isOverLimit && !isSubmitting && !isUploadingImage;
 
   return (
-    <Card className="w-full">
+    <Card 
+      className={`w-full transition-colors ${isDragging ? 'border-primary ring-2 ring-primary ring-offset-2 bg-primary/5' : ''}`}
+      {...dragHandlers}
+    >
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Text Input */}

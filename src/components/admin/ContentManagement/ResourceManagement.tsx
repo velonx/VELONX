@@ -9,6 +9,7 @@ import { BookOpen, Edit, Trash2, XCircle, Download, Eye, Plus, FileText } from "
 import toast from "react-hot-toast";
 import { getCSRFToken } from "@/lib/utils/csrf";
 import PDFUploadField, { PDFMetadata } from "@/components/admin/PDFUploadField";
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 
 interface Resource {
   id: string;
@@ -38,6 +39,20 @@ export default function ResourceManagement() {
   const resourceFormRef = useRef<HTMLDivElement>(null);
   const resourceFormElementRef = useRef<HTMLFormElement>(null);
 
+  const { isDragging, dragHandlers } = useDragAndDrop((files) => {
+    if (uploadingResourceImage) return;
+    const file = files[0];
+    if (file) {
+      // Simulate file input change event
+      const input = document.getElementById("resourceImageUpload") as HTMLInputElement;
+      if (input) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        input.files = dataTransfer.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+  });
   useEffect(() => {
     fetchResources();
   }, []);
@@ -623,7 +638,8 @@ export default function ResourceManagement() {
                     />
                     <label
                       htmlFor="resourceImageUpload"
-                      className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingResourceImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      {...dragHandlers}
+                      className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingResourceImage ? 'opacity-50 cursor-not-allowed' : ''} ${isDragging ? 'border-[#219EBC] bg-[#219EBC]/10' : ''}`}
                     >
                       {uploadingResourceImage ? (
                         <>
@@ -633,7 +649,7 @@ export default function ResourceManagement() {
                       ) : (
                         <>
                           <Download className="w-4 h-4" />
-                          Or upload from computer
+                          {isDragging ? "Drop image here" : "Or click/drag to upload from computer"}
                         </>
                       )}
                     </label>

@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { FileText, Upload, X, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { getCSRFToken } from "@/lib/utils/csrf";
-
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 /**
  * PDF Metadata Interface
  * Contains all information about an uploaded PDF file
@@ -50,6 +50,14 @@ export default function PDFUploadField({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { isDragging, dragHandlers } = useDragAndDrop((files) => {
+    if (disabled || isUploading) return;
+    const file = files[0];
+    if (file) {
+      handleFileChange({ target: { files: [file] } } as unknown as React.ChangeEvent<HTMLInputElement>);
+    }
+  });
 
   // Constants
   const MAX_FILE_SIZE = 10485760; // 10MB in bytes
@@ -215,7 +223,12 @@ export default function PDFUploadField({
         PDF File
       </label>
 
-      <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
+      <div 
+        className={`bg-gray-50 rounded-[32px] p-6 space-y-4 transition-colors ${
+          isDragging ? "bg-blue-50/50 ring-2 ring-[#219EBC] ring-inset" : ""
+        }`}
+        {...dragHandlers}
+      >
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -306,7 +319,7 @@ export default function PDFUploadField({
               </div>
               <div className="text-center">
                 <p className="text-sm font-bold text-gray-600 group-hover:text-[#219EBC] transition-colors">
-                  Click to upload PDF
+                  {isDragging ? "Drop PDF here" : "Click or drag to upload PDF"}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
                   Maximum file size: 10MB

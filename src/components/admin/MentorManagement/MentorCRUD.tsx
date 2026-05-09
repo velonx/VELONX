@@ -30,6 +30,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 
 interface Mentor {
   id: string;
@@ -70,6 +71,20 @@ export default function MentorCRUD() {
     twitterUrl: "",
   });
   const [expertiseInput, setExpertiseInput] = useState("");
+
+  const { isDragging, dragHandlers } = useDragAndDrop((files) => {
+    if (uploading) return;
+    const file = files[0];
+    if (file) {
+      const input = document.getElementById("image-upload") as HTMLInputElement;
+      if (input) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        input.files = dataTransfer.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+  });
 
   useEffect(() => {
     fetchMentors();
@@ -512,7 +527,8 @@ export default function MentorCRUD() {
                   />
                   <Label
                     htmlFor="image-upload"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-xl cursor-pointer font-bold text-sm"
+                    {...dragHandlers}
+                    className={`inline-flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-xl cursor-pointer font-bold text-sm transition-all ${isDragging ? 'ring-2 ring-[#219EBC] bg-[#219EBC]/10' : ''}`}
                   >
                     {uploading ? (
                       <>
@@ -522,7 +538,7 @@ export default function MentorCRUD() {
                     ) : (
                       <>
                         <Upload className="w-4 h-4" />
-                        Upload Image
+                        {isDragging ? "Drop image here" : "Upload Image"}
                       </>
                     )}
                   </Label>

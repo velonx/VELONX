@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { getCSRFToken } from "@/lib/utils/csrf";
-
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 const CATEGORIES = ["NOTEBOOK", "DIARY", "BOTTLE", "BAG", "PLANT", "LAMP", "STATIONERY", "APPAREL", "OTHER"];
 
 interface SwagItem {
@@ -32,6 +32,14 @@ export default function SwagItemManager() {
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  const { isDragging, dragHandlers } = useDragAndDrop((files) => {
+    if (uploadingImage) return;
+    const file = files[0];
+    if (file) {
+      const mockEvent = { target: { files: [file] } } as unknown as React.ChangeEvent<HTMLInputElement>;
+      handleImageUpload(mockEvent);
+    }
+  });
   const fetchItems = useCallback(async () => {
     setLoading(true);
     try {
@@ -222,9 +230,9 @@ export default function SwagItemManager() {
                       : <ImageIcon className="w-6 h-6 text-muted-foreground" />
                     }
                   </div>
-                  <label className="flex-1 cursor-pointer">
-                    <div className="w-full h-10 border-2 border-dashed border-border rounded-xl flex items-center justify-center text-sm text-muted-foreground hover:border-[#219EBC] hover:text-[#219EBC] transition-colors">
-                      {uploadingImage ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : "Click to upload image"}
+                  <label className="flex-1 cursor-pointer" {...dragHandlers}>
+                    <div className={`w-full h-10 border-2 border-dashed rounded-xl flex items-center justify-center text-sm transition-colors ${isDragging ? 'border-[#219EBC] bg-[#219EBC]/10 text-[#219EBC]' : 'border-border text-muted-foreground hover:border-[#219EBC] hover:text-[#219EBC]'}`}>
+                      {uploadingImage ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : isDragging ? "Drop image here" : "Click or drag to upload image"}
                     </div>
                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploadingImage} />
                   </label>
