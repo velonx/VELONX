@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
 import { notificationService } from "@/lib/services/notification.service";
+import { createJoinRequestSchema } from "@/lib/validations/project";
 
 /**
  * GET /api/projects/[id]/join-requests
@@ -102,6 +103,10 @@ export async function POST(
 
     const { id: projectId } = await params;
 
+    // Validate request body
+    const body = await request.json();
+    const validatedData = createJoinRequestSchema.parse(body);
+
     // Check if project exists
     const project = await prisma.project.findUnique({
       where: { id: projectId },
@@ -187,6 +192,7 @@ export async function POST(
           projectTitle: project.title,
           ownerId: project.ownerId,
           ownerName: project.owner.name,
+          message: validatedData.message,
         }),
       },
       include: {

@@ -154,19 +154,14 @@ describe('Project Endpoints Integration Tests', () => {
   })
 
   describe('GET /api/projects', () => {
-    it('should require authentication', async () => {
-      const { requireAuth } = await import('@/lib/middleware/auth.middleware')
-      vi.mocked(requireAuth).mockResolvedValueOnce(
-        NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) as any
-      )
-
+    it('should allow anonymous access', async () => {
       const request = createMockNextRequest({
         method: 'GET',
         url: 'http://localhost:3000/api/projects',
       })
 
       const response = await listProjectsHandler(request)
-      expect(response.status).toBe(401)
+      expect(response.status).toBe(200)
     })
 
     it('should support pagination parameters', async () => {

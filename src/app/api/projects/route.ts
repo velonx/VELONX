@@ -21,8 +21,6 @@ const projectsRateLimiter = createInMemoryRateLimiter({
  *     description: Retrieve projects with pagination and filtering options
  *     tags:
  *       - Projects
- *     security:
- *       - sessionAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -90,12 +88,6 @@ const projectsRateLimiter = createInMemoryRateLimiter({
  *                       type: integer
  *                     totalPages:
  *                       type: integer
- *       401:
- *         description: Unauthorized - Authentication required
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       429:
  *         description: Rate limit exceeded - Too many requests
  *         content:

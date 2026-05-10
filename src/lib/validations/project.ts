@@ -66,9 +66,17 @@ export const addProjectMemberSchema = z.object({
 });
 
 /**
+ * Schema for creating a project join request
+ */
+export const createJoinRequestSchema = z.object({
+  message: z.string().min(10, "Message must be at least 10 characters").max(1000, "Message must not exceed 1000 characters"),
+});
+
+/**
  * Type exports for TypeScript
  */
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 export type ProjectQueryInput = z.infer<typeof projectQuerySchema>;
 export type AddProjectMemberInput = z.infer<typeof addProjectMemberSchema>;
+export type CreateJoinRequestInput = z.infer<typeof createJoinRequestSchema>;
