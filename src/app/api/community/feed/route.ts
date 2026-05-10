@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/middleware/auth.middleware";
+import { auth } from "@/auth";
 import { withErrorHandler } from "@/lib/utils/errors";
 import { feedService } from "@/lib/services/feed.service";
 import { cacheService, CacheKeys, CacheTTL } from "@/lib/services/cache.service";
@@ -53,14 +54,9 @@ const feedQuerySchema = z.object({
  *         description: Unauthorized - Authentication required
  */
 export const GET = withErrorHandler(async (request: NextRequest) => {
-  // Require authentication
-  const sessionOrResponse = await requireAuth();
-  if (sessionOrResponse instanceof NextResponse) {
-    return sessionOrResponse;
-  }
-
-  const session = sessionOrResponse;
-  const userId = session.user.id!;
+  // Optional authentication
+  const session = await auth();
+  const userId = session?.user?.id;
 
   // Parse and validate query parameters
   // Only include params that have actual values so Zod defaults apply correctly
@@ -80,7 +76,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   // Generate cache key based on user ID, filter, cursor, and limit
   const cacheKey = CacheKeys.feed.user(
-    userId,
+    userId || "anonymous",
     validatedQuery.filter,
     validatedQuery.cursor || 'initial',
     validatedQuery.limit

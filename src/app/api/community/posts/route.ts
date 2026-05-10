@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/middleware/auth.middleware";
+import { auth } from "@/auth";
 import { withErrorHandler } from "@/lib/utils/errors";
 import { postService } from "@/lib/services/post.service";
 import { cacheService, CacheKeys } from "@/lib/services/cache.service";
@@ -170,11 +171,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
  *         description: Unauthorized - Authentication required
  */
 export const GET = withErrorHandler(async (request: NextRequest) => {
-  // Require authentication
-  const sessionOrResponse = await requireAuth();
-  if (sessionOrResponse instanceof NextResponse) {
-    return sessionOrResponse;
-  }
+  // Optional authentication
+  const session = await auth();
+  const userId = session?.user?.id;
 
   // Parse query parameters
   const searchParams = request.nextUrl.searchParams;
@@ -193,6 +192,24 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   }
   if (authorId) {
     where.authorId = authorId;
+  }
+
+  // Visibility logic
+  if (!userId) {
+    // Anonymous: only public posts
+    where.visibility = "PUBLIC";
+  } else {
+    // Authenticated: public posts + own posts + posts from groups/followers if authorized
+    // (This is a simplified version, the feed service has more robust logic but here we follow basic rules)
+    where.OR = [
+      { visibility: "PUBLIC" },
+      { authorId: userId },
+      // If groupId is provided, the query already filters by it. 
+      // For general listing, we might want to restrict group posts to joined groups only.
+      // But for the 'posts' endpoint usually used for specific filters, we'll keep it simple:
+      { visibility: "GROUP", group: { members: { some: { userId } } } },
+      { visibility: "FOLLOWERS", author: { followers: { some: { followerId: userId } } } }
+    ];
   }
 
   // Get posts from database with pagination

@@ -31,6 +31,7 @@ import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
 import { useGroupMembers } from "@/lib/hooks/useGroupMembers";
 import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import { secureFetch } from "@/lib/utils/csrf";
+import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 export default function GroupDetailPage() {
@@ -213,6 +214,9 @@ export default function GroupDetailPage() {
     );
   }
 
+  // Determine visibility
+  const canViewFeed = !group.isPrivate || isMember;
+
   return (
     <div className="min-h-screen pt-24 pb-28 bg-background">
       {/* Hidden file input */}
@@ -293,9 +297,12 @@ export default function GroupDetailPage() {
       {/* Main Content */}
       <section className="py-8 bg-background">
         <div className="container mx-auto px-4">
-          {isMember ? (
+          {canViewFeed ? (
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto mb-8">
+              <TabsList className={cn(
+                "grid w-full max-w-2xl mx-auto mb-8",
+                isModerator ? "grid-cols-4" : "grid-cols-2"
+              )}>
                 <TabsTrigger value="feed" className="gap-2">
                   <FileText className="w-4 h-4" /> Feed
                 </TabsTrigger>

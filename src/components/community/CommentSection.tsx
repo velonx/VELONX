@@ -2,8 +2,10 @@
 
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2Icon, MessageCircleIcon, SendIcon } from 'lucide-react';
+import { Loader2Icon, MessageCircleIcon, SendIcon, LockIcon } from 'lucide-react';
 import { usePostComments } from '@/lib/hooks/usePostComments';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { CommentItem } from './CommentItem';
 
 export interface CommentSectionProps {
@@ -36,6 +38,9 @@ function CommentSkeleton() {
 export function CommentSection({ postId, limit = 10 }: CommentSectionProps) {
   const [commentText, setCommentText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const {
     comments,
@@ -119,33 +124,65 @@ export function CommentSection({ postId, limit = 10 }: CommentSectionProps) {
         </div>
       )}
 
-      {/* Comment Input — always visible at the bottom */}
-      <form onSubmit={handleSubmit} className="mt-4 pt-4 border-t border-border/30">
-        <div className="flex items-start gap-3">
-          <textarea
-            ref={textareaRef}
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder="Add to the discussion..."
-            rows={1}
-            className="flex-1 min-h-[40px] max-h-32 px-4 py-2.5 text-sm border border-border/50 bg-muted/20 rounded-full resize-none focus:outline-none focus:ring-1 focus:ring-ring focus:bg-background focus:rounded-xl focus:min-h-[60px] transition-all"
-            disabled={isCreating}
-            aria-label="Comment text"
-          />
-          <Button
-            type="submit"
-            size="sm"
-            className="rounded-full px-5 h-10 font-semibold gap-1.5 shrink-0"
-            disabled={!commentText.trim() || isCreating}
-          >
-            {isCreating ? (
-              <Loader2Icon className="animate-spin size-4" />
-            ) : (
-              <>Send <SendIcon className="size-3.5" /></>
-            )}
-          </Button>
+      {/* Comment Input or Sign-in Prompt */}
+      {session ? (
+        <form onSubmit={handleSubmit} className="mt-4 pt-4 border-t border-border/30">
+          <div className="flex items-start gap-3">
+            <textarea
+              ref={textareaRef}
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Add to the discussion..."
+              rows={1}
+              className="flex-1 min-h-[40px] max-h-32 px-4 py-2.5 text-sm border border-border/50 bg-muted/20 rounded-full resize-none focus:outline-none focus:ring-1 focus:ring-ring focus:bg-background focus:rounded-xl focus:min-h-[60px] transition-all"
+              disabled={isCreating}
+              aria-label="Comment text"
+            />
+            <Button
+              type="submit"
+              size="sm"
+              className="rounded-full px-5 h-10 font-semibold gap-1.5 shrink-0"
+              disabled={!commentText.trim() || isCreating}
+            >
+              {isCreating ? (
+                <Loader2Icon className="animate-spin size-4" />
+              ) : (
+                <>Send <SendIcon className="size-3.5" /></>
+              )}
+            </Button>
+          </div>
+        </form>
+      ) : (
+        <div className="mt-4 pt-6 border-t border-border/30">
+          <div className="bg-muted/30 rounded-xl p-4 flex flex-col items-center text-center gap-3 border border-dashed border-border/60">
+            <div className="size-10 rounded-full bg-background flex items-center justify-center text-muted-foreground shadow-sm">
+              <LockIcon className="size-5" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">Sign in to join the discussion</p>
+              <p className="text-xs text-muted-foreground">Log in to upvote comments and share your thoughts.</p>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="rounded-full px-5 h-8 text-xs font-semibold"
+                onClick={() => router.push('/auth/login')}
+              >
+                Sign In
+              </Button>
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="rounded-full px-5 h-8 text-xs font-semibold"
+                onClick={() => router.push('/auth/signup')}
+              >
+                Create Account
+              </Button>
+            </div>
+          </div>
         </div>
-      </form>
+      )}
     </div>
   );
 }

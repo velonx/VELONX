@@ -81,64 +81,68 @@ export class FeedService {
    * Validates: Requirements 7.1, 7.3, 9.2
    * Optimized with parallel queries and select-only fields
    */
-  async getUserFeed(userId: string, query: FeedQuery = {}): Promise<FeedItemData[]> {
+  async getUserFeed(userId?: string, query: FeedQuery = {}): Promise<FeedItemData[]> {
     const limit = query.limit && query.limit > 0 ? Math.min(query.limit, 100) : 20;
     const filter = query.filter || "ALL";
 
-    // Lean existence check — select only id to verify the user exists before building feed
-    const userExists = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
-    if (!userExists) {
-      // User was deleted but session is still active — return empty feed gracefully
-      return [];
-    }
-
-
-    // Run all 4 relationship lookups in parallel on indexed junction tables
-    // (much faster than a single User.findUnique loading 4 nested relation arrays)
-    const [blockingRows, blockedByRows, followingRows, groupRows] = await Promise.all([
-      prisma.userBlock.findMany({ where: { blockerId: userId }, select: { blockedId: true } }),
-      prisma.userBlock.findMany({ where: { blockedId: userId }, select: { blockerId: true } }),
-      prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } }),
-      prisma.groupMember.findMany({ where: { userId }, select: { groupId: true } }),
-    ]);
-
-    const blockedUserIds = [
-      ...blockingRows.map((b) => b.blockedId),
-      ...blockedByRows.map((b) => b.blockerId),
-    ];
-    const followingIds = followingRows.map((f) => f.followingId);
-    const groupIds = groupRows.map((g) => g.groupId);
-
-    // Build the where clause based on filter
+    // Build the where clause
     let whereClause: any = {
       NOT: { content: "" },
     };
 
-    if (blockedUserIds.length > 0) {
-      whereClause.authorId = { notIn: blockedUserIds };
-    }
-
-    if (filter === "FOLLOWING") {
-      if (followingIds.length === 0) return [];
-      whereClause.AND = [
-        {
-          OR: [
-            { authorId: { in: followingIds } },
-            { visibility: "FOLLOWERS", authorId: { in: followingIds } },
-          ],
-        },
-      ];
-    } else if (filter === "GROUPS") {
-      if (groupIds.length === 0) return [];
-      whereClause.groupId = { in: groupIds };
-      whereClause.visibility = "GROUP";
+    // Handle anonymous vs authenticated feed
+    if (!userId) {
+      // Anonymous user feed: only public posts
+      whereClause.visibility = "PUBLIC";
     } else {
-      // ALL filter: public posts + posts from followed users + posts from joined groups
-      whereClause.OR = [
-        { visibility: "PUBLIC" },
-        { visibility: "FOLLOWERS", authorId: { in: followingIds } },
-        { visibility: "GROUP", groupId: { in: groupIds } },
+      // Lean existence check — select only id to verify the user exists before building feed
+      const userExists = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
+      if (!userExists) {
+        // User was deleted but session is still active — return empty feed gracefully
+        return [];
+      }
+
+      // Run all 4 relationship lookups in parallel on indexed junction tables
+      const [blockingRows, blockedByRows, followingRows, groupRows] = await Promise.all([
+        prisma.userBlock.findMany({ where: { blockerId: userId }, select: { blockedId: true } }),
+        prisma.userBlock.findMany({ where: { blockedId: userId }, select: { blockerId: true } }),
+        prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } }),
+        prisma.groupMember.findMany({ where: { userId }, select: { groupId: true } }),
+      ]);
+
+      const blockedUserIds = [
+        ...blockingRows.map((b) => b.blockedId),
+        ...blockedByRows.map((b) => b.blockerId),
       ];
+      const followingIds = followingRows.map((f) => f.followingId);
+      const groupIds = groupRows.map((g) => g.groupId);
+
+      if (blockedUserIds.length > 0) {
+        whereClause.authorId = { notIn: blockedUserIds };
+      }
+
+      if (filter === "FOLLOWING") {
+        if (followingIds.length === 0) return [];
+        whereClause.AND = [
+          {
+            OR: [
+              { authorId: { in: followingIds } },
+              { visibility: "FOLLOWERS", authorId: { in: followingIds } },
+            ],
+          },
+        ];
+      } else if (filter === "GROUPS") {
+        if (groupIds.length === 0) return [];
+        whereClause.groupId = { in: groupIds };
+        whereClause.visibility = "GROUP";
+      } else {
+        // ALL filter: public posts + posts from followed users + posts from joined groups
+        whereClause.OR = [
+          { visibility: "PUBLIC" },
+          { visibility: "FOLLOWERS", authorId: { in: followingIds } },
+          { visibility: "GROUP", groupId: { in: groupIds } },
+        ];
+      }
     }
 
     if (query.cursor) {
@@ -220,7 +224,7 @@ export class FeedService {
    * Validates: Requirements 4.4, 7.1, 9.2
    * Optimized with select-only fields
    */
-  async getGroupFeed(groupId: string, userId: string, query: FeedQuery = {}): Promise<FeedItemData[]> {
+  async getGroupFeed(groupId: string, userId?: string, query: FeedQuery = {}): Promise<FeedItemData[]> {
     // Validate that the group exists
     const group = await prisma.communityGroup.findUnique({
       where: { id: groupId },
@@ -231,18 +235,24 @@ export class FeedService {
       throw new NotFoundError("Community group");
     }
 
-    // Check if user is a member (required for private groups)
-    const isMember = await prisma.groupMember.findUnique({
-      where: {
-        groupId_userId: {
-          groupId,
-          userId,
-        },
-      },
-    });
+    // Check authorization for private groups
+    if (group.isPrivate) {
+      if (!userId) {
+        throw new AuthorizationError("Authentication required to view this private group");
+      }
 
-    if (group.isPrivate && !isMember) {
-      throw new AuthorizationError("You must be a member of this private group to view its feed");
+      const isMember = await prisma.groupMember.findUnique({
+        where: {
+          groupId_userId: {
+            groupId,
+            userId,
+          },
+        },
+      });
+
+      if (!isMember) {
+        throw new AuthorizationError("You must be a member of this private group to view its feed");
+      }
     }
 
     const limit = query.limit && query.limit > 0 ? Math.min(query.limit, 100) : 20;

@@ -17,11 +17,7 @@ const trendingQuerySchema = z.object({
  * Returns trending posts (cached for 5 minutes)
  */
 export const GET = withErrorHandler(async (request: NextRequest) => {
-  // Require authentication
-  const sessionOrResponse = await requireAuth();
-  if (sessionOrResponse instanceof NextResponse) {
-    return sessionOrResponse;
-  }
+  // No authentication required for trending posts
 
   // Parse and validate query parameters
   const searchParams = request.nextUrl.searchParams;
