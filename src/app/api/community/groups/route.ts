@@ -115,15 +115,12 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
  *       401:
  *         description: Unauthorized - Authentication required
  */
-export const GET = withErrorHandler(async (request: NextRequest) => {
-  // Require authentication
-  const sessionOrResponse = await requireAuth();
-  if (sessionOrResponse instanceof NextResponse) {
-    return sessionOrResponse;
-  }
+import { auth } from "@/auth";
 
-  const session = sessionOrResponse;
-  const userId = session.user.id!;
+export const GET = withErrorHandler(async (request: NextRequest) => {
+  // Check authentication optionally
+  const session = await auth();
+  const userId = session?.user?.id;
 
   // Parse query parameters
   const searchParams = request.nextUrl.searchParams;
@@ -158,16 +155,16 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       orderBy: { createdAt: "desc" },
     }),
     prisma.communityGroup.count(),
-    // Get groups the user is a member of
-    prisma.groupMember.findMany({
+    // Get groups the user is a member of (if logged in)
+    userId ? prisma.groupMember.findMany({
       where: { userId },
       select: { groupId: true },
-    }),
-    // Get groups the user has pending join requests for
-    prisma.groupJoinRequest.findMany({
+    }) : Promise.resolve([]),
+    // Get groups the user has pending join requests for (if logged in)
+    userId ? prisma.groupJoinRequest.findMany({
       where: { userId, status: "PENDING" },
       select: { groupId: true },
-    }),
+    }) : Promise.resolve([]),
   ]);
 
   // Format response with member and post counts

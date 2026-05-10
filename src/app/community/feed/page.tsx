@@ -133,27 +133,7 @@ export default function FeedPage() {
     }
   }, [linkInput, linkUrls.length]);
 
-  if (!session) {
-    return (
-      <div className="min-h-screen pt-24 bg-background">
-        <div className="container mx-auto px-4 py-16">
-          <Card>
-            <CardContent className="py-12 text-center">
-              <TrendingUp className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-              <h3 className="text-xl font-bold mb-2">Sign in to view your feed</h3>
-              <p className="text-muted-foreground mb-6">
-                Create an account to follow users, join groups, and see personalized content.
-              </p>
-              <div className="flex items-center justify-center gap-3">
-                <Button onClick={() => router.push("/auth/login")}>Sign In</Button>
-                <Button variant="outline" onClick={() => router.push("/auth/signup")}>Create Account</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  // Allow unauthenticated users to see the feed, but don't show the composer
 
   return (
     <div className="min-h-screen pt-24 pb-28 bg-background">
@@ -176,7 +156,7 @@ export default function FeedPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
               <FeedFilter currentFilter={filter} onFilterChange={setFilter} />
-              <Feed filter={filter} currentUserId={session.user?.id} />
+              <Feed filter={filter} currentUserId={session?.user?.id} />
             </div>
 
             <div className="space-y-6">
@@ -219,137 +199,156 @@ export default function FeedPage() {
       {/* Sticky Bottom Composer Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-xl border-t border-border/50 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
         <div className="container mx-auto px-4 py-3 max-w-3xl">
-          {showComposer ? (
-            <div className="space-y-3">
-              {/* Textarea */}
-              <textarea
-                ref={composerRef}
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-                placeholder="What's on your mind?"
-                rows={3}
-                className="w-full px-4 py-3 text-sm border border-border/50 bg-muted/20 rounded-xl resize-none focus:outline-none focus:ring-1 focus:ring-ring focus:bg-background transition-all"
-                disabled={isCreating}
-              />
+          {session ? (
+            showComposer ? (
+              <div className="space-y-3">
+                {/* Textarea */}
+                <textarea
+                  ref={composerRef}
+                  value={postContent}
+                  onChange={(e) => setPostContent(e.target.value)}
+                  placeholder="What's on your mind?"
+                  rows={3}
+                  className="w-full px-4 py-3 text-sm border border-border/50 bg-muted/20 rounded-xl resize-none focus:outline-none focus:ring-1 focus:ring-ring focus:bg-background transition-all"
+                  disabled={isCreating}
+                />
 
-              {/* Image Previews */}
-              {imageUrls.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  {imageUrls.map((url, i) => (
-                    <div key={i} className="relative group size-16 rounded-lg overflow-hidden border border-border/50">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={url} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => setImageUrls(prev => prev.filter((_, idx) => idx !== i))}
-                        className="absolute top-0.5 right-0.5 p-0.5 bg-destructive text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <XIcon className="size-2.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+                {/* Image Previews */}
+                {imageUrls.length > 0 && (
+                  <div className="flex gap-2 flex-wrap">
+                    {imageUrls.map((url, i) => (
+                      <div key={i} className="relative group size-16 rounded-lg overflow-hidden border border-border/50">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={url} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setImageUrls(prev => prev.filter((_, idx) => idx !== i))}
+                          className="absolute top-0.5 right-0.5 p-0.5 bg-destructive text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <XIcon className="size-2.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-              {/* Link Previews */}
-              {linkUrls.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {linkUrls.map((url, i) => (
-                    <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 bg-muted/50 rounded-full text-xs border border-border/30">
-                      <LinkIcon className="size-3 text-muted-foreground" />
-                      <span className="truncate max-w-[200px] text-primary">{url}</span>
-                      <button onClick={() => setLinkUrls(prev => prev.filter((_, idx) => idx !== i))} className="hover:text-destructive">
-                        <XIcon className="size-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+                {/* Link Previews */}
+                {linkUrls.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {linkUrls.map((url, i) => (
+                      <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 bg-muted/50 rounded-full text-xs border border-border/30">
+                        <LinkIcon className="size-3 text-muted-foreground" />
+                        <span className="truncate max-w-[200px] text-primary">{url}</span>
+                        <button onClick={() => setLinkUrls(prev => prev.filter((_, idx) => idx !== i))} className="hover:text-destructive">
+                          <XIcon className="size-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-              {/* Link Input (toggled) */}
-              {showLinkInput && (
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={linkInput}
-                    onChange={(e) => setLinkInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addLink(); } }}
-                    placeholder="https://..."
-                    className="flex-1 px-3 py-1.5 text-sm border border-border/50 rounded-full bg-muted/20 focus:outline-none focus:ring-1 focus:ring-ring"
-                    autoFocus
-                  />
-                  <Button type="button" variant="outline" size="sm" className="rounded-full px-3 text-xs" onClick={addLink} disabled={!linkInput.trim()}>
-                    Add
-                  </Button>
-                </div>
-              )}
+                {/* Link Input (toggled) */}
+                {showLinkInput && (
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={linkInput}
+                      onChange={(e) => setLinkInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addLink(); } }}
+                      placeholder="https://..."
+                      className="flex-1 px-3 py-1.5 text-sm border border-border/50 rounded-full bg-muted/20 focus:outline-none focus:ring-1 focus:ring-ring"
+                      autoFocus
+                    />
+                    <Button type="button" variant="outline" size="sm" className="rounded-full px-3 text-xs" onClick={addLink} disabled={!linkInput.trim()}>
+                      Add
+                    </Button>
+                  </div>
+                )}
 
-              {/* Action bar: image + link buttons + cancel/post */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  {/* Image upload button */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2.5 rounded-full"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isCreating || isUploadingImage || imageUrls.length >= MAX_IMAGES}
-                  >
-                    {isUploadingImage ? <Loader2Icon className="size-4 animate-spin" /> : <ImageIcon className="size-4" />}
-                    <span className="text-xs hidden sm:inline">
-                      {imageUrls.length > 0 ? `${imageUrls.length}/${MAX_IMAGES}` : "Image"}
-                    </span>
-                  </Button>
+                {/* Action bar: image + link buttons + cancel/post */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    {/* Image upload button */}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2.5 rounded-full"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isCreating || isUploadingImage || imageUrls.length >= MAX_IMAGES}
+                    >
+                      {isUploadingImage ? <Loader2Icon className="size-4 animate-spin" /> : <ImageIcon className="size-4" />}
+                      <span className="text-xs hidden sm:inline">
+                        {imageUrls.length > 0 ? `${imageUrls.length}/${MAX_IMAGES}` : "Image"}
+                      </span>
+                    </Button>
 
-                  {/* Link button */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2.5 rounded-full"
-                    onClick={() => setShowLinkInput(!showLinkInput)}
-                    disabled={linkUrls.length >= MAX_LINKS}
-                  >
-                    <LinkIcon className="size-4" />
-                    <span className="text-xs hidden sm:inline">
-                      {linkUrls.length > 0 ? `${linkUrls.length}/${MAX_LINKS}` : "Link"}
-                    </span>
-                  </Button>
-                </div>
+                    {/* Link button */}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2.5 rounded-full"
+                      onClick={() => setShowLinkInput(!showLinkInput)}
+                      disabled={linkUrls.length >= MAX_LINKS}
+                    >
+                      <LinkIcon className="size-4" />
+                      <span className="text-xs hidden sm:inline">
+                        {linkUrls.length > 0 ? `${linkUrls.length}/${MAX_LINKS}` : "Link"}
+                      </span>
+                    </Button>
+                  </div>
 
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-muted-foreground rounded-full text-xs"
-                    onClick={closeComposer}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="rounded-full px-5 font-semibold"
-                    disabled={!postContent.trim() || isCreating || isUploadingImage}
-                    onClick={handleCreatePost}
-                  >
-                    {isCreating ? (
-                      <><Loader2Icon className="size-3.5 animate-spin mr-1" /> Posting...</>
-                    ) : (
-                      "Post"
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground rounded-full text-xs"
+                      onClick={closeComposer}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="rounded-full px-5 font-semibold"
+                      disabled={!postContent.trim() || isCreating || isUploadingImage}
+                      onClick={handleCreatePost}
+                    >
+                      {isCreating ? (
+                        <><Loader2Icon className="size-3.5 animate-spin mr-1" /> Posting...</>
+                      ) : (
+                        "Post"
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              /* Collapsed bar */
+              <div className="flex items-center gap-3 cursor-pointer" onClick={openComposer}>
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  {session.user?.name?.[0] || "U"}
+                </div>
+                <div className="flex-1 px-4 py-2.5 rounded-full bg-muted/60 border border-border/40 text-muted-foreground text-sm hover:bg-muted transition-colors">
+                  What&apos;s on your mind?
+                </div>
+              </div>
+            )
           ) : (
-            /* Collapsed bar */
-            <div className="flex items-center gap-3 cursor-pointer" onClick={openComposer}>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                {session.user?.name?.[0] || "U"}
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-sm text-muted-foreground hidden sm:block">
+                Sign in to post, like, and reply to community discussions.
               </div>
-              <div className="flex-1 px-4 py-2.5 rounded-full bg-muted/60 border border-border/40 text-muted-foreground text-sm hover:bg-muted transition-colors">
-                What&apos;s on your mind?
+              <div className="text-sm text-muted-foreground sm:hidden">
+                Sign in to post and interact.
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={() => router.push('/auth/login')} variant="default" size="sm" className="rounded-full font-semibold px-5">
+                  Sign In
+                </Button>
+                <Button onClick={() => router.push('/auth/signup')} variant="outline" size="sm" className="rounded-full font-semibold px-5">
+                  Sign Up
+                </Button>
               </div>
             </div>
           )}

@@ -114,12 +114,6 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
   const fetchGroups = useCallback(async () => {
     if (!isMountedRef.current) return;
     
-    // Do not attempt to fetch if explicitly unauthenticated
-    if (status === 'unauthenticated') {
-      setState(prev => ({ ...prev, isLoading: false, error: null }));
-      return;
-    }
-
     // Only set loading if not already loading or if there's an error to clear
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
@@ -172,11 +166,9 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
   useEffect(() => {
     isMountedRef.current = true;
     
-    // Only fetch when authenticated
-    if (status === 'authenticated') {
+    // Fetch regardless of authentication status, as public groups are visible
+    if (status !== 'loading') {
       fetchGroups();
-    } else if (status === 'unauthenticated') {
-      setState(prev => ({ ...prev, isLoading: false }));
     }
 
     return () => {

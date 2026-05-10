@@ -166,10 +166,18 @@ export default function GroupsPage() {
             memberGroupIds={memberGroupIds}
             pendingRequestGroupIds={pendingRequestGroupIds}
             onJoinGroup={async (groupId) => {
+              if (!session) {
+                router.push('/auth/login');
+                return;
+              }
               await joinGroup(groupId);
               refetch();
             }}
             onRequestJoinGroup={async (groupId) => {
+              if (!session) {
+                router.push('/auth/login');
+                return;
+              }
               await requestJoinGroup(groupId);
             }}
             onViewDetails={(group) => router.push(`/community/groups/${group.id}`)}

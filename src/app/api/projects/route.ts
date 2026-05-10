@@ -133,8 +133,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = await requireAuth();
-    if (session instanceof NextResponse) return session;
+    // No authentication required for GET projects
+    // const session = await requireAuth();
+    // if (session instanceof NextResponse) return session;
 
     const { searchParams } = new URL(request.url);
     

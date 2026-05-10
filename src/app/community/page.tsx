@@ -99,32 +99,6 @@ function AuthenticatedCommunityContent() {
   );
 }
 
-/**
- * Unauthenticated placeholder for groups section
- */
-function UnauthenticatedCommunityContent() {
-  const router = useRouter();
-
-  return (
-    <Card>
-      <CardContent className="py-12 text-center">
-        <Sparkles className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-        <h3 className="text-xl font-bold mb-2">Sign in to explore</h3>
-        <p className="text-muted-foreground mb-6">
-          Log in to see groups, posts, and connect with the community.
-        </p>
-        <div className="flex items-center justify-center gap-3">
-          <Button onClick={() => router.push("/auth/login")}>
-            Sign In
-          </Button>
-          <Button variant="outline" onClick={() => router.push("/auth/signup")}>
-            Create Account
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 export default function CommunityPage() {
   const { data: session, status } = useSession();
@@ -201,12 +175,8 @@ export default function CommunityPage() {
                 </Link>
               </div>
 
-              {/* Authenticated content (groups) or sign-in prompt */}
-              {session ? (
-                <AuthenticatedCommunityContent />
-              ) : (
-                <UnauthenticatedCommunityContent />
-              )}
+              {/* Popular Groups content */}
+              <AuthenticatedCommunityContent />
             </div>
 
             {/* Sidebar */}
