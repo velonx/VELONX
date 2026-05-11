@@ -50,9 +50,23 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
-// Mock API hooks to return empty data
+// Mock API hooks to return minimal data with correct shape
 vi.mock('@/lib/api/hooks', () => ({
-  useProjects: () => ({ data: [], loading: false }),
+  useProjects: () => ({
+    data: [
+      {
+        id: 'project-1',
+        title: 'Test Project',
+        status: 'IN_PROGRESS',
+        ownerId: '507f1f77bcf86cd799439011',
+        githubUrl: null,
+        liveUrl: null,
+        _count: { members: 1 },
+        completedAt: null,
+      },
+    ],
+    loading: false,
+  }),
   useMeetings: () => ({ data: [], loading: false }),
   useUserStats: () => ({ data: {}, loading: false }),
   useCheckIn: () => ({ 
@@ -82,6 +96,10 @@ global.fetch = vi.fn(() =>
   })
 ) as any
 
+// Mock EditProjectModal to avoid rendering the full modal in layout tests
+vi.mock('@/components/projects/EditProjectModal', () => ({
+  EditProjectModal: () => null,
+}))
 
 // Helper to find sidebar by class substring since Tailwind responsive classes (e.g. md:w-80)
 // don't match CSS class selectors like .w-80

@@ -17,7 +17,7 @@ import {
     ExtendedProject,
     UserProjectRelationship,
 } from '@/lib/types/project-page.types';
-import { Github, ExternalLink, Loader2, Users, CheckCircle2, Trophy, ArrowRight, Share2, Check } from 'lucide-react';
+import { Github, ExternalLink, Loader2, Users, CheckCircle2, Trophy, ArrowRight, Share2, Check, Pencil } from 'lucide-react';
 
 export interface ProjectCardProps {
     project: ExtendedProject;
@@ -28,6 +28,7 @@ export interface ProjectCardProps {
     currentUserId?: string;
     onComplete?: (projectId: string, projectTitle: string) => void;
     isCompleting?: boolean;
+    onEdit?: (projectId: string) => void;
 }
 
 function getCategoryGradient(category: string) {
@@ -87,6 +88,7 @@ const ProjectCardComponent = ({
     currentUserId,
     onComplete,
     isCompleting = false,
+    onEdit,
 }: ProjectCardProps) => {
     const statusConfig = getStatusConfig(project.status);
     const joinConfig = getJoinButtonConfig(joinRequestStatus);
@@ -298,6 +300,18 @@ const ProjectCardComponent = ({
                     )}
                 </div>
 
+                {/* Edit button for owner */}
+                {isOwner && onEdit && (
+                    <button
+                        onClick={(e) => { stop(e); onEdit(project.id); }}
+                        aria-label={`Edit ${project.title}`}
+                        title="Edit project"
+                        className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                    >
+                        <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                    </button>
+                )}
+
                 {/* Primary CTA */}
                 {canComplete ? (
                     <Button
@@ -345,7 +359,8 @@ export const ProjectCard = React.memo(ProjectCardComponent, (prev, next) =>
     prev.isJoining === next.isJoining &&
     prev.currentUserId === next.currentUserId &&
     prev.isCompleting === next.isCompleting &&
-    prev.onComplete === next.onComplete
+    prev.onComplete === next.onComplete &&
+    prev.onEdit === next.onEdit
 );
 
 ProjectCard.displayName = 'ProjectCard';

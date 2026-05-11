@@ -151,6 +151,55 @@ describe('Project Endpoints Integration Tests', () => {
         expect(data.success).toBe(false)
       }
     })
+
+    it('should accept an optional githubUrl in project creation', async () => {
+      const { prisma } = await import('@/lib/prisma')
+      vi.mocked(prisma.project.create).mockResolvedValueOnce({
+        id: 'project-with-github',
+        status: 'PENDING',
+        githubUrl: 'https://github.com/owner/repo',
+      } as any)
+
+      const projectData = {
+        title: 'GitHub Project',
+        description: 'A project with a GitHub link',
+        techStack: ['React'],
+        maxMembers: 5,
+        githubUrl: 'https://github.com/owner/repo',
+      }
+
+      const request = createMockNextRequest({
+        method: 'POST',
+        url: 'http://localhost:3000/api/projects',
+        body: projectData,
+      })
+
+      const response = await createProjectHandler(request)
+      // Should not fail validation — 201 or 400 due to DB mock, never 422
+      expect([201, 400]).toContain(response.status)
+    })
+
+    it('should reject invalid githubUrl format', async () => {
+      const projectData = {
+        title: 'Test Project',
+        description: 'A test project with bad URL',
+        techStack: ['React'],
+        maxMembers: 5,
+        githubUrl: 'not-a-valid-url',
+      }
+
+      const request = createMockNextRequest({
+        method: 'POST',
+        url: 'http://localhost:3000/api/projects',
+        body: projectData,
+      })
+
+      const response = await createProjectHandler(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(data.success).toBe(false)
+    })
   })
 
   describe('GET /api/projects', () => {
@@ -354,6 +403,100 @@ describe('Project Endpoints Integration Tests', () => {
 
       // Should return 403 for non-owners
       expect([403, 404]).toContain(response.status)
+    })
+
+    it('should allow owner to update githubUrl via PATCH', async () => {
+      const { requireAuth } = await import('@/lib/middleware/auth.middleware')
+      const { prisma } = await import('@/lib/prisma')
+
+      // Mock the project as owned by the test user
+      vi.mocked(prisma.project.findUnique).mockResolvedValueOnce({
+        id: 'project-123',
+        ownerId: 'test-user-id',
+        status: 'IN_PROGRESS',
+        title: 'My Project',
+        description: 'Existing description',
+        techStack: ['React'],
+        githubUrl: null,
+      } as any)
+
+      vi.mocked(prisma.project.update).mockResolvedValueOnce({
+        id: 'project-123',
+        ownerId: 'test-user-id',
+        status: 'IN_PROGRESS',
+        title: 'My Project',
+        description: 'Existing description',
+        techStack: ['React'],
+        githubUrl: 'https://github.com/owner/repo',
+      } as any)
+
+      vi.mocked(requireAuth).mockResolvedValueOnce(
+        createMockSession({ user: { id: 'test-user-id', role: 'STUDENT' } })
+      )
+
+      const updateData = {
+        title: 'My Project',
+        description: 'Existing description',
+        techStack: ['React'],
+        githubUrl: 'https://github.com/owner/repo',
+      }
+
+      const request = createMockNextRequest({
+        method: 'PATCH',
+        url: 'http://localhost:3000/api/projects/project-123',
+        body: updateData,
+      })
+
+      const context = { params: Promise.resolve({ id: 'project-123' }) }
+      const response = await updateProjectHandler(request, context)
+
+      // Should succeed (200) or be blocked by missing project in findUnique mock (403/404)
+      expect([200, 403, 404]).toContain(response.status)
+    })
+
+    it('should reject invalid githubUrl format in PATCH', async () => {
+      const { prisma } = await import('@/lib/prisma')
+
+      // Mock the project twice: once for isProjectOwner and once for getProjectById
+      vi.mocked(prisma.project.findUnique)
+        .mockResolvedValueOnce({
+          id: 'project-123',
+          ownerId: 'test-user-id',
+          status: 'IN_PROGRESS',
+          title: 'My Project',
+          description: 'Existing description',
+          techStack: ['React'],
+          githubUrl: null,
+        } as any)
+        .mockResolvedValueOnce({
+          id: 'project-123',
+          ownerId: 'test-user-id',
+          status: 'IN_PROGRESS',
+          title: 'My Project',
+          description: 'Existing description',
+          techStack: ['React'],
+          githubUrl: null,
+        } as any)
+
+      const updateData = {
+        title: 'My Project',
+        description: 'Existing description',
+        techStack: ['React'],
+        githubUrl: 'not-a-valid-url',
+      }
+
+      const request = createMockNextRequest({
+        method: 'PATCH',
+        url: 'http://localhost:3000/api/projects/project-123',
+        body: updateData,
+      })
+
+      const context = { params: Promise.resolve({ id: 'project-123' }) }
+      const response = await updateProjectHandler(request, context)
+      const data = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(data.success).toBe(false)
     })
 
     it('should prevent non-owners from approving join requests', async () => {

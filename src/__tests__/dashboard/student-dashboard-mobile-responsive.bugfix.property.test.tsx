@@ -51,7 +51,21 @@ vi.mock('next/navigation', () => ({
 
 // Mock API hooks to return empty data
 vi.mock('@/lib/api/hooks', () => ({
-  useProjects: () => ({ data: [], loading: false }),
+  useProjects: () => ({
+    data: [
+      {
+        id: 'project-1',
+        title: 'Test Project',
+        status: 'IN_PROGRESS',
+        ownerId: '507f1f77bcf86cd799439011',
+        githubUrl: null,
+        liveUrl: null,
+        _count: { members: 1 },
+        completedAt: null,
+      },
+    ],
+    loading: false,
+  }),
   useMeetings: () => ({ data: [], loading: false }),
   useUserStats: () => ({ data: {}, loading: false }),
   useCheckIn: () => ({ 
@@ -80,6 +94,11 @@ global.fetch = vi.fn(() =>
     json: () => Promise.resolve({ success: true, data: [] }),
   })
 ) as any
+
+// Mock EditProjectModal to avoid rendering the full modal in layout tests
+vi.mock('@/components/projects/EditProjectModal', () => ({
+  EditProjectModal: () => null,
+}))
 
 describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', () => {
   let originalInnerWidth: number

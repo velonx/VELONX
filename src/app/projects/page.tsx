@@ -22,6 +22,10 @@ import { CompletionCelebration } from "@/components/projects/CompletionCelebrati
 const ProjectModal = lazy(() =>
     import("@/components/projects/ProjectModal").then(mod => ({ default: mod.ProjectModal }))
 );
+// Lazy load EditProjectModal
+const EditProjectModal = lazy(() =>
+    import("@/components/projects/EditProjectModal").then(mod => ({ default: mod.EditProjectModal }))
+);
 import {
     ExtendedProject,
     ProjectFilters,
@@ -64,6 +68,7 @@ function ProjectsPageContent() {
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [joiningProjects, setJoiningProjects] = useState<Set<string>>(new Set());
     const [activeTab, setActiveTab] = useState<'running' | 'completed'>('running');
+    const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
     // Fetch projects from API
     const {
@@ -223,6 +228,20 @@ function ProjectsPageContent() {
     const handleModalClose = useCallback(() => {
         setSelectedProjectId(null);
     }, []);
+
+    const handleEditProject = useCallback((projectId: string) => {
+        setEditingProjectId(projectId);
+        setSelectedProjectId(null); // close detail modal if open
+    }, []);
+
+    const handleEditClose = useCallback(() => {
+        setEditingProjectId(null);
+    }, []);
+
+    const handleEditSaved = useCallback(async () => {
+        setEditingProjectId(null);
+        await Promise.all([refetchRunning(), refetchCompleted()]);
+    }, [refetchRunning, refetchCompleted]);
 
     const handleJoinRequest = useCallback(async (projectId: string) => {
         if (!session?.user?.id) {
@@ -479,6 +498,7 @@ function ProjectsPageContent() {
                                     currentUserId={session?.user?.id}
                                     onComplete={handleProjectComplete}
                                     completingProjectId={isCompleting && pendingCompletion ? pendingCompletion.projectId : null}
+                                    onEdit={handleEditProject}
                                 />
                             )}
                         </TabsContent>
@@ -506,6 +526,7 @@ function ProjectsPageContent() {
                                     currentUserId={session?.user?.id}
                                     onComplete={handleProjectComplete}
                                     completingProjectId={isCompleting && pendingCompletion ? pendingCompletion.projectId : null}
+                                    onEdit={handleEditProject}
                                 />
                             )}
                         </TabsContent>
@@ -523,7 +544,24 @@ function ProjectsPageContent() {
                     project={selectedProject}
                     joinRequestStatus={selectedProjectId ? joinRequestStatuses.get(selectedProjectId) : undefined}
                     isJoining={selectedProjectId ? joiningProjects.has(selectedProjectId) : false}
+                    onEdit={selectedProjectId ? () => handleEditProject(selectedProjectId) : undefined}
                 />
+            </Suspense>
+
+            {/* Edit Project Modal - Lazy loaded with Suspense */}
+            <Suspense fallback={null}>
+                {editingProjectId && (() => {
+                    const allProjects = [...extendedRunningProjects, ...extendedCompletedProjects];
+                    const editingProject = allProjects.find(p => p.id === editingProjectId);
+                    return editingProject ? (
+                        <EditProjectModal
+                            project={editingProject}
+                            isOpen={true}
+                            onClose={handleEditClose}
+                            onSaved={handleEditSaved}
+                        />
+                    ) : null;
+                })()}
             </Suspense>
 
             {/* Floating Action Button - Submit Idea */}

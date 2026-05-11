@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Loader2, CheckCircle2, Sparkles, Lightbulb, Code } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle2, Sparkles, Lightbulb, Code, Github } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function SubmitProjectPage() {
@@ -22,6 +22,7 @@ export default function SubmitProjectPage() {
     techStack: [] as string[],
     goals: '',
     teamSize: '',
+    githubUrl: '',
   });
   const [techInput, setTechInput] = useState('');
 
@@ -71,6 +72,7 @@ export default function SubmitProjectPage() {
             techStack: formData.techStack,
             goals: formData.goals,
             teamSize: formData.teamSize,
+            githubUrl: formData.githubUrl || undefined,
             submittedBy: session?.user?.id,
           }),
         }),
@@ -290,6 +292,26 @@ export default function SubmitProjectPage() {
                       {formData.techStack.length}/15 technologies added. Click on a tech to remove it.
                     </p>
                   </div>
+                </div>
+
+                {/* GitHub Repository URL */}
+                <div className="space-y-2">
+                  <Label htmlFor="githubUrl" className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <Github className="w-4 h-4" />
+                    GitHub Repository URL
+                    <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+                  </Label>
+                  <Input
+                    id="githubUrl"
+                    type="url"
+                    value={formData.githubUrl}
+                    onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
+                    placeholder="https://github.com/username/repo"
+                    className="h-12 bg-muted/40 border-border rounded-xl"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Link your existing repository, or add it later when your project is approved.
+                  </p>
                 </div>
 
                 {/* Project Goals */}

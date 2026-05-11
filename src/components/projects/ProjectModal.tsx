@@ -31,6 +31,7 @@ import {
   Target,
   Loader2,
   Crown,
+  Pencil,
 } from 'lucide-react';
 
 export interface ProjectModalProps {
@@ -41,6 +42,7 @@ export interface ProjectModalProps {
   project?: ExtendedProject | null;
   joinRequestStatus?: UserProjectRelationship;
   isJoining?: boolean;
+  onEdit?: () => void;
 }
 
 function getStatusConfig(status: string) {
@@ -88,6 +90,7 @@ export function ProjectModal({
   project,
   joinRequestStatus = 'none',
   isJoining = false,
+  onEdit,
 }: ProjectModalProps) {
   const titleId = 'project-modal-title';
   const descriptionId = 'project-modal-description';
@@ -283,18 +286,33 @@ export function ProjectModal({
               )}
             </div>
 
-            <Button
-              variant={joinButtonConfig.variant}
-              onClick={handleJoinClick}
-              disabled={joinButtonConfig.disabled || isJoining}
-              aria-label={`${joinButtonConfig.label} for ${project.title}`}
-            >
-              {isJoining ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />Joining...</>
-              ) : (
-                joinButtonConfig.label
+            <div className="flex items-center gap-2">
+              {/* Edit button — owner only */}
+              {joinRequestStatus === 'owner' && onEdit && (
+                <Button
+                  variant="outline"
+                  onClick={onEdit}
+                  aria-label="Edit project details"
+                  className="border-primary/30 text-primary hover:bg-primary/10"
+                >
+                  <Pencil className="h-4 w-4 mr-2" aria-hidden="true" />
+                  Edit Project
+                </Button>
               )}
-            </Button>
+
+              <Button
+                variant={joinButtonConfig.variant}
+                onClick={handleJoinClick}
+                disabled={joinButtonConfig.disabled || isJoining}
+                aria-label={`${joinButtonConfig.label} for ${project.title}`}
+              >
+                {isJoining ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />Joining...</>
+                ) : (
+                  joinButtonConfig.label
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>

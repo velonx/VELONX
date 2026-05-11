@@ -100,6 +100,11 @@ export interface ProjectsGridProps {
    * Project ID currently being completed
    */
   completingProjectId?: string | null;
+
+  /**
+   * Handler for edit (owner only)
+   */
+  onEdit?: (projectId: string) => void;
   
   /**
    * Additional CSS classes
@@ -128,6 +133,7 @@ const ProjectsGridComponent = ({
   currentUserId,
   onComplete,
   completingProjectId,
+  onEdit,
   className,
 }: ProjectsGridProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -191,6 +197,7 @@ const ProjectsGridComponent = ({
                 currentUserId={currentUserId}
                 onComplete={onComplete}
                 isCompleting={isCompleting}
+                onEdit={onEdit}
               />
             </div>
           );

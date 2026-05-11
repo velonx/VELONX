@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { MoreHorizontal, CheckCircle2, Calendar } from "lucide-react";
+import { CheckCircle2, Calendar, Pencil, Github, ExternalLink } from "lucide-react";
 
 interface Project {
   id: string;
@@ -14,14 +14,19 @@ interface Project {
   users: string[];
   status: string;
   completedAt?: string | null;
+  ownerId?: string;
+  githubUrl?: string | null;
+  liveUrl?: string | null;
 }
 
 interface ProgressSummaryProps {
   projects: Project[];
   searchQuery: string;
+  onEdit?: (projectId: string) => void;
+  currentUserId?: string;
 }
 
-export default function ProgressSummary({ projects, searchQuery }: ProgressSummaryProps) {
+export default function ProgressSummary({ projects, searchQuery, onEdit, currentUserId }: ProgressSummaryProps) {
   const filteredProjects = projects.filter(project =>
     project.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -62,9 +67,42 @@ export default function ProgressSummary({ projects, searchQuery }: ProgressSumma
                     </div>
                   ))}
                 </div>
-                <button className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                  <MoreHorizontal className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-1">
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                      aria-label="GitHub repository"
+                    >
+                      <Github className="w-4 h-4" />
+                    </a>
+                  )}
+                  {project.liveUrl && (
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                      aria-label="Live demo"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                  {onEdit && project.ownerId === currentUserId && (
+                    <button
+                      onClick={() => onEdit(project.id)}
+                      className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition-colors"
+                      aria-label="Edit project"
+                      title="Edit project"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
               
               <h3 className="text-2xl font-black mb-6 leading-tight max-w-[150px]">{project.title}</h3>

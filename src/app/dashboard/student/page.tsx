@@ -53,6 +53,7 @@ import StudentApprovedInterviews from "@/components/dashboard/student/StudentApp
 
 // Project Components
 import JoinRequests from "@/components/dashboard/student/Projects/JoinRequests";
+import { EditProjectModal } from "@/components/projects/EditProjectModal";
 
 // Report Components
 import { ReportDialog } from "@/components/ReportDialog";
@@ -99,6 +100,7 @@ function StudentDashboardContent() {
     const [activeTab, setActiveTab] = useState("Dashboard");
     const [searchQuery, setSearchQuery] = useState("");
     const [projectStatusFilter, setProjectStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
+    const [editingProject, setEditingProject] = useState<any | null>(null);
 
     // Cast session user to extended type
     const user = session?.user as ExtendedUser | undefined;
@@ -272,7 +274,10 @@ function StudentDashboardContent() {
         textColor: i % 3 === 1 ? "text-[#00443D]" : "text-white",
         users: ["/avatars/1.png", "/avatars/2.png", "/avatars/3.png"],
         status: project.status,
-        completedAt: project.completedAt || null
+        completedAt: project.completedAt || null,
+        ownerId: project.ownerId,
+        githubUrl: project.githubUrl || null,
+        liveUrl: project.liveUrl || null,
     })) || [];
 
     // Map real meetings to timeline format
@@ -466,6 +471,11 @@ function StudentDashboardContent() {
                         <ProgressSummary
                             projects={projectsDisplay}
                             searchQuery={searchQuery}
+                            onEdit={(projectId) => {
+                                const raw = projects?.find(p => p.id === projectId);
+                                if (raw) setEditingProject(raw as any);
+                            }}
+                            currentUserId={session?.user?.id}
                         />
 
                         {/* Confirmed Mentor Sessions Section */}
@@ -1057,6 +1067,20 @@ function StudentDashboardContent() {
                 isOpen={showFollowingDialog}
                 onClose={() => setShowFollowingDialog(false)}
             />
+
+            {/* Edit Project Modal */}
+            {editingProject && (
+                <EditProjectModal
+                    project={editingProject}
+                    isOpen={true}
+                    onClose={() => setEditingProject(null)}
+                    onSaved={() => {
+                        setEditingProject(null);
+                        // Trigger a page refresh to reflect updates
+                        window.location.reload();
+                    }}
+                />
+            )}
         </div>
     );
 }

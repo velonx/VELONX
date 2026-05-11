@@ -310,3 +310,116 @@ describe('ProjectModal - Accessibility', () => {
     windowOpenSpy.mockRestore();
   });
 });
+
+describe('ProjectModal - Edit Feature', () => {
+  const mockOnClose = vi.fn();
+  const mockOnJoinRequest = vi.fn();
+  const mockOnEdit = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should show Edit Project button when user is owner and onEdit is provided', () => {
+    render(
+      <ProjectModal
+        projectId="project-1"
+        isOpen={true}
+        onClose={mockOnClose}
+        onJoinRequest={mockOnJoinRequest}
+        project={mockProject}
+        joinRequestStatus="owner"
+        onEdit={mockOnEdit}
+      />
+    );
+
+    const editButton = screen.getByRole('button', { name: /edit project details/i });
+    expect(editButton).toBeInTheDocument();
+  });
+
+  it('should NOT show Edit Project button for non-owner members', () => {
+    render(
+      <ProjectModal
+        projectId="project-1"
+        isOpen={true}
+        onClose={mockOnClose}
+        onJoinRequest={mockOnJoinRequest}
+        project={mockProject}
+        joinRequestStatus="member"
+        onEdit={mockOnEdit}
+      />
+    );
+
+    expect(screen.queryByRole('button', { name: /edit project details/i })).not.toBeInTheDocument();
+  });
+
+  it('should NOT show Edit Project button when onEdit is not provided', () => {
+    render(
+      <ProjectModal
+        projectId="project-1"
+        isOpen={true}
+        onClose={mockOnClose}
+        onJoinRequest={mockOnJoinRequest}
+        project={mockProject}
+        joinRequestStatus="owner"
+        // onEdit intentionally omitted
+      />
+    );
+
+    expect(screen.queryByRole('button', { name: /edit project details/i })).not.toBeInTheDocument();
+  });
+
+  it('should call onEdit when Edit Project button is clicked', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ProjectModal
+        projectId="project-1"
+        isOpen={true}
+        onClose={mockOnClose}
+        onJoinRequest={mockOnJoinRequest}
+        project={mockProject}
+        joinRequestStatus="owner"
+        onEdit={mockOnEdit}
+      />
+    );
+
+    const editButton = screen.getByRole('button', { name: /edit project details/i });
+    await user.click(editButton);
+
+    expect(mockOnEdit).toHaveBeenCalledTimes(1);
+  });
+
+  it('should display github link button when githubUrl is set', () => {
+    render(
+      <ProjectModal
+        projectId="project-1"
+        isOpen={true}
+        onClose={mockOnClose}
+        onJoinRequest={mockOnJoinRequest}
+        project={mockProject}
+        joinRequestStatus="none"
+      />
+    );
+
+    // GitHub button exists because mockProject.githubUrl is set
+    expect(screen.getByRole('button', { name: /view github repository/i })).toBeInTheDocument();
+  });
+
+  it('should NOT display github button when githubUrl is null', () => {
+    const projectNoGithub: ExtendedProject = { ...mockProject, githubUrl: null };
+
+    render(
+      <ProjectModal
+        projectId="project-1"
+        isOpen={true}
+        onClose={mockOnClose}
+        onJoinRequest={mockOnJoinRequest}
+        project={projectNoGithub}
+        joinRequestStatus="none"
+      />
+    );
+
+    expect(screen.queryByRole('button', { name: /view github repository/i })).not.toBeInTheDocument();
+  });
+});
