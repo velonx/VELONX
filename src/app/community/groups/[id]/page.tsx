@@ -58,7 +58,7 @@ export default function GroupDetailPage() {
   const MAX_IMAGES = 5;
   const MAX_LINKS = 3;
 
-  const { groups, isLoading, joinGroup, requestJoinGroup, leaveGroup, refetch, memberGroupIds } = useCommunityGroups();
+  const { groups, isLoading, joinGroup, requestJoinGroup, leaveGroup, updateGroup, deleteGroup, refetch, memberGroupIds } = useCommunityGroups();
   const group = groups?.find(g => g.id === groupId);
 
   const {
@@ -358,7 +358,14 @@ export default function GroupDetailPage() {
                       group={group}
                       members={members || []}
                       moderatorIds={[]}
-                      onUpdateGroup={async () => { await refetch(); }}
+                      onUpdateGroup={async (data) => {
+                        await updateGroup(groupId, data);
+                        await refetch();
+                      }}
+                      onDeleteGroup={async () => {
+                        const ok = await deleteGroup(groupId);
+                        if (ok) router.push('/community/groups');
+                      }}
                       isOwner={isOwner}
                     />
                   </TabsContent>

@@ -24,6 +24,8 @@ export interface UseCommunityGroupsState {
 export interface UseCommunityGroupsReturn extends UseCommunityGroupsState {
   refetch: () => Promise<void>;
   createGroup: (data: CreateGroupData) => Promise<CommunityGroupData | null>;
+  updateGroup: (groupId: string, data: UpdateGroupData) => Promise<CommunityGroupData | null>;
+  deleteGroup: (groupId: string) => Promise<boolean>;
   joinGroup: (groupId: string) => Promise<void>;
   requestJoinGroup: (groupId: string) => Promise<void>;
   leaveGroup: (groupId: string) => Promise<void>;
@@ -39,6 +41,16 @@ export interface CreateGroupData {
   description: string;
   isPrivate: boolean;
   imageUrl?: string;
+}
+
+/**
+ * Update Group Data Interface
+ */
+export interface UpdateGroupData {
+  name?: string;
+  description?: string;
+  isPrivate?: boolean;
+  imageUrl?: string | null;
 }
 
 /**
@@ -352,10 +364,89 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     }
   }, []);
 
+  /**
+   * Update community group details (owner only)
+   */
+  const updateGroup = useCallback(async (groupId: string, data: UpdateGroupData): Promise<CommunityGroupData | null> => {
+    try {
+      const response = await secureFetch(`/api/community/groups/${groupId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new ApiClientError(
+          response.status,
+          errorData.error?.code || 'UPDATE_ERROR',
+          errorData.error?.message || 'Failed to update group'
+        );
+      }
+
+      const result = await response.json();
+      const updated: CommunityGroupData = result.data;
+
+      // Patch the group in local state
+      if (isMountedRef.current) {
+        setState(prev => ({
+          ...prev,
+          groups: prev.groups.map(g => g.id === groupId ? { ...g, ...updated } : g),
+        }));
+      }
+
+      toast.success('Group updated successfully');
+      return updated;
+    } catch (err) {
+      console.error('[useCommunityGroups] Update error:', err);
+      toast.error(getErrorMessage(err));
+      return null;
+    }
+  }, []);
+
+  /**
+   * Delete a community group (owner only)
+   * Returns true on success.
+   */
+  const deleteGroup = useCallback(async (groupId: string): Promise<boolean> => {
+    try {
+      const response = await secureFetch(`/api/community/groups/${groupId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new ApiClientError(
+          response.status,
+          errorData.error?.code || 'DELETE_ERROR',
+          errorData.error?.message || 'Failed to delete group'
+        );
+      }
+
+      // Remove group from local state
+      if (isMountedRef.current) {
+        setState(prev => ({
+          ...prev,
+          groups: prev.groups.filter(g => g.id !== groupId),
+          memberGroupIds: prev.memberGroupIds.filter(id => id !== groupId),
+        }));
+      }
+
+      toast.success('Group deleted successfully');
+      return true;
+    } catch (err) {
+      console.error('[useCommunityGroups] Delete error:', err);
+      toast.error(getErrorMessage(err));
+      return false;
+    }
+  }, []);
+
   return {
     ...state,
     refetch,
     createGroup,
+    updateGroup,
+    deleteGroup,
     joinGroup,
     requestJoinGroup,
     leaveGroup,

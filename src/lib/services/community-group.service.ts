@@ -12,6 +12,16 @@ export interface CreateGroupInput {
 }
 
 /**
+ * Input type for updating a community group
+ */
+export interface UpdateGroupInput {
+  name?: string;
+  description?: string;
+  isPrivate?: boolean;
+  imageUrl?: string | null;
+}
+
+/**
  * Community Group service layer for managing group operations
  */
 export class CommunityGroupService {
@@ -354,6 +364,84 @@ export class CommunityGroupService {
 
     // Broadcast user left event to group
     await this.broadcastUserLeft(groupId, userId);
+  }
+
+  /**
+   * Update community group details
+   * Only the group owner can update the group.
+   */
+  async updateGroup(groupId: string, data: UpdateGroupInput, requesterId: string) {
+    // Validate that the group exists and requester is the owner
+    const group = await prisma.communityGroup.findUnique({
+      where: { id: groupId },
+      select: { id: true, ownerId: true },
+    });
+
+    if (!group) {
+      throw new NotFoundError("Community group");
+    }
+
+    if (group.ownerId !== requesterId) {
+      throw new AuthorizationError("Only the group owner can update group details");
+    }
+
+    // Validate fields if provided
+    if (data.name !== undefined && data.name.trim().length === 0) {
+      throw new ValidationError("Group name cannot be empty");
+    }
+    if (data.description !== undefined && data.description.trim().length === 0) {
+      throw new ValidationError("Group description cannot be empty");
+    }
+
+    // Build the update payload, trimming string fields
+    const updateData: UpdateGroupInput = {};
+    if (data.name !== undefined) updateData.name = data.name.trim();
+    if (data.description !== undefined) updateData.description = data.description.trim();
+    if (data.isPrivate !== undefined) updateData.isPrivate = data.isPrivate;
+    // Allow explicit null to clear the image
+    if ('imageUrl' in data) updateData.imageUrl = data.imageUrl ?? null;
+
+    const updated = await prisma.communityGroup.update({
+      where: { id: groupId },
+      data: updateData,
+      include: {
+        owner: {
+          select: { id: true, name: true, image: true },
+        },
+        _count: {
+          select: { members: true, posts: true },
+        },
+      },
+    });
+
+    return {
+      ...updated,
+      memberCount: updated._count.members,
+      postCount: updated._count.posts,
+      _count: undefined,
+    };
+  }
+
+  /**
+   * Delete a community group
+   * Only the group owner can delete the group.
+   * Prisma cascade handles related records (members, posts, messages, etc.).
+   */
+  async deleteGroup(groupId: string, requesterId: string): Promise<void> {
+    const group = await prisma.communityGroup.findUnique({
+      where: { id: groupId },
+      select: { id: true, ownerId: true },
+    });
+
+    if (!group) {
+      throw new NotFoundError("Community group");
+    }
+
+    if (group.ownerId !== requesterId) {
+      throw new AuthorizationError("Only the group owner can delete the group");
+    }
+
+    await prisma.communityGroup.delete({ where: { id: groupId } });
   }
 
   /**

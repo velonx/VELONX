@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { withErrorHandler } from "@/lib/utils/errors";
 import { prisma } from "@/lib/prisma";
-import { NotFoundError, AuthorizationError } from "@/lib/utils/errors";
+import { NotFoundError } from "@/lib/utils/errors";
+import { communityGroupService } from "@/lib/services/community-group.service";
 import { z } from "zod";
 
 /**
@@ -152,57 +153,17 @@ export const PATCH = withErrorHandler(
     const userId = session.user.id!;
     const { id: groupId } = await params;
 
-    // Check if group exists and user is owner
-    const group = await prisma.communityGroup.findUnique({
-      where: { id: groupId },
-      select: { id: true, ownerId: true },
-    });
-
-    if (!group) {
-      throw new NotFoundError("Community group");
-    }
-
-    if (group.ownerId !== userId) {
-      throw new AuthorizationError("Only the group owner can update group details");
-    }
-
     // Parse and validate request body
     const body = await request.json();
     const validatedData = updateGroupSchema.parse(body);
 
-    // Update group
-    const updatedGroup = await prisma.communityGroup.update({
-      where: { id: groupId },
-      data: validatedData,
-      include: {
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
-        },
-        _count: {
-          select: {
-            members: true,
-            posts: true,
-          },
-        },
-      },
-    });
-
-    // Format response
-    const formattedGroup = {
-      ...updatedGroup,
-      memberCount: updatedGroup._count.members,
-      postCount: updatedGroup._count.posts,
-      _count: undefined,
-    };
+    // Delegate to service (ownership + validation inside service)
+    const updatedGroup = await communityGroupService.updateGroup(groupId, validatedData, userId);
 
     return NextResponse.json(
       {
         success: true,
-        data: formattedGroup,
+        data: updatedGroup,
         message: "Group updated successfully",
       },
       { status: 200 }
@@ -249,24 +210,8 @@ export const DELETE = withErrorHandler(
     const userId = session.user.id!;
     const { id: groupId } = await params;
 
-    // Check if group exists and user is owner
-    const group = await prisma.communityGroup.findUnique({
-      where: { id: groupId },
-      select: { id: true, ownerId: true },
-    });
-
-    if (!group) {
-      throw new NotFoundError("Community group");
-    }
-
-    if (group.ownerId !== userId) {
-      throw new AuthorizationError("Only the group owner can delete the group");
-    }
-
-    // Delete group (cascade will handle related records)
-    await prisma.communityGroup.delete({
-      where: { id: groupId },
-    });
+    // Delegate to service (ownership check + cascading delete inside service)
+    await communityGroupService.deleteGroup(groupId, userId);
 
     return NextResponse.json(
       {
