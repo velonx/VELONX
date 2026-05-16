@@ -67,6 +67,9 @@ const SwagItemManager = dynamic(() => import("@/components/swag/admin/SwagItemMa
 const SwagOrderTable = dynamic(() => import("@/components/swag/admin/SwagOrderTable"), {
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
 });
+const VerificationManagement = dynamic(() => import("@/components/admin/VerificationManagement"), {
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+});
 
 
 export default function AdminDashboard() {
@@ -159,6 +162,7 @@ export default function AdminDashboard() {
         { icon: ShoppingBag, label: "Swag Store", value: "swag" },
         { icon: Flag, label: "Reports", value: "reports" },
         { icon: PenTool, label: "Blog Authoring", value: "blog" },
+        { icon: ShieldCheck, label: "Verifications", value: "verifications" },
         { icon: Activity, label: "Performance", value: "performance" },
         { icon: Settings, label: "Platform Info", value: "platform" },
     ];
@@ -237,6 +241,7 @@ export default function AdminDashboard() {
                             <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Post Blog</TabsTrigger>
                             <TabsTrigger value="career" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Career</TabsTrigger>
                             <TabsTrigger value="resources" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Resources</TabsTrigger>
+                            <TabsTrigger value="verifications" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Verifications</TabsTrigger>
                         </TabsList>
                     </div>
 
@@ -301,6 +306,10 @@ export default function AdminDashboard() {
 
                     <TabsContent value="resources">
                         <ResourceManagement />
+                    </TabsContent>
+
+                    <TabsContent value="verifications">
+                        <VerificationManagement />
                     </TabsContent>
 
                     <TabsContent value="performance">
