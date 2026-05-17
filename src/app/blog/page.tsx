@@ -5,11 +5,13 @@ import { motion } from "framer-motion";
 import { Calendar, Clock, User, ArrowRight, Search, Tag, Share2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useBlogPosts } from "@/lib/api/hooks";
 
 export default function BlogPage() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("All Posts");
     const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
 
     // Fetch blog posts from API
@@ -18,7 +20,7 @@ export default function BlogPage() {
         pageSize: 20
     });
 
-    const categories = ["All Posts", "Technology", "Development", "Design", "Career"];
+    const categories = ["All Posts", "AI", "Article", "Hackathons", "Development"];
 
     const handleShare = async (post: any) => {
         const url = `${window.location.origin}/blog/${post.id}`;
@@ -38,8 +40,40 @@ export default function BlogPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen pt-24 flex items-center justify-center bg-background">
-                <div className="w-16 h-16 rounded-full border-4 border-[#219EBC] border-t-transparent animate-spin" />
+            <div className="min-h-screen pt-24 bg-background">
+                <section className="py-20 bg-background overflow-hidden relative">
+                    <div className="container mx-auto px-4 relative z-10 text-center space-y-8">
+                        <Skeleton className="h-20 w-3/4 max-w-2xl mx-auto rounded-xl" />
+                        <Skeleton className="h-6 w-1/2 max-w-lg mx-auto rounded-lg" />
+                        <Skeleton className="h-14 w-full max-w-xl mx-auto rounded-2xl mt-10" />
+                        <div className="flex flex-wrap justify-center gap-3 mt-8">
+                            {[1, 2, 3, 4, 5].map(i => (
+                                <Skeleton key={i} className="h-10 w-24 rounded-full" />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+                <section className="py-20">
+                    <div className="container mx-auto px-4 max-w-6xl">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                            {[1, 2, 3, 4, 5, 6].map((i) => (
+                                <Card key={i} className="group h-full border-0 rounded-[48px] overflow-hidden bg-background shadow-xl">
+                                    <Skeleton className="aspect-[16/10] w-full rounded-none" />
+                                    <CardHeader className="p-8 pb-4">
+                                        <Skeleton className="h-4 w-32 mb-4 rounded-md" />
+                                        <Skeleton className="h-8 w-full rounded-md" />
+                                        <Skeleton className="h-8 w-4/5 mt-2 rounded-md" />
+                                    </CardHeader>
+                                    <CardContent className="px-8 pb-8">
+                                        <Skeleton className="h-4 w-full mb-2 rounded-md" />
+                                        <Skeleton className="h-4 w-full mb-2 rounded-md" />
+                                        <Skeleton className="h-4 w-2/3 rounded-md" />
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                </section>
             </div>
         );
     }
@@ -82,6 +116,28 @@ export default function BlogPage() {
                             className="w-full h-14 bg-background rounded-2xl pl-14 pr-6 border border-border focus:ring-2 focus:ring-[#219EBC] outline-none transition-all shadow-sm text-foreground placeholder:text-muted-foreground"
                         />
                     </motion.div>
+
+                    {/* Category Filters */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="flex flex-wrap justify-center gap-3 mt-8 max-w-3xl mx-auto"
+                    >
+                        {categories.map((category) => (
+                            <button
+                                key={category}
+                                onClick={() => setSelectedCategory(category)}
+                                className={`px-6 py-2.5 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+                                    selectedCategory === category
+                                        ? "bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30 scale-105"
+                                        : "bg-background border border-border text-muted-foreground hover:border-[#219EBC]/50 hover:text-foreground hover:scale-105"
+                                }`}
+                            >
+                                {category}
+                            </button>
+                        ))}
+                    </motion.div>
                 </div>
             </section>
 
@@ -91,10 +147,13 @@ export default function BlogPage() {
                     {blogPosts && blogPosts.length > 0 ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
                             {blogPosts
-                                .filter(post =>
-                                    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                    post.content.toLowerCase().includes(searchQuery.toLowerCase())
-                                )
+                                .filter(post => {
+                                    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                                          post.content.toLowerCase().includes(searchQuery.toLowerCase());
+                                    const matchesCategory = selectedCategory === "All Posts" || 
+                                                            (post.tags && post.tags.includes(selectedCategory));
+                                    return matchesSearch && matchesCategory;
+                                })
                                 .map((post, index) => (
                                     <motion.div
                                         key={post.id}

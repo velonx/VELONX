@@ -452,3 +452,46 @@ export default function EventCard({
     </Card>
   );
 }
+
+export function EventCardSkeleton({ className }: { className?: string }) {
+  return (
+    <Card className={cn("bg-card border border-border rounded-[24px] overflow-hidden shadow-lg", className)}>
+      <div className="relative w-full aspect-video bg-muted">
+          <div className="w-full h-full animate-pulse bg-muted-foreground/10" />
+      </div>
+      <CardHeader className="p-3 sm:p-4 pb-0">
+          <div className="flex gap-3 mb-2">
+            <div className="h-3 w-16 animate-pulse bg-muted rounded" />
+            <div className="h-3 w-16 animate-pulse bg-muted rounded" />
+          </div>
+          <div className="h-6 w-3/4 mb-2 animate-pulse bg-muted rounded" />
+          <div className="h-4 w-full mb-1 animate-pulse bg-muted rounded" />
+          <div className="h-4 w-5/6 mb-3 animate-pulse bg-muted rounded" />
+          
+          <div className="flex gap-2 mb-3">
+            <div className="h-4 w-12 animate-pulse bg-muted rounded" />
+            <div className="h-4 w-20 animate-pulse bg-muted rounded" />
+          </div>
+          
+          <div className="space-y-1.5 mb-4">
+              <div className="flex justify-between">
+                <div className="h-3 w-16 animate-pulse bg-muted rounded" />
+                <div className="h-3 w-12 animate-pulse bg-muted rounded" />
+              </div>
+              <div className="h-1.5 w-full animate-pulse bg-muted rounded-full" />
+          </div>
+      </CardHeader>
+      <CardFooter className="p-3 sm:p-4 pt-0 flex flex-col gap-2">
+          <div className="flex gap-2 w-full">
+            <div className="h-10 flex-1 animate-pulse bg-muted rounded-lg" />
+            <div className="h-10 flex-1 animate-pulse bg-muted rounded-lg" />
+          </div>
+          <div className="flex gap-2 w-full">
+            <div className="h-9 flex-1 animate-pulse bg-muted rounded-lg" />
+            <div className="h-9 w-9 animate-pulse bg-muted rounded-lg" />
+          </div>
+      </CardFooter>
+    </Card>
+  );
+}
+

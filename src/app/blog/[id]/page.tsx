@@ -152,7 +152,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 1, delay: 0.6 }}
-                    className="rich-text-content px-4 md:px-0"
+                    className="prose prose-lg md:prose-xl dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tight prose-a:text-[#219EBC] hover:prose-a:text-[#1a7a94] prose-img:rounded-[32px] prose-img:shadow-2xl prose-blockquote:border-l-[#219EBC] prose-blockquote:bg-[#219EBC]/5 prose-blockquote:rounded-r-2xl prose-blockquote:py-1 px-4 md:px-0 rich-text-content mx-auto"
                 >
                     <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 </motion.div>
