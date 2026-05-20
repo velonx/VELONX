@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono, Bebas_Neue, Outfit, Great_Vibes, Dancing_Script, Amatic_SC, Indie_Flower, Sniglet, Girassol, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -9,17 +10,81 @@ import { ConditionalNavbar } from "@/components/conditional-navbar";
 import { GoogleAnalytics } from "@/components/analytics";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const geistSans = { variable: "--font-geist-sans" };
-const geistMono = { variable: "--font-geist-mono" };
-const bebasNeue = { variable: "--font-bebas" };
-const outfit = { variable: "--font-outfit" };
-const greatVibes = { variable: "--font-great-vibes" };
-const dancingScript = { variable: "--font-dancing-script" };
-const amaticSC = { variable: "--font-amatic-sc" };
-const indieFlower = { variable: "--font-indie-flower" };
-const sniglet = { variable: "--font-sniglet" };
-const girassol = { variable: "--font-girassol" };
-const spaceGrotesk = { variable: "--font-space-grotesk" };
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  variable: "--font-bebas",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+});
+
+const greatVibes = Great_Vibes({
+  weight: "400",
+  variable: "--font-great-vibes",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+
+const dancingScript = Dancing_Script({
+  weight: ["400", "600", "700"],
+  variable: "--font-dancing-script",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+
+const amaticSC = Amatic_SC({
+  weight: ["400", "700"],
+  variable: "--font-amatic-sc",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+
+const indieFlower = Indie_Flower({
+  weight: "400",
+  variable: "--font-indie-flower",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+
+const sniglet = Sniglet({
+  weight: ["400", "800"],
+  variable: "--font-sniglet",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+
+const girassol = Girassol({
+  weight: "400",
+  variable: "--font-girassol",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+});
 
 import { defaultMetadata } from "@/lib/seo.config";
 
