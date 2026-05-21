@@ -19,8 +19,9 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Github, ExternalLink, Image as ImageIcon, X, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { ExtendedProject } from '@/lib/types/project-page.types';
+import { ExtendedProject } from '../../lib/types/project-page.types';
 import { cn } from '@/lib/utils';
+import { secureFetch, fetchCSRFToken } from '@/lib/utils/csrf';
 
 export interface EditProjectModalProps {
     project: ExtendedProject;
@@ -79,6 +80,13 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
         }
     }, [project, isOpen]);
 
+    // Prefetch CSRF token when modal opens to prevent cookie/session race conditions
+    useEffect(() => {
+        if (isOpen) {
+            fetchCSRFToken().catch(() => {});
+        }
+    }, [isOpen]);
+
     const handleAddTech = () => {
         const trimmed = techInput.trim();
         if (trimmed && !form.techStack.includes(trimmed) && form.techStack.length < 20) {
@@ -133,9 +141,6 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
 
         setSaving(true);
         try {
-            const { getCSRFToken } = await import('@/lib/utils/csrf');
-            const csrfToken = await getCSRFToken();
-
             const body: Record<string, unknown> = {
                 title: form.title.trim(),
                 description: form.description.trim(),
@@ -148,13 +153,11 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
             if (form.liveUrl.trim()) body.liveUrl = form.liveUrl.trim();
             if (form.imageUrl.trim()) body.imageUrl = form.imageUrl.trim();
 
-            const res = await fetch(`/api/projects/${project.id}`, {
+            const res = await secureFetch(`/api/projects/${project.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-csrf-token': csrfToken,
                 },
-                credentials: 'include',
                 body: JSON.stringify(body),
             });
 

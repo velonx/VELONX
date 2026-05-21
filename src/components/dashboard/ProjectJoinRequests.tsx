@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FolderKanban, CheckCircle2, XCircle, Mail, Award, TrendingUp } from "lucide-react";
 import toast from "react-hot-toast";
-import { getCSRFToken } from "@/lib/utils/csrf";
+import { secureFetch, fetchCSRFToken } from "@/lib/utils/csrf";
 
 interface JoinRequest {
   id: string;
@@ -83,17 +83,19 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
+  // Prefetch CSRF token when component mounts to prevent cookie race conditions
+  useEffect(() => {
+    fetchCSRFToken().catch(() => {});
+  }, []);
+
   const handleApprove = async (requestId: string, userName: string, projectId: string) => {
     setProcessing(requestId);
     try {
-      const csrfToken = await getCSRFToken();
-      const response = await fetch(`/api/projects/join-requests/${requestId}`, {
+      const response = await secureFetch(`/api/projects/join-requests/${requestId}`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
-          'x-csrf-token': csrfToken
         },
-        credentials: 'include',
         body: JSON.stringify({ action: 'approve' }),
       });
 
@@ -119,14 +121,11 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
 
     setProcessing(requestId);
     try {
-      const csrfToken = await getCSRFToken();
-      const response = await fetch(`/api/projects/join-requests/${requestId}`, {
+      const response = await secureFetch(`/api/projects/join-requests/${requestId}`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
-          'x-csrf-token': csrfToken
         },
-        credentials: 'include',
         body: JSON.stringify({ action: 'reject' }),
       });
 

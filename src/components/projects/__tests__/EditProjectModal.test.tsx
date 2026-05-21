@@ -12,8 +12,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom/vitest';
 import { EditProjectModal } from '../EditProjectModal';
-import { ExtendedProject } from '@/lib/types/project-page.types';
+import { ExtendedProject } from '../../../lib/types/project-page.types';
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -21,6 +22,13 @@ import { ExtendedProject } from '@/lib/types/project-page.types';
 
 vi.mock('@/lib/utils/csrf', () => ({
   getCSRFToken: vi.fn().mockResolvedValue('mock-csrf-token'),
+  secureFetch: vi.fn().mockImplementation(async (url, options = {}) => {
+    const headers = {
+      ...options.headers,
+      'x-csrf-token': 'mock-csrf-token',
+    };
+    return fetch(url, { ...options, headers });
+  }),
 }));
 
 const mockFetch = vi.fn();

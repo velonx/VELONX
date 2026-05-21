@@ -48,15 +48,15 @@ function SkeletonResourceCard() {
       {/* Image Section - 16:9 aspect ratio */}
       <div className="relative w-full aspect-video bg-muted">
         <Skeleton className="w-full h-full" />
-        
-        {/* Type Badge Overlay */}
-        <div className="absolute top-2 right-2">
-          <Skeleton className="h-6 w-20" />
-        </div>
       </div>
       
       {/* Content Section */}
       <div className="flex flex-col flex-1 p-4 gap-3">
+        {/* Type Badge Skeleton */}
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-6 w-20" />
+        </div>
+        
         {/* Title - 2 lines */}
         <div className="space-y-2">
           <Skeleton className="h-5 w-full" />

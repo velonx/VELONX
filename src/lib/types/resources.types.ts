@@ -3,7 +3,7 @@
  * Feature: resources-page-ui-improvements
  */
 
-import type { Resource as APIResource } from '@/lib/api/types';
+import type { Resource as APIResource } from '../api/types';
 
 // Re-export Resource type from API types for convenience
 export type Resource = APIResource;

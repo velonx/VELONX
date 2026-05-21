@@ -3,7 +3,7 @@
  * Feature: project-page-ui-improvements
  */
 
-import { Project, ProjectMember, ProjectCategory, ProjectDifficulty } from '@/lib/api/types';
+import { Project, ProjectMember, ProjectCategory, ProjectDifficulty } from '../api/types';
 
 // Re-export types from API types for convenience
 export type { ProjectCategory, ProjectDifficulty };

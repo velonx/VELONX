@@ -176,14 +176,12 @@ export default function BlogClient() {
                                                         <Tag className="w-16 h-16 opacity-50" />
                                                     </div>
                                                 )}
-                                                <div className="absolute top-6 left-6">
-                                                    <Badge className="bg-background/90 backdrop-blur-md text-[#023047] hover:bg-background border-0 py-1.5 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl">
-                                                        {post.tags[0] || 'Article'}
-                                                    </Badge>
-                                                </div>
                                             </div>
                                             <CardHeader className="p-8 pb-4">
-                                                <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                                                <div className="flex items-center flex-wrap gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                                                    <Badge className="bg-[#219EBC]/10 text-[#219EBC] hover:bg-[#219EBC]/20 border-0 py-1 px-3 rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-none">
+                                                        {post.tags[0] || 'Article'}
+                                                    </Badge>
                                                     <span className="flex items-center gap-1.5">
                                                         <Calendar className="w-3.5 h-3.5" />
                                                         {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}

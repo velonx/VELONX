@@ -46,6 +46,7 @@ import {
     saveFilterPreference,
 } from "@/lib/utils/session-storage";
 import { usePerformanceMonitoring, useWebVitals } from "@/lib/hooks/usePerformanceMonitoring";
+import { secureFetch, fetchCSRFToken } from "@/lib/utils/csrf";
 
 function ProjectsPageContent() {
     const { data: session } = useSession();
@@ -111,6 +112,11 @@ function ProjectsPageContent() {
     useEffect(() => {
         saveFilterPreference(filters);
     }, [filters]);
+
+    // Prefetch CSRF token when page mounts to prevent cookie race conditions
+    useEffect(() => {
+        fetchCSRFToken().catch(() => {});
+    }, []);
 
     // Convert API projects to ExtendedProject type
     // Memoized to avoid unnecessary conversions on every render
@@ -256,16 +262,11 @@ function ProjectsPageContent() {
         setJoiningProjects(prev => new Set(prev).add(projectId));
 
         try {
-            const { getCSRFToken } = await import('@/lib/utils/csrf');
-            const csrfToken = await getCSRFToken();
-
-            const response = await fetch(`/api/projects/${projectId}/join-requests`, {
+            const response = await secureFetch(`/api/projects/${projectId}/join-requests`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-csrf-token': csrfToken,
                 },
-                credentials: 'include',
             });
 
             const data = await response.json();

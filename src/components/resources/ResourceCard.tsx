@@ -314,28 +314,24 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
           onError={handleImageError}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-
-        {/* Type Badge Overlay */}
-        <div className="absolute top-3 right-3">
-          <Badge className={cn('text-xs border backdrop-blur-md shadow-lg', getTypeBadgeClass(type))}>
-            {getTypeIcon(type)}
-            <span className="ml-1.5 font-semibold">{type}</span>
-          </Badge>
-        </div>
-
-        {/* PDF Indicator Badge */}
-        {hasPDF && (
-          <div className="absolute top-3 left-3">
-            <Badge className="text-xs border backdrop-blur-md shadow-lg bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20">
-              <FileDown className="h-3 w-3" aria-hidden="true" />
-              <span className="ml-1.5 font-semibold">PDF</span>
-            </Badge>
-          </div>
-        )}
       </div>
 
       {/* Content Section */}
       <article className="flex flex-col flex-1 p-4 gap-3">
+        {/* Type & PDF Badges */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge className={cn('text-xs border shadow-none py-1 px-2.5 rounded-lg', getTypeBadgeClass(type))}>
+            {getTypeIcon(type)}
+            <span className="ml-1.5 font-semibold">{type}</span>
+          </Badge>
+          {hasPDF && (
+            <Badge className="text-xs border shadow-none bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 py-1 px-2.5 rounded-lg">
+              <FileDown className="h-3 w-3" aria-hidden="true" />
+              <span className="ml-1.5 font-semibold">PDF</span>
+            </Badge>
+          )}
+        </div>
+
         {/* Title */}
         <h3 className="text-lg font-bold leading-tight line-clamp-2 text-foreground">
           {resource.title}
