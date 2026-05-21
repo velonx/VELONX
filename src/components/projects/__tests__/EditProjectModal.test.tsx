@@ -20,16 +20,20 @@ import { ExtendedProject } from '../../../lib/types/project-page.types';
 // Mocks
 // ---------------------------------------------------------------------------
 
-vi.mock('@/lib/utils/csrf', () => ({
-  getCSRFToken: vi.fn().mockResolvedValue('mock-csrf-token'),
-  secureFetch: vi.fn().mockImplementation(async (url, options = {}) => {
-    const headers = {
-      ...options.headers,
-      'x-csrf-token': 'mock-csrf-token',
-    };
-    return fetch(url, { ...options, headers });
-  }),
-}));
+vi.mock('@/lib/utils/csrf', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...(actual as any),
+    fetchCSRFToken: vi.fn().mockResolvedValue('mock-csrf-token'),
+    secureFetch: vi.fn().mockImplementation(async (url, options = {}) => {
+      const headers = {
+        ...options.headers,
+        'x-csrf-token': 'mock-csrf-token',
+      };
+      return fetch(url, { ...options, headers });
+    }),
+  };
+});
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
