@@ -219,6 +219,39 @@ export class BlogService {
   }
 
   /**
+   * Increment view count for a blog post
+   */
+  async incrementViews(id: string) {
+    // Check if blog post exists
+    const existingBlogPost = await prisma.blogPost.findUnique({
+      where: { id },
+    });
+
+    if (!existingBlogPost) {
+      throw new NotFoundError("Blog post");
+    }
+
+    const blogPost = await prisma.blogPost.update({
+      where: { id },
+      data: {
+        views: { increment: 1 },
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return blogPost;
+  }
+
+  /**
    * Delete a blog post
    */
   async deleteBlogPost(id: string) {

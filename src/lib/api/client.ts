@@ -325,6 +325,11 @@ export const blogApi = {
   getById: (id: string) =>
     fetchApi<ApiResponse<BlogPost>>(`/api/blog/${id}`),
 
+  trackView: (id: string) =>
+    fetchApi<ApiResponse<{ views: number }>>(`/api/blog/${id}/view`, {
+      method: 'POST',
+    }),
+
   create: (data: Partial<BlogPost>) =>
     fetchApi<ApiResponse<BlogPost>>('/api/blog', {
       method: 'POST',

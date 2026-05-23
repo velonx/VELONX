@@ -164,6 +164,7 @@ model User {
   mentorReviews    MentorReview[]    @relation("StudentReviews")
   notifications    Notification[]
   resourceVisits   ResourceVisit[]
+  blogPostReads    BlogPostRead[]
 
   // Gamification relations
   badges         UserBadge[]
@@ -681,13 +682,33 @@ model BlogPost {
   status      PostStatus @default(DRAFT)
   authorId    String     @db.ObjectId
   publishedAt DateTime?
+  views       Int        @default(0)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
   // Relations
-  author User @relation(fields: [authorId], references: [id])
+  author User           @relation(fields: [authorId], references: [id])
+  reads  BlogPostRead[]
 
   @@map("blog_posts")
+}
+
+// BlogPostRead Model - Tracks user reads of blog posts for XP awards
+model BlogPostRead {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  postId     String   @db.ObjectId
+  readAt     DateTime @default(now())
+  xpAwarded  Boolean  @default(false)
+
+  // Relations
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
+  @@map("blog_post_reads")
 }
 
 // Meeting Enums

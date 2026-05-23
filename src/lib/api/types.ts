@@ -201,6 +201,7 @@ export interface BlogPost {
   tags: string[];
   status: 'DRAFT' | 'PUBLISHED';
   authorId: string;
+  views: number;
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;

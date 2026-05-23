@@ -1,11 +1,13 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import { useBlogPost } from "@/lib/api/hooks";
+import { blogApi } from "@/lib/api/client";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { Calendar, Clock, ArrowLeft, Share2, Check } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, Share2, Check, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -15,6 +17,41 @@ export default function BlogPostClient({ params }: Props) {
     const { id } = use(params);
     const { data: post, loading, error } = useBlogPost(id);
     const [copied, setCopied] = useState(false);
+
+    // Track blog post view on client side (once per session)
+    useEffect(() => {
+        if (!post || post.status !== "PUBLISHED") return;
+
+        const sessionKey = `viewed_post_${id}`;
+        const hasViewed = sessionStorage.getItem(sessionKey);
+
+        if (!hasViewed) {
+            blogApi.trackView(id)
+                .then((res) => {
+                    sessionStorage.setItem(sessionKey, "true");
+                    
+                    // Show a beautiful toast notification if XP was awarded
+                    const responseData = res as any;
+                    if (responseData?.data?.xpAwarded) {
+                        toast.success(`🎉 You earned ${responseData.data.xpAmount} XP for reading this article!`, {
+                            duration: 5000,
+                            position: "bottom-right",
+                            style: {
+                                background: "#023047",
+                                color: "#fff",
+                                borderRadius: "20px",
+                                border: "1px solid rgba(33, 158, 188, 0.3)",
+                                fontSize: "12px",
+                                fontWeight: "bold",
+                            }
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.error("Failed to track blog view:", err);
+                });
+        }
+    }, [id, post]);
     
     // Reading Progress Bar
     const { scrollYProgress } = useScroll();
@@ -131,6 +168,11 @@ export default function BlogPostClient({ params }: Props) {
                         <span className="flex items-center gap-2.5">
                             <Clock className="w-4 h-4 text-[#219EBC]" />
                             {Math.ceil((post.content?.split(' ').length || 0) / 200)} min read
+                        </span>
+                        <span className="w-1.5 h-1.5 bg-[#219EBC]/30 rounded-full" />
+                        <span className="flex items-center gap-2.5">
+                            <Eye className="w-4 h-4 text-[#219EBC]" />
+                            {post.views || 0} views
                         </span>
                     </motion.div>
                 </header>

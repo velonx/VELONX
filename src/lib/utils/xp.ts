@@ -29,6 +29,7 @@ export const XP_REWARDS = {
   PROJECT_COMPLETION: 100,
   MENTOR_SESSION: 25,
   RESOURCE_VISIT: 10,
+  BLOG_POST_READ: 10,
   RESOURCE_CONTRIBUTION: 30, // Contributing a new resource
   STREAK_BONUS: 20, // Daily login streak bonus
   REFERRAL_SIGNUP: 25, // Referral signup milestone
