@@ -167,11 +167,13 @@ export const Pagination = React.memo<PaginationProps>(({
     // Scroll to top after page change
     if (scrollToTop) {
       setTimeout(() => {
-        if (scrollTarget) {
-          const element = document.querySelector(scrollTarget);
-          element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (typeof window !== 'undefined') {
+          if (scrollTarget) {
+            const element = document.querySelector(scrollTarget);
+            element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         }
       }, 100);
     }
