@@ -74,6 +74,7 @@ async function fetchApi<T>(
       ...options,
       headers,
       credentials: 'include', // Include cookies for CSRF token
+      cache: 'no-store', // Disable caching for all API requests to ensure real-time data
     });
 
     // Check if we need to parse as JSON

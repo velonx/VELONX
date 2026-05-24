@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { blogService } from "@/lib/services/blog.service";
+
+export const dynamic = "force-dynamic";
 import { requireAuth, requireAdmin } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
 import { createBlogPostSchema } from "@/lib/validations/blog";

@@ -17,6 +17,14 @@ export default function BlogPostClient({ params }: Props) {
     const { id } = use(params);
     const { data: post, loading, error } = useBlogPost(id);
     const [copied, setCopied] = useState(false);
+    const [views, setViews] = useState<number | null>(null);
+
+    // Sync local views state with fetched post views when post is loaded
+    useEffect(() => {
+        if (post) {
+            setViews(post.views || 0);
+        }
+    }, [post]);
 
     // Track blog post view on client side (once per session)
     useEffect(() => {
@@ -32,6 +40,14 @@ export default function BlogPostClient({ params }: Props) {
                     
                     // Show a beautiful toast notification if XP was awarded
                     const responseData = res as any;
+                    
+                    // Instantly update the local views count state from the API response
+                    if (responseData?.data?.views !== undefined) {
+                        setViews(responseData.data.views);
+                    } else {
+                        setViews(prev => (prev !== null ? prev + 1 : 1));
+                    }
+
                     if (responseData?.data?.xpAwarded) {
                         toast.success(`🎉 You earned ${responseData.data.xpAmount} XP for reading this article!`, {
                             duration: 5000,
@@ -172,7 +188,7 @@ export default function BlogPostClient({ params }: Props) {
                         <span className="w-1.5 h-1.5 bg-[#219EBC]/30 rounded-full" />
                         <span className="flex items-center gap-2.5">
                             <Eye className="w-4 h-4 text-[#219EBC]" />
-                            {post.views || 0} views
+                            {views !== null ? views : (post.views || 0)} views
                         </span>
                     </motion.div>
                 </header>
