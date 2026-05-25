@@ -1,29 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Clock, ArrowRight, Search, Tag, Share2, Check } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Search, Tag, Share2, Check, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
 import Link from "next/link";
 import { useBlogPosts } from "@/lib/api/hooks";
+import { calculateReadTime, deriveCategories } from "@/lib/utils/blog";
+import type { BlogPost } from "@/lib/api/types";
 
 export default function BlogClient() {
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All Posts");
     const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
+    const [page, setPage] = useState(1);
 
-    // Fetch blog posts from API
-    const { data: blogPosts, loading } = useBlogPosts({
+    // Debounce search input by 300ms to avoid API spam
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchInput);
+            setPage(1); // reset to page 1 on new search
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchInput]);
+
+    // Reset to page 1 when category changes
+    const handleCategoryChange = useCallback((category: string) => {
+        setSelectedCategory(category);
+        setPage(1);
+    }, []);
+
+    // Fetch blog posts from API — server-side search + tag filtering
+    const { data: blogPosts, loading, pagination } = useBlogPosts({
         status: 'PUBLISHED',
-        pageSize: 20
+        pageSize: 9,
+        page,
+        search: debouncedSearch || undefined,
+        tag: selectedCategory !== "All Posts" ? selectedCategory : undefined,
     });
 
-    const categories = ["All Posts", "AI", "Article", "Hackathons", "Development"];
+    // Derive categories dynamically from all loaded posts
+    const categories = useMemo(
+        () => deriveCategories(blogPosts || [], ["All Posts"]),
+        [blogPosts]
+    );
 
-    const handleShare = async (post: any) => {
-        const url = `${window.location.origin}/blog/${post.id}`;
+    const handleShare = async (post: BlogPost) => {
+        const slug = post.slug || post.id;
+        const url = `${window.location.origin}/blog/${slug}`;
         const shareData = {
             title: post.title,
             text: `Check out this article: ${post.title}`,
@@ -77,13 +105,15 @@ export default function BlogClient() {
             </div>
         );
     }
+
+    const hasResults = blogPosts && blogPosts.length > 0;
+    const isFiltered = debouncedSearch.length > 0 || selectedCategory !== "All Posts";
+
     return (
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
             <section className="py-20 bg-background overflow-hidden relative">
-
                 <div className="container mx-auto px-4 relative z-10 text-center">
-
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -95,7 +125,7 @@ export default function BlogClient() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-muted-foreground text-xl mx-auto leading-relaxed whitespace-nowrap"
+                        className="text-muted-foreground text-xl mx-auto leading-relaxed max-w-2xl"
                     >
                         Explore our blog for the latest in technology, career advice, and community stories.
                     </motion.p>
@@ -111,151 +141,195 @@ export default function BlogClient() {
                         <input
                             type="text"
                             placeholder="Search articles..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
                             className="w-full h-14 bg-background rounded-2xl pl-14 pr-6 border border-border focus:ring-2 focus:ring-[#219EBC] outline-none transition-all shadow-sm text-foreground placeholder:text-muted-foreground"
                         />
                     </motion.div>
 
-                    {/* Category Filters */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="flex flex-wrap justify-center gap-3 mt-8 max-w-3xl mx-auto"
-                    >
-                        {categories.map((category) => (
-                            <button
-                                key={category}
-                                onClick={() => setSelectedCategory(category)}
-                                className={`px-6 py-2.5 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-                                    selectedCategory === category
-                                        ? "bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30 scale-105"
-                                        : "bg-background border border-border text-muted-foreground hover:border-[#219EBC]/50 hover:text-foreground hover:scale-105"
-                                }`}
-                            >
-                                {category}
-                            </button>
-                        ))}
-                    </motion.div>
+                    {/* Category Filters — derived dynamically from post tags */}
+                    {categories.length > 1 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="flex flex-wrap justify-center gap-3 mt-8 max-w-3xl mx-auto"
+                        >
+                            {categories.map((category) => (
+                                <button
+                                    key={category}
+                                    onClick={() => handleCategoryChange(category)}
+                                    className={`px-6 py-2.5 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+                                        selectedCategory === category
+                                            ? "bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30 scale-105"
+                                            : "bg-background border border-border text-muted-foreground hover:border-[#219EBC]/50 hover:text-foreground hover:scale-105"
+                                    }`}
+                                >
+                                    {category}
+                                </button>
+                            ))}
+                        </motion.div>
+                    )}
                 </div>
             </section>
 
             {/* Blog Grid */}
             <section className="py-20">
                 <div className="container mx-auto px-4 max-w-6xl">
-                    {blogPosts && blogPosts.length > 0 ? (
+                    {hasResults ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-                            {blogPosts
-                                .filter(post => {
-                                    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                                          post.content.toLowerCase().includes(searchQuery.toLowerCase());
-                                    const matchesCategory = selectedCategory === "All Posts" || 
-                                                            (post.tags && post.tags.includes(selectedCategory));
-                                    return matchesSearch && matchesCategory;
-                                })
-                                .map((post, index) => (
-                                    <motion.div
-                                        key={post.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.1 }}
-                                    >
-                                        <Card className="group h-full border-0 rounded-[48px] overflow-hidden bg-background shadow-2xl shadow-black/[0.03] hover:shadow-black/[0.08] transition-all duration-500 hover:-translate-y-2">
-                                            <div className="aspect-[16/10] overflow-hidden relative bg-gradient-to-br from-[#219EBC] to-[#023047]">
-                                                {post.imageUrl ? (
-                                                    // eslint-disable-next-line @next/next/no-img-element
-                                                    <img
-                                                        src={post.imageUrl}
-                                                        alt={post.title}
-                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            {blogPosts.map((post, index) => (
+                                <motion.div
+                                    key={post.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.07 }}
+                                >
+                                    <Card className="group h-full border-0 rounded-[48px] overflow-hidden bg-background shadow-2xl shadow-black/[0.03] hover:shadow-black/[0.08] transition-all duration-500 hover:-translate-y-2">
+                                        <div className="aspect-[16/10] overflow-hidden relative bg-gradient-to-br from-[#219EBC] to-[#023047]">
+                                            {post.imageUrl ? (
+                                                <Image
+                                                    src={post.imageUrl}
+                                                    alt={post.title}
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-white">
+                                                    <Tag className="w-16 h-16 opacity-50" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <CardHeader className="p-8 pb-4">
+                                            <div className="flex items-center flex-wrap gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                                                <Badge className="bg-[#219EBC]/10 text-[#219EBC] hover:bg-[#219EBC]/20 border-0 py-1 px-3 rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-none">
+                                                    {post.tags[0] || 'Article'}
+                                                </Badge>
+                                                <span className="flex items-center gap-1.5">
+                                                    <Calendar className="w-3.5 h-3.5" />
+                                                    {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                            <CardTitle className="text-2xl font-black text-foreground leading-tight group-hover:text-[#219EBC] transition-colors line-clamp-2">
+                                                {post.title}
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="px-8 pb-4">
+                                            <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                                                {post.excerpt || post.content.replace(/<[^>]*>/g, "").substring(0, 150) + '...'}
+                                            </p>
+                                        </CardContent>
+                                        <CardFooter className="px-8 pb-10 mt-auto border-t border-gray-50 pt-6 flex items-center justify-between">
+                                            <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                                                <span className="flex items-center gap-1.5">
+                                                    <Clock className="w-3.5 h-3.5 text-[#219EBC]" />
+                                                    {calculateReadTime(post.content)} min read
+                                                </span>
+                                                <span className="flex items-center gap-1.5">
+                                                    <Eye className="w-3.5 h-3.5 text-[#219EBC]" />
+                                                    {post.views.toLocaleString()}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {/* Share Button */}
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleShare(post); }}
+                                                    title={copiedPostId === post.id ? 'Link copied!' : 'Share'}
+                                                    className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
+                                                    aria-label={`Share ${post.title}`}
+                                                >
+                                                    {copiedPostId === post.id ? (
+                                                        <Check className="w-5 h-5 text-green-500" />
+                                                    ) : (
+                                                        <Share2 className="w-5 h-5" />
+                                                    )}
+                                                </button>
+                                                {/* Read More Button — opens in same tab */}
+                                                <Link
+                                                    href={`/blog/${post.slug || post.id}`}
+                                                    className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
+                                                    aria-label={`Read more about ${post.title}`}
+                                                >
+                                                    <ArrowRight className="w-5 h-5" />
+                                                </Link>
+                                            </div>
+                                        </CardFooter>
+
+                                        {/* Author row */}
+                                        {post.author && (
+                                            <div className="px-8 pb-8 flex items-center gap-3 border-t border-gray-50 pt-4">
+                                                {post.author.image ? (
+                                                    <Image
+                                                        src={post.author.image}
+                                                        alt={post.author.name || "Author"}
+                                                        width={28}
+                                                        height={28}
+                                                        className="rounded-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-white">
-                                                        <Tag className="w-16 h-16 opacity-50" />
+                                                    <div className="w-7 h-7 rounded-full bg-[#219EBC]/20 flex items-center justify-center text-[#219EBC] text-[10px] font-black">
+                                                        {(post.author.name || "A").charAt(0).toUpperCase()}
                                                     </div>
                                                 )}
+                                                <span className="text-xs font-bold text-muted-foreground">
+                                                    {post.author.name || "Velonx Team"}
+                                                </span>
                                             </div>
-                                            <CardHeader className="p-8 pb-4">
-                                                <div className="flex items-center flex-wrap gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
-                                                    <Badge className="bg-[#219EBC]/10 text-[#219EBC] hover:bg-[#219EBC]/20 border-0 py-1 px-3 rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-none">
-                                                        {post.tags[0] || 'Article'}
-                                                    </Badge>
-                                                    <span className="flex items-center gap-1.5">
-                                                        <Calendar className="w-3.5 h-3.5" />
-                                                        {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}
-                                                    </span>
-                                                    <span className="flex items-center gap-1.5">
-                                                        <Clock className="w-3.5 h-3.5" />
-                                                        5 min
-                                                    </span>
-                                                </div>
-                                                <CardTitle className="text-2xl font-black text-foreground leading-tight group-hover:text-[#219EBC] transition-colors line-clamp-2">
-                                                    {post.title}
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="px-8 pb-8">
-                                                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
-                                                    {post.excerpt || post.content.substring(0, 150) + '...'}
-                                                </p>
-                                            </CardContent>
-                                            <CardFooter className="px-8 pb-10 mt-auto border-t border-gray-50 pt-8 flex items-center justify-between">
-                                                <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                                    <span className="flex items-center gap-1.5">
-                                                        <Clock className="w-3.5 h-3.5 text-[#219EBC]" />
-                                                        {Math.ceil(post.content.split(' ').length / 200)} min read
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    {/* Share Button */}
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleShare(post); }}
-                                                        title={copiedPostId === post.id ? 'Link copied!' : 'Share'}
-                                                        className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
-                                                        aria-label={`Share ${post.title}`}
-                                                    >
-                                                        {copiedPostId === post.id ? (
-                                                            <Check className="w-5 h-5 text-green-500" />
-                                                        ) : (
-                                                            <Share2 className="w-5 h-5" />
-                                                        )}
-                                                    </button>
-                                                    {/* Read More Button */}
-                                                    <Link
-                                                        href={`/blog/${post.id}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
-                                                        aria-label={`Read more about ${post.title}`}
-                                                    >
-                                                        <ArrowRight className="w-5 h-5" />
-                                                    </Link>
-                                                </div>
-                                            </CardFooter>
-                                        </Card>
-                                    </motion.div>
-                                ))}
+                                        )}
+                                    </Card>
+                                </motion.div>
+                            ))}
                         </div>
                     ) : (
                         <div className="text-center py-20 text-muted-foreground">
                             <Tag className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                            <p className="text-xl font-bold">No blog posts found</p>
-                            <p className="text-sm mt-2">Check back later for new content!</p>
+                            {isFiltered ? (
+                                <>
+                                    <p className="text-xl font-bold">No results found</p>
+                                    <p className="text-sm mt-2">
+                                        Try a different search term or category.
+                                    </p>
+                                    <button
+                                        onClick={() => { setSearchInput(""); setSelectedCategory("All Posts"); }}
+                                        className="mt-6 px-6 py-2.5 rounded-full bg-[#219EBC]/10 text-[#219EBC] font-bold text-sm hover:bg-[#219EBC] hover:text-white transition-all"
+                                    >
+                                        Clear filters
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-xl font-bold">No blog posts yet</p>
+                                    <p className="text-sm mt-2">Check back later for new content!</p>
+                                </>
+                            )}
                         </div>
                     )}
 
-                    {/* Pagination - Hidden for now */}
-                    {blogPosts && blogPosts.length > 9 && (
+                    {/* Functional Pagination */}
+                    {pagination && pagination.totalPages > 1 && (
                         <div className="mt-20 flex justify-center gap-3">
-                            <button className="w-12 h-12 rounded-2xl bg-[#023047] text-white font-black shadow-lg shadow-[#023047]/20">1</button>
-                            <button className="w-12 h-12 rounded-2xl bg-background border border-border text-muted-foreground font-black hover:border-[#219EBC]/30">2</button>
-                            <button className="w-12 h-12 rounded-2xl bg-background border border-border text-muted-foreground font-black hover:border-[#219EBC]/30">3</button>
+                            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
+                                <button
+                                    key={p}
+                                    onClick={() => {
+                                        setPage(p);
+                                        window.scrollTo({ top: 0, behavior: "smooth" });
+                                    }}
+                                    className={`w-12 h-12 rounded-2xl font-black transition-all ${
+                                        p === page
+                                            ? "bg-[#023047] text-white shadow-lg shadow-[#023047]/20"
+                                            : "bg-background border border-border text-muted-foreground hover:border-[#219EBC]/30 hover:text-foreground"
+                                    }`}
+                                >
+                                    {p}
+                                </button>
+                            ))}
                         </div>
                     )}
                 </div>
             </section>
-
         </div>
     );
 }

@@ -675,6 +675,7 @@ enum PostStatus {
 model BlogPost {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   title       String
+  slug        String?    @unique // SEO-friendly URL identifier, e.g. "my-post-title"
   content     String
   excerpt     String?
   imageUrl    String?

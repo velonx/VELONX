@@ -41,12 +41,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
       select: {
         id: true,
+        slug: true,
         updatedAt: true,
       },
     });
 
     const dynamicBlogEntries = publishedPosts.map((post) => ({
-      url: `${baseUrl}/blog/${post.id}`,
+      url: `${baseUrl}/blog/${post.slug || post.id}`,
       lastModified: post.updatedAt || currentDate,
       changeFrequency: "weekly" as const,
       priority: 0.6,

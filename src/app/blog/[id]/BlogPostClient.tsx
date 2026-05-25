@@ -4,16 +4,34 @@ import { use, useState, useEffect } from "react";
 import { useBlogPost } from "@/lib/api/hooks";
 import { blogApi } from "@/lib/api/client";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { Calendar, Clock, ArrowLeft, Share2, Check, Eye } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, Share2, Check, Eye, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { calculateReadTime } from "@/lib/utils/blog";
+
+interface RelatedPost {
+  id: string;
+  slug: string | null;
+  title: string;
+  excerpt: string | null;
+  imageUrl: string | null;
+  tags: string[];
+  publishedAt: string | null;
+  createdAt: string;
+  views: number;
+  content: string;
+  author?: { name: string | null; image: string | null } | null;
+}
 
 interface Props {
   params: Promise<{ id: string }>;
+  relatedPosts?: RelatedPost[];
 }
 
-export default function BlogPostClient({ params }: Props) {
+export default function BlogPostClient({ params, relatedPosts = [] }: Props) {
     const { id } = use(params);
     const { data: post, loading, error } = useBlogPost(id);
     const [copied, setCopied] = useState(false);
@@ -37,10 +55,9 @@ export default function BlogPostClient({ params }: Props) {
             blogApi.trackView(id)
                 .then((res) => {
                     sessionStorage.setItem(sessionKey, "true");
-                    
-                    // Show a beautiful toast notification if XP was awarded
+
                     const responseData = res as any;
-                    
+
                     // Instantly update the local views count state from the API response
                     if (responseData?.data?.views !== undefined) {
                         setViews(responseData.data.views);
@@ -68,7 +85,7 @@ export default function BlogPostClient({ params }: Props) {
                 });
         }
     }, [id, post]);
-    
+
     // Reading Progress Bar
     const { scrollYProgress } = useScroll();
     const scaleX = useSpring(scrollYProgress, {
@@ -96,8 +113,38 @@ export default function BlogPostClient({ params }: Props) {
 
     if (loading) {
         return (
-            <div className="min-h-screen pt-24 flex items-center justify-center bg-background">
-                <div className="w-16 h-16 rounded-full border-4 border-[#219EBC] border-t-transparent animate-spin" />
+            <div className="min-h-screen pt-24 bg-background pb-20">
+                {/* Sticky nav skeleton */}
+                <div className="sticky top-24 z-40 w-full bg-background/80 backdrop-blur-xl border-b border-border/50">
+                    <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+                        <Skeleton className="h-5 w-32 rounded-full" />
+                        <Skeleton className="h-9 w-24 rounded-full" />
+                    </div>
+                </div>
+                <article className="container mx-auto px-4 max-w-3xl pt-20 space-y-10">
+                    {/* Tags + title + meta */}
+                    <div className="text-center space-y-6">
+                        <div className="flex justify-center gap-2">
+                            <Skeleton className="h-7 w-20 rounded-xl" />
+                            <Skeleton className="h-7 w-20 rounded-xl" />
+                        </div>
+                        <Skeleton className="h-16 w-full rounded-xl" />
+                        <Skeleton className="h-8 w-4/5 mx-auto rounded-xl" />
+                        <div className="flex justify-center gap-8">
+                            <Skeleton className="h-5 w-28 rounded-md" />
+                            <Skeleton className="h-5 w-20 rounded-md" />
+                            <Skeleton className="h-5 w-20 rounded-md" />
+                        </div>
+                    </div>
+                    {/* Hero image */}
+                    <Skeleton className="w-full h-[360px] rounded-[48px]" />
+                    {/* Content lines */}
+                    <div className="space-y-3">
+                        {Array.from({ length: 12 }).map((_, i) => (
+                            <Skeleton key={i} className={`h-4 rounded-md ${i % 4 === 3 ? "w-3/4" : "w-full"}`} />
+                        ))}
+                    </div>
+                </article>
             </div>
         );
     }
@@ -113,6 +160,8 @@ export default function BlogPostClient({ params }: Props) {
         );
     }
 
+    const readTime = calculateReadTime(post.content || "");
+
     return (
         <div className="min-h-screen pt-24 bg-background pb-20 selection:bg-[#219EBC]/30">
             {/* Reading Progress Bar */}
@@ -124,8 +173,8 @@ export default function BlogPostClient({ params }: Props) {
             {/* Top Navigation */}
             <div className="sticky top-24 z-40 w-full bg-background/80 backdrop-blur-xl border-b border-border/50">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <Link 
-                        href="/blog" 
+                    <Link
+                        href="/blog"
                         className="flex items-center gap-2 text-muted-foreground hover:text-[#219EBC] transition-colors font-bold uppercase tracking-widest text-[10px]"
                     >
                         <ArrowLeft className="w-4 h-4" /> Back to Articles
@@ -148,7 +197,7 @@ export default function BlogPostClient({ params }: Props) {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="flex justify-center gap-2.5"
+                        className="flex justify-center gap-2.5 flex-wrap"
                     >
                         {post.tags?.map((tag: string, idx: number) => (
                             <Badge key={idx} className="bg-[#219EBC]/10 text-[#219EBC] dark:text-[#219EBC] dark:bg-[#219EBC]/10 border border-[#219EBC]/20 py-1.5 px-4 rounded-xl font-bold text-[10px] uppercase tracking-[0.15em]">
@@ -170,7 +219,7 @@ export default function BlogPostClient({ params }: Props) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
-                        className="flex items-center justify-center gap-8 text-[11px] font-bold text-muted-foreground uppercase tracking-[0.25em] pt-4"
+                        className="flex items-center justify-center gap-6 text-[11px] font-bold text-muted-foreground uppercase tracking-[0.25em] pt-4 flex-wrap"
                     >
                         <span className="flex items-center gap-2.5">
                             <Calendar className="w-4 h-4 text-[#219EBC]" />
@@ -180,15 +229,15 @@ export default function BlogPostClient({ params }: Props) {
                                 day: 'numeric'
                             })}
                         </span>
-                        <span className="w-1.5 h-1.5 bg-[#219EBC]/30 rounded-full" />
+                        <span className="w-1.5 h-1.5 bg-[#219EBC]/30 rounded-full hidden sm:block" />
                         <span className="flex items-center gap-2.5">
                             <Clock className="w-4 h-4 text-[#219EBC]" />
-                            {Math.ceil((post.content?.split(' ').length || 0) / 200)} min read
+                            {readTime} min read
                         </span>
-                        <span className="w-1.5 h-1.5 bg-[#219EBC]/30 rounded-full" />
+                        <span className="w-1.5 h-1.5 bg-[#219EBC]/30 rounded-full hidden sm:block" />
                         <span className="flex items-center gap-2.5">
                             <Eye className="w-4 h-4 text-[#219EBC]" />
-                            {views !== null ? views : (post.views || 0)} views
+                            {(views !== null ? views : (post.views || 0)).toLocaleString()} views
                         </span>
                     </motion.div>
                 </header>
@@ -199,18 +248,21 @@ export default function BlogPostClient({ params }: Props) {
                         initial={{ opacity: 0, y: 40, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                        className="w-full rounded-[64px] overflow-hidden mb-24 shadow-4xl shadow-black/30 border border-white/5"
+                        className="w-full rounded-[48px] overflow-hidden mb-24 shadow-2xl shadow-black/20 border border-white/5 relative aspect-[16/9]"
                     >
-                        <img
+                        <Image
                             src={post.imageUrl}
                             alt={post.title}
-                            className="w-full h-auto object-cover max-h-[700px] hover:scale-105 transition-transform duration-1000"
+                            fill
+                            priority
+                            sizes="(max-width: 768px) 100vw, 768px"
+                            className="object-cover hover:scale-105 transition-transform duration-1000"
                         />
                     </motion.div>
                 )}
 
                 {/* Main Content */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 1, delay: 0.6 }}
@@ -219,24 +271,53 @@ export default function BlogPostClient({ params }: Props) {
                     <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 </motion.div>
 
+                {/* Author Card */}
+                {post.author && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.8 }}
+                        className="mt-20 p-8 rounded-[32px] bg-[#219EBC]/5 border border-[#219EBC]/10 flex items-start gap-6"
+                    >
+                        <div className="shrink-0">
+                            {post.author.image ? (
+                                <Image
+                                    src={post.author.image}
+                                    alt={post.author.name || "Author"}
+                                    width={64}
+                                    height={64}
+                                    className="rounded-full object-cover ring-2 ring-[#219EBC]/20"
+                                />
+                            ) : (
+                                <div className="w-16 h-16 rounded-full bg-[#219EBC]/20 flex items-center justify-center text-[#219EBC] text-2xl font-black">
+                                    {(post.author.name || "V").charAt(0).toUpperCase()}
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground mb-1">Written by</p>
+                            <p className="text-foreground font-black text-lg leading-tight">
+                                {post.author.name || "Velonx Team"}
+                            </p>
+                            {post.author.bio && (
+                                <p className="text-muted-foreground text-sm mt-2 leading-relaxed">
+                                    {post.author.bio}
+                                </p>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+
                 {/* Footer Section */}
-                <footer className="mt-32 pt-20 border-t border-border/50 flex flex-col items-center gap-10">
-                    <div className="text-center space-y-4">
-                        <p className="text-muted-foreground text-sm font-bold uppercase tracking-[0.3em]">End of Story</p>
-                        <p className="text-foreground/60 text-lg italic max-w-md mx-auto">
-                            "Innovation distinguishes between a leader and a follower."
-                        </p>
-                    </div>
-                    
-                    <div className="flex flex-col items-center gap-6">
-                        <Link 
+                <footer className="mt-16 pt-16 border-t border-border/50 flex flex-col items-center gap-6">
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <Link
                             href="/blog"
-                            className="group px-10 h-16 bg-foreground text-background rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3 active:scale-95 shadow-xl shadow-black/10"
+                            className="group px-10 h-14 bg-foreground text-background rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3 active:scale-95 shadow-xl shadow-black/10"
                         >
                             Return to Insights
                             <ArrowLeft className="w-4 h-4 rotate-180 group-hover:translate-x-1 transition-transform" />
                         </Link>
-                        
                         <button
                             onClick={handleShare}
                             className="text-muted-foreground hover:text-[#219EBC] transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center gap-2"
@@ -246,6 +327,99 @@ export default function BlogPostClient({ params }: Props) {
                     </div>
                 </footer>
             </article>
+
+            {/* Related Posts Section */}
+            {relatedPosts.length > 0 && (
+                <section className="mt-24 border-t border-border/50 py-20 bg-background">
+                    <div className="container mx-auto px-4 max-w-6xl">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="mb-12 text-center"
+                        >
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#219EBC] mb-3">Continue Reading</p>
+                            <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
+                                More from Velonx <span className="text-[#219EBC]">Insights</span>
+                            </h2>
+                        </motion.div>
+
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {relatedPosts.map((related, index) => (
+                                <motion.div
+                                    key={related.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                >
+                                    <Link
+                                        href={`/blog/${related.slug || related.id}`}
+                                        className="group block rounded-[32px] overflow-hidden bg-background border border-border/50 hover:border-[#219EBC]/30 shadow-lg hover:shadow-xl hover:shadow-black/[0.06] transition-all duration-500 hover:-translate-y-1"
+                                    >
+                                        {/* Thumbnail */}
+                                        <div className="aspect-[16/9] relative bg-gradient-to-br from-[#219EBC]/20 to-[#023047]/20 overflow-hidden">
+                                            {related.imageUrl ? (
+                                                <Image
+                                                    src={related.imageUrl}
+                                                    alt={related.title}
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <span className="text-4xl font-black text-[#219EBC]/30">
+                                                        {related.title.charAt(0)}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Card body */}
+                                        <div className="p-6">
+                                            {/* Tags */}
+                                            {related.tags.length > 0 && (
+                                                <span className="inline-block bg-[#219EBC]/10 text-[#219EBC] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg mb-3">
+                                                    {related.tags[0]}
+                                                </span>
+                                            )}
+
+                                            {/* Title */}
+                                            <h3 className="text-foreground font-black text-lg leading-tight group-hover:text-[#219EBC] transition-colors line-clamp-2 mb-3">
+                                                {related.title}
+                                            </h3>
+
+                                            {/* Excerpt */}
+                                            <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-4">
+                                                {related.excerpt ||
+                                                    related.content.replace(/<[^>]*>/g, "").substring(0, 100) + "..."}
+                                            </p>
+
+                                            {/* Meta row */}
+                                            <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="flex items-center gap-1.5">
+                                                        <Clock className="w-3 h-3 text-[#219EBC]" />
+                                                        {calculateReadTime(related.content)} min
+                                                    </span>
+                                                    <span className="flex items-center gap-1.5">
+                                                        <Eye className="w-3 h-3 text-[#219EBC]" />
+                                                        {related.views.toLocaleString()}
+                                                    </span>
+                                                </div>
+                                                <span className="flex items-center gap-1 text-[#219EBC] group-hover:gap-2 transition-all">
+                                                    Read <ArrowRight className="w-3 h-3" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
         </div>
     );
 }

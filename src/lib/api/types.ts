@@ -195,6 +195,7 @@ export interface Resource {
 export interface BlogPost {
   id: string;
   title: string;
+  slug: string | null;
   content: string;
   excerpt: string | null;
   imageUrl: string | null;
@@ -209,6 +210,7 @@ export interface BlogPost {
     id: string;
     name: string | null;
     image: string | null;
+    bio?: string | null;
   };
 }
 
@@ -349,6 +351,7 @@ export interface BlogFilters extends PaginationParams {
   author?: string;
   status?: 'DRAFT' | 'PUBLISHED';
   tag?: string;
+  search?: string;
 }
 
 export interface LeaderboardFilters extends PaginationParams {

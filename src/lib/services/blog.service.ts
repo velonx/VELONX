@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NotFoundError } from "@/lib/utils/errors";
+import { generateUniqueSlug } from "@/lib/utils/slug";
 
 /**
  * Blog Service
@@ -95,23 +96,43 @@ export class BlogService {
   }
 
   /**
-   * Get blog post by ID with full details
+   * Get blog post by ID or slug with full details.
+   * Tries slug lookup first (if the param doesn't look like an ObjectId),
+   * then falls back to ID lookup for backward compatibility.
    */
-  async getBlogPostById(id: string, includesDrafts: boolean = false) {
-    const blogPost = await prisma.blogPost.findUnique({
-      where: { id },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            email: true,
-            bio: true,
+  async getBlogPostById(idOrSlug: string, includesDrafts: boolean = false) {
+    // MongoDB ObjectIds are exactly 24 hex characters
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(idOrSlug);
+
+    const blogPost = isObjectId
+      ? await prisma.blogPost.findUnique({
+          where: { id: idOrSlug },
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+                email: true,
+                bio: true,
+              },
+            },
           },
-        },
-      },
-    });
+        })
+      : await prisma.blogPost.findUnique({
+          where: { slug: idOrSlug },
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+                email: true,
+                bio: true,
+              },
+            },
+          },
+        });
 
     if (!blogPost) {
       throw new NotFoundError("Blog post");
@@ -126,7 +147,7 @@ export class BlogService {
   }
 
   /**
-   * Create a new blog post
+   * Create a new blog post — auto-generates a unique slug from the title
    */
   async createBlogPost(data: {
     title: string;
@@ -138,9 +159,13 @@ export class BlogService {
     authorId: string;
     publishedAt?: string;
   }) {
+    // Auto-generate unique slug from title
+    const slug = await generateUniqueSlug(data.title);
+
     const blogPost = await prisma.blogPost.create({
       data: {
         title: data.title,
+        slug,
         content: data.content,
         excerpt: data.excerpt,
         imageUrl: data.imageUrl,
@@ -165,7 +190,8 @@ export class BlogService {
   }
 
   /**
-   * Update an existing blog post
+   * Update an existing blog post.
+   * If title changes, regenerate the slug.
    */
   async updateBlogPost(
     id: string,
@@ -191,14 +217,31 @@ export class BlogService {
     // Build update data
     const updateData: Prisma.BlogPostUpdateInput = {};
 
-    if (data.title !== undefined) updateData.title = data.title;
+    if (data.title !== undefined) {
+      updateData.title = data.title;
+      // Regenerate slug only when title changes
+      if (data.title !== existingBlogPost.title) {
+        updateData.slug = await generateUniqueSlug(data.title, id);
+      }
+    }
+
+    // Backfill slug for existing posts that don't have one yet
+    if (!existingBlogPost.slug && !updateData.slug) {
+      updateData.slug = await generateUniqueSlug(
+        existingBlogPost.title,
+        existingBlogPost.id
+      );
+    }
+
     if (data.content !== undefined) updateData.content = data.content;
     if (data.excerpt !== undefined) updateData.excerpt = data.excerpt;
     if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
     if (data.tags !== undefined) updateData.tags = data.tags;
     if (data.status !== undefined) updateData.status = data.status as any;
     if (data.publishedAt !== undefined)
-      updateData.publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
+      updateData.publishedAt = data.publishedAt
+        ? new Date(data.publishedAt)
+        : null;
 
     const blogPost = await prisma.blogPost.update({
       where: { id },
