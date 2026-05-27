@@ -59,6 +59,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   // Fetch the current post and related posts in parallel (server-side)
   let jsonLd: object | null = null;
+  let post: any = null;
   let relatedPosts: Array<{
     id: string;
     slug: string | null;
@@ -74,7 +75,7 @@ export default async function BlogPostPage({ params }: Props) {
   }> = [];
 
   try {
-    const post = await blogService.getBlogPostById(id, false);
+    post = await blogService.getBlogPostById(id, false);
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
     const postSlugOrId = post.slug || id;
 
