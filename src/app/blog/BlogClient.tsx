@@ -137,10 +137,11 @@ export default function BlogClient() {
                         transition={{ delay: 0.2 }}
                         className="relative w-full max-w-xl mx-auto group mt-10"
                     >
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-[#219EBC] transition-colors" />
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-[#219EBC] transition-colors" aria-hidden="true" />
                         <input
                             type="text"
                             placeholder="Search articles..."
+                            aria-label="Search articles"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
                             className="w-full h-14 bg-background rounded-2xl pl-14 pr-6 border border-border focus:ring-2 focus:ring-[#219EBC] outline-none transition-all shadow-sm text-foreground placeholder:text-muted-foreground"
@@ -159,10 +160,11 @@ export default function BlogClient() {
                                 <button
                                     key={category}
                                     onClick={() => handleCategoryChange(category)}
+                                    aria-pressed={selectedCategory === category}
                                     className={`px-6 py-2.5 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
                                         selectedCategory === category
-                                            ? "bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30 scale-105"
-                                            : "bg-background border border-border text-muted-foreground hover:border-[#219EBC]/50 hover:text-foreground hover:scale-105"
+                                            ? "bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30 ring-2 ring-[#219EBC]/50"
+                                            : "bg-background border border-border text-muted-foreground hover:border-[#219EBC]/50 hover:text-foreground hover:bg-[#219EBC]/5"
                                     }`}
                                 >
                                     {category}
@@ -174,7 +176,7 @@ export default function BlogClient() {
             </section>
 
             {/* Blog Grid */}
-            <section className="py-20">
+            <section id="blog-grid" className="py-20">
                 <div className="container mx-auto px-4 max-w-6xl">
                     {hasResults ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -186,8 +188,8 @@ export default function BlogClient() {
                                     viewport={{ once: true }}
                                     transition={{ delay: index * 0.07 }}
                                 >
-                                    <Card className="group h-full border-0 rounded-[48px] overflow-hidden bg-background shadow-2xl shadow-black/[0.03] hover:shadow-black/[0.08] transition-all duration-500 hover:-translate-y-2">
-                                        <div className="aspect-[16/10] overflow-hidden relative bg-gradient-to-br from-[#219EBC] to-[#023047]">
+                                    <Card className="group h-full border-0 rounded-3xl overflow-hidden bg-background shadow-2xl shadow-black/[0.03] hover:shadow-black/[0.08] transition-all duration-500 hover:-translate-y-2 flex flex-col">
+                                        <div className="aspect-[16/10] overflow-hidden relative border-b border-border/10">
                                             {post.imageUrl ? (
                                                 <Image
                                                     src={post.imageUrl}
@@ -197,8 +199,10 @@ export default function BlogClient() {
                                                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                                                 />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-white">
-                                                    <Tag className="w-16 h-16 opacity-50" />
+                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#219EBC]/20 to-[#023047]/20 group-hover:scale-105 transition-transform duration-700">
+                                                    <span className="text-6xl font-black text-[#219EBC]/30">
+                                                        {post.title.charAt(0)}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>
@@ -216,19 +220,41 @@ export default function BlogClient() {
                                                 {post.title}
                                             </CardTitle>
                                         </CardHeader>
-                                        <CardContent className="px-8 pb-4">
-                                            <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                                        <CardContent className="px-8 pb-4 flex-grow">
+                                            <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-6">
                                                 {post.excerpt || post.content.replace(/<[^>]*>/g, "").substring(0, 150) + '...'}
                                             </p>
+                                            
+                                            {/* Author row */}
+                                            {post.author && (
+                                                <div className="flex items-center gap-3">
+                                                    {post.author.image ? (
+                                                        <Image
+                                                            src={post.author.image}
+                                                            alt={post.author.name || "Author"}
+                                                            width={28}
+                                                            height={28}
+                                                            className="rounded-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-7 h-7 rounded-full bg-[#219EBC]/20 flex items-center justify-center text-[#219EBC] text-[10px] font-black">
+                                                            {(post.author.name || "A").charAt(0).toUpperCase()}
+                                                        </div>
+                                                    )}
+                                                    <span className="text-xs font-bold text-foreground">
+                                                        {post.author.name || "Velonx Team"}
+                                                    </span>
+                                                </div>
+                                            )}
                                         </CardContent>
-                                        <CardFooter className="px-8 pb-10 mt-auto border-t border-gray-50 pt-6 flex items-center justify-between">
+                                        <CardFooter className="px-8 pb-8 mt-auto border-t border-gray-50 pt-6 flex items-center justify-between">
                                             <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
                                                 <span className="flex items-center gap-1.5">
-                                                    <Clock className="w-3.5 h-3.5 text-[#219EBC]" />
+                                                    <Clock className="w-3.5 h-3.5 text-[#219EBC]" aria-hidden="true" />
                                                     {calculateReadTime(post.content)} min read
                                                 </span>
                                                 <span className="flex items-center gap-1.5">
-                                                    <Eye className="w-3.5 h-3.5 text-[#219EBC]" />
+                                                    <Eye className="w-3.5 h-3.5 text-[#219EBC]" aria-hidden="true" />
                                                     {post.views.toLocaleString()}
                                                 </span>
                                             </div>
@@ -241,9 +267,9 @@ export default function BlogClient() {
                                                     aria-label={`Share ${post.title}`}
                                                 >
                                                     {copiedPostId === post.id ? (
-                                                        <Check className="w-5 h-5 text-green-500" />
+                                                        <Check className="w-5 h-5 text-green-500" aria-hidden="true" />
                                                     ) : (
-                                                        <Share2 className="w-5 h-5" />
+                                                        <Share2 className="w-5 h-5" aria-hidden="true" />
                                                     )}
                                                 </button>
                                                 {/* Read More Button — opens in same tab */}
@@ -252,32 +278,10 @@ export default function BlogClient() {
                                                     className="w-10 h-10 rounded-full bg-[#219EBC]/10 text-[#219EBC] flex items-center justify-center hover:bg-[#219EBC] hover:text-white transition-all"
                                                     aria-label={`Read more about ${post.title}`}
                                                 >
-                                                    <ArrowRight className="w-5 h-5" />
+                                                    <ArrowRight className="w-5 h-5" aria-hidden="true" />
                                                 </Link>
                                             </div>
                                         </CardFooter>
-
-                                        {/* Author row */}
-                                        {post.author && (
-                                            <div className="px-8 pb-8 flex items-center gap-3 border-t border-gray-50 pt-4">
-                                                {post.author.image ? (
-                                                    <Image
-                                                        src={post.author.image}
-                                                        alt={post.author.name || "Author"}
-                                                        width={28}
-                                                        height={28}
-                                                        className="rounded-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="w-7 h-7 rounded-full bg-[#219EBC]/20 flex items-center justify-center text-[#219EBC] text-[10px] font-black">
-                                                        {(post.author.name || "A").charAt(0).toUpperCase()}
-                                                    </div>
-                                                )}
-                                                <span className="text-xs font-bold text-muted-foreground">
-                                                    {post.author.name || "Velonx Team"}
-                                                </span>
-                                            </div>
-                                        )}
                                     </Card>
                                 </motion.div>
                             ))}
@@ -313,13 +317,15 @@ export default function BlogClient() {
                             {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
                                 <button
                                     key={p}
+                                    aria-label={`Page ${p}`}
+                                    aria-current={p === page ? "page" : undefined}
                                     onClick={() => {
                                         setPage(p);
-                                        window.scrollTo({ top: 0, behavior: "smooth" });
+                                        document.getElementById('blog-grid')?.scrollIntoView({ behavior: "smooth", block: "start" });
                                     }}
                                     className={`w-12 h-12 rounded-2xl font-black transition-all ${
                                         p === page
-                                            ? "bg-[#023047] text-white shadow-lg shadow-[#023047]/20"
+                                            ? "bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30"
                                             : "bg-background border border-border text-muted-foreground hover:border-[#219EBC]/30 hover:text-foreground"
                                     }`}
                                 >

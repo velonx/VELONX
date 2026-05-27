@@ -22,7 +22,9 @@ export async function POST(
 
     // Only increment view counts for PUBLISHED blog posts
     if (existingBlogPost.status === "PUBLISHED") {
-      const updatedPost = await blogService.incrementViews(id);
+      const postId = existingBlogPost.id; // Use actual ObjectID, not the slug from URL
+
+      const updatedPost = await blogService.incrementViews(postId);
       
       let xpAwarded = false;
       let xpResult = null;
@@ -37,7 +39,7 @@ export async function POST(
           where: {
             userId_postId: {
               userId,
-              postId: id,
+              postId: postId,
             },
           },
         });
@@ -48,7 +50,7 @@ export async function POST(
             await prisma.blogPostRead.create({
               data: {
                 userId,
-                postId: id,
+                postId: postId,
                 xpAwarded: true,
               },
             });
