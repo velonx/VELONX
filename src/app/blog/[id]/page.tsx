@@ -176,7 +176,7 @@ export default async function BlogPostPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <BlogPostClient params={params} relatedPosts={relatedPosts} />
+      <BlogPostClient params={params} initialPost={post} relatedPosts={relatedPosts} />
     </>
   );
 }

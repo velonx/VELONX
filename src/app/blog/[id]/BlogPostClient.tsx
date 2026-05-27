@@ -28,12 +28,19 @@ interface RelatedPost {
 
 interface Props {
   params: Promise<{ id: string }>;
+  initialPost?: any;
   relatedPosts?: RelatedPost[];
 }
 
-export default function BlogPostClient({ params, relatedPosts = [] }: Props) {
+export default function BlogPostClient({ params, initialPost, relatedPosts = [] }: Props) {
     const { id } = use(params);
-    const { data: post, loading, error } = useBlogPost(id);
+    
+    // Use server-provided post data directly instead of fetching on the client,
+    // which eliminates TTFB and Resource Load Delay on the client side.
+    const post = initialPost;
+    const loading = !post;
+    const error = null;
+    
     const [copied, setCopied] = useState(false);
     const [views, setViews] = useState<number | null>(null);
 
@@ -208,9 +215,8 @@ export default function BlogPostClient({ params, relatedPosts = [] }: Props) {
                     </motion.div>
 
                     <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 1, y: 0 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                         className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground leading-[1.1] tracking-tight text-balance"
                     >
                         {post.title}
@@ -245,9 +251,8 @@ export default function BlogPostClient({ params, relatedPosts = [] }: Props) {
 
                 {/* Hero Image */}
                 <motion.div
-                    initial={{ opacity: 0, y: 40, scale: 0.98 }}
+                    initial={{ opacity: 1, y: 0, scale: 1 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
                     className="w-full rounded-3xl overflow-hidden mb-24 shadow-2xl shadow-black/20 border border-border/10 relative aspect-[16/9] bg-gradient-to-br from-[#219EBC]/10 to-[#023047]/10"
                 >
                     {post.imageUrl ? (
@@ -256,6 +261,7 @@ export default function BlogPostClient({ params, relatedPosts = [] }: Props) {
                             alt={post.title}
                             fill
                             priority
+                            fetchPriority="high"
                             sizes="(max-width: 768px) 100vw, 768px"
                             className="object-cover hover:scale-105 transition-transform duration-1000"
                         />
