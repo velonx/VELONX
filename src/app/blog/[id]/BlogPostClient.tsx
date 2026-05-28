@@ -282,6 +282,45 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
                     className="prose prose-lg md:prose-xl dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tight prose-a:text-[#219EBC] hover:prose-a:text-[#1a7a94] prose-img:rounded-[32px] prose-img:shadow-2xl prose-blockquote:border-l-[#219EBC] prose-blockquote:bg-[#219EBC]/5 prose-blockquote:rounded-r-2xl prose-blockquote:py-1 px-4 md:px-0 rich-text-content mx-auto"
                 >
                     <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                    <style jsx global>{`
+                        .rich-text-content table {
+                            border-collapse: collapse;
+                            table-layout: fixed;
+                            width: 100%;
+                            margin: 1.5rem 0;
+                            overflow: hidden;
+                        }
+                        .rich-text-content table td,
+                        .rich-text-content table th {
+                            min-width: 1em;
+                            border: 2px solid #ced4da;
+                            padding: 8px;
+                            vertical-align: top;
+                            box-sizing: border-box;
+                            position: relative;
+                        }
+                        .rich-text-content table th {
+                            font-weight: bold;
+                            text-align: left;
+                            background-color: #f1f3f5;
+                        }
+                        .rich-text-content ul[data-type="taskList"] {
+                            list-style: none;
+                            padding: 0;
+                        }
+                        .rich-text-content ul[data-type="taskList"] li {
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 0.25rem;
+                        }
+                        .rich-text-content ul[data-type="taskList"] li > label {
+                            margin-right: 0.5rem;
+                            user-select: none;
+                        }
+                        .rich-text-content ul[data-type="taskList"] li > div {
+                            flex: 1;
+                        }
+                    `}</style>
                 </motion.div>
 
                 {/* Author Card */}
