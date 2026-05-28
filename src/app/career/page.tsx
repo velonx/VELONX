@@ -411,23 +411,6 @@ export default function CareerPage() {
                     </Tabs>
                 </div>
             </section>
-
-            {/* Floating Action Button - Get Resume Feedback */}
-            <button
-                onClick={() => window.open("https://keyracer.in/pages/career-chat-widget.html", "_blank")}
-                className="fixed bottom-8 right-8 z-50 group hover:scale-105 transition-transform"
-                aria-label="Get Resume Feedback"
-            >
-                <div className="relative">
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-violet-600 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
-                    {/* Button */}
-                    <div className="relative flex items-center gap-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white px-6 py-4 rounded-full shadow-2xl transition-all duration-300 group-hover:scale-110 group-active:scale-95">
-                        <Sparkles className="w-5 h-5" />
-                        <span className="font-semibold" style={{ fontFamily: "'Montserrat', sans-serif" }}>Get Resume Feedback</span>
-                    </div>
-                </div>
-            </button>
         </div>
     );
 }
