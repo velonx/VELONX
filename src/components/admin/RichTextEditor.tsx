@@ -6,18 +6,18 @@ import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { TextStyle } from "@tiptap/extension-text-style";
-import Table from '@tiptap/extension-table'
-import TableRow from '@tiptap/extension-table-row'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TextAlign from '@tiptap/extension-text-align'
-import Highlight from '@tiptap/extension-highlight'
+import { Table } from '@tiptap/extension-table'
+import { TableRow } from '@tiptap/extension-table-row'
+import { TableCell } from '@tiptap/extension-table-cell'
+import { TableHeader } from '@tiptap/extension-table-header'
+import { TextAlign } from '@tiptap/extension-text-align'
+import { Highlight } from '@tiptap/extension-highlight'
 import { Color } from '@tiptap/extension-color'
-import Image from '@tiptap/extension-image'
-import TaskItem from '@tiptap/extension-task-item'
-import TaskList from '@tiptap/extension-task-list'
-import Subscript from '@tiptap/extension-subscript'
-import Superscript from '@tiptap/extension-superscript'
+import { Image } from '@tiptap/extension-image'
+import { TaskItem } from '@tiptap/extension-task-item'
+import { TaskList } from '@tiptap/extension-task-list'
+import { Subscript } from '@tiptap/extension-subscript'
+import { Superscript } from '@tiptap/extension-superscript'
 import { 
   Bold, 
   Italic, 
@@ -305,7 +305,7 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
       <div className="px-2 pb-2">
         <EditorContent editor={editor} />
       </div>
-      <style jsx global>{\`
+      <style jsx global>{`
         .tiptap p.is-editor-empty:first-child::before {
           content: attr(data-placeholder);
           float: left;
@@ -373,7 +373,7 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
           height: auto;
           border-radius: 8px;
         }
-      \`}</style>
+      `}</style>
     </div>
   );
 }
