@@ -42,14 +42,8 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
     const error = null;
     
     const [copied, setCopied] = useState(false);
-    const [views, setViews] = useState<number | null>(null);
-
-    // Sync local views state with fetched post views when post is loaded
-    useEffect(() => {
-        if (post) {
-            setViews(post.views || 0);
-        }
-    }, [post]);
+    const [clientViews, setClientViews] = useState<number | null>(null);
+    const views = clientViews !== null ? clientViews : (post?.views ?? null);
 
     // Track blog post view on client side (once per session)
     useEffect(() => {
@@ -67,9 +61,9 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
 
                     // Instantly update the local views count state from the API response
                     if (responseData?.data?.views !== undefined) {
-                        setViews(responseData.data.views);
+                        setClientViews(responseData.data.views);
                     } else {
-                        setViews(prev => (prev !== null ? prev + 1 : 1));
+                        setClientViews(prev => (prev !== null ? prev + 1 : (post.views || 0) + 1));
                     }
 
                     if (responseData?.data?.xpAwarded) {

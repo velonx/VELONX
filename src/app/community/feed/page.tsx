@@ -14,6 +14,7 @@ import { TrendingPosts } from "@/components/community/TrendingPosts";
 import { useFeed } from "@/lib/hooks/useFeed";
 import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 export default function FeedPage() {
   const { data: session } = useSession();
@@ -218,8 +219,7 @@ export default function FeedPage() {
                   <div className="flex gap-2 flex-wrap">
                     {imageUrls.map((url, i) => (
                       <div key={i} className="relative group size-16 rounded-lg overflow-hidden border border-border/50">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={url} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" />
+                        <Image src={url} alt={`Upload ${i + 1}`} className="w-full h-full object-cover"  width={500} height={500} />
                         <button
                           type="button"
                           onClick={() => setImageUrls(prev => prev.filter((_, idx) => idx !== i))}

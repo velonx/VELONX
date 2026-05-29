@@ -33,6 +33,7 @@ import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import { secureFetch } from "@/lib/utils/csrf";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 export default function GroupDetailPage() {
   const { data: session } = useSession();
@@ -416,8 +417,7 @@ export default function GroupDetailPage() {
                   <div className="flex gap-2 flex-wrap">
                     {imageUrls.map((url, i) => (
                       <div key={i} className="relative group size-16 rounded-lg overflow-hidden border border-border/50">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={url} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" />
+                        <Image src={url} alt={`Upload ${i + 1}`} className="w-full h-full object-cover"  width={500} height={500} />
                         <button
                           type="button"
                           onClick={() => setImageUrls(prev => prev.filter((_, idx) => idx !== i))}

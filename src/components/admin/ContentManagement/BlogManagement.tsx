@@ -10,6 +10,7 @@ import { PenTool, Edit, Trash2, XCircle, Download, Send } from "lucide-react";
 import toast from "react-hot-toast";
 import RichTextEditor from "../RichTextEditor";
 import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
+import Image from "next/image";
 
 interface Blog {
   id: string;
@@ -154,12 +155,11 @@ export default function BlogManagement() {
                   <div className="flex items-start gap-6">
                     {blog.imageUrl && (
                       <>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                           src={blog.imageUrl}
                           alt={blog.title}
                           className="w-24 h-24 rounded-xl object-cover"
-                        />
+                         width={500} height={500} />
                       </>
                     )}
                     <div className="flex-1">
@@ -332,10 +332,11 @@ export default function BlogManagement() {
                 <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
                   {blogImagePreview && (
                     <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={blogImagePreview}
                         alt="Blog cover preview"
+                        width={500}
+                        height={300}
                         className="w-full h-full object-cover"
                         onError={() => {
                           setBlogImagePreview(null);

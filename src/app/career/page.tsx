@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Upload, Video, Calendar, CheckCircle, Clock, Briefcase, GraduationCap, ArrowRight, Loader2, Search, ChevronRight, ExternalLink, MapPin, DollarSign, Sparkles, FileText, Users, Share2, Check } from "lucide-react";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 export default function CareerPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -264,8 +265,7 @@ export default function CareerPage() {
                                                     </div>
                                                     {internship.imageUrl && (
                                                         <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center">
-                                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                            <img src={internship.imageUrl} alt={internship.company} className="w-full h-full object-contain" />
+                                                            <Image src={internship.imageUrl} alt={internship.company} width={64} height={64} className="w-full h-full object-contain" />
                                                         </div>
                                                     )}
                                                 </div>
@@ -348,8 +348,7 @@ export default function CareerPage() {
                                                     </div>
                                                     {job.imageUrl && (
                                                         <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center">
-                                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                            <img src={job.imageUrl} alt={job.company} className="w-full h-full object-contain" />
+                                                            <Image src={job.imageUrl} alt={job.company} width={64} height={64} className="w-full h-full object-contain" />
                                                         </div>
                                                     )}
                                                 </div>

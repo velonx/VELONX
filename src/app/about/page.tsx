@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Rocket, Target, Users, Shield, Zap, Sparkles, Heart, Lightbulb } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
+import Image from "next/image";
 
 export default function AboutPage() {
     const stats = [
@@ -100,10 +101,11 @@ export default function AboutPage() {
                     <div className="grid md:grid-cols-2 gap-16 items-center">
                         <div className="relative">
                             <div className="aspect-square bg-muted rounded-[64px] overflow-hidden shadow-2xl">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
+                                <Image
                                     src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80"
                                     alt="Team collaboration"
+                                    width={1000}
+                                    height={1000}
                                     className="w-full h-full object-cover"
                                 />
                             </div>

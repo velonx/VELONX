@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import Image from "next/image";
 
 export interface ProjectData {
     name: string;
@@ -64,10 +65,10 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({ isOpen, onClose, p
 
                 {/* Top Image Area */}
                 <div className="relative h-64 w-full bg-zinc-200 dark:bg-zinc-800">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                         src={project.src}
                         alt={project.name}
+                        fill
                         className="w-full h-full object-cover"
                     />
 

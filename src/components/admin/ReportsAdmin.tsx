@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
+import Image from "next/image";
   Flag,
   ChevronDown,
   ChevronUp,
@@ -324,12 +325,11 @@ export function ReportsAdmin() {
                               rel="noopener noreferrer"
                               className="rounded-xl overflow-hidden border border-border hover:opacity-80 transition-opacity aspect-video block"
                             >
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
+                              <Image
                                 src={url}
                                 alt={`Attachment ${i + 1}`}
                                 className="w-full h-full object-cover"
-                              />
+                               width={500} height={500} />
                             </a>
                           ))}
                         </div>

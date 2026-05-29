@@ -23,6 +23,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 export default function EventManagement() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -412,10 +413,11 @@ export default function EventManagement() {
                   <div className="bg-muted/30 rounded-2xl p-6 space-y-4 mt-2">
                     {imagePreview && (
                       <div className="relative w-full h-48 rounded-xl overflow-hidden bg-muted">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                           src={imagePreview}
                           alt="Event preview"
+                          width={500}
+                          height={300}
                           className="w-full h-full object-cover"
                           onError={() => {
                             setImagePreview(null);
@@ -569,11 +571,12 @@ export default function EventManagement() {
                   <div className="flex items-start justify-between gap-4">
                     {event.imageUrl && (
                       <>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                           src={event.imageUrl}
                           alt={event.title}
-                          className="w-24 h-24 rounded-xl object-cover flex-shrink-0"
+                          width={96}
+                          height={96}
+                          className="w-full h-full object-cover flex-shrink-0"
                         />
                       </>
                     )}

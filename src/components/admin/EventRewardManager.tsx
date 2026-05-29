@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Trophy, Star, Gift, Medal, Zap, Award, Plus, Trash2, Pencil, Save, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,11 +65,7 @@ export default function EventRewardManager({ eventId }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
 
-  useEffect(() => {
-    fetchRewards();
-  }, [eventId]);
-
-  const fetchRewards = async () => {
+  const fetchRewards = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`/api/events/${eventId}/rewards`);
@@ -80,7 +76,11 @@ export default function EventRewardManager({ eventId }: Props) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [eventId]);
+
+  useEffect(() => {
+    fetchRewards();
+  }, [fetchRewards]);
 
   const openCreate = () => {
     setEditingId(null);

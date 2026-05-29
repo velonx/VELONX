@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { ArrowRight, Rocket, Mail, Lock, User, Eye, EyeOff, Gift, Github } from "lucide-react";
 import { authApi } from "@/lib/api/client";
+import Image from "next/image";
 
 export default function SignupPageWrapper() {
     return (
@@ -365,10 +366,11 @@ function SignupPage() {
 
                     {/* Illustration */}
                     <div className="relative z-10 w-full max-w-sm">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                             src="/signup-illustration.webp"
                             alt="Secure Signup Illustration"
+                            width={500}
+                            height={500}
                             className="w-full h-auto object-contain drop-shadow-xl"
                             style={{ maxHeight: "calc(100vh - 14rem)" }}
                         />

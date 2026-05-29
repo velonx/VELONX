@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Shield, Mail, Lock, Eye, EyeOff, Github, ArrowRight, AlertCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -22,11 +23,11 @@ export default function LoginPage() {
         const searchParams = new URLSearchParams(window.location.search);
         const error = searchParams.get("error");
         if (error === "OAuthAccountNotLinked") {
-            setAuthError("An account with this email already exists. Please log in with the method you originally used to sign up.");
+            queueMicrotask(() => setAuthError("An account with this email already exists. Please log in with the method you originally used to sign up."));
         } else if (error === "AccessDenied") {
-            setAuthError("Access denied. You do not have permission to sign in.");
+            queueMicrotask(() => setAuthError("Access denied. You do not have permission to sign in."));
         } else if (error) {
-            setAuthError("An error occurred during authentication.");
+            queueMicrotask(() => setAuthError("An error occurred during authentication."));
         }
     }, []);
 
@@ -285,10 +286,11 @@ export default function LoginPage() {
 
                     {/* Illustration */}
                     <div className="relative z-10 w-full max-w-sm">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                             src="/secure-login.svg"
                             alt="Secure Login Illustration"
+                            width={500}
+                            height={500}
                             className="w-full h-auto object-contain drop-shadow-xl"
                             style={{ maxHeight: "calc(100vh - 14rem)" }}
                         />

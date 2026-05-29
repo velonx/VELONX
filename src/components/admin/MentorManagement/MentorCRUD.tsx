@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
+import Image from "next/image";
 
 interface Mentor {
   id: string;
@@ -394,10 +395,11 @@ export default function MentorCRUD() {
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#219EBC] to-[#023047] flex items-center justify-center text-white font-bold text-xl flex-shrink-0 overflow-hidden">
                       {mentor.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={mentor.imageUrl}
                           alt={mentor.name}
+                          width={64}
+                          height={64}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -506,10 +508,11 @@ export default function MentorCRUD() {
               <div className="flex items-center gap-4">
                 <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                   {formData.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={formData.imageUrl}
                       alt="Preview"
+                      width={96}
+                      height={96}
                       className="w-full h-full object-cover"
                     />
                   ) : (

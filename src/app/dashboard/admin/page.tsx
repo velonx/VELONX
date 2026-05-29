@@ -26,6 +26,7 @@ import {
 import toast from "react-hot-toast";
 import { useUserRequests, usePlatformStats } from "@/lib/api/hooks";
 import { adminApi } from "@/lib/api/client";
+import Image from "next/image";
 
 // Dynamic imports for large components to enable code splitting
 const ProjectSubmissions = dynamic(() => import("@/components/admin/ProjectSubmissions"), {
@@ -179,8 +180,7 @@ export default function AdminDashboard() {
                 <div className="mb-12">
                     <div className="relative inline-block mb-4">
                         <div className="w-20 h-20 rounded-full border-2 border-[#219EBC] p-1">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={session.user?.image || "/avatars/admin.png"} alt="Admin" className="w-full h-full rounded-full object-cover" />
+                            <Image src={session.user?.image || "/avatars/admin.png"} alt="Admin" width={80} height={80} className="w-full h-full rounded-full object-cover" />
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#219EBC] rounded-full flex items-center justify-center shadow-md">
                             <ShieldCheck className="w-3 h-3 text-white" />

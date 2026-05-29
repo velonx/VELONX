@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Check, Sparkles } from "lucide-react";
+import Image from "next/image";
 
 // Available avatar options
 export const AVATAR_OPTIONS = [
@@ -82,11 +83,11 @@ export default function AvatarSelector({ currentAvatar, onSelectAvatar, trigger 
                                     } transition-colors`}>
                                     <div className="bg-[#0a0a0f] rounded-xl p-2">
                                         {/* Avatar Image */}
-                                        <div className="aspect-square rounded-xl overflow-hidden mb-2">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                        <div className="aspect-square rounded-xl overflow-hidden mb-2 relative">
+                                            <Image
                                                 src={avatar.src}
                                                 alt={avatar.name}
+                                                fill
                                                 className="w-full h-full object-cover"
                                             />
                                         </div>
@@ -113,11 +114,11 @@ export default function AvatarSelector({ currentAvatar, onSelectAvatar, trigger 
                 {/* Preview & Confirm */}
                 <div className="flex items-center justify-between pt-4 border-t border-white/10">
                     <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/10">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                        <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/10 relative">
+                            <Image
                                 src={selectedAvatar}
                                 alt="Selected avatar"
+                                fill
                                 className="w-full h-full object-cover"
                             />
                         </div>

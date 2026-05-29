@@ -7,15 +7,15 @@
  * - Descriptive alt text for event images
  */
 
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import EventCard from '../EventCard';
 import AddEventForm from '../AddEventForm';
-import { Event } from '@/lib/api/types';
+import { Event } from '../../../lib/api/types';
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-  // eslint-disable-next-line @next/next/no-img-element
   default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} {...props} />,
 }));
 

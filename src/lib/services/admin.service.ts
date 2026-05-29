@@ -300,8 +300,6 @@ export class AdminService {
   
   /**
    * Log a moderation action
-   * This is a placeholder for future implementation
-   * In a real system, you would create a ModerationLog model
    */
   async logModerationAction(params: {
     adminId: string;
@@ -310,22 +308,41 @@ export class AdminService {
     targetId: string;
     reason?: string;
   }) {
-    // For now, we'll just return the action details
-    // In a production system, you would store this in a ModerationLog table
-    const logEntry = {
-      id: `log_${Date.now()}`,
-      adminId: params.adminId,
-      action: params.action,
-      targetType: params.targetType,
-      targetId: params.targetId,
-      reason: params.reason,
-      timestamp: new Date(),
-    };
-    
-    // TODO: Store in database when ModerationLog model is added
-    console.log("Moderation action logged:", logEntry);
-    
-    return logEntry;
+    try {
+      const logEntry = await prisma.moderationLog.create({
+        data: {
+          moderatorId: params.adminId,
+          targetId: params.targetId,
+          type: params.action as any,
+          reason: params.reason,
+          metadata: {
+            targetType: params.targetType
+          }
+        }
+      });
+      
+      return {
+        id: logEntry.id,
+        adminId: params.adminId,
+        action: params.action,
+        targetType: params.targetType,
+        targetId: params.targetId,
+        reason: params.reason,
+        timestamp: logEntry.createdAt,
+      };
+    } catch (error) {
+      console.error("Failed to log moderation action:", error);
+      // Fallback if action is an invalid enum or DB fails
+      return {
+        id: `log_${Date.now()}`,
+        adminId: params.adminId,
+        action: params.action,
+        targetType: params.targetType,
+        targetId: params.targetId,
+        reason: params.reason,
+        timestamp: new Date(),
+      };
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Crown, Diamond } from "lucide-react";
 import { useLeaderboard } from "@/lib/api/hooks";
+import Image from "next/image";
 // Avatar options for users to choose from
 const AVATAR_OPTIONS = [
     { id: 1, name: "Cool Ape", src: "/avatars/cool-ape.png" },
@@ -79,10 +80,11 @@ export default function LeaderboardPage() {
                                 <div className="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-[20px] md:rounded-[24px] overflow-hidden border-4 border-border/50 shadow-2xl bg-background p-1.5 md:p-2 group-hover:scale-105 transition-transform">
                                     {top3[1]?.avatarSrc ? (
                                         <>
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                            <Image
                                                 src={top3[1].avatarSrc}
                                                 alt={top3[1]?.name || 'User avatar'}
+                                                width={128}
+                                                height={128}
                                                 className="w-full h-full object-cover rounded-[18px]"
                                             />
                                         </>
@@ -116,10 +118,11 @@ export default function LeaderboardPage() {
                                 <div className="w-28 h-28 md:w-44 md:h-44 mx-auto rounded-[24px] md:rounded-[32px] overflow-hidden border-[4px] md:border-[6px] border-[#FFB703]/30 shadow-2xl shadow-[#FFB703]/20 bg-background p-1.5 md:p-2 group-hover:scale-110 transition-transform">
                                     {top3[0]?.avatarSrc ? (
                                         <>
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                            <Image
                                                 src={top3[0].avatarSrc}
                                                 alt={top3[0]?.name || 'User avatar'}
+                                                width={176}
+                                                height={176}
                                                 className="w-full h-full object-cover rounded-[24px]"
                                             />
                                         </>
@@ -150,10 +153,11 @@ export default function LeaderboardPage() {
                                 <div className="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-[20px] md:rounded-[24px] overflow-hidden border-4 border-[#F4A261]/30 shadow-2xl bg-background p-1.5 md:p-2 group-hover:scale-105 transition-transform">
                                     {top3[2]?.avatarSrc ? (
                                         <>
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                            <Image
                                                 src={top3[2].avatarSrc}
                                                 alt={top3[2]?.name || 'User avatar'}
+                                                width={128}
+                                                height={128}
                                                 className="w-full h-full object-cover rounded-[18px]"
                                             />
                                         </>
@@ -211,8 +215,7 @@ export default function LeaderboardPage() {
                                             <div className="col-span-2 md:col-span-1 font-bold text-muted-foreground group-hover:text-[#219EBC]">{user.rank}</div>
                                             <div className="col-span-6 md:col-span-5 flex items-center gap-3 md:gap-4">
                                                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex-shrink-0 overflow-hidden border-2 border-border group-hover:border-[#219EBC]/30 transition-colors">
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img src={user.avatarSrc} alt={user.name || 'User'} className="w-full h-full object-cover" />
+                                                    <Image src={user.avatarSrc} alt={user.name || 'User'} width={48} height={48} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="font-bold text-foreground group-hover:text-[#219EBC] transition-colors truncate text-sm md:text-base">{user.name || 'Anonymous'}</p>

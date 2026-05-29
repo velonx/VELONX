@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { getCSRFToken } from "@/lib/utils/csrf";
 import PDFUploadField, { PDFMetadata } from "@/components/admin/PDFUploadField";
 import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
+import Image from "next/image";
 
 interface Resource {
   id: string;
@@ -251,12 +252,11 @@ export default function ResourceManagement() {
                   <div className="relative w-full h-48 bg-gray-100 overflow-hidden group">
                     {resource.imageUrl ? (
                       <>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                           src={resource.imageUrl}
                           alt={resource.title}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                        />
+                         width={500} height={500} />
                       </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#219EBC]/10 to-[#023047]/10 transition-all duration-300 group-hover:from-[#219EBC]/20 group-hover:to-[#023047]/20">
@@ -530,10 +530,11 @@ export default function ResourceManagement() {
                 <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
                   {resourceImagePreview && (
                     <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={resourceImagePreview}
                         alt="Resource preview"
+                        width={500}
+                        height={300}
                         className="w-full h-full object-cover"
                         onError={() => {
                           setResourceImagePreview(null);

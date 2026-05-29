@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Package, Truck, CheckCircle2, Clock, MapPin, Phone, ShoppingBag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
+import Image from "next/image";
 
 interface SwagOrder {
   id: string;
@@ -108,8 +109,7 @@ export default function SwagOrdersList() {
               {/* Item Image/Icon */}
               <div className="w-24 h-24 rounded-2xl bg-muted flex-shrink-0 overflow-hidden relative border border-border">
                 {order.item.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={order.item.imageUrl} alt={order.item.name} className="w-full h-full object-cover" />
+                  <Image src={order.item.imageUrl} alt={order.item.name} className="w-full h-full object-cover"  width={500} height={500} />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-3xl opacity-50">
                     🎁

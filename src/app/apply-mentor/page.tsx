@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Loader2, CheckCircle2, Sparkles, Briefcase, GraduationCap, Link as LinkIcon, Github, Twitter, Upload, Image as ImageIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { isValidGitHubUrl, isValidTwitterUrl, isValidLinkedInUrl } from "@/lib/validations/mentor";
+import Image from "next/image";
 
 export default function ApplyMentorPage() {
   const { data: session, status } = useSession();
@@ -305,12 +306,11 @@ export default function ApplyMentorPage() {
                   <div className="flex items-center gap-6">
                     <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center overflow-hidden border-4 border-border">
                       {formData.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={formData.imageUrl}
                           alt="Profile preview"
                           className="w-full h-full object-cover"
-                        />
+                         width={500} height={500} />
                       ) : (
                         <ImageIcon className="w-12 h-12 text-muted-foreground" />
                       )}

@@ -15,6 +15,7 @@ import {
   FileText,
 } from "lucide-react";
 import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
+import Image from "next/image";
 
 /* ─── Types ─────────────────────────────────────────────── */
 type ReportCategory =
@@ -458,12 +459,11 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
                         className="relative group rounded-2xl overflow-hidden border border-border bg-muted aspect-video"
                       >
                         {m.type === "image" ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
+                          <Image
                             src={m.previewUrl}
                             alt="Preview"
                             className="w-full h-full object-cover"
-                          />
+                           width={500} height={500} />
                         ) : (
                           <video
                             src={m.previewUrl}

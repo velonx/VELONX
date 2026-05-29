@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Video, Users, ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface MentorSession {
   id: string;
@@ -160,12 +161,11 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
                 {/* Mentor Avatar */}
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={session.mentor.imageUrl || "/avatars/default.png"}
                       alt={session.mentor.name}
                       className="w-full h-full rounded-full object-cover"
-                    />
+                     width={500} height={500} />
                   </div>
                 </div>
 
