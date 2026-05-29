@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Twitter, Linkedin, Github, Facebook, Share2 } from "lucide-react";
-import SocialFlipButton from "@/components/ui/social-flip-button";
+import { Linkedin, Github, Instagram } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export function Footer() {
@@ -27,43 +26,21 @@ export function Footer() {
                         <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mb-8">
                             Empowering the next generation of tech leaders through community, collaboration, and innovation.
                         </p>
-                        <div className="flex items-center">
-                            <button
-                                className="font-outfit relative overflow-hidden justify-center flex w-36 h-12 rounded-3xl text-white bg-blue-600 cursor-pointer transition-all duration-[5000ms] ease-in-out group hover:rounded-lg"
-                            >
-                                <span
-                                    className="absolute inset-0 flex items-center justify-center gap-2 text-md transition-all duration-300 ease-in-out translate-y-0 group-hover:-translate-y-10 group-hover:opacity-0"
-                                >
-                                    <span>Share</span>
-                                    <Share2 className="w-5 h-5" />
-                                </span>
-                                <span
-                                    className="absolute inset-0 flex gap-5 items-center justify-center px-7 opacity-0 transition-opacity ease-in-out group-hover:opacity-100"
-                                >
-                                    <a
-                                        href="#"
-                                        className="transition-transform text-lg duration-200 ease-in-out translate-y-10 group-hover:translate-y-0 hover:text-white/80"
-                                    >
-                                        <Twitter className="w-5 h-5" />
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="transition-transform text-lg duration-200 ease-in-out translate-y-10 group-hover:translate-y-0 group-hover:delay-75 hover:text-white/80"
-                                    >
-                                        <Facebook className="w-5 h-5" />
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="transition-transform text-lg duration-200 ease-in-out translate-y-10 group-hover:translate-y-0 group-hover:delay-150 hover:text-white/80"
-                                    >
-                                        <Linkedin className="w-5 h-5" />
-                                    </a>
-                                </span>
-                            </button>
-                        </div>
-                        {/* Contact - SocialFlipButton */}
-                        <div className="mt-4 -ml-4">
-                            <SocialFlipButton />
+                        <div className="flex items-center gap-4 mt-6">
+                            <a href="#" aria-label="GitHub" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Github className="w-5 h-5" />
+                            </a>
+                            <a href="https://www.linkedin.com/company/velonx-in/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Linkedin className="w-5 h-5" />
+                            </a>
+                            <a href="https://www.instagram.com/velonx.in?igsh=MW05aWtjdmpncG4xdA==" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Instagram className="w-5 h-5" />
+                            </a>
+                            <a href="#" aria-label="X (Twitter)" className="text-muted-foreground hover:text-primary transition-colors">
+                                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                </svg>
+                            </a>
                         </div>
                     </div>
 
