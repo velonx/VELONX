@@ -423,10 +423,10 @@ export default function ContactPage() {
                     Email Us
                   </p>
                   <a
-                    href="mailto:hello@velonx.in"
+                    href="mailto:info@velonx.in"
                     className="text-foreground font-black hover:text-[#219EBC] transition-colors"
                   >
-                    hello@velonx.in
+                    info@velonx.in
                   </a>
                   <p className="text-xs text-muted-foreground mt-1">
                     We reply within 1–2 business days
@@ -446,7 +446,7 @@ export default function ContactPage() {
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">
                     Headquarters
                   </p>
-                  <p className="text-foreground font-black">Silicon Valley, CA, USA</p>
+                  <p className="text-foreground font-black">India MP Bhopal</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Remote-first team worldwide
                   </p>
