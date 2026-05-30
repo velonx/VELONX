@@ -1,23 +1,29 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, Video, Calendar, CheckCircle, Clock, Briefcase, GraduationCap, ArrowRight, Loader2, Search, ChevronRight, ExternalLink, MapPin, DollarSign, Sparkles, FileText, Users, Share2, Check } from "lucide-react";
+import { Upload, Video, Calendar, CheckCircle, Clock, Briefcase, GraduationCap, ArrowRight, Loader2, Search, ChevronRight, ExternalLink, MapPin, DollarSign, Sparkles, FileText, Users, Share2, Check, LogIn, X, Lock } from "lucide-react";
 import toast from "react-hot-toast";
 import Image from "next/image";
 
 export default function CareerPage() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [activeTab, setActiveTab] = useState("internships");
     const [internships, setInternships] = useState<any[]>([]);
     const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [copiedId, setCopiedId] = useState<string | null>(null);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [pendingAction, setPendingAction] = useState<string>("");
 
     const handleShare = async (id: string, title: string, type: 'internship' | 'job') => {
         const url = `${window.location.origin}/career?tab=${type}&id=${id}`;
@@ -74,6 +80,13 @@ export default function CareerPage() {
 
     const handleMockSchedule = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (status !== "authenticated") {
+            setPendingAction("Mock Interview");
+            setShowLoginModal(true);
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -113,12 +126,87 @@ export default function CareerPage() {
     };
 
     const handleApply = (url: string, title: string) => {
+        if (status !== "authenticated") {
+            setPendingAction(title);
+            setShowLoginModal(true);
+            return;
+        }
         window.open(url, "_blank");
         toast.success(`Opening application for ${title}...`);
     };
 
+    const handleLoginRedirect = () => {
+        router.push(`/auth/login?callbackUrl=/career`);
+    };
+
     return (
         <div className="min-h-screen pt-24 bg-background">
+            {/* Login Required Modal */}
+            {showLoginModal && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    style={{ backdropFilter: "blur(8px)", background: "rgba(0,0,0,0.55)" }}
+                    onClick={() => setShowLoginModal(false)}
+                >
+                    <div
+                        className="relative w-full max-w-md bg-card border border-border rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Top accent bar */}
+                        <div className="h-1.5 w-full bg-gradient-to-r from-[#219EBC] via-[#F4A261] to-[#219EBC]" />
+
+                        <button
+                            onClick={() => setShowLoginModal(false)}
+                            className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            aria-label="Close"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="px-8 py-10 text-center">
+                            <div className="w-16 h-16 rounded-2xl bg-[#219EBC]/10 border border-[#219EBC]/20 flex items-center justify-center mx-auto mb-5">
+                                <Lock className="w-8 h-8 text-[#219EBC]" />
+                            </div>
+
+                            <h2 className="text-2xl font-bold text-foreground mb-2">Login Required</h2>
+                            <p className="text-muted-foreground text-sm mb-1">
+                                You need to be logged in to apply for
+                            </p>
+                            <p className="text-[#219EBC] font-semibold text-base mb-6">
+                                &ldquo;{pendingAction}&rdquo;
+                            </p>
+
+                            <div className="space-y-3">
+                                <Button
+                                    onClick={handleLoginRedirect}
+                                    className="w-full h-12 bg-gradient-to-r from-[#219EBC] to-blue-500 hover:brightness-110 text-white font-bold rounded-xl text-base shadow-lg shadow-[#219EBC]/20 transition-all gap-2"
+                                >
+                                    <LogIn className="w-5 h-5" />
+                                    Login to Apply
+                                </Button>
+                                <Button
+                                    onClick={() => setShowLoginModal(false)}
+                                    variant="ghost"
+                                    className="w-full h-11 rounded-xl text-muted-foreground hover:text-foreground font-medium"
+                                >
+                                    Maybe Later
+                                </Button>
+                            </div>
+
+                            <p className="text-xs text-muted-foreground mt-5">
+                                Don&apos;t have an account?{" "}
+                                <button
+                                    onClick={() => router.push("/auth/signup?callbackUrl=/career")}
+                                    className="text-[#219EBC] font-semibold hover:underline"
+                                >
+                                    Sign up for free
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Hero Section */}
             <section className="relative py-16 bg-background overflow-hidden">
 
