@@ -14,6 +14,7 @@ import { useMentors } from "@/lib/api/hooks";
 import BookingDialog from "@/components/mentors/BookingDialog";
 import { MentorCard } from "@/components/mentors/MentorCard";
 import type { Mentor } from "@/lib/api/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 
@@ -65,13 +66,7 @@ export default function MentorsPage() {
 
 
 
-    if (loading) {
-        return (
-            <div className="min-h-screen pt-24 flex items-center justify-center bg-background">
-                <div className="w-16 h-16 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-            </div>
-        );
-    }
+
 
     return (
         <div className="min-h-screen pt-24 bg-background">
@@ -139,7 +134,36 @@ export default function MentorsPage() {
             {/* Mentors Grid */}
             <section className="py-16 bg-muted/30">
                 <div className="container mx-auto px-4">
-                    {filteredMentors.length > 0 ? (
+                    {loading ? (
+                        <div className="grid md:grid-cols-2 gap-10 justify-items-center">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <div key={i} className="card-7 animate-pulse pointer-events-none w-full">
+                                    <img
+                                        src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                                        className="bg-muted animate-pulse"
+                                        alt="Loading..."
+                                        style={{ objectFit: 'cover' }}
+                                    />
+                                    <div className="w-full">
+                                        <div className="inline-flex items-center gap-1 bg-muted rounded-full w-24 h-6 mb-[14px]" />
+                                        <div className="h-7 w-48 bg-muted rounded mb-[10px]" />
+                                        <div className="h-4 w-36 bg-muted rounded mb-3" />
+                                        <div className="space-y-2 mb-[30px] w-full">
+                                            <div className="h-3.5 bg-muted rounded w-full" />
+                                            <div className="h-3.5 bg-muted rounded w-[90%]" />
+                                            <div className="h-3.5 bg-muted rounded w-[80%]" />
+                                        </div>
+                                        <div className="socials">
+                                            <div className="w-[50px] h-[50px] rounded-full bg-muted border-4 border-card" />
+                                            <div className="w-[50px] h-[50px] rounded-full bg-muted border-4 border-card" />
+                                            <div className="w-[50px] h-[50px] rounded-full bg-muted border-4 border-card" />
+                                            <div className="w-[50px] h-[50px] rounded-full bg-muted border-4 border-card" />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : filteredMentors.length > 0 ? (
                         <div className="grid md:grid-cols-2 gap-10 justify-items-center">
                             {filteredMentors.map((mentor, index) => (
                                 <MentorCard
