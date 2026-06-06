@@ -63,3 +63,98 @@ export async function generateUniqueSlug(
   const next = usedNumbers.length > 0 ? Math.max(...usedNumbers) + 1 : 2;
   return `${base}-${next}`;
 }
+
+/**
+ * Generate a unique slug for an event, appending a numeric suffix if
+ * the base slug already exists (e.g. "my-event", "my-event-2", "my-event-3").
+ *
+ * @param title     The event title to derive the slug from
+ * @param excludeId Optional event ID to exclude when checking uniqueness (for updates)
+ */
+/**
+ * Generate a unique slug for an event.
+ */
+export async function generateUniqueEventSlug(
+  title: string,
+  excludeId?: string
+): Promise<string> {
+  const base = toSlug(title);
+
+  // Check if base slug is available
+  const existing = await prisma.event.findFirst({
+    where: {
+      slug: base,
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
+    select: { id: true },
+  });
+
+  if (!existing) return base;
+
+  // Find all slugs that start with base + "-" + number
+  const siblings = await prisma.event.findMany({
+    where: {
+      slug: { startsWith: `${base}-` },
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
+    select: { slug: true },
+  });
+
+  const suffixPattern = new RegExp(`^${base}-(\\d+)$`);
+  const usedNumbers = siblings
+    .map((e) => {
+      const match = e.slug?.match(suffixPattern);
+      return match ? parseInt(match[1], 10) : 0;
+    })
+    .filter(Boolean);
+
+  const next = usedNumbers.length > 0 ? Math.max(...usedNumbers) + 1 : 2;
+  return `${base}-${next}`;
+}
+
+/**
+ * Generate a unique slug for an opportunity, appending a numeric suffix if
+ * the base slug already exists (e.g. "my-opp", "my-opp-2", "my-opp-3").
+ *
+ * @param title     The opportunity title to derive the slug from
+ * @param excludeId Optional opportunity ID to exclude when checking uniqueness (for updates)
+ */
+export async function generateUniqueOpportunitySlug(
+  title: string,
+  excludeId?: string
+): Promise<string> {
+  const base = toSlug(title);
+
+  // Check if base slug is available
+  const existing = await prisma.opportunity.findFirst({
+    where: {
+      slug: base,
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
+    select: { id: true },
+  });
+
+  if (!existing) return base;
+
+  // Find all slugs that start with base + "-" + number
+  const siblings = await prisma.opportunity.findMany({
+    where: {
+      slug: { startsWith: `${base}-` },
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
+    select: { slug: true },
+  });
+
+  const suffixPattern = new RegExp(`^${base}-(\\d+)$`);
+  const usedNumbers = siblings
+    .map((o) => {
+      const match = o.slug?.match(suffixPattern);
+      return match ? parseInt(match[1], 10) : 0;
+    })
+    .filter(Boolean);
+
+  const next = usedNumbers.length > 0 ? Math.max(...usedNumbers) + 1 : 2;
+  return `${base}-${next}`;
+}
+
+

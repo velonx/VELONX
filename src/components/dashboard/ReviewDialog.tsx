@@ -73,11 +73,11 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md bg-white rounded-[32px]">
+      <DialogContent className="max-w-md bg-white rounded-4xl">
         {!submitted ? (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-black text-[#023047]">
+              <DialogTitle className="text-2xl font-black text-[#1A234A]">
                 Rate Your Session
               </DialogTitle>
               <DialogDescription className="sr-only">Provide feedback for your mentor session</DialogDescription>
@@ -85,7 +85,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
 
             {/* Session Info */}
             <div className="bg-gray-50 rounded-2xl p-4 mb-4">
-              <h4 className="font-bold text-[#023047] mb-1">{session.title}</h4>
+              <h4 className="font-bold text-[#1A234A] mb-1">{session.title}</h4>
               <p className="text-sm text-gray-500">
                 with {session.mentor.name} • {session.mentor.company}
               </p>
@@ -118,7 +118,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
                   ))}
                 </div>
                 {rating > 0 && (
-                  <p className="text-center text-sm font-bold text-[#219EBC]">
+                  <p className="text-center text-sm font-bold text-[#226CE0]">
                     {rating === 5 && 'Excellent!'}
                     {rating === 4 && 'Great!'}
                     {rating === 3 && 'Good'}
@@ -139,7 +139,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   maxLength={1000}
-                  className="w-full h-32 bg-gray-50 border-0 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#219EBC] resize-none"
+                  className="w-full h-32 bg-gray-50 border-0 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#226CE0] resize-none"
                 />
                 <p className="text-xs text-gray-400 text-right">
                   {comment.length}/1000 characters
@@ -150,7 +150,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
               <Button
                 type="submit"
                 disabled={loading || rating === 0}
-                className="w-full h-12 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                className="w-full h-12 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
               >
                 {loading ? (
                   <>
@@ -168,7 +168,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
             <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="w-10 h-10 text-green-600" />
             </div>
-            <h3 className="text-2xl font-black text-[#023047] mb-2">
+            <h3 className="text-2xl font-black text-[#1A234A] mb-2">
               Thank You!
             </h3>
             <p className="text-gray-500 mb-6">
@@ -176,7 +176,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
             </p>
             <Button
               onClick={handleClose}
-              className="w-full h-12 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+              className="w-full h-12 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
             >
               Done
             </Button>

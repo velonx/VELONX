@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { auth } from "@/auth";
 import { withErrorHandler } from "@/lib/utils/errors";
 import { feedService } from "@/lib/services/feed.service";

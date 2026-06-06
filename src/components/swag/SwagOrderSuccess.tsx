@@ -7,6 +7,7 @@ interface Props {
   order: {
     id: string;
     xpSpent: number;
+    status: string;
     fullName: string;
     phone: string;
     address: string;
@@ -24,7 +25,7 @@ export function SwagOrderSuccess({ order, onClose }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
       <div className="bg-card border border-border rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300">
         {/* Success header */}
-        <div className="relative bg-gradient-to-br from-emerald-500 to-green-600 p-8 text-center">
+        <div className="relative bg-linear-to-br from-emerald-500 to-green-600 p-8 text-center">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors"
@@ -42,7 +43,7 @@ export function SwagOrderSuccess({ order, onClose }: Props) {
         <div className="p-6 space-y-4">
           {/* Item */}
           <div className="flex items-center gap-3 bg-muted/50 rounded-2xl p-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#219EBC] to-violet-600 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-linear-to-br from-[#226CE0] to-violet-600 rounded-xl flex items-center justify-center">
               <Package className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1">
@@ -58,7 +59,7 @@ export function SwagOrderSuccess({ order, onClose }: Props) {
           {/* Delivery */}
           <div className="bg-muted/30 rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-3">
-              <MapPin className="w-4 h-4 text-[#219EBC]" />
+              <MapPin className="w-4 h-4 text-[#226CE0]" />
               <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Delivery To</span>
             </div>
             <p className="font-bold text-foreground text-sm">{order.fullName}</p>
@@ -74,24 +75,27 @@ export function SwagOrderSuccess({ order, onClose }: Props) {
 
           {/* Status pipeline */}
           <div className="flex items-center justify-between pt-1">
-            {STATUS_STEPS.map((step, i) => (
-              <div key={step} className="flex items-center flex-1">
-                <div className="flex flex-col items-center gap-1">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? "bg-[#219EBC] text-white" : "bg-muted text-muted-foreground"}`}>
-                    {i + 1}
+            {(() => {
+              const currentStepIndex = STATUS_STEPS.indexOf(order.status);
+              return STATUS_STEPS.map((step, i) => (
+                <div key={step} className="flex items-center flex-1">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${i <= currentStepIndex ? "bg-[#226CE0] text-white" : "bg-muted text-muted-foreground"}`}>
+                      {i + 1}
+                    </div>
+                    <span className={`text-[9px] font-bold uppercase tracking-wide ${i <= currentStepIndex ? "text-[#226CE0] font-bold" : "text-muted-foreground"}`}>{step}</span>
                   </div>
-                  <span className={`text-[9px] font-bold uppercase tracking-wide ${i === 0 ? "text-[#219EBC]" : "text-muted-foreground"}`}>{step}</span>
+                  {i < STATUS_STEPS.length - 1 && (
+                    <div className={`flex-1 h-0.5 mx-1 ${i < currentStepIndex ? "bg-[#226CE0]" : "bg-muted"}`} />
+                  )}
                 </div>
-                {i < STATUS_STEPS.length - 1 && (
-                  <div className={`flex-1 h-0.5 mx-1 ${i === 0 ? "bg-[#219EBC]/30" : "bg-muted"}`} />
-                )}
-              </div>
-            ))}
+              ));
+            })()}
           </div>
 
           <Button
             onClick={onClose}
-            className="w-full h-11 bg-gradient-to-r from-[#219EBC] to-violet-600 text-white font-bold rounded-xl hover:opacity-90"
+            className="w-full h-11 bg-linear-to-r from-[#226CE0] to-violet-600 text-white font-bold rounded-xl hover:opacity-90"
           >
             Continue Shopping
           </Button>

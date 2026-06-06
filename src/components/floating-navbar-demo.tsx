@@ -2,7 +2,6 @@
 
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import {
   IconCalendar,
   IconFolder,
@@ -15,6 +14,8 @@ import {
   IconLayoutDashboard,
 } from "@tabler/icons-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { UnreadCountBadge } from "@/components/unread-count-badge";
+import Link from "next/link";
 
 export default function FloatingNavDemo() {
   const { data: session } = useSession();
@@ -74,20 +75,29 @@ export default function FloatingNavDemo() {
 
   // Desktop right side content based on auth state
   const rightContent = session?.user ? (
-    <Link
-      href={dashboardLink}
-      className="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-muted transition-all"
-    >
-      <Avatar className="w-8 h-8 border-2 border-[#219EBC] shrink-0">
-        <AvatarImage src={session.user.image || ""} />
-        <AvatarFallback className="bg-gradient-to-br from-[#219EBC] to-[#E9C46A] text-white text-xs font-bold">
-          {session.user.name?.charAt(0) || "U"}
-        </AvatarFallback>
-      </Avatar>
-      <span className="text-sm font-semibold text-foreground">
-        {session.user.name?.split(" ")[0]}
-      </span>
-    </Link>
+    <div className="flex items-center gap-2">
+      <Link
+        href="/notifications"
+        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted"
+        aria-label="View notifications"
+      >
+        <UnreadCountBadge />
+      </Link>
+      <Link
+        href={dashboardLink}
+        className="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-muted transition-all"
+      >
+        <Avatar className="w-8 h-8 border-2 border-[#226CE0] shrink-0">
+          <AvatarImage src={session.user.image || ""} />
+          <AvatarFallback className="bg-linear-to-br from-[#226CE0] to-[#E9C46A] text-white text-xs font-bold">
+            {session.user.name?.charAt(0) || "U"}
+          </AvatarFallback>
+        </Avatar>
+        <span className="text-sm font-semibold text-foreground">
+          {session.user.name?.split(" ")[0]}
+        </span>
+      </Link>
+    </div>
   ) : (
     <div className="flex items-center gap-2">
       <Link href="/auth/login">
@@ -96,7 +106,7 @@ export default function FloatingNavDemo() {
         </button>
       </Link>
       <Link href="/auth/signup">
-        <button className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] hover:brightness-110 text-white font-semibold text-xs rounded-full px-4 py-2 transition-all shadow-md whitespace-nowrap">
+        <button className="bg-linear-to-r from-[#FF6B6B] to-[#FF8E53] hover:brightness-110 text-white font-semibold text-xs rounded-full px-4 py-2 transition-all shadow-md whitespace-nowrap">
           Join Now
         </button>
       </Link>
@@ -105,19 +115,28 @@ export default function FloatingNavDemo() {
 
   // Mobile avatar to show in navbar header (outside menu, like regular navbar)
   const mobileAvatar = session?.user ? (
-    <Link href={dashboardLink} aria-label="Go to dashboard">
-      <Avatar className="w-8 h-8 border-2 border-[#219EBC]">
-        <AvatarImage src={session.user.image || ""} />
-        <AvatarFallback className="bg-[#219EBC] text-white text-xs">
-          {session.user.name?.[0]}
-        </AvatarFallback>
-      </Avatar>
-    </Link>
+    <div className="flex items-center gap-1">
+      <Link
+        href="/notifications"
+        className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted"
+        aria-label="View notifications"
+      >
+        <UnreadCountBadge />
+      </Link>
+      <Link href={dashboardLink} aria-label="Go to dashboard">
+        <Avatar className="w-8 h-8 border-2 border-[#226CE0]">
+          <AvatarImage src={session.user.image || ""} />
+          <AvatarFallback className="bg-[#226CE0] text-white text-xs">
+            {session.user.name?.[0]}
+          </AvatarFallback>
+        </Avatar>
+      </Link>
+    </div>
   ) : null;
 
   const mobileRightContent = session?.user ? (
     <Link href={dashboardLink} className="w-full">
-      <button className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#219EBC]/20">
+      <button className="w-full bg-[#226CE0] hover:bg-[#334DAF] text-white rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#226CE0]/20">
         My Dashboard
       </button>
     </Link>
@@ -129,7 +148,7 @@ export default function FloatingNavDemo() {
         </button>
       </Link>
       <Link href="/auth/signup">
-        <button className="w-full bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#219EBC]/20">
+        <button className="w-full bg-[#226CE0] hover:bg-[#334DAF] text-white rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#226CE0]/20">
           Join Community
         </button>
       </Link>
@@ -138,13 +157,22 @@ export default function FloatingNavDemo() {
 
   // Mobile nav header (for authenticated users)
   const mobileNavHeader = session?.user ? (
-    <Link
-      href={dashboardLink}
-      className="px-6 py-4 text-lg font-black text-[#219EBC] bg-[#219EBC]/5 hover:bg-[#219EBC]/10 rounded-2xl transition-all uppercase tracking-wide flex items-center gap-3 mb-2"
-    >
-      <IconLayoutDashboard className="h-6 w-6" />
-      My Dashboard
-    </Link>
+    <>
+      <Link
+        href={dashboardLink}
+        className="px-6 py-4 text-lg font-black text-[#226CE0] bg-[#226CE0]/5 hover:bg-[#226CE0]/10 rounded-2xl transition-all uppercase tracking-wide flex items-center gap-3 mb-2"
+      >
+        <IconLayoutDashboard className="h-6 w-6" />
+        My Dashboard
+      </Link>
+      <Link
+        href="/notifications"
+        className="px-6 py-3 text-lg font-black text-muted-foreground hover:text-accent hover:bg-muted rounded-2xl transition-all uppercase tracking-wide flex items-center gap-3 mb-2"
+      >
+        <UnreadCountBadge />
+        Notifications
+      </Link>
+    </>
   ) : null;
 
   return (

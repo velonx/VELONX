@@ -92,7 +92,7 @@ export default function SwagOrdersList() {
         <p className="text-muted-foreground mb-6">Redeem your XP for awesome merchandise in the Swag Store!</p>
         <button 
           onClick={() => window.location.href = '/swag'}
-          className="px-6 py-3 bg-[#219EBC] text-white rounded-2xl font-bold hover:shadow-lg hover:shadow-[#219EBC]/30 transition-all"
+          className="px-6 py-3 bg-[#226CE0] text-white rounded-2xl font-bold hover:shadow-lg hover:shadow-[#226CE0]/30 transition-all"
         >
           Go to Swag Store
         </button>
@@ -133,7 +133,7 @@ export default function SwagOrdersList() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-black text-[#219EBC]">{order.totalXp} XP</p>
+                    <p className="text-lg font-black text-[#226CE0]">{order.totalXp} XP</p>
                     <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Spent</p>
                   </div>
                 </div>

@@ -1,6 +1,5 @@
-import type { Metadata } from "next";
+import type {} from "next";
 import "./globals.css";
-import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Providers from "@/components/providers";
 import { ScrollAnimationProvider } from "@/components/scroll-animation-provider";
@@ -38,9 +37,7 @@ export default function RootLayout({
         <GoogleAnalytics />
         <Providers>
           <ThemeProvider>
-            <a href="#main-content" className="skip-to-main">
-              Skip to main content
-            </a>
+
             <Toaster
               position="top-center"
               toastOptions={{
@@ -52,7 +49,7 @@ export default function RootLayout({
                 },
                 success: {
                   iconTheme: {
-                    primary: '#219EBC',
+                    primary: '#226CE0',
                     secondary: '#fff',
                   },
                 },

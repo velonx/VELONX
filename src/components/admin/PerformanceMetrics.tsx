@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Activity, Database, Layers, TrendingUp, AlertTriangle } from 'lucide-react'
+import { Activity, Database, Layers, AlertTriangle } from 'lucide-react';
 
 interface APIMetric {
   endpoint: string

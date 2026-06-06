@@ -120,7 +120,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
           </p>
           <Button
             onClick={() => router.push('/mentors')}
-            className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+            className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
           >
             Book a session
           </Button>
@@ -160,7 +160,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
               <div className="flex flex-col md:flex-row md:items-start gap-4">
                 {/* Mentor Avatar */}
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
+                  <div className="w-12 h-12 rounded-full border-2 border-[#226CE0] p-0.5">
                     <Image
                       src={session.mentor.imageUrl || "/avatars/default.png"}
                       alt={session.mentor.name}
@@ -185,11 +185,11 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
                   {/* Session Info */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 text-[#219EBC]" />
+                      <Calendar className="w-4 h-4 text-[#226CE0]" />
                       <span className="font-medium">{dateStr}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4 text-[#219EBC]" />
+                      <Clock className="w-4 h-4 text-[#226CE0]" />
                       <span className="font-medium">{timeStr} • {session.duration} min</span>
                     </div>
                   </div>
@@ -200,7 +200,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
                       {session.mentor.expertise.slice(0, 3).map((skill, idx) => (
                         <span
                           key={idx}
-                          className="px-3 py-1 bg-[#219EBC]/10 text-[#219EBC] text-xs font-bold rounded-full"
+                          className="px-3 py-1 bg-[#226CE0]/10 text-[#226CE0] text-xs font-bold rounded-full"
                         >
                           {skill}
                         </span>
@@ -213,7 +213,7 @@ export default function StudentConfirmedSessions({ userId }: StudentConfirmedSes
                     <div className="flex items-center gap-2">
                       <Button
                         onClick={() => window.open(session.meetingLink, '_blank')}
-                        className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                        className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
                         size="sm"
                       >
                         <Video className="w-4 h-4 mr-2" />

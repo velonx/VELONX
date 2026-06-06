@@ -31,11 +31,11 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#0f1624] px-4 font-outfit">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 font-outfit">
       <div className="w-full max-w-md bg-white dark:bg-[#131c2e] p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-[#1e2d45]">
         
         <div className="mb-6">
-          <Link href="/auth/login" className="inline-flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-[#219EBC] transition-colors">
+          <Link href="/auth/login" className="inline-flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-[#226CE0] transition-colors">
             <ArrowLeft className="w-4 h-4 mr-1.5" />
             Back to login
           </Link>
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="name@example.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#219EBC]/40 focus:border-[#219EBC] transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#226CE0]/40 focus:border-[#226CE0] transition-all"
                   />
                 </div>
               </div>
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading || !email}
-                className="w-full flex items-center justify-center bg-[#219EBC] hover:bg-[#1a7a94] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold rounded-xl py-3 transition-all shadow-md shadow-[#219EBC]/20 mt-2"
+                className="w-full flex items-center justify-center bg-[#226CE0] hover:bg-[#334DAF] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold rounded-xl py-3 transition-all shadow-md shadow-[#226CE0]/20 mt-2"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">

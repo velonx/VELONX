@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Calendar, Download, ExternalLink } from 'lucide-react';
 import { Event } from '@/lib/api/types';
 import { useCalendarExport } from '@/lib/hooks/useCalendarExport';

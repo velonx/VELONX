@@ -52,7 +52,7 @@ export const SortControlComponent = ({ value, onChange }: SortControlProps) => {
       <ArrowUpDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
       <Select value={value} onValueChange={handleValueChange}>
         <SelectTrigger
-          className="w-[180px]"
+          className="w-45 bg-card border-border text-foreground hover:bg-accent/50 transition-all duration-200"
           aria-label="Sort projects by"
         >
           <SelectValue placeholder="Sort by..." />

@@ -24,7 +24,7 @@ interface UserListProps {
 
 export default function UserList({ userRequests, onApprove, onReject }: UserListProps) {
   return (
-    <div className="bg-white rounded-[40px] border border-gray-50 shadow-xl shadow-black/[0.02] overflow-hidden">
+    <div className="bg-white rounded-[40px] border border-gray-50 shadow-xl shadow-black/2 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
@@ -40,11 +40,11 @@ export default function UserList({ userRequests, onApprove, onReject }: UserList
                 <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center font-black text-[#219EBC]">
+                      <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center font-black text-[#226CE0]">
                         {r.user?.name?.[0] || 'U'}
                       </div>
                       <div>
-                        <p className="font-bold text-[#023047]">{r.user?.name || 'Unknown'}</p>
+                        <p className="font-bold text-[#1A234A]">{r.user?.name || 'Unknown'}</p>
                         <p className="text-xs text-gray-400">{r.user?.email}</p>
                       </div>
                     </div>

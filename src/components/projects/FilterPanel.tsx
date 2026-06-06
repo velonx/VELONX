@@ -18,12 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Slider } from '@/components/ui/slider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import {
-  ProjectFilters,
-  ProjectCategory,
-  ProjectDifficulty,
-  CATEGORY_COLORS,
-} from '@/lib/types/project-page.types';
+import { ProjectFilters, ProjectCategory, ProjectDifficulty } from '@/lib/types/project-page.types';
 import { countActiveFilters } from '@/lib/utils/project-filters';
 
 interface FilterPanelProps {
@@ -116,7 +111,7 @@ export const FilterPanelComponent = ({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="gap-2"
+            className="gap-2 bg-card border-border text-foreground hover:bg-accent/50 transition-all duration-200"
             aria-label="Open filter panel"
             aria-expanded="false"
           >
@@ -160,7 +155,7 @@ export const FilterPanelComponent = ({
             </p>
           </div>
 
-          <ScrollArea className="h-[400px]">
+          <ScrollArea className="h-100">
             <div className="p-4 space-y-6">
               {/* Tech Stack Filter */}
               <div>

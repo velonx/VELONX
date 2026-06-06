@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
         <head><meta charset="utf-8" /></head>
         <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f6f9fc;margin:0;padding:0;">
           <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;margin-top:32px;">
-            <div style="background:linear-gradient(135deg,#219EBC 0%,#023047 100%);padding:32px;text-align:center;">
+            <div style="background:linear-gradient(135deg,#226CE0 0%,#1A234A 100%);padding:32px;text-align:center;">
               <h1 style="color:#fff;font-size:28px;font-weight:900;margin:0;letter-spacing:2px;">VELONX</h1>
               <p style="color:rgba(255,255,255,0.85);font-size:14px;margin:8px 0 0;">New Contact Form Submission</p>
             </div>
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
                 </tr>
                 <tr>
                   <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;">Email</td>
-                  <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:15px;color:#219EBC;">${email}</td>
+                  <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:15px;color:#226CE0;">${email}</td>
                 </tr>
                 <tr>
                   <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;">Subject</td>
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
                 <div style="background:#f9fafb;border-radius:12px;padding:20px;font-size:15px;color:#374151;line-height:1.7;white-space:pre-wrap;">${message}</div>
               </div>
               <div style="margin-top:24px;padding:16px;background:#fef3c7;border-radius:12px;font-size:13px;color:#92400e;">
-                Reply to: <a href="mailto:${email}" style="color:#219EBC;font-weight:700;">${email}</a>
+                Reply to: <a href="mailto:${email}" style="color:#226CE0;font-weight:700;">${email}</a>
               </div>
             </div>
             <div style="padding:20px;border-top:1px solid #e5e7eb;text-align:center;font-size:12px;color:#9ca3af;">
@@ -78,16 +78,16 @@ export async function POST(request: NextRequest) {
         <head><meta charset="utf-8" /></head>
         <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f6f9fc;margin:0;padding:0;">
           <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;margin-top:32px;">
-            <div style="background:linear-gradient(135deg,#219EBC 0%,#023047 100%);padding:32px;text-align:center;">
+            <div style="background:linear-gradient(135deg,#226CE0 0%,#1A234A 100%);padding:32px;text-align:center;">
               <h1 style="color:#fff;font-size:28px;font-weight:900;margin:0;letter-spacing:2px;">VELONX</h1>
               <p style="color:rgba(255,255,255,0.85);font-size:14px;margin:8px 0 0;">We received your message!</p>
             </div>
             <div style="padding:36px 32px;">
-              <h2 style="font-size:22px;font-weight:800;color:#023047;margin:0 0 16px;">Hey ${name} 👋</h2>
+              <h2 style="font-size:22px;font-weight:800;color:#1A234A;margin:0 0 16px;">Hey ${name} 👋</h2>
               <p style="font-size:15px;color:#374151;line-height:1.7;margin:0 0 16px;">
                 Thanks for reaching out. We have received your message about <strong>${subject}</strong> and our team will get back to you within <strong>1-2 business days</strong>.
               </p>
-              <div style="background:#f0f9ff;border-left:4px solid #219EBC;border-radius:0 12px 12px 0;padding:16px 20px;margin:24px 0;">
+              <div style="background:#f0f9ff;border-left:4px solid #226CE0;border-radius:0 12px 12px 0;padding:16px 20px;margin:24px 0;">
                 <p style="font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;margin:0 0 8px;">Your message</p>
                 <p style="font-size:14px;color:#374151;line-height:1.6;margin:0;white-space:pre-wrap;">${message.slice(0, 300)}${message.length > 300 ? '...' : ''}</p>
               </div>

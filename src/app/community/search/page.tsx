@@ -8,7 +8,6 @@ import { Search, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { SearchResults } from "@/components/community/SearchResults";
-import { SearchBar } from "@/components/community/SearchBar";
 import { useSearch } from "@/lib/hooks/useSearch";
 
 function SearchPageContent() {

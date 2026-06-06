@@ -2,14 +2,16 @@
 
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/navbar";
+import FloatingNavDemo from "@/components/floating-navbar-demo";
 
 export function ConditionalNavbar() {
   const pathname = usePathname();
   
-  // Don't show the main navbar on the landing page (only show floating navbar there)
+  // Show floating navbar on the landing page
   if (pathname === "/") {
-    return null;
+    return <FloatingNavDemo />;
   }
   
   return <Navbar />;
 }
+

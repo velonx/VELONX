@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 
 export default function EventManagement() {
@@ -238,16 +237,16 @@ export default function EventManagement() {
   return (
     <div className="space-y-8">
       {/* Events List */}
-      <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+      <Card className="bg-background border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
         <CardHeader className="p-12 border-b border-gray-50">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-3xl font-black text-[#023047] mb-2">Manage Events</h3>
+              <h3 className="text-3xl font-black text-[#1A234A] mb-2">Manage Events</h3>
               <p className="text-muted-foreground">Create, edit, and manage platform events</p>
             </div>
             <Button
               onClick={() => setShowForm(!showForm)}
-              className="h-14 px-8 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-2xl shadow-lg"
+              className="h-14 px-8 bg-[#226CE0] hover:bg-[#334DAF] text-white font-black rounded-2xl shadow-lg"
             >
               {showForm ? (
                 <>
@@ -533,7 +532,7 @@ export default function EventManagement() {
               <div className="flex gap-4">
                 <Button
                   type="submit"
-                  className="h-12 px-8 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                  className="h-12 px-8 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
                 >
                   {editingEvent ? 'Update Event' : 'Create Event'}
                 </Button>
@@ -553,7 +552,7 @@ export default function EventManagement() {
         <CardContent className="p-12">
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : events.length === 0 ? (
             <div className="text-center py-20">
@@ -576,7 +575,7 @@ export default function EventManagement() {
                           alt={event.title}
                           width={96}
                           height={96}
-                          className="w-full h-full object-cover flex-shrink-0"
+                          className="w-full h-full object-cover shrink-0"
                         />
                       </>
                     )}
@@ -626,7 +625,7 @@ export default function EventManagement() {
                         onClick={() => handleViewAttendees(event)}
                         variant="outline"
                         size="sm"
-                        className="h-10 px-4 rounded-xl border-[#219EBC] text-[#219EBC] hover:bg-[#219EBC]/10"
+                        className="h-10 px-4 rounded-xl border-[#226CE0] text-[#226CE0] hover:bg-[#226CE0]/10"
                         title="View Attendees"
                       >
                         <Users className="w-4 h-4" />
@@ -656,7 +655,7 @@ export default function EventManagement() {
                       onClick={() => setExpandedRewardEventId(
                         expandedRewardEventId === event.id ? null : event.id
                       )}
-                      className="flex items-center gap-2 text-sm font-semibold text-[#219EBC] hover:text-[#1a7a94] transition-colors"
+                      className="flex items-center gap-2 text-sm font-semibold text-[#226CE0] hover:text-[#334DAF] transition-colors"
                     >
                       <Trophy className="w-4 h-4" />
                       {expandedRewardEventId === event.id ? 'Hide Rewards' : 'Manage Rewards'}
@@ -679,7 +678,7 @@ export default function EventManagement() {
           <DialogHeader className="p-8 border-b border-border bg-muted/30">
             <div className="flex items-center justify-between">
               <div>
-                <DialogTitle className="text-2xl font-black text-[#023047]">Registered Attendees</DialogTitle>
+                <DialogTitle className="text-2xl font-black text-[#1A234A]">Registered Attendees</DialogTitle>
                 <DialogDescription className="mt-1">
                   {viewingAttendeesEvent?.title} · {attendees.length} people
                 </DialogDescription>
@@ -689,7 +688,7 @@ export default function EventManagement() {
                 size="sm"
                 onClick={() => viewingAttendeesEvent && exportAttendeesCSV(viewingAttendeesEvent, attendees)}
                 disabled={attendees.length === 0}
-                className="h-10 px-4 border-[#219EBC] text-[#219EBC] font-bold rounded-xl"
+                className="h-10 px-4 border-[#226CE0] text-[#226CE0] font-bold rounded-xl"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Export CSV
@@ -701,7 +700,7 @@ export default function EventManagement() {
             <div className="p-8">
               {loadingAttendees ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-4">
-                  <div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                  <div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
                   <p className="text-muted-foreground font-medium">Loading attendee list...</p>
                 </div>
               ) : attendees.length === 0 ? (
@@ -717,9 +716,9 @@ export default function EventManagement() {
                       className="flex items-center justify-between p-4 rounded-2xl border border-border bg-muted/10"
                     >
                       <div className="flex items-center gap-4">
-                        <Avatar className="w-12 h-12 border-2 border-[#219EBC]/20">
+                        <Avatar className="w-12 h-12 border-2 border-[#226CE0]/20">
                           <AvatarImage src={attendee.user.image} alt={attendee.user.name} />
-                          <AvatarFallback className="bg-[#219EBC] text-white font-bold">
+                          <AvatarFallback className="bg-[#226CE0] text-white font-bold">
                             {attendee.user.name?.[0]?.toUpperCase() || <User className="w-5 h-5" />}
                           </AvatarFallback>
                         </Avatar>
@@ -748,7 +747,7 @@ export default function EventManagement() {
           <div className="p-6 border-t border-border bg-muted/30 flex justify-end">
             <Button
               onClick={() => setViewingAttendeesEvent(null)}
-              className="h-11 px-8 bg-[#023047] text-white font-bold rounded-xl"
+              className="h-11 px-8 bg-[#1A234A] text-white font-bold rounded-xl"
             >
               Close
             </Button>

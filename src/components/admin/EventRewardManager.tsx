@@ -32,7 +32,7 @@ const ICONS: { value: IconType; label: string; icon: React.ReactNode }[] = [
   { value: "trophy",      label: "Trophy",      icon: <Trophy className="w-4 h-4 text-[#FFB703]" /> },
   { value: "star",        label: "Star",        icon: <Star className="w-4 h-4 text-[#F9A8D4]" /> },
   { value: "gift",        label: "Gift",        icon: <Gift className="w-4 h-4 text-[#6EE7B7]" /> },
-  { value: "certificate", label: "Certificate", icon: <Award className="w-4 h-4 text-[#219EBC]" /> },
+  { value: "certificate", label: "Certificate", icon: <Award className="w-4 h-4 text-[#226CE0]" /> },
   { value: "medal",       label: "Medal",       icon: <Medal className="w-4 h-4 text-orange-400" /> },
   { value: "zap",         label: "Zap",         icon: <Zap className="w-4 h-4 text-purple-400" /> },
 ];
@@ -42,7 +42,7 @@ const getIcon = (type: IconType, size = "w-5 h-5") => {
     case "trophy":      return <Trophy className={`${size} text-[#FFB703]`} />;
     case "star":        return <Star className={`${size} text-[#F9A8D4]`} />;
     case "gift":        return <Gift className={`${size} text-[#6EE7B7]`} />;
-    case "certificate": return <Award className={`${size} text-[#219EBC]`} />;
+    case "certificate": return <Award className={`${size} text-[#226CE0]`} />;
     case "medal":       return <Medal className={`${size} text-orange-400`} />;
     case "zap":         return <Zap className={`${size} text-purple-400`} />;
   }
@@ -161,7 +161,7 @@ export default function EventRewardManager({ eventId }: Props) {
           <h3 className="font-bold text-foreground text-base">Event Rewards</h3>
           <p className="text-muted-foreground text-xs mt-0.5">Prizes displayed on the public event page</p>
         </div>
-        <Button size="sm" onClick={openCreate} className="bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-lg gap-1.5">
+        <Button size="sm" onClick={openCreate} className="bg-[#226CE0] hover:bg-[#334DAF] text-white rounded-lg gap-1.5">
           <Plus className="w-3.5 h-3.5" /> Add Reward
         </Button>
       </div>
@@ -239,7 +239,7 @@ export default function EventRewardManager({ eventId }: Props) {
           </div>
 
           <div className="flex gap-3 pt-1">
-            <Button type="submit" disabled={saving} size="sm" className="bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-lg gap-1.5">
+            <Button type="submit" disabled={saving} size="sm" className="bg-[#226CE0] hover:bg-[#334DAF] text-white rounded-lg gap-1.5">
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
               {saving ? "Saving..." : "Save Reward"}
             </Button>
@@ -260,15 +260,15 @@ export default function EventRewardManager({ eventId }: Props) {
       ) : (
         <div className="space-y-3">
           {rewards.map(r => (
-            <div key={r.id} className="flex items-start gap-4 p-4 rounded-xl border border-border bg-card hover:border-[#219EBC]/30 transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
+            <div key={r.id} className="flex items-start gap-4 p-4 rounded-xl border border-border bg-card hover:border-[#226CE0]/30 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
                 {getIcon(r.iconType)}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-semibold text-sm text-foreground">{r.title}</p>
                   {r.rankRequired && (
-                    <span className="text-[10px] bg-[#219EBC]/10 text-[#219EBC] px-2 py-0.5 rounded-full font-semibold">
+                    <span className="text-[10px] bg-[#226CE0]/10 text-[#226CE0] px-2 py-0.5 rounded-full font-semibold">
                       Top {r.rankRequired}
                     </span>
                   )}
@@ -280,7 +280,7 @@ export default function EventRewardManager({ eventId }: Props) {
                 </div>
                 <p className="text-muted-foreground text-xs mt-0.5 line-clamp-2">{r.description}</p>
               </div>
-              <div className="flex items-center gap-1.5 flex-shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button onClick={() => openEdit(r)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
                   <Pencil className="w-3.5 h-3.5" />
                 </button>

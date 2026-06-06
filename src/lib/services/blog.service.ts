@@ -262,10 +262,13 @@ export class BlogService {
   }
 
   /**
-   * Increment view count for a blog post
+   * Increment view count for a blog post.
+   * Uses explicit set instead of increment to safely handle legacy posts
+   * where the views field may be null (created before the field was added).
+   * MongoDB's $inc operator throws a type error on null fields.
    */
   async incrementViews(id: string) {
-    // Check if blog post exists
+    // Fetch existing post to get current views (may be null for old posts)
     const existingBlogPost = await prisma.blogPost.findUnique({
       where: { id },
     });
@@ -274,10 +277,14 @@ export class BlogService {
       throw new NotFoundError("Blog post");
     }
 
+    // Use explicit set to handle null views on legacy posts safely.
+    // { increment: 1 } fails on null; { set: N } always works.
+    const newViews = (existingBlogPost.views ?? 0) + 1;
+
     const blogPost = await prisma.blogPost.update({
       where: { id },
       data: {
-        views: { increment: 1 },
+        views: { set: newViews },
       },
       include: {
         author: {

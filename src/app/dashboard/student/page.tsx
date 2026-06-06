@@ -31,9 +31,7 @@ import {
 import SwagOrdersList from "@/components/dashboard/student/SwagOrdersList";
 import { useProjects, useMeetings, useUserStats } from "@/lib/api/hooks";
 import { DailyCheckIn } from "@/components/daily-check-in";
-import SessionCard from "@/components/dashboard/SessionCard";
 import ReviewDialog from "@/components/dashboard/ReviewDialog";
-import ProjectJoinRequests from "@/components/dashboard/ProjectJoinRequests";
 import { FollowersList } from "@/components/community/FollowersList";
 import { FollowingList } from "@/components/community/FollowingList";
 import { PostCard } from "@/components/community/PostCard";
@@ -46,9 +44,6 @@ import WelcomeSection from "@/components/dashboard/student/Overview/WelcomeSecti
 import ProgressSummary from "@/components/dashboard/student/Overview/ProgressSummary";
 
 // Mentorship Components
-import FindMentors from "@/components/dashboard/student/Mentorship/FindMentors";
-import UpcomingSessions from "@/components/dashboard/student/Mentorship/UpcomingSessions";
-import SessionHistory from "@/components/dashboard/student/Mentorship/SessionHistory";
 import StudentConfirmedSessions from "@/components/dashboard/student/StudentConfirmedSessions";
 import StudentApprovedInterviews from "@/components/dashboard/student/StudentApprovedInterviews";
 
@@ -98,7 +93,7 @@ function StudentDashboardContent() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [activeTab, setActiveTab] = useState("Dashboard");
+    const [activeTab, setActiveTab] = useState("overview");
     const [searchQuery, setSearchQuery] = useState("");
     const [projectStatusFilter, setProjectStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
     const [editingProject, setEditingProject] = useState<any | null>(null);
@@ -165,7 +160,7 @@ function StudentDashboardContent() {
     }, [session?.user?.id]);
 
     useEffect(() => {
-        if (activeTab === 'Report' && session?.user?.id) {
+        if (activeTab === 'report' && session?.user?.id) {
             fetchMyReports();
         }
     }, [activeTab, session?.user?.id, fetchMyReports]);
@@ -249,20 +244,21 @@ function StudentDashboardContent() {
     if (status === "loading" || projectsLoading || meetingsLoading || statsLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
-                <div className="w-16 h-16 rounded-full border-4 border-[#219EBC] border-t-transparent animate-spin" />
+                <div className="w-16 h-16 rounded-full border-4 border-[#226CE0] border-t-transparent animate-spin" />
             </div>
         );
     }
 
     if (!session) return null;
 
-    const navItems = [
-        { icon: LayoutDashboard, label: "Dashboard" },
-        { icon: Users, label: "Community" },
-        { icon: Timer, label: "Tracking" },
-        { icon: ShoppingBag, label: "Swag" },
-        { icon: Flag, label: "Report" },
-        { icon: Settings, label: "Setting" },
+    // Sidebar menu items
+    const menuItems = [
+        { key: "overview", emoji: "📊", label: "Overview Workspace" },
+        { key: "community", emoji: "👥", label: "My Community" },
+        { key: "tracking", emoji: "⚡", label: "Activity Tracking" },
+        { key: "swag", emoji: "🛍️", label: "My Redemptions" },
+        { key: "report", emoji: "🚩", label: "Reports" },
+        { key: "settings", emoji: "⚙️", label: "Workspace Settings" },
     ];
 
     // Map real projects to display format
@@ -281,189 +277,278 @@ function StudentDashboardContent() {
         liveUrl: project.liveUrl || null,
     })) || [];
 
-    // Map real meetings to timeline format
-    const timeline = meetings?.reduce((acc: any[], meeting) => {
-        const date = new Date(meeting.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const time = new Date(meeting.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    // Generate user initials
+    const userInitials = session.user?.name
+        ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase()
+        : 'U';
 
-        const existingDate = acc.find(item => item.date === date);
-        const meetingItem = {
-            time,
-            title: meeting.title,
-            sub: meeting.description || 'Meeting',
-            color: "border-teal-400"
-        };
+    // Level label
+    const getLevelLabel = (level: number) => {
+        if (level >= 8) return 'Elite Builder';
+        if (level >= 6) return 'Senior Builder';
+        if (level >= 4) return 'Active Builder';
+        if (level >= 2) return 'Rising Builder';
+        return 'Student Builder';
+    };
 
-        if (existingDate) {
-            existingDate.items.push(meetingItem);
-        } else {
-            acc.push({
-                date,
-                items: [meetingItem]
-            });
-        }
+    // Build activity items from real data (meetings + sessions)
+    const activityItems: { time: string; title: string; dotClass: string }[] = [];
 
-        return acc;
-    }, []) || [];
+    // Add mentor session activity
+    mentorSessions.slice(0, 3).forEach(s => {
+        const date = new Date(s.date);
+        const timeStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' +
+            date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        activityItems.push({
+            time: timeStr,
+            title: `${s.status === 'COMPLETED' ? 'Completed' : 'Upcoming'} session: ${s.title} with ${s.mentor.name}`,
+            dotClass: s.status === 'COMPLETED' ? 'success' : ''
+        });
+    });
+
+    // Add meeting activity
+    meetings?.slice(0, 3).forEach(m => {
+        const date = new Date(m.date);
+        const timeStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' +
+            date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        activityItems.push({
+            time: timeStr,
+            title: m.title,
+            dotClass: ''
+        });
+    });
+
+    // Sort by most recent
+    activityItems.sort((a, b) => b.time.localeCompare(a.time));
 
     return (
-        <div className="flex min-h-screen bg-background pt-20">
-            {/* Mobile Navigation - Visible only on mobile */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border z-30 safe-area-pb shadow-lg">
-                <nav className="flex items-center justify-around p-3">
-                    {navItems.map((item) => (
+        <div className="container dashboard-layout">
+            {/* ====== Sidebar ====== */}
+            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:flex rounded-2xl w-20 fixed left-0">
+                <div className="sr-only">Dashboard Setting</div>
+                <div className="dashboard-user-profile">
+                    {session.user?.image ? (
+                        <div className="w-18 h-18 rounded-full border-2 border-[#A78BFA] overflow-hidden" style={{ boxShadow: '0 0 20px rgba(124,58,237,0.15)' }}>
+                            <Image src={session.user.image} alt="User" width={72} height={72} className="w-full h-full object-cover" />
+                        </div>
+                    ) : (
+                        <div className="dashboard-user-avatar">{userInitials}</div>
+                    )}
+                    <div className="dashboard-user-name">{session.user?.name || 'Student'}</div>
+                    <div className="dashboard-user-tag">{getLevelLabel(user?.level || 1)}</div>
+                </div>
+
+                <div className="dashboard-menu">
+                    {menuItems.map(item => (
                         <button
-                            key={item.label}
-                            onClick={() => setActiveTab(item.label)}
-                            className={`flex flex-col items-center gap-1.5 px-4 py-2.5 rounded-2xl transition-all ${activeTab === item.label
-                                ? "text-[#219EBC] bg-muted"
-                                : "text-muted-foreground hover:bg-muted"
-                                }`}
+                            key={item.key}
+                            className={`dashboard-menu-item ${activeTab === item.key ? 'active' : ''}`}
+                            onClick={() => setActiveTab(item.key)}
                         >
-                            <item.icon className="w-5 h-5" />
-                            <span className="text-xs font-bold uppercase tracking-wide">{item.label}</span>
+                            <span>{item.emoji}</span> {item.label}
+                        </button>
+                    ))}
+                </div>
+            </aside>
+
+            {/* ====== Mobile Bottom Nav ====== */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border z-30 safe-area-pb shadow-lg">
+                <nav className="flex items-center justify-around p-2">
+                    {menuItems.map(item => (
+                        <button
+                            key={item.key}
+                            onClick={() => setActiveTab(item.key)}
+                            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all text-xs font-bold ${
+                                activeTab === item.key
+                                    ? 'text-[#7C3AED] bg-purple-50 dark:bg-purple-900/20'
+                                    : 'text-muted-foreground'
+                            }`}
+                        >
+                            <span className="text-base">{item.emoji}</span>
+                            <span className="truncate max-w-14">{item.label.split(' ')[0]}</span>
                         </button>
                     ))}
                 </nav>
             </div>
 
-            {/* Left Sidebar — collapsed by default, expands on hover */}
-            <aside className="group hidden md:flex flex-col md:w-20 hover:md:w-80 bg-background border-r border-border p-4 hover:p-6 md:fixed md:left-0 top-20 bottom-0 z-50 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out">
-                <div className="mb-12 flex items-center gap-4">
-                    <div className="relative shrink-0 flex items-center justify-center">
-                        <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
-                            <Image src={session.user?.image || "/avatars/default.png"} alt="User" width={48} height={48} className="w-full h-full rounded-full object-cover" />
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Clock className="w-3 h-3 text-[#219EBC]" />
-                        </div>
+            {/* ====== Main Content Panel Area ====== */}
+            <main className="md:ml-20 md:mr-96" style={{ width: '100%' }}>
+                {/* Bento Stats Row */}
+                <section className="dashboard-bento">
+                    <div className="dashboard-widget-card">
+                        <span className="dashboard-widget-label">XP Balance</span>
+                        <span className="dashboard-widget-value">{user?.xp || 0} XP</span>
+                        <span className="dashboard-widget-footer" style={{ color: '#22C55E' }}>⚡ Level {user?.level || 1}</span>
                     </div>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-0 group-hover:w-48 overflow-hidden shrink-0">
-                        <h2 className="text-xl font-bold text-foreground mb-1 truncate">{session.user?.name}</h2>
-                        <p className="text-muted-foreground text-sm font-medium truncate">{session.user?.email}</p>
+                    <div className="dashboard-widget-card">
+                        <span className="dashboard-widget-label">Enrolled Events</span>
+                        <span className="dashboard-widget-value">{userStats?.stats?.eventsAttending || 0} Active</span>
+                        <span className="dashboard-widget-footer">Events registered</span>
                     </div>
-                </div>
-
-                <nav className="flex-1 space-y-2">
-                    {navItems.map((item) => (
-                        <button
-                            key={item.label}
-                            onClick={() => setActiveTab(item.label)}
-                            className={`w-full flex items-center gap-4 px-3 py-4 rounded-2xl transition-all font-bold ${activeTab === item.label
-                                ? "bg-[#219EBC]/10 text-[#219EBC]"
-                                : "text-muted-foreground hover:bg-muted hover:text-muted-foreground"
-                                }`}
-                            title={item.label}
-                        >
-                            <item.icon className="w-6 h-6 shrink-0" />
-                            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap overflow-hidden">
-                                {item.label}
-                            </span>
-                        </button>
-                    ))}
-                </nav>
-
-
-            </aside>
-
-            {/* Main Content */}
-            <main className="flex-1 md:ml-20 md:mr-96 p-4 md:p-12 pb-24 md:pb-12 transition-all duration-300">
-                {/* Mobile Header - Visible only on mobile */}
-                <div className="md:hidden mb-6 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full border-2 border-[#219EBC] p-0.5">
-                            <Image src={session.user?.image || "/avatars/default.png"} alt="User" width={48} height={48} className="w-full h-full rounded-full object-cover" />
-                        </div>
-                        <div>
-                            <h2 className="text-lg font-bold text-foreground">{session.user?.name}</h2>
-                            <p className="text-xs text-muted-foreground font-bold">Level {user?.level || 1}</p>
-                        </div>
+                    <div className="dashboard-widget-card">
+                        <span className="dashboard-widget-label">My Projects</span>
+                        <span className="dashboard-widget-value">{projectCounts.all} Total</span>
+                        <span className="dashboard-widget-footer" style={{ color: '#7C3AED' }}>{projectCounts.inProgress} In Progress</span>
                     </div>
-                    <button className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground relative transition-all">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-card" />
-                    </button>
-                </div>
+                    <div className="dashboard-widget-card">
+                        <span className="dashboard-widget-label">Builder Level</span>
+                        <span className="dashboard-widget-value">Lvl {user?.level || 1}</span>
+                        <span className="dashboard-widget-footer" style={{ color: '#226CE0' }}>{getLevelLabel(user?.level || 1)}</span>
+                    </div>
+                </section>
 
-                {activeTab === "Dashboard" && (
-                    <>
-                        {/* Mobile Daily Check-in - Visible only on mobile */}
-                        <div className="md:hidden mb-6">
-                            <DailyCheckIn />
+                {/* ====== Panel: Overview ====== */}
+                <div className={`dashboard-content-panel ${activeTab === 'overview' ? 'active' : ''}`}>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                        Welcome Back, {session.user?.name?.split(' ')[0] || 'Student'}!
+                    </h1>
+                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                        Your workspace is up to date. Keep participating in events and pushing code to earn more XP.
+                    </p>
+
+                    {/* Daily Check-in */}
+                    <div className="mb-8">
+                        <DailyCheckIn />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '2rem' }} className="max-lg:grid-cols-1">
+                        {/* Left: Activity Timeline */}
+                        <div className="bg-card border border-border rounded-2xl p-6">
+                            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.25rem' }}>Recent Workspace Activity</h3>
+                            {activityItems.length > 0 ? (
+                                <div className="activity-timeline">
+                                    {activityItems.slice(0, 5).map((item, i) => (
+                                        <div className="activity-item" key={i}>
+                                            <div className={`activity-dot ${item.dotClass}`}></div>
+                                            <div className="activity-time">{item.time}</div>
+                                            <div className="activity-title">{item.title}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-muted-foreground text-sm">No recent activity yet. Join events and book mentor sessions to see activity here.</p>
+                            )}
                         </div>
 
-                        {/* Header */}
-                        <WelcomeSection
-                            userName={session.user?.name?.split(" ")[0] || "Student"}
-                            searchQuery={searchQuery}
-                            onSearchChange={setSearchQuery}
-                        />
-
-                        {/* Project Status Filter Tabs */}
-                        <div className="mb-8">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-2xl font-bold text-foreground">My Projects</h2>
+                        {/* Right: Badges & Skill Bars */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                            <div className="bg-card border border-border rounded-2xl p-6">
+                                <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>Earned Badges</h3>
+                                <div className="dashboard-badge-list">
+                                    <div className="badge-icon-box">
+                                        <span>💻</span>
+                                        <div className="badge-icon-label">Coder</div>
+                                    </div>
+                                    <div className="badge-icon-box">
+                                        <span>{projectCounts.completed > 0 ? '🏆' : '🔒'}</span>
+                                        <div className="badge-icon-label">{projectCounts.completed > 0 ? 'Finisher' : 'Locked'}</div>
+                                    </div>
+                                    <div className="badge-icon-box">
+                                        <span>{(user?.currentStreak || 0) >= 3 ? '🔥' : '🔒'}</span>
+                                        <div className="badge-icon-label">{(user?.currentStreak || 0) >= 3 ? 'Active' : 'Locked'}</div>
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Status Tabs */}
-                            <div className="flex flex-wrap gap-3 mb-6">
-                                <button
-                                    onClick={() => handleProjectStatusChange('ALL')}
-                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'ALL'
-                                        ? 'bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30'
-                                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <FolderOpen className="w-4 h-4" />
-                                        <span>All Projects</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'ALL'
-                                            ? 'bg-white/20 text-white'
-                                            : 'bg-background text-foreground'
-                                            }`}>
-                                            {projectCounts.all}
-                                        </span>
+                            <div className="bg-card border border-border rounded-2xl p-6">
+                                <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>Skill Index</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    <div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', fontWeight: 600 }}>
+                                            <span>Projects Completed</span>
+                                            <span>{Math.min(100, projectCounts.completed * 20)}%</span>
+                                        </div>
+                                        <div className="radar-bar-track">
+                                            <div className="radar-bar-fill" style={{ width: `${Math.min(100, projectCounts.completed * 20)}%` }}></div>
+                                        </div>
                                     </div>
-                                </button>
-
-                                <button
-                                    onClick={() => handleProjectStatusChange('IN_PROGRESS')}
-                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'IN_PROGRESS'
-                                        ? 'bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30'
-                                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <Loader2 className="w-4 h-4" />
-                                        <span>In Progress</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'IN_PROGRESS'
-                                            ? 'bg-white/20 text-white'
-                                            : 'bg-background text-foreground'
-                                            }`}>
-                                            {projectCounts.inProgress}
-                                        </span>
+                                    <div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', fontWeight: 600 }}>
+                                            <span>Event Participation</span>
+                                            <span>{Math.min(100, (userStats?.stats?.eventsAttending || 0) * 25)}%</span>
+                                        </div>
+                                        <div className="radar-bar-track">
+                                            <div className="radar-bar-fill" style={{ width: `${Math.min(100, (userStats?.stats?.eventsAttending || 0) * 25)}%` }}></div>
+                                        </div>
                                     </div>
-                                </button>
-
-                                <button
-                                    onClick={() => handleProjectStatusChange('COMPLETED')}
-                                    className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'COMPLETED'
-                                        ? 'bg-[#219EBC] text-white shadow-lg shadow-[#219EBC]/30'
-                                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <CheckCircle2 className="w-4 h-4" />
-                                        <span>Completed</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'COMPLETED'
-                                            ? 'bg-white/20 text-white'
-                                            : 'bg-background text-foreground'
-                                            }`}>
-                                            {projectCounts.completed}
-                                        </span>
+                                    <div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', fontWeight: 600 }}>
+                                            <span>Mentor Sessions</span>
+                                            <span>{Math.min(100, mentorSessions.filter(s => s.status === 'COMPLETED').length * 25)}%</span>
+                                        </div>
+                                        <div className="radar-bar-track">
+                                            <div className="radar-bar-fill" style={{ width: `${Math.min(100, mentorSessions.filter(s => s.status === 'COMPLETED').length * 25)}%` }}></div>
+                                        </div>
                                     </div>
-                                </button>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Projects Section */}
+                    <div className="mt-10">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-foreground">My Projects</h2>
+                        </div>
+
+                        {/* Status Tabs */}
+                        <div className="flex flex-wrap gap-3 mb-6">
+                            <button
+                                onClick={() => handleProjectStatusChange('ALL')}
+                                className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'ALL'
+                                    ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
+                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <FolderOpen className="w-4 h-4" />
+                                    <span>All Projects</span>
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'ALL'
+                                        ? 'bg-white/20 text-white'
+                                        : 'bg-background text-foreground'
+                                        }`}>
+                                        {projectCounts.all}
+                                    </span>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => handleProjectStatusChange('IN_PROGRESS')}
+                                className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'IN_PROGRESS'
+                                    ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
+                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Loader2 className="w-4 h-4" />
+                                    <span>In Progress</span>
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'IN_PROGRESS'
+                                        ? 'bg-white/20 text-white'
+                                        : 'bg-background text-foreground'
+                                        }`}>
+                                        {projectCounts.inProgress}
+                                    </span>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => handleProjectStatusChange('COMPLETED')}
+                                className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'COMPLETED'
+                                    ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
+                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    <span>Completed</span>
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'COMPLETED'
+                                        ? 'bg-white/20 text-white'
+                                        : 'bg-background text-foreground'
+                                        }`}>
+                                        {projectCounts.completed}
+                                    </span>
+                                </div>
+                            </button>
                         </div>
 
                         {/* Project Cards */}
@@ -476,560 +561,547 @@ function StudentDashboardContent() {
                             }}
                             currentUserId={session?.user?.id}
                         />
+                    </div>
 
-                        {/* Confirmed Mentor Sessions Section */}
-                        {session?.user?.id && (
-                            <StudentConfirmedSessions userId={session.user.id} />
-                        )}
+                    {/* Confirmed Mentor Sessions Section */}
+                    {session?.user?.id && (
+                        <StudentConfirmedSessions userId={session.user.id} />
+                    )}
 
-                        {/* Approved Mock Interviews Section */}
-                        {session?.user?.id && (
-                            <StudentApprovedInterviews userId={session.user.id} />
-                        )}
+                    {/* Approved Mock Interviews Section */}
+                    {session?.user?.id && (
+                        <StudentApprovedInterviews userId={session.user.id} />
+                    )}
 
-                        {/* Project Join Requests Section */}
-                        {session?.user?.id && (
-                            <JoinRequests userId={session.user.id} />
-                        )}
-                    </>
-                )}
+                    {/* Project Join Requests Section */}
+                    {session?.user?.id && (
+                        <JoinRequests userId={session.user.id} />
+                    )}
+                </div>
 
-                {activeTab === "Tracking" && (
-                    <>
-                        {/* Tracking Header */}
-                        <header className="mb-12">
-                            <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
-                                <Timer className="w-8 h-8 text-[#219EBC]" />
-                                Activity Tracking
-                            </h1>
-                            <p className="text-muted-foreground font-medium tracking-tight">Monitor your progress and achievements</p>
-                        </header>
+                {/* ====== Panel: Community ====== */}
+                <div className={`dashboard-content-panel ${activeTab === 'community' ? 'active' : ''}`}>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                        My Community Profile
+                    </h1>
+                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                        Your posts, followers, and groups at a glance.
+                    </p>
 
-                        {/* XP & Level Overview */}
-                        <div className="mb-12">
-                            {/* XP & Level Card */}
-                            <Card className="bg-gradient-to-br from-[#219EBC] to-[#023047] text-white border-0 rounded-[32px] p-8 shadow-xl max-w-2xl">
-                                <div className="flex items-start justify-between mb-6">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Award className="w-6 h-6" />
-                                            <h3 className="text-lg font-bold">Level {user?.level || 1}</h3>
-                                        </div>
-                                        <p className="text-5xl font-black mb-1">{user?.xp || 0}</p>
-                                        <p className="text-sm opacity-90">total XP earned</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <Trophy className="w-16 h-16 opacity-20" />
-                                    </div>
+                    {/* Community Stats */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+                        <Card className="bg-card border rounded-2xl p-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                                    <Target className="w-5 h-5 text-blue-600" />
                                 </div>
-
-                                {/* Progress Bar with Details */}
-                                <div className="bg-background/20 rounded-xl p-4 mb-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-xs font-bold opacity-90">
-                                            {(() => {
-                                                const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
-                                                const currentLevel = user?.level || 1;
-                                                const currentXP = user?.xp || 0;
-                                                if (currentLevel >= 10) return 'Max Level Reached!';
-                                                const currentThreshold = thresholds[currentLevel - 1];
-                                                return `${currentXP - currentThreshold} XP`;
-                                            })()}
-                                        </span>
-                                        <span className="text-xs font-bold opacity-90">
-                                            {(() => {
-                                                const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
-                                                const currentLevel = user?.level || 1;
-                                                const currentXP = user?.xp || 0;
-                                                if (currentLevel >= 10) return '';
-                                                const currentThreshold = thresholds[currentLevel - 1];
-                                                const nextThreshold = thresholds[currentLevel];
-                                                const remaining = nextThreshold - currentXP;
-                                                return `${remaining} XP to go`;
-                                            })()}
-                                        </span>
-                                    </div>
-                                    <div className="h-3 bg-background/30 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-background rounded-full transition-all duration-500 relative"
-                                            style={{
-                                                width: `${(() => {
-                                                    const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
-                                                    const currentLevel = user?.level || 1;
-                                                    const currentXP = user?.xp || 0;
-                                                    if (currentLevel >= 10) return 100;
-                                                    const currentThreshold = thresholds[currentLevel - 1];
-                                                    const nextThreshold = thresholds[currentLevel];
-                                                    const progress = ((currentXP - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
-                                                    return Math.min(100, Math.max(0, progress));
-                                                })()}%`
-                                            }}
-                                        >
-                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-center mt-2">
-                                        <span className="text-lg font-black">
-                                            {(() => {
-                                                const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
-                                                const currentLevel = user?.level || 1;
-                                                const currentXP = user?.xp || 0;
-                                                if (currentLevel >= 10) return '100%';
-                                                const currentThreshold = thresholds[currentLevel - 1];
-                                                const nextThreshold = thresholds[currentLevel];
-                                                const progress = ((currentXP - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
-                                                return `${Math.round(Math.min(100, Math.max(0, progress)))}%`;
-                                            })()}
-                                        </span>
-                                        <span className="text-xs opacity-75 ml-1">complete</span>
-                                    </div>
-                                </div>
-
-                                {/* Level Milestones */}
-                                <div className="grid grid-cols-3 gap-3 mb-4">
-                                    <div className="bg-background/20 rounded-xl p-3 text-center">
-                                        <Flame className="w-5 h-5 mx-auto mb-1 opacity-75" />
-                                        <p className="text-xs opacity-75 mb-1">Current</p>
-                                        <p className="text-lg font-black">Lvl {user?.level || 1}</p>
-                                    </div>
-                                    <div className="bg-background/20 rounded-xl p-3 text-center">
-                                        <Target className="w-5 h-5 mx-auto mb-1 opacity-75" />
-                                        <p className="text-xs opacity-75 mb-1">Next</p>
-                                        <p className="text-lg font-black">
-                                            {(() => {
-                                                const currentLevel = user?.level || 1;
-                                                return currentLevel >= 10 ? 'MAX' : `Lvl ${currentLevel + 1}`;
-                                            })()}
-                                        </p>
-                                    </div>
-                                    <div className="bg-background/20 rounded-xl p-3 text-center">
-                                        <Trophy className="w-5 h-5 mx-auto mb-1 opacity-75" />
-                                        <p className="text-xs opacity-75 mb-1">Max</p>
-                                        <p className="text-lg font-black">Lvl 10</p>
-                                    </div>
-                                </div>
-
-                                {/* Action Button */}
-                                <button
-                                    onClick={() => router.push('/leaderboard')}
-                                    className="w-full bg-background/20 hover:bg-background/30 rounded-xl p-3 flex items-center justify-between transition-all group"
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <Trophy className="w-4 h-4" />
-                                        <span className="text-sm font-bold">View Leaderboard</span>
-                                    </div>
-                                    <TrendingUp className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </button>
-                            </Card>
-                        </div>
-
-                        {/* XP Breakdown */}
-                        <section className="mb-12">
-                            <h3 className="text-2xl font-bold text-foreground mb-6">XP Rewards</h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                                <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <Calendar className="w-6 h-6 text-purple-600" />
-                                    </div>
-                                    <p className="text-2xl font-bold text-foreground mb-1">{(userStats?.stats?.eventsAttending || 0) * 50}</p>
-                                    <p className="text-xs text-muted-foreground font-bold">Event Attendance</p>
-                                </Card>
-                                <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <Target className="w-6 h-6 text-green-600" />
-                                    </div>
-                                    <p className="text-2xl font-black text-foreground mb-1">{projectCounts.completed * 100}</p>
-                                    <p className="text-xs text-muted-foreground font-bold">Project Completion</p>
-                                </Card>
-                                <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <Users className="w-5 h-5 text-blue-600" />
-                                    </div>
-                                    <p className="text-2xl font-black text-foreground mb-1">{mentorSessions.filter(s => s.status === 'COMPLETED').length * 25}</p>
-                                    <p className="text-xs text-muted-foreground font-bold">Mentor Sessions</p>
-                                </Card>
-                                <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <Flame className="w-6 h-6 text-orange-600" />
-                                    </div>
-                                    <p className="text-2xl font-black text-foreground mb-1">{(user?.currentStreak || 0) * 20}</p>
-                                    <p className="text-xs text-muted-foreground font-bold">Streak Bonus</p>
-                                </Card>
-                                <Card className="bg-background border-0 rounded-[24px] p-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <Award className="w-5 h-5 text-teal-600" />
-                                    </div>
-                                    <p className="text-2xl font-black text-foreground mb-1">{(userStats?.stats?.blogPostsAuthored || 0) * 30}</p>
-                                    <p className="text-xs text-muted-foreground font-bold">Resource Share</p>
-                                </Card>
                             </div>
-                        </section>
-
-                        {/* Activity Summary */}
-                        <section>
-                            <h3 className="text-2xl font-bold text-foreground mb-6">Activity Summary</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                                <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                                            <Target className="w-5 h-5 text-purple-600" />
-                                        </div>
-                                        <TrendingUp className="w-5 h-5 text-green-500" />
-                                    </div>
-                                    <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.projectsOwned || 0}</p>
-                                    <p className="text-sm text-muted-foreground font-bold">Projects Created</p>
-                                </Card>
-                                <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                                            <Users className="w-5 h-5 text-blue-600" />
-                                        </div>
-                                        <TrendingUp className="w-5 h-5 text-green-500" />
-                                    </div>
-                                    <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.projectsJoined || 0}</p>
-                                    <p className="text-sm text-muted-foreground font-bold">Projects Joined</p>
-                                </Card>
-                                <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                                            <Calendar className="w-5 h-5 text-green-600" />
-                                        </div>
-                                        <TrendingUp className="w-5 h-5 text-green-500" />
-                                    </div>
-                                    <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.eventsAttending || 0}</p>
-                                    <p className="text-sm text-muted-foreground font-bold">Events Attended</p>
-                                </Card>
-                                <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                                            <Users className="w-5 h-5 text-orange-600" />
-                                        </div>
-                                        <TrendingUp className="w-5 h-5 text-green-500" />
-                                    </div>
-                                    <p className="text-3xl font-bold text-foreground mb-1">{mentorSessions.filter(s => s.status === 'COMPLETED').length}</p>
-                                    <p className="text-sm text-muted-foreground font-bold">Sessions Completed</p>
-                                </Card>
+                            <p className="text-3xl font-bold text-foreground mb-1">{posts?.length || 0}</p>
+                            <p className="text-sm text-muted-foreground font-bold">Posts Created</p>
+                        </Card>
+                        <Card className="bg-card border rounded-2xl p-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
+                                    <Users className="w-5 h-5 text-emerald-600" />
+                                </div>
                             </div>
-                        </section>
-                    </>
-                )}
-
-                {activeTab === "Swag" && (
-                    <>
-                        <header className="mb-12">
-                            <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
-                                <ShoppingBag className="w-8 h-8 text-[#219EBC]" />
-                                My Redemptions
-                            </h1>
-                            <p className="text-muted-foreground font-medium tracking-tight">Your orders and swag history</p>
-                        </header>
-                        <SwagOrdersList />
-                    </>
-                )}
-
-                {activeTab === "Community" && (
-                    <>
-                        {/* Community Header */}
-                        <header className="mb-12">
-                            <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
-                                <Users className="w-8 h-8 text-[#219EBC]" />
-                                My Community Profile
-                            </h1>
-                            <p className="text-muted-foreground font-medium tracking-tight">Your posts, followers, and groups</p>
-                        </header>
-
-                        {/* Community Stats */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-                            <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                                        <Target className="w-5 h-5 text-blue-600" />
-                                    </div>
+                            <p className="text-3xl font-bold text-foreground mb-1">{userGroups.length}</p>
+                            <p className="text-sm text-muted-foreground font-bold">Groups Joined</p>
+                        </Card>
+                        <Card className="bg-card border rounded-2xl p-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+                                    <TrendingUp className="w-5 h-5 text-orange-600" />
                                 </div>
-                                <p className="text-3xl font-bold text-foreground mb-1">{posts?.length || 0}</p>
-                                <p className="text-sm text-muted-foreground font-bold">Posts Created</p>
-                            </Card>
-                            <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
-                                        <Users className="w-5 h-5 text-emerald-600" />
-                                    </div>
-                                </div>
-                                <p className="text-3xl font-bold text-foreground mb-1">{userGroups.length}</p>
-                                <p className="text-sm text-muted-foreground font-bold">Groups Joined</p>
-                            </Card>
+                            </div>
+                            <p className="text-3xl font-bold text-foreground mb-1">0</p>
+                            <p className="text-sm text-muted-foreground font-bold">Total Reactions</p>
+                        </Card>
+                    </div>
 
-                            <Card className="bg-background border-0 rounded-[24px] p-6 shadow-sm">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                                        <TrendingUp className="w-5 h-5 text-orange-600" />
-                                    </div>
-                                </div>
-                                <p className="text-3xl font-bold text-foreground mb-1">0</p>
-                                <p className="text-sm text-muted-foreground font-bold">Total Reactions</p>
-                            </Card>
+                    {/* Posts Section */}
+                    <section className="mb-12">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-2xl font-bold text-foreground">My Posts</h3>
+                            <Button
+                                onClick={() => router.push('/community')}
+                                variant="outline"
+                                className="rounded-xl"
+                            >
+                                View Feed
+                            </Button>
                         </div>
-
-                        {/* Posts Section */}
-                        <section className="mb-12">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-2xl font-bold text-foreground">My Posts</h3>
+                        {postsLoading ? (
+                            <div className="text-center py-12">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#226CE0] mx-auto mb-4"></div>
+                                <p className="text-muted-foreground">Loading posts...</p>
+                            </div>
+                        ) : posts && posts.length > 0 ? (
+                            <div className="space-y-4">
+                                {posts.slice(0, 3).map((post) => (
+                                    <PostCard
+                                        key={post.id}
+                                        post={post}
+                                        currentUserId={session?.user?.id}
+                                        onEdit={async (postId, content) => {
+                                            const { getCSRFToken } = await import('@/lib/utils/csrf');
+                                            const csrfToken = await getCSRFToken();
+                                            const res = await fetch(`/api/community/posts/${postId}`, {
+                                                method: 'PATCH',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'x-csrf-token': csrfToken
+                                                },
+                                                body: JSON.stringify({ content })
+                                            });
+                                            if (!res.ok) throw new Error('Failed to edit post');
+                                            router.refresh();
+                                        }}
+                                        onDelete={async (postId) => {
+                                            const { getCSRFToken } = await import('@/lib/utils/csrf');
+                                            const csrfToken = await getCSRFToken();
+                                            const res = await fetch(`/api/community/posts/${postId}`, {
+                                                method: 'DELETE',
+                                                headers: { 'x-csrf-token': csrfToken }
+                                            });
+                                            if (!res.ok) throw new Error('Failed to delete post');
+                                            router.refresh();
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <Card className="bg-card border rounded-4xl p-12 text-center shadow-sm">
+                                <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-xl font-bold text-foreground mb-2">No Posts Yet</h3>
+                                <p className="text-muted-foreground mb-6">
+                                    Share your first post with the community
+                                </p>
                                 <Button
-                                    onClick={() => router.push('/community/feed')}
-                                    variant="outline"
-                                    className="rounded-xl"
+                                    onClick={() => router.push('/community')}
+                                    className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
                                 >
-                                    View Feed
+                                    Create Post
                                 </Button>
-                            </div>
-                            {postsLoading ? (
-                                <div className="text-center py-12">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
-                                    <p className="text-muted-foreground">Loading posts...</p>
-                                </div>
-                            ) : posts && posts.length > 0 ? (
-                                <div className="space-y-4">
-                                    {posts.slice(0, 3).map((post) => (
-                                        <PostCard 
-                                            key={post.id} 
-                                            post={post}
-                                            currentUserId={session?.user?.id}
-                                            onEdit={async (postId, content) => {
-                                                const { getCSRFToken } = await import('@/lib/utils/csrf');
-                                                const csrfToken = await getCSRFToken();
-                                                const res = await fetch(`/api/community/posts/${postId}`, {
-                                                    method: 'PATCH',
-                                                    headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
-                                                    body: JSON.stringify({ content })
-                                                });
-                                                if (!res.ok) throw new Error('Failed to edit post');
-                                                router.refresh();
-                                            }}
-                                            onDelete={async (postId) => {
-                                                const { getCSRFToken } = await import('@/lib/utils/csrf');
-                                                const csrfToken = await getCSRFToken();
-                                                const res = await fetch(`/api/community/posts/${postId}`, {
-                                                    method: 'DELETE',
-                                                    headers: { 'x-csrf-token': csrfToken }
-                                                });
-                                                if (!res.ok) throw new Error('Failed to delete post');
-                                                router.refresh();
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
-                                    <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-foreground mb-2">No Posts Yet</h3>
-                                    <p className="text-muted-foreground mb-6">
-                                        Share your first post with the community
-                                    </p>
-                                    <Button
-                                        onClick={() => router.push('/community/feed')}
-                                        className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
-                                    >
-                                        Create Post
-                                    </Button>
-                                </Card>
-                            )}
-                        </section>
+                            </Card>
+                        )}
+                    </section>
 
-                        {/* Groups Section */}
-                        <section className="mb-12">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-2xl font-bold text-foreground">My Groups</h3>
+                    {/* Groups Section */}
+                    <section className="mb-12">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-2xl font-bold text-foreground">My Groups</h3>
+                            <Button
+                                onClick={() => router.push('/community/groups')}
+                                variant="outline"
+                                className="rounded-xl"
+                            >
+                                Browse Groups
+                            </Button>
+                        </div>
+                        {groupsLoading ? (
+                            <div className="text-center py-12">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#226CE0] mx-auto mb-4"></div>
+                                <p className="text-muted-foreground">Loading groups...</p>
+                            </div>
+                        ) : userGroups.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                {userGroups.slice(0, 3).map((group) => (
+                                    <GroupCard key={group.id} group={group} />
+                                ))}
+                            </div>
+                        ) : (
+                            <Card className="bg-card border rounded-4xl p-12 text-center shadow-sm">
+                                <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-xl font-bold text-foreground mb-2">No Groups Yet</h3>
+                                <p className="text-muted-foreground mb-6">
+                                    Join or create a group to connect with others
+                                </p>
                                 <Button
                                     onClick={() => router.push('/community/groups')}
-                                    variant="outline"
-                                    className="rounded-xl"
+                                    className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
                                 >
-                                    Browse Groups
+                                    Explore Groups
                                 </Button>
+                            </Card>
+                        )}
+                    </section>
+                </div>
+
+                {/* ====== Panel: Tracking ====== */}
+                <div className={`dashboard-content-panel ${activeTab === 'tracking' ? 'active' : ''}`}>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                        Activity Tracking
+                    </h1>
+                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                        Monitor your progress, XP rewards, and achievement metrics.
+                    </p>
+
+                    {/* XP & Level Card */}
+                    <Card className="bg-linear-to-br from-[#226CE0] to-[#1A234A] text-white border-0 rounded-4xl p-8 shadow-xl max-w-2xl mb-10">
+                        <div className="flex items-start justify-between mb-6">
+                            <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Award className="w-6 h-6" />
+                                    <h3 className="text-lg font-bold">Level {user?.level || 1}</h3>
+                                </div>
+                                <p className="text-5xl font-black mb-1">{user?.xp || 0}</p>
+                                <p className="text-sm opacity-90">total XP earned</p>
                             </div>
-                            {groupsLoading ? (
-                                <div className="text-center py-12">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
-                                    <p className="text-muted-foreground">Loading groups...</p>
+                            <div className="text-right">
+                                <Trophy className="w-16 h-16 opacity-20" />
+                            </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="bg-background/20 rounded-xl p-4 mb-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-bold opacity-90">
+                                    {(() => {
+                                        const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
+                                        const currentLevel = user?.level || 1;
+                                        const currentXP = user?.xp || 0;
+                                        if (currentLevel >= 10) return 'Max Level Reached!';
+                                        const currentThreshold = thresholds[currentLevel - 1];
+                                        return `${currentXP - currentThreshold} XP`;
+                                    })()}
+                                </span>
+                                <span className="text-xs font-bold opacity-90">
+                                    {(() => {
+                                        const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
+                                        const currentLevel = user?.level || 1;
+                                        const currentXP = user?.xp || 0;
+                                        if (currentLevel >= 10) return '';
+                                        const nextThreshold = thresholds[currentLevel];
+                                        const remaining = nextThreshold - currentXP;
+                                        return `${remaining} XP to go`;
+                                    })()}
+                                </span>
+                            </div>
+                            <div className="h-3 bg-background/30 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-background rounded-full transition-all duration-500 relative"
+                                    style={{
+                                        width: `${(() => {
+                                            const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
+                                            const currentLevel = user?.level || 1;
+                                            const currentXP = user?.xp || 0;
+                                            if (currentLevel >= 10) return 100;
+                                            const currentThreshold = thresholds[currentLevel - 1];
+                                            const nextThreshold = thresholds[currentLevel];
+                                            const progress = ((currentXP - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
+                                            return Math.min(100, Math.max(0, progress));
+                                        })()}%`
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-pulse" />
                                 </div>
-                            ) : userGroups.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                    {userGroups.slice(0, 3).map((group) => (
-                                        <GroupCard key={group.id} group={group} />
-                                    ))}
+                            </div>
+                        </div>
+
+                        {/* Level Milestones */}
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                            <div className="bg-background/20 rounded-xl p-3 text-center">
+                                <Flame className="w-5 h-5 mx-auto mb-1 opacity-75" />
+                                <p className="text-xs opacity-75 mb-1">Current</p>
+                                <p className="text-lg font-black">Lvl {user?.level || 1}</p>
+                            </div>
+                            <div className="bg-background/20 rounded-xl p-3 text-center">
+                                <Target className="w-5 h-5 mx-auto mb-1 opacity-75" />
+                                <p className="text-xs opacity-75 mb-1">Next</p>
+                                <p className="text-lg font-black">
+                                    {(user?.level || 1) >= 10 ? 'MAX' : `Lvl ${(user?.level || 1) + 1}`}
+                                </p>
+                            </div>
+                            <div className="bg-background/20 rounded-xl p-3 text-center">
+                                <Trophy className="w-5 h-5 mx-auto mb-1 opacity-75" />
+                                <p className="text-xs opacity-75 mb-1">Max</p>
+                                <p className="text-lg font-black">Lvl 10</p>
+                            </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <button
+                            onClick={() => router.push('/leaderboard')}
+                            className="w-full bg-background/20 hover:bg-background/30 rounded-xl p-3 flex items-center justify-between transition-all group"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Trophy className="w-4 h-4" />
+                                <span className="text-sm font-bold">View Leaderboard</span>
+                            </div>
+                            <TrendingUp className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </Card>
+
+                    {/* XP Breakdown */}
+                    <section className="mb-12">
+                        <h3 className="text-2xl font-bold text-foreground mb-6">XP Rewards</h3>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Calendar className="w-6 h-6 text-purple-600" />
                                 </div>
-                            ) : (
-                                <Card className="bg-background border-0 rounded-[32px] p-12 text-center shadow-sm">
-                                    <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-foreground mb-2">No Groups Yet</h3>
-                                    <p className="text-muted-foreground mb-6">
-                                        Join or create a group to connect with others
-                                    </p>
-                                    <Button
-                                        onClick={() => router.push('/community/groups')}
-                                        className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
-                                    >
-                                        Explore Groups
-                                    </Button>
-                                </Card>
-                            )}
-                        </section>
+                                <p className="text-2xl font-bold text-foreground mb-1">{(userStats?.stats?.eventsAttending || 0) * 50}</p>
+                                <p className="text-xs text-muted-foreground font-bold">Event Attendance</p>
+                            </Card>
+                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Target className="w-6 h-6 text-green-600" />
+                                </div>
+                                <p className="text-2xl font-black text-foreground mb-1">{projectCounts.completed * 100}</p>
+                                <p className="text-xs text-muted-foreground font-bold">Project Completion</p>
+                            </Card>
+                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Users className="w-5 h-5 text-blue-600" />
+                                </div>
+                                <p className="text-2xl font-black text-foreground mb-1">{mentorSessions.filter(s => s.status === 'COMPLETED').length * 25}</p>
+                                <p className="text-xs text-muted-foreground font-bold">Mentor Sessions</p>
+                            </Card>
+                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Flame className="w-6 h-6 text-orange-600" />
+                                </div>
+                                <p className="text-2xl font-black text-foreground mb-1">{(user?.currentStreak || 0) * 20}</p>
+                                <p className="text-xs text-muted-foreground font-bold">Streak Bonus</p>
+                            </Card>
+                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Award className="w-5 h-5 text-teal-600" />
+                                </div>
+                                <p className="text-2xl font-black text-foreground mb-1">{(userStats?.stats?.blogPostsAuthored || 0) * 30}</p>
+                                <p className="text-xs text-muted-foreground font-bold">Resource Share</p>
+                            </Card>
+                        </div>
+                    </section>
 
+                    {/* Activity Summary */}
+                    <section>
+                        <h3 className="text-2xl font-bold text-foreground mb-6">Activity Summary</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                            <Card className="bg-card border rounded-3xl p-6 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                                        <Target className="w-5 h-5 text-purple-600" />
+                                    </div>
+                                    <TrendingUp className="w-5 h-5 text-green-500" />
+                                </div>
+                                <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.projectsOwned || 0}</p>
+                                <p className="text-sm text-muted-foreground font-bold">Projects Created</p>
+                            </Card>
+                            <Card className="bg-card border rounded-3xl p-6 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                                        <Users className="w-5 h-5 text-blue-600" />
+                                    </div>
+                                    <TrendingUp className="w-5 h-5 text-green-500" />
+                                </div>
+                                <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.projectsJoined || 0}</p>
+                                <p className="text-sm text-muted-foreground font-bold">Projects Joined</p>
+                            </Card>
+                            <Card className="bg-card border rounded-3xl p-6 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                                        <Calendar className="w-5 h-5 text-green-600" />
+                                    </div>
+                                    <TrendingUp className="w-5 h-5 text-green-500" />
+                                </div>
+                                <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.eventsAttending || 0}</p>
+                                <p className="text-sm text-muted-foreground font-bold">Events Attended</p>
+                            </Card>
+                            <Card className="bg-card border rounded-3xl p-6 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+                                        <Users className="w-5 h-5 text-orange-600" />
+                                    </div>
+                                    <TrendingUp className="w-5 h-5 text-green-500" />
+                                </div>
+                                <p className="text-3xl font-bold text-foreground mb-1">{mentorSessions.filter(s => s.status === 'COMPLETED').length}</p>
+                                <p className="text-sm text-muted-foreground font-bold">Sessions Completed</p>
+                            </Card>
+                        </div>
+                    </section>
+                </div>
 
-                    </>
-                )}
+                {/* ====== Panel: Swag ====== */}
+                <div className={`dashboard-content-panel ${activeTab === 'swag' ? 'active' : ''}`}>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                        My Redemptions
+                    </h1>
+                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                        Your orders and swag history.
+                    </p>
+                    <SwagOrdersList />
+                </div>
 
-                {activeTab === "Report" && (
-                    <>
-                        {/* Report Header */}
-                        <header className="mb-8">
-                            <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
-                                <Flag className="w-8 h-8 text-red-500" />
-                                Reports
-                            </h1>
-                            <p className="text-muted-foreground font-medium">Submit issues, bugs, or violations with photo & video evidence</p>
-                        </header>
+                {/* ====== Panel: Report ====== */}
+                <div className={`dashboard-content-panel ${activeTab === 'report' ? 'active' : ''}`}>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                        Reports
+                    </h1>
+                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                        Submit issues, bugs, or violations with photo &amp; video evidence.
+                    </p>
 
-                        {/* Submit button */}
-                        <div className="mb-8">
+                    {/* Submit button */}
+                    <div className="mb-8">
+                        <button
+                            id="open-report-dialog-btn"
+                            onClick={() => setShowReportDialog(true)}
+                            className="flex items-center gap-3 px-6 py-4 bg-linear-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold rounded-2xl shadow-lg shadow-red-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                            <Flag className="w-5 h-5" />
+                            Submit a Report
+                        </button>
+                    </div>
+
+                    {/* My Reports */}
+                    <section>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-foreground">My Reports</h2>
                             <button
-                                id="open-report-dialog-btn"
-                                onClick={() => setShowReportDialog(true)}
-                                className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold rounded-2xl shadow-lg shadow-red-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                onClick={fetchMyReports}
+                                className="text-sm text-[#226CE0] hover:underline font-medium"
                             >
-                                <Flag className="w-5 h-5" />
-                                Submit a Report
+                                Refresh
                             </button>
                         </div>
 
-                        {/* My Reports */}
-                        <section>
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-2xl font-bold text-foreground">My Reports</h2>
-                                <button
-                                    onClick={fetchMyReports}
-                                    className="text-sm text-[#219EBC] hover:underline font-medium"
-                                >
-                                    Refresh
-                                </button>
+                        {reportsLoading ? (
+                            <div className="flex items-center justify-center py-16">
+                                <Loader2 className="w-10 h-10 animate-spin text-[#226CE0]" />
                             </div>
-
-                            {reportsLoading ? (
-                                <div className="flex items-center justify-center py-16">
-                                    <Loader2 className="w-10 h-10 animate-spin text-[#219EBC]" />
-                                </div>
-                            ) : myReports.length === 0 ? (
-                                <div className="bg-muted/40 border border-border rounded-[24px] p-12 text-center">
-                                    <Flag className="w-14 h-14 text-muted-foreground mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-foreground mb-2">No reports yet</h3>
-                                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                                        Use the button above to report bugs, violations, or any platform issue.
-                                        Attach photos and videos as evidence.
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {myReports.map((report) => {
-                                        const STATUS_STYLE = {
-                                            OPEN: { label: 'Open', icon: AlertCircle, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
-                                            IN_REVIEW: { label: 'In Review', icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/30' },
-                                            RESOLVED: { label: 'Resolved', icon: CheckCircle2, color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30' },
-                                            DISMISSED: { label: 'Dismissed', icon: XCircle, color: 'text-gray-500', bg: 'bg-gray-100 dark:bg-gray-800' },
-                                        };
-                                        const s = STATUS_STYLE[report.status as keyof typeof STATUS_STYLE];
-                                        const SIcon = s?.icon || AlertCircle;
-                                        return (
-                                            <div
-                                                key={report.id}
-                                                className="bg-card border border-border rounded-[24px] p-6 hover:shadow-md transition-shadow"
-                                            >
-                                                <div className="flex items-start gap-4">
-                                                    <div className={`mt-1 w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${s?.bg || 'bg-muted'}`}>
-                                                        <SIcon className={`w-5 h-5 ${s?.color || 'text-muted-foreground'}`} />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex flex-wrap items-center gap-2 mb-1">
-                                                            <span className="text-xs px-2 py-0.5 bg-muted rounded-full text-muted-foreground font-bold">
-                                                                {report.category?.replace(/_/g, ' ')}
+                        ) : myReports.length === 0 ? (
+                            <div className="bg-muted/40 border border-border rounded-3xl p-12 text-center">
+                                <Flag className="w-14 h-14 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-xl font-bold text-foreground mb-2">No reports yet</h3>
+                                <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                                    Use the button above to report bugs, violations, or any platform issue.
+                                    Attach photos and videos as evidence.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {myReports.map((report) => {
+                                    const STATUS_STYLE = {
+                                        OPEN: { label: 'Open', icon: AlertCircle, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+                                        IN_REVIEW: { label: 'In Review', icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/30' },
+                                        RESOLVED: { label: 'Resolved', icon: CheckCircle2, color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30' },
+                                        DISMISSED: { label: 'Dismissed', icon: XCircle, color: 'text-gray-500', bg: 'bg-gray-100 dark:bg-gray-800' },
+                                    };
+                                    const s = STATUS_STYLE[report.status as keyof typeof STATUS_STYLE];
+                                    const SIcon = s?.icon || AlertCircle;
+                                    return (
+                                        <div
+                                            key={report.id}
+                                            className="bg-card border border-border rounded-3xl p-6 hover:shadow-md transition-shadow"
+                                        >
+                                            <div className="flex items-start gap-4">
+                                                <div className={`mt-1 w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${s?.bg || 'bg-muted'}`}>
+                                                    <SIcon className={`w-5 h-5 ${s?.color || 'text-muted-foreground'}`} />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                        <span className="text-xs px-2 py-0.5 bg-muted rounded-full text-muted-foreground font-bold">
+                                                            {report.category?.replace(/_/g, ' ')}
+                                                        </span>
+                                                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s?.bg || 'bg-muted'} ${s?.color || ''}`}>
+                                                            {s?.label || report.status}
+                                                        </span>
+                                                        {report.photoUrls?.length > 0 && (
+                                                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                                                📷 {report.photoUrls.length}
                                                             </span>
-                                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s?.bg || 'bg-muted'} ${s?.color || ''}` }>
-                                                                {s?.label || report.status}
-                                                            </span>
-                                                            {report.photoUrls?.length > 0 && (
-                                                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                                                    📷 {report.photoUrls.length}
-                                                                </span>
-                                                            )}
-                                                            {report.videoUrls?.length > 0 && (
-                                                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                                                    🎥 {report.videoUrls.length}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <h3 className="font-bold text-foreground">{report.title}</h3>
-                                                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{report.description}</p>
-                                                        {report.adminNotes && (
-                                                            <div className="mt-3 bg-muted/50 rounded-xl p-3">
-                                                                <p className="text-xs font-bold text-muted-foreground mb-1">Admin Response:</p>
-                                                                <p className="text-sm text-foreground">{report.adminNotes}</p>
-                                                            </div>
                                                         )}
-                                                        <p className="text-xs text-muted-foreground mt-2">
-                                                            Submitted {new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                                        </p>
+                                                        {report.videoUrls?.length > 0 && (
+                                                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                                                🎥 {report.videoUrls.length}
+                                                            </span>
+                                                        )}
                                                     </div>
+                                                    <h3 className="font-bold text-foreground">{report.title}</h3>
+                                                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{report.description}</p>
+                                                    {report.adminNotes && (
+                                                        <div className="mt-3 bg-muted/50 rounded-xl p-3">
+                                                            <p className="text-xs font-bold text-muted-foreground mb-1">Admin Response:</p>
+                                                            <p className="text-sm text-foreground">{report.adminNotes}</p>
+                                                        </div>
+                                                    )}
+                                                    <p className="text-xs text-muted-foreground mt-2">
+                                                        Submitted {new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                    </p>
                                                 </div>
                                             </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </section>
-                    </>
-                )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </section>
+                </div>
 
-                {activeTab === "Setting" && (
-                    <div className="text-center py-20">
-                        <Settings className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                        <h2 className="text-2xl font-black text-foreground mb-2">Settings</h2>
-                        <p className="text-muted-foreground">Settings page coming soon...</p>
+                {/* ====== Panel: Settings ====== */}
+                <div className={`dashboard-content-panel ${activeTab === 'settings' ? 'active' : ''}`}>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                        Workspace Settings
+                    </h1>
+                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                        Customize your profile. Updating these parameters will help other community members discover and connect with you.
+                    </p>
+
+                    <div className="bg-card border border-border rounded-2xl p-8">
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }} className="max-sm:grid-cols-1">
+                            <div className="dashboard-form-group">
+                                <label className="dashboard-form-label">Full Name</label>
+                                <input type="text" className="dashboard-form-input" placeholder={session.user?.name || 'Your Name'} defaultValue={session.user?.name || ''} readOnly />
+                            </div>
+                            <div className="dashboard-form-group">
+                                <label className="dashboard-form-label">Email</label>
+                                <input type="email" className="dashboard-form-input" placeholder={session.user?.email || 'your@email.com'} defaultValue={session.user?.email || ''} readOnly />
+                            </div>
+                            <div className="dashboard-form-group">
+                                <label className="dashboard-form-label">GitHub Profile URL</label>
+                                <input type="url" className="dashboard-form-input" placeholder="https://github.com/username" />
+                            </div>
+                            <div className="dashboard-form-group">
+                                <label className="dashboard-form-label">LinkedIn Profile URL</label>
+                                <input type="url" className="dashboard-form-input" placeholder="https://linkedin.com/in/username" />
+                            </div>
+                        </div>
+
+                        <div className="dashboard-form-group mb-4">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <label className="dashboard-form-label">Technical Stack & Skills</label>
+                                <span style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))' }}>(Comma separated)</span>
+                            </div>
+                            <input type="text" className="dashboard-form-input" placeholder="React, Node, Python, Figma, etc." />
+                        </div>
+
+                        <div className="dashboard-form-group mb-6">
+                            <label className="dashboard-form-label">Developer Biography</label>
+                            <textarea className="dashboard-form-input" rows={4} placeholder="Briefly describe what you like to build..." style={{ resize: 'none' }}></textarea>
+                        </div>
+
+                        <button
+                            className="w-full flex items-center justify-center gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold py-3 px-6 rounded-xl transition-all hover:shadow-lg hover:shadow-purple-500/20"
+                            onClick={() => {
+                                alert('Profile settings saved! ✨');
+                            }}
+                        >
+                            Update Workspace Profile Info 🚀
+                        </button>
                     </div>
-                )}
+                </div>
             </main>
 
-            {/* Right Sidebar - Calendar */}
-            <aside className="hidden md:block md:w-96 bg-card p-10 border-l border-border md:fixed md:right-0 top-20 bottom-0 z-20 overflow-y-auto">
+            {/* ====== Right Sidebar - Calendar ====== */}
+            <aside className="hidden md:block w-96 fixed right-0 bg-card p-10 border-l border-border top-20 bottom-0 z-20 overflow-y-auto" aria-label="Calendar sidebar">
                 <div className="mb-8">
                     <h2 className="text-2xl font-black text-foreground">Calendar</h2>
                 </div>
-
                 {/* Daily Check-in Component */}
                 <div className="mb-8">
                     <DailyCheckIn />
-                </div>
-
-                <div className="space-y-12">
-                    {timeline.length > 0 ? (
-                        timeline.map((section, idx) => (
-                            <div key={idx}>
-                                <div className="flex items-center justify-between mb-8">
-                                    <h3 className="text-sm font-bold text-foreground">{section.date}</h3>
-                                    <button className="text-muted-foreground hover:text-foreground"><MoreHorizontal className="w-4 h-4" /></button>
-                                </div>
-                                <div className="space-y-8">
-                                    {section.items.map((item: any, i: number) => (
-                                        <div key={i} className="flex gap-6 relative">
-                                            <div className="text-sm font-black text-foreground w-12">{item.time}</div>
-                                            <div className={`flex-1 border-l-4 ${item.color} pl-6 group cursor-pointer`}>
-                                                <h4 className="text-sm font-black text-foreground mb-1 group-hover:text-primary transition-colors">{item.title}</h4>
-                                                <p className="text-muted-foreground text-xs font-bold">{item.sub}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))
-                    ) : null}
                 </div>
             </aside>
 

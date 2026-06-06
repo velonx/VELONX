@@ -99,7 +99,7 @@ export default function BookingDialog({ open, onOpenChange, mentor, onSuccess }:
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl bg-card rounded-[32px]">
+      <DialogContent className="max-w-2xl bg-card rounded-4xl">
         {step === 'form' ? (
           <>
             <DialogHeader>
@@ -113,7 +113,7 @@ export default function BookingDialog({ open, onOpenChange, mentor, onSuccess }:
 
             {/* Mentor Info */}
             <div className="bg-muted/50 rounded-2xl p-4 flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-black text-xl shadow-lg">
+              <div className="w-16 h-16 rounded-full bg-linear-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-black text-xl shadow-lg">
                 {mentor.name.split(' ').map(n => n[0]).join('')}
               </div>
               <div className="flex-1">

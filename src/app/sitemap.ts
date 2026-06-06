@@ -53,9 +53,54 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
-    return [...siteMapEntries, ...dynamicBlogEntries];
+    // Fetch active opportunities dynamically to index them
+    let dynamicCareerEntries: MetadataRoute.Sitemap = [];
+    try {
+      const activeOpportunities = await prisma.opportunity.findMany({
+        where: {
+          status: "ACTIVE",
+        },
+        select: {
+          id: true,
+          slug: true,
+          updatedAt: true,
+        },
+      });
+
+      dynamicCareerEntries = activeOpportunities.map((opp) => ({
+        url: `${baseUrl}/career/${opp.slug || opp.id}`,
+        lastModified: opp.updatedAt || currentDate,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }));
+    } catch (err) {
+      console.error("[Sitemap Generation] Failed to fetch active opportunities:", err);
+    }
+
+    // Fetch events dynamically to index them
+    let dynamicEventEntries: MetadataRoute.Sitemap = [];
+    try {
+      const events = await prisma.event.findMany({
+        select: {
+          id: true,
+          slug: true,
+          updatedAt: true,
+        },
+      });
+
+      dynamicEventEntries = events.map((event) => ({
+        url: `${baseUrl}/events/${event.slug || event.id}`,
+        lastModified: event.updatedAt || currentDate,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }));
+    } catch (err) {
+      console.error("[Sitemap Generation] Failed to fetch events:", err);
+    }
+
+    return [...siteMapEntries, ...dynamicBlogEntries, ...dynamicCareerEntries, ...dynamicEventEntries];
   } catch (error) {
-    console.error("[Sitemap Generation] Failed to fetch published blog posts:", error);
+    console.error("[Sitemap Generation] Failed to fetch dynamic entries:", error);
     return siteMapEntries;
   }
 }

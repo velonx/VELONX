@@ -5,9 +5,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
-
-// CSRF token configuration
 const CSRF_TOKEN_LENGTH = 32
 const CSRF_HEADER_NAME = 'x-csrf-token'
 const CSRF_COOKIE_NAME = 'csrf-token'

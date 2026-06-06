@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { NotFoundError, ConflictError, ValidationError, AppError } from "@/lib/utils/errors";
 import { notificationService } from "./notification.service";
 import { computeRegistrationStatus } from "@/lib/utils/event-helpers";
+import { generateUniqueEventSlug } from "@/lib/utils/slug";
 import { eventAnalyticsService } from "./event-analytics.service";
 
 /**
@@ -36,7 +37,26 @@ export class EventService {
     if (status) {
       const now = new Date();
       
-      if (status === 'UPCOMING') {
+      if (status === 'ACTIVE') {
+        // Active events: ONGOING or UPCOMING (not completed or cancelled)
+        where.AND = [
+          {
+            OR: [
+              { status: 'ONGOING' },
+              { status: 'UPCOMING' },
+              { date: { gt: now } },
+              { 
+                AND: [
+                  { endDate: { not: null } },
+                  { endDate: { gt: now } }
+                ]
+              }
+            ]
+          },
+          { status: { not: 'CANCELLED' } },
+          { status: { not: 'COMPLETED' } }
+        ];
+      } else if (status === 'UPCOMING') {
         // Upcoming events: date is in the future AND not cancelled
         // For multi-day events, check if endDate (if exists) is in the future
         where.AND = [
@@ -100,6 +120,7 @@ export class EventService {
         where,
         select: {
           id: true,
+          slug: true,
           title: true,
           description: true,
           type: true,
@@ -156,11 +177,12 @@ export class EventService {
   }
   
   /**
-   * Get event by ID with full details
+   * Get event by ID or slug with full details
    */
-  async getEventById(id: string) {
-    const event = await prisma.event.findUnique({
-      where: { id },
+  async getEventById(idOrSlug: string) {
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(idOrSlug);
+    let event = await prisma.event.findUnique({
+      where: isObjectId ? { id: idOrSlug } : { slug: idOrSlug },
       include: {
         creator: {
           select: {
@@ -193,6 +215,46 @@ export class EventService {
     if (!event) {
       throw new NotFoundError("Event");
     }
+
+    // Dynamic backfill: if event has no slug, generate one and update DB
+    if (!event.slug) {
+      try {
+        const newSlug = await generateUniqueEventSlug(event.title);
+        event = await prisma.event.update({
+          where: { id: event.id },
+          data: { slug: newSlug },
+          include: {
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+                email: true,
+              },
+            },
+            attendees: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    email: true,
+                  },
+                },
+              },
+            },
+            _count: {
+              select: {
+                attendees: true,
+              },
+            },
+          },
+        });
+      } catch (e) {
+        console.error("Failed to backfill slug for event:", event.id, e);
+      }
+    }
     
     const eventData = event as any;
     return {
@@ -219,8 +281,10 @@ export class EventService {
     status?: string;
     creatorId: string;
   }) {
+    const slug = await generateUniqueEventSlug(data.title);
     const event = await prisma.event.create({
       data: {
+        slug,
         title: data.title,
         description: data.description,
         type: data.type as any,
@@ -304,7 +368,17 @@ export class EventService {
     // Build update data
     const updateData: Prisma.EventUpdateInput = {};
     
-    if (data.title !== undefined) updateData.title = data.title;
+    if (data.title !== undefined) {
+      updateData.title = data.title;
+      if (data.title !== existingEvent.title) {
+        updateData.slug = await generateUniqueEventSlug(data.title, id);
+      }
+    }
+
+    // Backfill slug for existing events that do not have one yet
+    if (!(existingEvent as any).slug && !updateData.slug) {
+      updateData.slug = await generateUniqueEventSlug(data.title || existingEvent.title, id);
+    }
     if (data.description !== undefined) updateData.description = data.description;
     if (data.type !== undefined) updateData.type = data.type as any;
     if (data.date !== undefined) updateData.date = new Date(data.date);

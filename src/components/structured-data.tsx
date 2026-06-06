@@ -1,4 +1,3 @@
-import React from 'react';
 
 // Organization schema for homepage
 export function OrganizationSchema() {

@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { FlipText } from "@/components/ui/flip-text";
 import { useTheme } from "@/components/theme-provider";
 import "./TelescopeHero.css";
 
@@ -66,7 +65,7 @@ export const TelescopeHero = () => {
             />
 
             {/* Subtle Gradient Overlay */}
-            <div className="absolute inset-0 z-[2] opacity-40 bg-gradient-to-b from-transparent via-background/50 to-background" />
+            <div className="absolute inset-0 z-2 opacity-40 bg-linear-to-b from-transparent via-background/50 to-background" />
 
             {/* Content Layer */}
             <div

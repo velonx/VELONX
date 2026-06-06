@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Edit2, Trash2, Loader2, Package, Zap, Image as ImageIcon, ToggleLeft, ToggleRight, X, Check } from "lucide-react";
+import { Plus, Edit2, Loader2, Package, Zap, Image as ImageIcon, ToggleLeft, ToggleRight, X, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -134,14 +134,14 @@ export default function SwagItemManager() {
           <h3 className="text-2xl font-bold text-foreground">Swag Catalog</h3>
           <p className="text-muted-foreground text-sm">{items.length} items · {items.filter(i => i.isActive).length} active</p>
         </div>
-        <Button onClick={openCreate} className="bg-gradient-to-r from-[#219EBC] to-violet-600 text-white font-bold rounded-xl h-10 px-5 flex items-center gap-2 hover:opacity-90">
+        <Button onClick={openCreate} className="bg-gradient-to-r from-[#226CE0] to-violet-600 text-white font-bold rounded-xl h-10 px-5 flex items-center gap-2 hover:opacity-90">
           <Plus className="w-4 h-4" /> Add Item
         </Button>
       </div>
 
       {/* Items table */}
       {loading ? (
-        <div className="flex items-center justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-[#219EBC]" /></div>
+        <div className="flex items-center justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-[#226CE0]" /></div>
       ) : (
         <div className="bg-card border border-border rounded-3xl overflow-hidden">
           <div className="overflow-x-auto">
@@ -194,7 +194,7 @@ export default function SwagItemManager() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => openEdit(item)} className="w-8 h-8 rounded-lg bg-muted hover:bg-[#219EBC]/10 hover:text-[#219EBC] flex items-center justify-center transition-colors"><Edit2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => openEdit(item)} className="w-8 h-8 rounded-lg bg-muted hover:bg-[#226CE0]/10 hover:text-[#226CE0] flex items-center justify-center transition-colors"><Edit2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -231,7 +231,7 @@ export default function SwagItemManager() {
                     }
                   </div>
                   <label className="flex-1 cursor-pointer" {...dragHandlers}>
-                    <div className={`w-full h-10 border-2 border-dashed rounded-xl flex items-center justify-center text-sm transition-colors ${isDragging ? 'border-[#219EBC] bg-[#219EBC]/10 text-[#219EBC]' : 'border-border text-muted-foreground hover:border-[#219EBC] hover:text-[#219EBC]'}`}>
+                    <div className={`w-full h-10 border-2 border-dashed rounded-xl flex items-center justify-center text-sm transition-colors ${isDragging ? 'border-[#226CE0] bg-[#226CE0]/10 text-[#226CE0]' : 'border-border text-muted-foreground hover:border-[#226CE0] hover:text-[#226CE0]'}`}>
                       {uploadingImage ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : isDragging ? "Drop image here" : "Click or drag to upload image"}
                     </div>
                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploadingImage} />
@@ -242,33 +242,33 @@ export default function SwagItemManager() {
               {/* Name */}
               <div>
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Name *</label>
-                <input required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Premium Velonx Notebook" className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50" />
+                <input required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Premium Velonx Notebook" className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50" />
               </div>
 
               {/* Description */}
               <div>
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Description *</label>
-                <textarea required rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Brief product description..." className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50 resize-none" />
+                <textarea required rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Brief product description..." className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50 resize-none" />
               </div>
 
               {/* Category + XP Cost */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Category</label>
-                  <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50">
+                  <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50">
                     {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">XP Cost *</label>
-                  <input required type="number" min={1} value={form.xpCost} onChange={e => setForm(f => ({ ...f, xpCost: Number(e.target.value) }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50" />
+                  <input required type="number" min={1} value={form.xpCost} onChange={e => setForm(f => ({ ...f, xpCost: Number(e.target.value) }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50" />
                 </div>
               </div>
 
               {/* Stock */}
               <div>
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Stock (-1 = unlimited)</label>
-                <input type="number" min={-1} value={form.stock} onChange={e => setForm(f => ({ ...f, stock: Number(e.target.value) }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50" />
+                <input type="number" min={-1} value={form.stock} onChange={e => setForm(f => ({ ...f, stock: Number(e.target.value) }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50" />
               </div>
 
               {/* Active toggle */}
@@ -279,7 +279,7 @@ export default function SwagItemManager() {
                 </button>
               </div>
 
-              <Button type="submit" disabled={saving} className="w-full h-11 bg-gradient-to-r from-[#219EBC] to-violet-600 text-white font-bold rounded-xl hover:opacity-90">
+              <Button type="submit" disabled={saving} className="w-full h-11 bg-gradient-to-r from-[#226CE0] to-violet-600 text-white font-bold rounded-xl hover:opacity-90">
                 {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : <><Check className="w-4 h-4 mr-2" />{editItem ? "Update Item" : "Create Item"}</>}
               </Button>
             </form>

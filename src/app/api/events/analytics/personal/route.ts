@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
 import { prisma } from "@/lib/prisma";
-import { EventType, EventStatus, AttendeeStatus } from "@prisma/client";
+import { EventType, EventStatus } from '@prisma/client';
 
 /**
  * GET /api/events/analytics/personal

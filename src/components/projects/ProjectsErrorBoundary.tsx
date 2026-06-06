@@ -85,7 +85,7 @@ export class ProjectsErrorBoundary extends Component<
 
       return (
         <div
-          className="min-h-[600px] flex items-center justify-center p-6 bg-gradient-to-b from-gray-50 to-white"
+          className="min-h-150 flex items-center justify-center p-6 bg-linear-to-b from-gray-50 to-white"
           role="alert"
           aria-live="assertive"
         >
@@ -151,7 +151,7 @@ export class ProjectsErrorBoundary extends Component<
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
               <Button
                 onClick={this.handleReset}
-                className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold px-6 py-3"
+                className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-semibold px-6 py-3"
                 aria-label="Try again to reload the projects"
               >
                 <RefreshCw className="w-4 h-4 mr-2" aria-hidden="true" />

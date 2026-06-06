@@ -90,7 +90,7 @@ export default function SwagCheckoutModal({ item, userXp, onClose, onSuccess }: 
         {/* Item summary */}
         <div className="p-6 border-b border-border">
           <div className="flex items-center gap-4 bg-muted/50 rounded-2xl p-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#219EBC] to-violet-600 overflow-hidden flex-shrink-0 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#226CE0] to-violet-600 overflow-hidden flex-shrink-0 flex items-center justify-center">
               {item.imageUrl
                 ? <Image src={item.imageUrl} alt={item.name} width={64} height={64} className="object-cover w-full h-full" />
                 : <Package className="w-8 h-8 text-white" />
@@ -124,7 +124,7 @@ export default function SwagCheckoutModal({ item, userXp, onClose, onSuccess }: 
               placeholder="Your full name"
               value={form.fullName}
               onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}
-              className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50 transition-all text-sm ${errors.fullName ? "border-red-500" : "border-border"}`}
+              className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50 transition-all text-sm ${errors.fullName ? "border-red-500" : "border-border"}`}
             />
             {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
           </div>
@@ -139,7 +139,7 @@ export default function SwagCheckoutModal({ item, userXp, onClose, onSuccess }: 
               placeholder="+91 98765 43210"
               value={form.phone}
               onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-              className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50 transition-all text-sm ${errors.phone ? "border-red-500" : "border-border"}`}
+              className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50 transition-all text-sm ${errors.phone ? "border-red-500" : "border-border"}`}
             />
             {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
           </div>
@@ -154,7 +154,7 @@ export default function SwagCheckoutModal({ item, userXp, onClose, onSuccess }: 
               value={form.address}
               onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
               rows={2}
-              className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50 transition-all text-sm resize-none ${errors.address ? "border-red-500" : "border-border"}`}
+              className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50 transition-all text-sm resize-none ${errors.address ? "border-red-500" : "border-border"}`}
             />
             {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
           </div>
@@ -168,7 +168,7 @@ export default function SwagCheckoutModal({ item, userXp, onClose, onSuccess }: 
                 placeholder="City"
                 value={form.city}
                 onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
-                className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50 transition-all text-sm ${errors.city ? "border-red-500" : "border-border"}`}
+                className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50 transition-all text-sm ${errors.city ? "border-red-500" : "border-border"}`}
               />
               {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
             </div>
@@ -179,7 +179,7 @@ export default function SwagCheckoutModal({ item, userXp, onClose, onSuccess }: 
                 placeholder="400001"
                 value={form.pincode}
                 onChange={e => setForm(f => ({ ...f, pincode: e.target.value }))}
-                className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50 transition-all text-sm ${errors.pincode ? "border-red-500" : "border-border"}`}
+                className={`w-full px-4 py-3 bg-background border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50 transition-all text-sm ${errors.pincode ? "border-red-500" : "border-border"}`}
               />
               {errors.pincode && <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>}
             </div>
@@ -195,7 +195,7 @@ export default function SwagCheckoutModal({ item, userXp, onClose, onSuccess }: 
               placeholder="Any delivery instructions..."
               value={form.notes}
               onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-              className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC]/50 transition-all text-sm"
+              className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0]/50 transition-all text-sm"
             />
           </div>
 
@@ -203,7 +203,7 @@ export default function SwagCheckoutModal({ item, userXp, onClose, onSuccess }: 
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-12 bg-gradient-to-r from-[#219EBC] to-violet-600 text-white font-bold rounded-xl hover:opacity-90 transition-all text-sm mt-2"
+            className="w-full h-12 bg-gradient-to-r from-[#226CE0] to-violet-600 text-white font-bold rounded-xl hover:opacity-90 transition-all text-sm mt-2"
           >
             {loading ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>

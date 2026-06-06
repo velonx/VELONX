@@ -7,22 +7,7 @@ import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-    Layout,
-    PenTool,
-    BarChart3,
-    Calendar,
-    Eye,
-    Settings,
-    ShieldCheck,
-    Users,
-    Lightbulb,
-    Activity,
-    Briefcase,
-    BookOpen,
-    Flag,
-    ShoppingBag
-} from "lucide-react";
+import { Layout, PenTool, Calendar, Eye, Settings, ShieldCheck, Users, Activity, Flag, ShoppingBag } from 'lucide-react';
 import toast from "react-hot-toast";
 import { useUserRequests, usePlatformStats } from "@/lib/api/hooks";
 import { adminApi } from "@/lib/api/client";
@@ -30,46 +15,46 @@ import Image from "next/image";
 
 // Dynamic imports for large components to enable code splitting
 const ProjectSubmissions = dynamic(() => import("@/components/admin/ProjectSubmissions"), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const CareerManagement = dynamic(() => import("@/components/admin/CareerManagement"), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const PerformanceMetrics = dynamic(() => import("@/components/admin/PerformanceMetrics"), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const UserManagement = dynamic(() => import("@/components/admin/UserManagement"), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const BlogManagement = dynamic(() => import("@/components/admin/ContentManagement").then(mod => ({ default: mod.BlogManagement })), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const ResourceManagement = dynamic(() => import("@/components/admin/ContentManagement").then(mod => ({ default: mod.ResourceManagement })), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const MentorApplications = dynamic(() => import("@/components/admin/MentorManagement").then(mod => ({ default: mod.MentorApplications })), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const MentorCRUD = dynamic(() => import("@/components/admin/MentorManagement").then(mod => ({ default: mod.MentorCRUD })), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const EventManagement = dynamic(() => import("@/components/admin/EventManagement"), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const AdminBookingApprovalPanel = dynamic(() => import("@/components/admin/AdminBookingApprovalPanel"), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const ReportsAdmin = dynamic(() => import("@/components/admin/ReportsAdmin").then(mod => ({ default: mod.ReportsAdmin })), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const SwagItemManager = dynamic(() => import("@/components/swag/admin/SwagItemManager"), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const SwagOrderTable = dynamic(() => import("@/components/swag/admin/SwagOrderTable"), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const VerificationManagement = dynamic(() => import("@/components/admin/VerificationManagement"), {
-    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" /></div>
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 
 
@@ -145,7 +130,7 @@ export default function AdminDashboard() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#226CE0] mx-auto mb-4"></div>
                     <p className="text-muted-foreground">Loading...</p>
                 </div>
             </div>
@@ -171,7 +156,7 @@ export default function AdminDashboard() {
     return (
         <div className="flex min-h-screen bg-background pt-20">
             {/* Left Sidebar */}
-            <aside className="w-80 bg-[#023047] flex flex-col p-8 fixed left-0 top-20 bottom-0 z-20 text-white">
+            <aside className="w-80 bg-[#1A234A] flex flex-col p-8 fixed left-0 top-20 bottom-0 z-20 text-white">
                 <div className="flex items-center gap-3 mb-12">
                     <div className="w-10 h-10 bg-background/10 rounded-xl flex items-center justify-center text-white font-bold border border-white/20">A</div>
                     <span className="text-xl font-black tracking-tight">Admin Console</span>
@@ -179,10 +164,10 @@ export default function AdminDashboard() {
 
                 <div className="mb-12">
                     <div className="relative inline-block mb-4">
-                        <div className="w-20 h-20 rounded-full border-2 border-[#219EBC] p-1">
+                        <div className="w-20 h-20 rounded-full border-2 border-[#226CE0] p-1">
                             <Image src={session.user?.image || "/avatars/admin.png"} alt="Admin" width={80} height={80} className="w-full h-full rounded-full object-cover" />
                         </div>
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#219EBC] rounded-full flex items-center justify-center shadow-md">
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#226CE0] rounded-full flex items-center justify-center shadow-md">
                             <ShieldCheck className="w-3 h-3 text-white" />
                         </div>
                     </div>
@@ -196,7 +181,7 @@ export default function AdminDashboard() {
                             key={item.label}
                             onClick={() => setActiveTab(item.value)}
                             className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold ${activeTab === item.value
-                                ? "bg-card/10 text-[#219EBC]"
+                                ? "bg-card/10 text-[#226CE0]"
                                 : "text-white/50 hover:bg-card/5 hover:text-white"
                                 }`}
                         >
@@ -234,14 +219,14 @@ export default function AdminDashboard() {
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <div className="flex justify-between items-center mb-8">
                         <TabsList className="bg-background p-1 rounded-2xl border border-border shadow-sm">
-                            <TabsTrigger value="management" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Review Center</TabsTrigger>
+                            <TabsTrigger value="management" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Review Center</TabsTrigger>
                             <TabsTrigger value="reports" className="px-8 py-3 rounded-xl data-[state=active]:bg-red-500 data-[state=active]:text-white font-bold text-sm flex items-center gap-2">
                                 <Flag className="w-4 h-4" />Reports
                             </TabsTrigger>
-                            <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Post Blog</TabsTrigger>
-                            <TabsTrigger value="career" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Career</TabsTrigger>
-                            <TabsTrigger value="resources" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Resources</TabsTrigger>
-                            <TabsTrigger value="verifications" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm">Verifications</TabsTrigger>
+                            <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Post Blog</TabsTrigger>
+                            <TabsTrigger value="career" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Career</TabsTrigger>
+                            <TabsTrigger value="resources" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Resources</TabsTrigger>
+                            <TabsTrigger value="verifications" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Verifications</TabsTrigger>
                         </TabsList>
                     </div>
 
@@ -317,7 +302,7 @@ export default function AdminDashboard() {
                     </TabsContent>
 
                     <TabsContent value="platform">
-                        <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+                        <Card className="bg-background border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
                             <CardHeader className="p-12 border-b border-gray-50">
                                 <h3 className="text-3xl font-bold text-foreground mb-2">Platform Information</h3>
                                 <p className="text-muted-foreground">System status and configuration</p>

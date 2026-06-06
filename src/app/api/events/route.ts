@@ -4,7 +4,7 @@ import { requireAuth, requireAdmin } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations/event";
 import { computeRegistrationStatus } from "@/lib/utils/event-helpers";
-import type { Event } from "@/lib/api/types";
+import type {} from "@/lib/api/types";
 
 /**
  * GET /api/events

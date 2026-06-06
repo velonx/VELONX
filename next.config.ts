@@ -25,25 +25,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'api.dicebear.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      // Google OAuth profile images
-      {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-      },
-      // GitHub OAuth profile images
-      {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
+        hostname: '**',
       },
     ],
     // Device sizes for responsive images

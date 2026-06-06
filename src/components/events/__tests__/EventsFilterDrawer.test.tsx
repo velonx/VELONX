@@ -379,7 +379,7 @@ describe('EventsFilterDrawer', () => {
       render(<EventsFilterDrawer {...mockProps} />);
 
       const triggerButton = screen.getByRole('button', { name: /open filters/i });
-      expect(triggerButton).toHaveClass('min-h-[44px]');
+      expect(triggerButton).toHaveClass('min-h-11');
     });
   });
 

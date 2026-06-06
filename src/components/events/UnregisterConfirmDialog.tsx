@@ -125,15 +125,15 @@ export default function UnregisterConfirmDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
         className={cn(
-          "bg-[#0f172a] border-0 text-white p-0 gap-0 overflow-hidden",
+          "card-glass-redesign border border-border text-foreground p-0 gap-0 overflow-hidden",
           "max-w-2xl w-[calc(100%-2rem)] mx-auto",
-          "sm:rounded-[24px] rounded-2xl",
+          "sm:rounded-3xl rounded-2xl",
           "max-h-[90vh] overflow-y-auto"
         )}
       >
         {/* Header with Gradient */}
         <div className={cn(
-          "relative bg-gradient-to-br",
+          "relative bg-linear-to-br",
           getTypeColor(),
           "p-5 sm:p-6 pb-6 sm:pb-8"
         )}>
@@ -156,7 +156,7 @@ export default function UnregisterConfirmDialog({
             <DialogTitle className="text-xl sm:text-2xl font-bold text-white leading-tight">
               Unregister from Event
             </DialogTitle>
-            <DialogDescription className="text-white/80 text-sm sm:text-base">
+            <DialogDescription className="text-white/80 text-sm sm:text-base font-medium">
               Are you sure you want to unregister?
             </DialogDescription>
           </DialogHeader>
@@ -166,63 +166,63 @@ export default function UnregisterConfirmDialog({
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Event Title */}
           <div className="text-center">
-            <h3 className="text-xl font-bold text-white mb-2">
+            <h3 className="text-xl font-bold text-[#1A234A] dark:text-white mb-2">
               {event.title}
             </h3>
-            <p className="text-gray-400 text-sm line-clamp-2">
+            <p className="text-[#7582B3] dark:text-gray-400 text-sm line-clamp-2">
               {event.description}
             </p>
           </div>
 
-          <Separator className="bg-white/10" />
+          <Separator className="bg-border" />
 
           {/* Event Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Date */}
-            <div className="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/10">
-              <div className="p-2 bg-[#219EBC]/20 rounded-lg flex-shrink-0">
-                <Calendar className="w-4 h-4 text-[#219EBC]" />
+            <div className="flex items-start gap-3 p-3 bg-card/45 rounded-xl border border-border">
+              <div className="p-2 bg-[#226CE0]/10 rounded-lg shrink-0">
+                <Calendar className="w-4 h-4 text-[#226CE0]" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">
+                <p className="text-xs text-[#7582B3] dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">
                   Date
                 </p>
-                <p className="text-white text-sm font-medium truncate">
+                <p className="text-[#1A234A] dark:text-white text-sm font-medium truncate">
                   {dateString}
                 </p>
               </div>
             </div>
 
             {/* Time */}
-            <div className="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/10">
-              <div className="p-2 bg-[#219EBC]/20 rounded-lg flex-shrink-0">
-                <Clock className="w-4 h-4 text-[#219EBC]" />
+            <div className="flex items-start gap-3 p-3 bg-card/45 rounded-xl border border-border">
+              <div className="p-2 bg-[#226CE0]/10 rounded-lg shrink-0">
+                <Clock className="w-4 h-4 text-[#226CE0]" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">
+                <p className="text-xs text-[#7582B3] dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">
                   Time
                 </p>
-                <p className="text-white text-sm font-medium">
+                <p className="text-[#1A234A] dark:text-white text-sm font-medium">
                   {timeString}
-                  {duration && <span className="text-gray-400 ml-1">({duration}h)</span>}
+                  {duration && <span className="text-[#7582B3] dark:text-gray-400 ml-1">({duration}h)</span>}
                 </p>
               </div>
             </div>
 
             {/* Platform/Location */}
             {platformInfo && (
-              <div className="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/10 sm:col-span-2">
+              <div className="flex items-start gap-3 p-3 bg-card/45 rounded-xl border border-border sm:col-span-2">
                 <div className={cn(
-                  "p-2 rounded-lg flex-shrink-0",
-                  platformInfo.color.replace('text-', 'bg-') + '/20'
+                  "p-2 rounded-lg shrink-0",
+                  platformInfo.color.replace('text-', 'bg-') + '/10'
                 )}>
                   <platformInfo.icon className={cn("w-4 h-4", platformInfo.color)} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">
+                  <p className="text-xs text-[#7582B3] dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">
                     Platform
                   </p>
-                  <p className="text-white text-sm font-medium truncate">
+                  <p className="text-[#1A234A] dark:text-white text-sm font-medium truncate">
                     {platformInfo.name}
                   </p>
                 </div>
@@ -230,17 +230,17 @@ export default function UnregisterConfirmDialog({
             )}
           </div>
 
-          <Separator className="bg-white/10" />
+          <Separator className="bg-border" />
 
           {/* Warning Message */}
           <div className="p-4 bg-red-500/10 rounded-xl border border-red-500/20">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
               <div className="space-y-2">
-                <h4 className="text-white font-semibold text-sm">
+                <h4 className="text-red-500 dark:text-red-400 font-semibold text-sm">
                   Please Confirm Unregistration
                 </h4>
-                <p className="text-gray-300 text-sm leading-relaxed">
+                <p className="text-[#7582B3] dark:text-gray-300 text-sm leading-relaxed">
                   By unregistering, you will lose your spot in this event. 
                   If the event is popular, you may not be able to register again if it fills up. 
                   This action will free up a spot for other attendees.
@@ -256,7 +256,7 @@ export default function UnregisterConfirmDialog({
             onClick={onClose}
             disabled={isLoading}
             variant="outline"
-            className="flex-1 h-11 border-2 border-white/10 hover:border-white/20 text-white hover:text-white font-semibold rounded-xl transition-all bg-transparent"
+            className="flex-1 h-11 border-2 border-border hover:border-[#226CE0] text-[#1A234A] dark:text-white hover:text-[#226CE0] dark:hover:text-[#226CE0] font-semibold rounded-xl transition-all bg-transparent cursor-pointer"
           >
             Cancel
           </Button>
@@ -264,10 +264,10 @@ export default function UnregisterConfirmDialog({
             onClick={onConfirm}
             disabled={isLoading}
             className={cn(
-              "flex-1 h-11 font-bold rounded-xl flex items-center justify-center gap-2 transition-all",
+              "flex-1 h-11 font-bold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer",
               isLoading
-                ? "bg-red-600 cursor-wait"
-                : "bg-gradient-to-r from-red-600 to-rose-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-600/20"
+                ? "bg-red-500/70 cursor-wait text-white"
+                : "bg-red-600 hover:bg-red-700 text-white hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-600/20"
             )}
           >
             {isLoading ? (

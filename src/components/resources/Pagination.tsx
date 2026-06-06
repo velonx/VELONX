@@ -237,7 +237,7 @@ export const Pagination = React.memo<PaginationProps>(({
             disabled={isFirstPage}
             aria-label="Go to first page"
             title="First page"
-            className="hidden sm:inline-flex min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
+            className="hidden sm:inline-flex min-h-11 min-w-11 md:min-h-0 md:min-w-0"
           >
             <ChevronsLeft className="h-4 w-4" aria-hidden="true" />
           </Button>
@@ -251,7 +251,7 @@ export const Pagination = React.memo<PaginationProps>(({
           disabled={isFirstPage}
           aria-label="Go to previous page"
           title="Previous page"
-          className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
+          className="min-h-11 min-w-11 md:min-h-0 md:min-w-0"
         >
           <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </Button>
@@ -284,7 +284,7 @@ export const Pagination = React.memo<PaginationProps>(({
                 aria-current={isActive ? 'page' : undefined}
                 title={`Page ${page}`}
                 className={cn(
-                  'min-w-[44px] min-h-[44px] md:min-w-[32px] md:min-h-0',
+                  'min-w-11 min-h-11 md:min-w-8 md:min-h-0',
                   isActive && 'pointer-events-none'
                 )}
               >
@@ -302,7 +302,7 @@ export const Pagination = React.memo<PaginationProps>(({
           disabled={isLastPage}
           aria-label="Go to next page"
           title="Next page"
-          className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
+          className="min-h-11 min-w-11 md:min-h-0 md:min-w-0"
         >
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
@@ -316,7 +316,7 @@ export const Pagination = React.memo<PaginationProps>(({
             disabled={isLastPage}
             aria-label="Go to last page"
             title="Last page"
-            className="hidden sm:inline-flex min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
+            className="hidden sm:inline-flex min-h-11 min-w-11 md:min-h-0 md:min-w-0"
           >
             <ChevronsRight className="h-4 w-4" aria-hidden="true" />
           </Button>

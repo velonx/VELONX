@@ -15,8 +15,7 @@
 
 'use client';
 
-import React from 'react';
-import { Search, BookOpen, Filter } from 'lucide-react';
+import { BookOpen, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

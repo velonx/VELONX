@@ -23,18 +23,18 @@ export default function WelcomeSection({ userName, searchQuery, onSearchChange }
       </div>
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
         <div className="relative group flex-1 sm:flex-initial">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-[#219EBC] transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-[#226CE0] transition-colors" />
           <input
             type="text"
             placeholder="Search projects..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="h-12 md:h-14 bg-white border border-gray-100 rounded-2xl pl-12 pr-6 w-full sm:w-64 shadow-sm focus:ring-2 focus:ring-[#219EBC] outline-none transition-all"
+            className="h-12 md:h-14 bg-white border border-gray-100 rounded-2xl pl-12 pr-6 w-full sm:w-64 shadow-sm focus:ring-2 focus:ring-[#226CE0] outline-none transition-all"
           />
         </div>
         <Button 
           onClick={() => router.push('/submit-project')}
-          className="h-12 md:h-14 px-6 md:px-8 bg-[#023047] hover:bg-black text-white font-black rounded-2xl shadow-xl shadow-[#023047]/20 flex items-center justify-center gap-2 whitespace-nowrap"
+          className="h-12 md:h-14 px-6 md:px-8 bg-[#1A234A] hover:bg-black text-white font-black rounded-2xl shadow-xl shadow-[#1A234A]/20 flex items-center justify-center gap-2 whitespace-nowrap"
         >
           <span className="hidden sm:inline">Add New Project</span>
           <span className="sm:hidden">Add Project</span>

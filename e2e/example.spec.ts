@@ -7,7 +7,7 @@
 import { test, expect } from '@playwright/test'
 import { login, logout, TEST_USERS } from './helpers/auth.helper'
 import { navigateToDashboard, waitForPageLoad } from './helpers/navigation.helper'
-import { expectToBeOnPage, expectToastVisible } from './helpers/assertions.helper'
+import { expectToBeOnPage } from './helpers/assertions.helper';
 
 test.describe('Example E2E Tests', () => {
   test.describe('Home Page', () => {

@@ -117,16 +117,16 @@ export default function BlogManagement() {
   return (
     <div className="space-y-8">
       {/* Blog Management List */}
-      <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+      <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
         <CardHeader className="p-12 border-b border-gray-50">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-3xl font-black text-[#023047] mb-2">Manage Blog Posts</h3>
+              <h3 className="text-3xl font-black text-[#1A234A] mb-2">Manage Blog Posts</h3>
               <p className="text-gray-400">View, edit, and delete existing blog posts</p>
             </div>
             <Button
               onClick={handleNewPost}
-              className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+              className="h-12 px-6 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
             >
               <PenTool className="w-4 h-4 mr-2" />
               New Post
@@ -136,7 +136,7 @@ export default function BlogManagement() {
         <CardContent className="p-12">
           {loadingBlogs ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#226CE0] mx-auto mb-4"></div>
               <p className="text-gray-600">Loading blogs...</p>
             </div>
           ) : blogs.length === 0 ? (
@@ -165,7 +165,7 @@ export default function BlogManagement() {
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <h4 className="text-lg font-bold text-[#023047] mb-1">{blog.title}</h4>
+                          <h4 className="text-lg font-bold text-[#1A234A] mb-1">{blog.title}</h4>
                           <p className="text-sm text-gray-500">
                             {blog.excerpt || blog.content?.replace(/<[^>]*>/g, '').substring(0, 100) + '...'}
                           </p>
@@ -213,9 +213,9 @@ export default function BlogManagement() {
 
       {/* Create/Edit Blog Form */}
       <div ref={formRef}>
-        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+        <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
           <CardHeader className="p-12 border-b border-gray-50">
-            <h3 className="text-3xl font-black text-[#023047] mb-2">
+            <h3 className="text-3xl font-black text-[#1A234A] mb-2">
               {editingBlog ? 'Edit Article' : 'Publish New Article'}
             </h3>
             <p className="text-gray-400">
@@ -319,7 +319,7 @@ export default function BlogManagement() {
                 <select
                   name="status"
                   required
-                  className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
+                  className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#226CE0] outline-none"
                   defaultValue={editingBlog?.status || 'PUBLISHED'}
                 >
                   <option value="DRAFT">Draft</option>
@@ -329,7 +329,7 @@ export default function BlogManagement() {
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Cover Image</label>
-                <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
+                <div className="bg-gray-50 rounded-3xl p-6 space-y-4">
                   {blogImagePreview && (
                     <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
                       <Image
@@ -368,9 +368,9 @@ export default function BlogManagement() {
                     />
                     <p className="text-xs text-gray-400 ml-1">
                       Get free images from:
-                      <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Unsplash</a>,
-                      <a href="https://pexels.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Pexels</a>, or
-                      <a href="https://pixabay.com" target="_blank" rel="noopener noreferrer" className="text-[#219EBC] hover:underline ml-1">Pixabay</a>
+                      <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="text-[#226CE0] hover:underline ml-1">Unsplash</a>,
+                      <a href="https://pexels.com" target="_blank" rel="noopener noreferrer" className="text-[#226CE0] hover:underline ml-1">Pexels</a>, or
+                      <a href="https://pixabay.com" target="_blank" rel="noopener noreferrer" className="text-[#226CE0] hover:underline ml-1">Pixabay</a>
                     </p>
                   </div>
 
@@ -430,11 +430,11 @@ export default function BlogManagement() {
                     <label
                       htmlFor="blogImageUpload"
                       {...dragHandlers}
-                      className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''} ${isDragging ? 'border-[#219EBC] bg-[#219EBC]/10' : ''}`}
+                      className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#226CE0] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#226CE0] font-medium ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''} ${isDragging ? 'border-[#226CE0] bg-[#226CE0]/10' : ''}`}
                     >
                       {uploadingImage ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
                           Uploading...
                         </>
                       ) : (
@@ -455,7 +455,7 @@ export default function BlogManagement() {
                   onChange={setBlogContent}
                 />
               </div>
-              <Button type="submit" className="w-full h-16 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-[24px] text-lg shadow-xl shadow-[#219EBC]/20">
+              <Button type="submit" className="w-full h-16 bg-[#226CE0] hover:bg-[#334DAF] text-white font-black rounded-3xl text-lg shadow-xl shadow-[#226CE0]/20">
                 {editingBlog ? 'Update Article' : 'Publish Live'} <Send className="w-5 h-5 ml-2" />
               </Button>
             </form>

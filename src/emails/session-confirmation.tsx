@@ -1,5 +1,4 @@
 import { Heading, Link, Text } from '@react-email/components';
-import * as React from 'react';
 import { EmailLayout, button, heading, paragraph } from './base-layout';
 
 interface SessionConfirmationEmailProps {
@@ -77,13 +76,13 @@ const sessionCard = {
     padding: '20px',
     borderRadius: '8px',
     margin: '20px 0',
-    borderLeft: '4px solid #219EBC',
+    borderLeft: '4px solid #226CE0',
 };
 
 const sessionCardTitle = {
     fontSize: '18px',
     fontWeight: 'bold',
-    color: '#023047',
+    color: '#1A234A',
     margin: '0 0 12px',
 };
 
@@ -101,7 +100,7 @@ const smallText = {
 };
 
 const linkStyle = {
-    color: '#219EBC',
+    color: '#226CE0',
     textDecoration: 'underline',
     wordBreak: 'break-all' as const,
 };

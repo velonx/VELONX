@@ -345,6 +345,7 @@ enum AttendeeStatus {
 // Event Model
 model Event {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String?     @unique
   title       String
   description String
   type        EventType
@@ -867,6 +868,7 @@ enum OpportunityStatus {
 // Opportunity Model (for both Internships and Jobs)
 model Opportunity {
   id           String            @id @default(auto()) @map("_id") @db.ObjectId
+  slug         String?           @unique
   type         OpportunityType
   title        String
   company      String

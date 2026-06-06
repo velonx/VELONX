@@ -1,5 +1,4 @@
 import { Heading, Link, Text } from '@react-email/components';
-import * as React from 'react';
 import { EmailLayout, button, heading, paragraph } from './base-layout';
 
 interface WelcomeEmailProps {
@@ -68,7 +67,7 @@ const listItem = {
 };
 
 const link = {
-    color: '#219EBC',
+    color: '#226CE0',
     textDecoration: 'underline',
 };
 

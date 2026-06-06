@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 /**
  * Feed Skeleton Props Interface
@@ -34,12 +35,12 @@ export function FeedSkeleton({ count = 3 }: FeedSkeletonProps) {
           <CardHeader className="pb-3">
             <div className="flex items-start gap-3">
               {/* Avatar Skeleton */}
-              <div className="size-10 rounded-full bg-muted animate-pulse shrink-0" />
+              <Skeleton className="size-10 rounded-full shrink-0" />
 
               {/* Author Info Skeleton */}
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-32 bg-muted animate-pulse rounded" />
-                <div className="h-3 w-24 bg-muted animate-pulse rounded" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-24" />
               </div>
             </div>
           </CardHeader>
@@ -48,14 +49,14 @@ export function FeedSkeleton({ count = 3 }: FeedSkeletonProps) {
           <CardContent className="space-y-3">
             {/* Text Lines */}
             <div className="space-y-2">
-              <div className="h-4 w-full bg-muted animate-pulse rounded" />
-              <div className="h-4 w-5/6 bg-muted animate-pulse rounded" />
-              <div className="h-4 w-4/6 bg-muted animate-pulse rounded" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-5/6" />
+              <Skeleton className="h-4 w-4/6" />
             </div>
 
             {/* Image Skeleton (optional, alternating) */}
             {index % 2 === 0 && (
-              <div className="aspect-video w-full bg-muted animate-pulse rounded-md" />
+              <Skeleton className="aspect-video w-full rounded-md" />
             )}
           </CardContent>
 
@@ -63,14 +64,14 @@ export function FeedSkeleton({ count = 3 }: FeedSkeletonProps) {
           <CardFooter className="flex-col gap-3 pt-0">
             {/* Stats */}
             <div className="flex items-center justify-between w-full">
-              <div className="h-3 w-20 bg-muted animate-pulse rounded" />
-              <div className="h-3 w-20 bg-muted animate-pulse rounded" />
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-3 w-20" />
             </div>
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2 w-full border-t pt-3">
-              <div className="h-8 flex-1 bg-muted animate-pulse rounded" />
-              <div className="h-8 flex-1 bg-muted animate-pulse rounded" />
+              <Skeleton className="h-8 flex-1" />
+              <Skeleton className="h-8 flex-1" />
             </div>
           </CardFooter>
         </Card>

@@ -10,6 +10,8 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import '@testing-library/jest-dom';
 import { EventCardSkeleton, EventCardSkeletonLoader } from '../EventCardSkeleton';
 
 describe('EventCardSkeleton', () => {
@@ -41,7 +43,7 @@ describe('EventCardSkeleton', () => {
       const { container } = render(<EventCardSkeleton />);
       
       // Check for gradient header section
-      const gradientHeader = container.querySelector('.bg-gradient-to-br');
+      const gradientHeader = container.querySelector('.bg-linear-to-br');
       expect(gradientHeader).toBeInTheDocument();
       expect(gradientHeader).toHaveClass('h-40');
     });
@@ -52,7 +54,7 @@ describe('EventCardSkeleton', () => {
       
       expect(card).toHaveClass('bg-[#0f172a]');
       expect(card).toHaveClass('border-0');
-      expect(card).toHaveClass('rounded-[24px]');
+      expect(card).toHaveClass('rounded-3xl');
       expect(card).toHaveClass('shadow-2xl');
     });
   });

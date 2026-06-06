@@ -10,7 +10,7 @@
  * Requirements: 4.3
  */
 
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test';
 import { login, TEST_USERS } from './helpers/auth.helper'
 import { expectToBeOnPage } from './helpers/assertions.helper'
 import { waitForPageLoad, navigateToDashboard } from './helpers/navigation.helper'

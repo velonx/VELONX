@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,12 +21,21 @@ import {
 export default function GroupsPage() {
   const { data: session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [privacyFilter, setPrivacyFilter] = useState<"all" | "public" | "private">("all");
 
   // Fetch groups with filters
   const { groups, isLoading, refetch, createGroup, joinGroup, requestJoinGroup, memberGroupIds, pendingRequestGroupIds } = useCommunityGroups();
+
+  // Open Create Group dialog if redirect parameters are set
+  useEffect(() => {
+    if (searchParams?.get("create") === "true" && session) {
+      const timer = setTimeout(() => setShowCreateDialog(true), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, session]);
 
   // Filter groups based on search and privacy
   const filteredGroups = groups?.filter((group) => {
@@ -114,7 +123,7 @@ export default function GroupsPage() {
         </div>
       </section>
 
-      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
 
       {/* Filters and Actions */}
       <section className="py-8 bg-background">
@@ -124,7 +133,7 @@ export default function GroupsPage() {
             <div className="flex items-center gap-3">
               <Filter className="w-5 h-5 text-muted-foreground" />
               <Select value={privacyFilter} onValueChange={(value: any) => setPrivacyFilter(value)}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-45">
                   <SelectValue placeholder="Filter by privacy" />
                 </SelectTrigger>
                 <SelectContent>
@@ -155,7 +164,7 @@ export default function GroupsPage() {
         </div>
       </section>
 
-      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
 
       {/* Groups List */}
       <section className="py-12 bg-background">

@@ -3,14 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import {
-  Zap, Package, Search, ChevronDown, Check, X,
-  Gift, Truck, Sparkles, ShoppingBag
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Zap, Package, Search, ChevronDown, X, Gift, Truck, Sparkles } from 'lucide-react';
 import toast from "react-hot-toast";
 import SwagCheckoutModal from "@/components/swag/SwagCheckoutModal";
 import { SwagOrderSuccess } from "@/components/swag/SwagOrderSuccess";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type SwagCategory = "ALL" | "NOTEBOOK" | "DIARY" | "BOTTLE" | "BAG" | "PLANT" | "LAMP" | "STATIONERY" | "APPAREL" | "OTHER";
 
@@ -126,116 +123,53 @@ export default function SwagPage() {
   const activeCategoryLabel = CATEGORIES.find(c => c.value === activeCategory);
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
-      {/* ─── HERO ──────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden min-h-[500px] flex items-center pt-20 border-b border-border">
-        {/* Background layers */}
-        <div className="absolute inset-0 bg-background" />
-        
-        {/* Subtle glows - Adjusted for theme responsiveness */}
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none opacity-50" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-muted/20 rounded-full blur-[120px] pointer-events-none opacity-50" />
-        
-        {/* Dot grid - Adaptive opacity */}
-        <div
-          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
+    <div className="min-h-screen bg-background">
+      {/* Page Hero */}
+      <header className="page-hero">
+        <div className="page-hero-bg"></div>
+        <div className="container text-center py-16">
+          <span className="section-label-redesign justify-center inline-flex mb-4">GAMIFIED REWARDS</span>
+          <h1 className="display-1 text-5xl font-black text-foreground mb-4">
+            Velonx <span className="title-accent">Swag Store</span>
+          </h1>
+          <p className="text-muted-foreground text-sm max-w-xl mx-auto leading-relaxed">
+            Participate in learning events, showcase projects, assist community members, earn XP, and redeem premium swag.
+          </p>
+        </div>
+      </header>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-            {/* ── LEFT: Content ── */}
-            <div className="space-y-8">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-muted/50 backdrop-blur-sm">
-                <Sparkles className="w-3.5 h-3.5 text-muted-foreground" />
-                <span className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.2em]">
-                  Premium Swag · XP Rewards
-                </span>
-              </div>
-
-              {/* Headline */}
-              <div className="space-y-4">
-                <h1 className="font-black leading-[1] tracking-tight text-foreground" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "clamp(3.5rem,7vw,5rem)" }}>
-                  Velonx<br />
-                  <span className="text-muted-foreground/30">Swag Store</span>
-                </h1>
-                <p className="text-muted-foreground text-lg leading-relaxed max-w-lg font-medium">
-                  Exclusive merchandise for the Velonx community. 
-                  Redeem your hard-earned XP for high-quality student essentials.
-                </p>
-              </div>
-
-              {/* XP Balance card - Theme Responsive */}
-              <div
-                className="inline-flex items-center gap-5 px-8 py-5 rounded-[2rem] border border-border shadow-2xl transition-all"
-                style={{ background: "var(--card)", backdropFilter: "blur(40px)" }}
-              >
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 flex-shrink-0 shadow-inner">
-                  <Zap className="w-7 h-7 text-primary" />
-                </div>
-                <div>
-                  <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.25em] mb-1">Available XP</p>
-                  <p className="text-foreground font-black text-3xl tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-                    {session
-                      ? userXp !== null
-                        ? <span>{userXp.toLocaleString()}</span>
-                        : "..."
-                      : <span className="text-muted-foreground/40 text-lg font-bold">Sign in</span>
-                    }
-                  </p>
-                </div>
-              </div>
-
-              {/* Mini stat pills */}
-              <div className="flex flex-wrap gap-4">
-                {[
-                  { icon: Gift,      label: "42+ Items" },
-                  { icon: Truck,     label: "Global Shipping" },
-                ].map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl border border-border bg-muted/30">
-                    <Icon className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">{label}</span>
-                  </div>
-                ))}
-              </div>
+      {/* XP Wallet Banner */}
+      <section className="py-4">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="coins-header">
+            <div>
+              <h2 className="text-lg font-bold text-foreground mb-1.5">Your Wallet &amp; XP Ledger</h2>
+              <p className="text-xs text-muted-foreground max-w-lg leading-relaxed">
+                You earn 50 XP for attending webinars, 100 for hackathons, 150 for projects, and 200 for winning coding competitions.
+              </p>
             </div>
-
-            {/* ── RIGHT: Hero image Container ── */}
-            <div className="relative group">
-              <div className="absolute -inset-4 bg-gradient-to-tr from-primary/5 to-transparent rounded-[3rem] blur-2xl opacity-50 pointer-events-none" />
-              <div className="relative aspect-square w-full max-w-[500px] mx-auto rounded-[3rem] border border-border bg-card/50 flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-muted/20 to-transparent" />
-                {/* Light Mode Image */}
-                <Image
-                  src="/swag-hero-light.webp" 
-                  alt="Swag Hero"
-                  fill
-                  className="object-contain p-8 group-hover:scale-110 transition-transform duration-700 dark:hidden block"
-                  priority
-                />
-                {/* Dark Mode Image */}
-                <Image
-                  src="/swag-hero-dark.webp" 
-                  alt="Swag Hero"
-                  fill
-                  className="object-contain p-8 group-hover:scale-110 transition-transform duration-700 hidden dark:block"
-                  priority
-                />
+            <div className="coins-count-box">
+              <div className="text-left">
+                <div className="text-[10px] text-muted-foreground font-black uppercase tracking-wider">Balance</div>
+                <div className="coins-num flex items-center gap-1.5">
+                  {session
+                    ? userXp !== null
+                      ? `${userXp.toLocaleString()} XP`
+                      : "..."
+                    : "Not Signed In"
+                  }
+                </div>
               </div>
+              <span className="text-2xl" role="img" aria-label="coin">🪙</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* ─── PRODUCTS SECTION ──────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
+      <section className="max-w-5xl mx-auto px-4 py-12">
         {/* Search & Filter Row */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto flex-1">
             {/* Search Input */}
             <div className="relative w-full sm:max-w-md group">
@@ -254,68 +188,31 @@ export default function SwagPage() {
               )}
             </div>
 
-            {/* Category Dropdown */}
-            <div ref={dropdownRef} className="relative w-full sm:w-fit">
-              <button
-                onClick={() => setDropdownOpen(o => !o)}
-                className="w-full sm:w-fit flex items-center justify-between gap-4 px-5 py-3.5 rounded-2xl border border-border text-foreground font-bold text-sm transition-all hover:bg-muted group bg-muted/20"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-base grayscale group-hover:grayscale-0 transition-all">{activeCategoryLabel?.emoji}</span>
-                  <span className="tracking-wide uppercase text-[11px]">{activeCategoryLabel?.label}</span>
-                </div>
-                <ChevronDown className={`w-4 h-4 text-muted-foreground/50 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
-              </button>
-
-              {dropdownOpen && (
-                <div
-                  className="absolute top-full left-0 mt-3 w-full sm:w-64 rounded-[2rem] border border-border shadow-2xl z-50 overflow-hidden py-2 bg-popover"
+            {/* Category Chips */}
+            <div className="filter-chips">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.value}
+                  onClick={() => setActiveCategory(cat.value)}
+                  className={`filter-chip ${activeCategory === cat.value ? "active" : ""}`}
                 >
-                  <div className="px-4 py-2 border-b border-border mb-2">
-                    <p className="text-muted-foreground/40 text-[9px] font-black uppercase tracking-[0.2em]">Filter by Category</p>
-                  </div>
-                  <div className="max-h-72 overflow-y-auto custom-scrollbar">
-                    {CATEGORIES.map(cat => (
-                      <button
-                        key={cat.value}
-                        onClick={() => { setActiveCategory(cat.value); setDropdownOpen(false); }}
-                        className={`w-full flex items-center gap-4 px-5 py-3 text-xs font-bold uppercase tracking-widest transition-all hover:bg-muted ${
-                          activeCategory === cat.value
-                            ? "text-primary bg-primary/5"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        <span className={`text-base ${activeCategory === cat.value ? "" : "grayscale opacity-50"}`}>{cat.emoji}</span>
-                        <span className="flex-1 text-left">{cat.label}</span>
-                        {activeCategory === cat.value && <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(33,158,188,0.5)]" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+                  <span className="mr-1.5">{cat.emoji}</span>
+                  {cat.label}
+                </button>
+              ))}
             </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-             <div className="h-px w-8 bg-border hidden lg:block" />
-             <p className="text-muted-foreground/40 text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap">
-              {filtered.length} Results {activeCategory !== "ALL" && <span className="text-muted-foreground/60">/ {activeCategoryLabel?.label}</span>}
-            </p>
           </div>
         </div>
 
         {/* Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="swag-grid">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="rounded-3xl overflow-hidden animate-pulse border border-border bg-muted/20">
-                <div className="aspect-square bg-muted/40" />
-                <div className="p-5 space-y-3">
-                  <div className="h-4 bg-muted/40 rounded-xl w-3/4" />
-                  <div className="h-3 bg-muted/40 rounded-xl w-full" />
-                  <div className="h-3 bg-muted/40 rounded-xl w-1/2" />
-                  <div className="h-10 bg-muted/40 rounded-xl mt-4" />
-                </div>
+              <div key={i} className="card swag-card pointer-events-none border border-border bg-card/40 rounded-2xl p-4 flex flex-col gap-3">
+                <Skeleton className="swag-img-container h-50 rounded-xl" />
+                <Skeleton className="h-5 rounded w-3/4 mb-1 mt-4" />
+                <Skeleton className="h-4 rounded w-full mb-3" />
+                <Skeleton className="h-8 rounded w-1/2 mt-auto" />
               </div>
             ))}
           </div>
@@ -326,19 +223,27 @@ export default function SwagPage() {
             <p className="text-muted-foreground/30 text-sm">Try a different category or clear your search</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="swag-grid">
             {filtered.map(item => {
               const canAfford = session && userXp !== null && userXp >= item.xpCost;
               const isOutOfStock = item.stock === 0;
-              const gradient = CATEGORY_GRADIENTS[item.category] || "from-slate-800/40 to-slate-900/40";
-
               return (
                 <div
                   key={item.id}
-                  className={`group rounded-3xl overflow-hidden flex flex-col border border-border transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 bg-card ${isOutOfStock ? "opacity-50" : ""}`}
+                  className={`card swag-card ${isOutOfStock ? "opacity-50" : ""}`}
                 >
-                  {/* Image */}
-                  <div className={`relative aspect-square bg-gradient-to-br ${gradient} overflow-hidden`}>
+                  {isOutOfStock && (
+                    <span className="badge badge-amber" style={{ position: "absolute", top: "12px", left: "12px", zIndex: 2 }}>
+                      OUT OF STOCK
+                    </span>
+                  )}
+                  {item.stock !== -1 && item.stock > 0 && item.stock <= 5 && (
+                    <span className="badge badge-green" style={{ position: "absolute", top: "12px", left: "12px", zIndex: 2 }}>
+                      ONLY {item.stock} LEFT!
+                    </span>
+                  )}
+                  
+                  <div className="swag-img-container">
                     {item.imageUrl ? (
                       <Image
                         src={item.imageUrl}
@@ -348,55 +253,31 @@ export default function SwagPage() {
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center text-6xl">
-                        {CATEGORY_ICONS[item.category] || "🎁"}
-                      </div>
-                    )}
-
-                    {/* XP badge */}
-                    <div
-                      className="absolute top-3 right-3 text-white text-xs font-black px-3 py-1.5 rounded-xl flex items-center gap-1 border border-white/10"
-                      style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
-                    >
-                      <Zap className="w-3 h-3 text-amber-400" />
-                      {item.xpCost.toLocaleString()}
-                    </div>
-
-                    {/* Stock badge */}
-                    {item.stock !== -1 && item.stock > 0 && item.stock <= 5 && (
-                      <div className="absolute top-3 left-3 bg-red-500/90 text-white text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm">
-                        Only {item.stock} left!
-                      </div>
-                    )}
-                    {isOutOfStock && (
-                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
-                        <span className="text-white font-bold px-4 py-2 rounded-xl text-sm border border-white/10" style={{ background: "rgba(0,0,0,0.7)" }}>Out of Stock</span>
-                      </div>
+                      <span className="swag-graphic">{CATEGORY_ICONS[item.category] || "🎁"}</span>
                     )}
                   </div>
 
-                  {/* Info */}
-                  <div className="p-5 flex flex-col flex-1">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-2 block">{item.category}</span>
-                    <h3 className="font-bold text-foreground text-base mb-1 leading-tight line-clamp-1">{item.name}</h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2 flex-1 mb-4">{item.description}</p>
+                  <h2 className="swag-title line-clamp-1">{item.name}</h2>
+                  <p className="swag-desc line-clamp-2">{item.description}</p>
 
+                  <div className="swag-price-box">
+                    <span className="swag-coins">{item.xpCost.toLocaleString()} XP</span>
                     <button
                       onClick={() => handleRedeem(item)}
                       disabled={isOutOfStock || (!canAfford && !!session && userXp !== null)}
-                      className={`w-full h-10 rounded-xl font-bold text-sm transition-all ${
+                      className={`btn-redesign ${
                         isOutOfStock || (!canAfford && !!session && userXp !== null)
-                          ? "bg-muted text-muted-foreground cursor-not-allowed border border-border"
-                          : "bg-primary text-primary-foreground hover:opacity-90 hover:scale-[1.02] active:scale-95 shadow-lg shadow-primary/20"
+                          ? "btn-redesign-secondary cursor-not-allowed text-xs py-2 px-3"
+                          : "btn-redesign-primary text-xs py-2 px-3"
                       }`}
                     >
                       {isOutOfStock
-                        ? "Out of Stock"
+                        ? "Sold Out"
                         : !session
-                        ? "Sign in to Redeem"
+                        ? "Sign In"
                         : !canAfford && userXp !== null
-                        ? `Need ${(item.xpCost - userXp).toLocaleString()} more XP`
-                        : "Redeem Now"}
+                        ? `Need ${item.xpCost - userXp} XP`
+                        : "Redeem"}
                     </button>
                   </div>
                 </div>

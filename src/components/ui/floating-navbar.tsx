@@ -34,7 +34,7 @@ export const FloatingNav = ({
   mobileNavHeader?: React.ReactNode;
 }) => {
   const { scrollYProgress } = useScroll();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -49,8 +49,10 @@ export const FloatingNav = ({
         clearTimeout(hideTimeoutRef.current);
       }
 
-      // Scrolling up - show navbar
-      if (direction < 0) {
+      // Scrolling up or at the top of the page - show navbar
+      if (currentScrollPos < 10) {
+        setVisible(true);
+      } else if (direction < 0) {
         setVisible(true);
       }
       // Scrolling down - hide navbar after a delay
@@ -93,7 +95,7 @@ export const FloatingNav = ({
           "mx-2 md:mx-auto md:max-w-fit",
           "border border-border rounded-full",
           "bg-card/95 backdrop-blur-xl shadow-lg",
-          "z-[5000] pr-2 pl-3 md:pr-3 md:pl-6 py-2",
+          "z-5000 pr-2 pl-3 md:pr-3 md:pl-6 py-2",
           "items-center justify-between md:justify-center md:space-x-1",
           "max-w-[calc(100vw-16px)] md:max-w-fit",
           className
@@ -104,7 +106,7 @@ export const FloatingNav = ({
           href="/"
           className="flex items-center mr-1 pr-2 md:pr-3 md:mr-2 md:border-r border-border shrink-0"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#219EBC] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-sm md:text-lg tracking-tight">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-[#226CE0] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-sm md:text-lg tracking-tight">
             Velonx
           </span>
         </Link>
@@ -150,13 +152,13 @@ export const FloatingNav = ({
                 <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-card border-l border-border w-[300px] p-0">
+            <SheetContent side="right" className="bg-card border-l border-border w-75 p-0">
               <VisuallyHidden>
                 <SheetTitle>Navigation Menu</SheetTitle>
               </VisuallyHidden>
               <div className="flex flex-col h-full overflow-y-auto custom-scrollbar p-6">
                 <Link href="/" onClick={() => setMobileMenuOpen(false)} className="mb-8">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#219EBC] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-3xl tracking-tight">
+                  <span className="text-transparent bg-clip-text bg-linear-to-r from-[#226CE0] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-3xl tracking-tight">
                     Velonx
                   </span>
                 </Link>

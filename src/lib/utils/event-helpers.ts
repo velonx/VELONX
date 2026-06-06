@@ -5,7 +5,7 @@
  */
 
 import type { Event } from '@/lib/api/types';
-import type { RegistrationStatusInfo, RegistrationClosureReason } from '@/lib/types/events.types';
+import type { RegistrationStatusInfo } from '@/lib/types/events.types';
 
 /**
  * Computes the registration status for an event based on multiple conditions

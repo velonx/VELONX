@@ -3,8 +3,7 @@
  * Detects and alerts on performance issues
  */
 
-import { alertService } from '@/lib/services/alert.service'
-import { ErrorLogger, type ErrorSeverity } from '@/lib/services/error-logger.service'
+import { ErrorLogger } from '@/lib/services/error-logger.service';
 
 /**
  * Performance thresholds

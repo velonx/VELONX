@@ -1,344 +1,710 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, Medal, Crown, Diamond } from "lucide-react";
 import { useLeaderboard } from "@/lib/api/hooks";
 import Image from "next/image";
+import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-// Avatar options for users to choose from
-const AVATAR_OPTIONS = [
-    { id: 1, name: "Cool Ape", src: "/avatars/cool-ape.png" },
-    { id: 2, name: "Robot Hero", src: "/avatars/robot-hero.png" },
-    { id: 3, name: "Space Cat", src: "/avatars/space-cat.png" },
-    { id: 4, name: "Wizard Owl", src: "/avatars/wizard-owl.png" },
-    { id: 5, name: "Punk Dog", src: "/avatars/punk-dog.png" },
-];
+import { motion } from "framer-motion";
 
 export default function LeaderboardPage() {
     const { data: session } = useSession();
-    const [activeTab, setActiveTab] = useState<"daily" | "monthly">("daily");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeFilter, setActiveFilter] = useState<"all" | "elite" | "builder" | "rising">("all");
 
     // Fetch leaderboard from API
     const { data: leaderboardData, loading } = useLeaderboard({ pageSize: 50 });
 
-    // Extend leaderboard with avatars (use deterministic values based on index)
-    const EXTENDED_LEADERBOARD = leaderboardData?.map((user, index) => ({
-        ...user,
-        avatarSrc: user.image || AVATAR_OPTIONS[index % AVATAR_OPTIONS.length].src,
-        followers: Math.floor((index * 137 + 1000) % 15000) + 1000,
-        prize: index === 0 ? 100000 : index === 1 ? 50000 : index === 2 ? 20000 : Math.floor(1000 / (index + 1)) * 100,
-        earnPoints: 2000,
-    })) || [];
+    const getTier = (xp: number) => {
+        if (xp >= 3500) return "elite";
+        if (xp >= 1500) return "builder";
+        return "rising";
+    };
+
+    const getTierLabel = (tier: string) => {
+        const labels: Record<string, string> = { elite: "Elite Builder", builder: "Core Builder", rising: "Rising Star" };
+        return labels[tier] || "Builder";
+    };
+
+    const getChangeIcon = (change: string) => {
+        if (change === "up") return (
+            <span className="lb-rank-change up" title="Moved up">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="inline-block">
+                    <path d="M5 1L9 8H1L5 1Z" fill="#22c55e"/>
+                </svg>
+            </span>
+        );
+        if (change === "down") return (
+            <span className="lb-rank-change down" title="Moved down">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="inline-block">
+                    <path d="M5 9L1 2H9L5 9Z" fill="#ef4444"/>
+                </svg>
+            </span>
+        );
+        return (
+            <span className="lb-rank-change same" title="No change">
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className="inline-block">
+                    <rect x="0" y="1.5" width="10" height="1.5" rx="0.75" fill="currentColor" opacity="0.4"/>
+                    <rect x="0" y="4" width="10" height="1.5" rx="0.75" fill="currentColor" opacity="0.2"/>
+                </svg>
+            </span>
+        );
+    };
+
+    const getAvatarColor = (idx: number) => {
+        const colors = ["#226CE0", "#f0771a", "#059669", "#7c3aed", "#0891b2"];
+        return colors[idx % colors.length];
+    };
+
+    const getAvatarHtml = (user: any, index: number) => {
+        const isTop = user.rank <= 3;
+        const medalColors: Record<number, string> = { 1: "#f0c81a", 2: "#b4bec8", 3: "#cd7f32" };
+        const medalColor = medalColors[user.rank];
+        const initials = (user.name || "V").split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+
+        if (user.image) {
+            return (
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-border shrink-0">
+                    <Image src={user.image} alt={user.name || "User"} width={40} height={40} className="w-full h-full object-cover" />
+                </div>
+            );
+        }
+
+        if (isTop) {
+            return (
+                <svg width="40" height="40" viewBox="0 0 40 40" className="shrink-0">
+                    <circle cx="20" cy="20" r="19" fill="none" stroke={medalColor} strokeWidth="1.5" strokeDasharray="3 2" opacity="0.7">
+                        <animateTransform attributeName="transform" type="rotate" values="0 20 20;360 20 20" dur="10s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="20" cy="20" r="15" fill={medalColor} opacity="0.15"/>
+                    <circle cx="20" cy="20" r="15" fill="none" stroke={medalColor} strokeWidth="1"/>
+                    <text x="20" y="24.5" textAnchor="middle" fontSize="10" fontWeight="900" fill={medalColor}>{initials}</text>
+                </svg>
+            );
+        }
+
+        return (
+            <div className="lb-user-avatar" style={{ background: getAvatarColor(index) }}>
+                {initials}
+            </div>
+        );
+    };
+
+    // Process & map leaderboard users
+    const EXTENDED_LEADERBOARD = leaderboardData?.map((user, index) => {
+        const rank = user.rank || (index + 1);
+        const change = index % 4 === 0 ? "up" : index % 4 === 1 ? "down" : "same";
+        return {
+            ...user,
+            rank,
+            change
+        };
+    }) || [];
 
     const top3 = EXTENDED_LEADERBOARD.slice(0, 3);
+    const first = top3.find(u => u.rank === 1);
+    const second = top3.find(u => u.rank === 2);
+    const third = top3.find(u => u.rank === 3);
 
+    const firstInitials = first ? (first.name || "V").split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : "KS";
+    const secondInitials = second ? (second.name || "V").split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : "AT";
+    const thirdInitials = third ? (third.name || "V").split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : "RM";
 
+    // Filtering logic
+    const filteredUsers = EXTENDED_LEADERBOARD.filter((user) => {
+        const tier = getTier(user.xp);
+        const matchesFilter = activeFilter === "all" || tier === activeFilter;
+        const q = searchQuery.toLowerCase();
+        const matchesSearch = !q ||
+            user.name?.toLowerCase().includes(q) ||
+            getTierLabel(tier).toLowerCase().includes(q);
+        return matchesFilter && matchesSearch;
+    });
 
+    const currentUserEntry = EXTENDED_LEADERBOARD.find(
+        (user) => user.name === session?.user?.name
+    );
+    const showYourRank = !!session?.user;
+
+    const userXp = currentUserEntry?.xp ?? (session?.user as any)?.xp ?? 0;
+    const userLevel = currentUserEntry?.level ?? (session?.user as any)?.level ?? 1;
+
+    const yourRank = currentUserEntry?.rank ?? "--";
+    const yourProjects = currentUserEntry?.projects ?? (session?.user as any)?.projects ?? 0;
+    const yourStreak = currentUserEntry?.currentStreak ?? (session?.user as any)?.currentStreak ?? 0;
+    const yourTierLabel = currentUserEntry ? getTierLabel(getTier(currentUserEntry.xp)) : getTierLabel(getTier(userXp));
+    const yourInitials = session?.user?.name ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : "RP";
 
     return (
-        <div className="min-h-screen pt-24 bg-background">
-            {/* Hero Section */}
-            <section className="relative py-12 bg-background overflow-hidden">
+        <div className="min-h-screen pt-24 bg-background selection:bg-primary/30">
+            {/* HERO SECTION */}
+            <section className="leaderboard-hero">
+                {/* SVG Animated Background Grid */}
+                <div className="lb-hero-svg-bg" aria-hidden="true">
+                    <svg viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="600" cy="200" rx="500" ry="220" fill="#226CE0" opacity="0.05"/>
+                        <g opacity="0.25">
+                            <circle cx="100" cy="80"  r="1.5" fill="#226CE0"/><circle cx="200" cy="80"  r="1.5" fill="#226CE0"/><circle cx="300" cy="80"  r="1.5" fill="#226CE0"/><circle cx="400" cy="80"  r="1.5" fill="#226CE0"/><circle cx="500" cy="80"  r="1.5" fill="#226CE0"/><circle cx="600" cy="80"  r="1.5" fill="#226CE0"/><circle cx="700" cy="80"  r="1.5" fill="#226CE0"/><circle cx="800" cy="80"  r="1.5" fill="#226CE0"/><circle cx="900" cy="80"  r="1.5" fill="#226CE0"/><circle cx="1000" cy="80" r="1.5" fill="#226CE0"/><circle cx="1100" cy="80" r="1.5" fill="#226CE0"/>
+                            <circle cx="100" cy="160" r="1.5" fill="#226CE0"/><circle cx="200" cy="160" r="1.5" fill="#226CE0"/><circle cx="300" cy="160" r="1.5" fill="#226CE0"/><circle cx="400" cy="160" r="1.5" fill="#226CE0"/><circle cx="500" cy="160" r="1.5" fill="#226CE0"/><circle cx="600" cy="160" r="1.5" fill="#226CE0"/><circle cx="700" cy="160" r="1.5" fill="#226CE0"/><circle cx="800" cy="160" r="1.5" fill="#226CE0"/><circle cx="900" cy="160" r="1.5" fill="#226CE0"/><circle cx="1000" cy="160" r="1.5" fill="#226CE0"/><circle cx="1100" cy="160" r="1.5" fill="#226CE0"/>
+                            <circle cx="100" cy="240" r="1.5" fill="#226CE0"/><circle cx="200" cy="240" r="1.5" fill="#226CE0"/><circle cx="300" cy="240" r="1.5" fill="#226CE0"/><circle cx="400" cy="240" r="1.5" fill="#226CE0"/><circle cx="500" cy="240" r="1.5" fill="#226CE0"/><circle cx="600" cy="240" r="1.5" fill="#226CE0"/><circle cx="700" cy="240" r="1.5" fill="#226CE0"/><circle cx="800" cy="240" r="1.5" fill="#226CE0"/><circle cx="900" cy="240" r="1.5" fill="#226CE0"/><circle cx="1000" cy="240" r="1.5" fill="#226CE0"/><circle cx="1100" cy="240" r="1.5" fill="#226CE0"/>
+                            <circle cx="100" cy="320" r="1.5" fill="#226CE0"/><circle cx="200" cy="320" r="1.5" fill="#226CE0"/><circle cx="300" cy="320" r="1.5" fill="#226CE0"/><circle cx="400" cy="320" r="1.5" fill="#226CE0"/><circle cx="500" cy="320" r="1.5" fill="#226CE0"/><circle cx="600" cy="320" r="1.5" fill="#226CE0"/><circle cx="700" cy="320" r="1.5" fill="#226CE0"/><circle cx="800" cy="320" r="1.5" fill="#226CE0"/><circle cx="900" cy="320" r="1.5" fill="#226CE0"/><circle cx="1000" cy="320" r="1.5" fill="#226CE0"/><circle cx="1100" cy="320" r="1.5" fill="#226CE0"/>
+                        </g>
+                        <g opacity="0.18" stroke="#226CE0" strokeWidth="1" fill="none">
+                            <line x1="200" y1="80" x2="400" y2="160"><animate attributeName="opacity" values="0.2;0.6;0.2" dur="4s" repeatCount="indefinite"/></line>
+                            <line x1="400" y1="160" x2="600" y2="80"><animate attributeName="opacity" values="0.6;0.2;0.6" dur="3.5s" repeatCount="indefinite"/></line>
+                            <line x1="600" y1="80" x2="800" y2="160"><animate attributeName="opacity" values="0.2;0.5;0.2" dur="4.2s" repeatCount="indefinite"/></line>
+                            <line x1="800" y1="160" x2="1000" y2="80"><animate attributeName="opacity" values="0.5;0.2;0.5" dur="3.8s" repeatCount="indefinite"/></line>
+                            <line x1="300" y1="240" x2="600" y2="160"><animate attributeName="opacity" values="0.3;0.6;0.3" dur="5s" repeatCount="indefinite"/></line>
+                            <line x1="600" y1="160" x2="900" y2="240"><animate attributeName="opacity" values="0.6;0.3;0.6" dur="4.5s" repeatCount="indefinite"/></line>
+                        </g>
+                        <circle cx="600" cy="80" r="4" fill="#226CE0" opacity="0.6">
+                            <animate attributeName="r" values="3;6;3" dur="2.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="200" cy="160" r="3" fill="#F0771A" opacity="0.5">
+                            <animate attributeName="r" values="2;5;2" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="1000" cy="160" r="3" fill="#F0771A" opacity="0.4">
+                            <animate attributeName="r" values="2;5;2" dur="3.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                </div>
 
-                <div className="container mx-auto px-4 text-center">
-                    <div className="max-w-3xl mx-auto mb-12">
+                <div className="leaderboard-hero-eyebrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                        <path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                    </svg>
+                    Updated Weekly
+                </div>
+
+                <h1 className="leaderboard-hero-title">
+                    Top Student<br /><span className="title-accent">Builders &amp; Hackers</span>
+                </h1>
+
+                <p className="leaderboard-hero-sub">
+                    Climb the leaderboard by shipping projects, verifying skills, and maintaining streaks. Your ranking speaks louder than your resume.
+                </p>
+
+                {/* SVG Divider */}
+                <div className="lb-hero-divider">
+                    <div className="lb-hero-divider-line"></div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#226CE0" strokeWidth="2" opacity="0.5">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                    <div className="lb-hero-divider-line"></div>
+                </div>
+            </section>
+
+            {/* PODIUM SECTION */}
+            <section className="podium-section">
+                <div className="container mx-auto max-w-5xl">
+                    <div className="podium-section-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="inline-block mr-2 opacity-50">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        This Week's Podium
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="inline-block ml-2 opacity-50">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
                     </div>
 
-                    {/* Period Toggle */}
-                    <div className="flex justify-center mb-16">
-                        <div className="inline-flex bg-muted rounded-2xl p-1.5 border border-border">
+                    {loading ? (
+                        <div className="flex justify-center items-end gap-4 max-w-175 mx-auto animate-pulse">
+                            {/* Silver Podium Skeleton */}
+                            <div className="flex-1 max-w-50 text-center">
+                                <div className="podium-card-inner border-border/40 bg-muted/20">
+                                    <Skeleton className="w-6 h-6 rounded-full mx-auto mb-2" />
+                                    <Skeleton className="w-16 h-16 rounded-full mx-auto mb-3" />
+                                    <Skeleton className="w-24 h-4 mx-auto mb-2" />
+                                    <Skeleton className="w-28 h-3 mx-auto mb-4" />
+                                    <Skeleton className="w-16 h-5 mx-auto" />
+                                </div>
+                                <div className="podium-block bg-muted/10 h-13.75 text-muted-foreground/30 text-lg">2</div>
+                            </div>
+                            {/* Gold Podium Skeleton */}
+                            <div className="flex-1 max-w-55 text-center -mt-6">
+                                <div className="podium-card-inner border-border/40 bg-muted/20">
+                                    <Skeleton className="w-8 h-6 mx-auto mb-2" />
+                                    <Skeleton className="w-6 h-6 rounded-full mx-auto mb-2" />
+                                    <Skeleton className="w-20 h-20 rounded-full mx-auto mb-3" />
+                                    <Skeleton className="w-28 h-5 mx-auto mb-2" />
+                                    <Skeleton className="w-32 h-3 mx-auto mb-4" />
+                                    <Skeleton className="w-20 h-6 mx-auto" />
+                                </div>
+                                <div className="podium-block bg-muted/15 h-20 text-muted-foreground/40 text-2xl">1</div>
+                            </div>
+                            {/* Bronze Podium Skeleton */}
+                            <div className="flex-1 max-w-50 text-center">
+                                <div className="podium-card-inner border-border/40 bg-muted/20">
+                                    <Skeleton className="w-6 h-6 rounded-full mx-auto mb-2" />
+                                    <Skeleton className="w-16 h-16 rounded-full mx-auto mb-3" />
+                                    <Skeleton className="w-24 h-4 mx-auto mb-2" />
+                                    <Skeleton className="w-28 h-3 mx-auto mb-4" />
+                                    <Skeleton className="w-16 h-5 mx-auto" />
+                                </div>
+                                <div className="podium-block bg-muted/10 h-10 text-muted-foreground/30 text-lg">3</div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="podium-stage">
+                            {/* Rank 2 - Silver */}
+                            <motion.div 
+                                initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                                className="podium-card rank-2"
+                            >
+                                <div className="podium-card-inner">
+                                    <svg className="podium-rank-badge" width="28" height="28" viewBox="0 0 28 28" style={{ margin: "0 auto 8px", display: "block" }}>
+                                        <circle cx="14" cy="14" r="13" fill="#b4bec8" opacity="0.25" stroke="#b4bec8" strokeWidth="1.5"/>
+                                        <text x="14" y="18.5" textAnchor="middle" fontSize="12" fontWeight="900" fill="#b4bec8">2</text>
+                                    </svg>
+                                    <svg width="72" height="72" viewBox="0 0 72 72" className="block mx-auto mb-3">
+                                        <circle cx="36" cy="36" r="34" fill="none" stroke="#b4bec8" strokeWidth="2" strokeDasharray="6 3" opacity="0.6">
+                                            <animateTransform attributeName="transform" type="rotate" values="0 36 36;360 36 36" dur="10s" repeatCount="indefinite"/>
+                                        </circle>
+                                        {second?.image ? (
+                                            <>
+                                                <clipPath id="silver-clip">
+                                                    <circle cx="36" cy="36" r="28" />
+                                                </clipPath>
+                                                <g clipPath="url(#silver-clip)">
+                                                    <image href={second.image} x="8" y="8" width="56" height="56" preserveAspectRatio="xMidYMid slice" />
+                                                </g>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <circle cx="36" cy="36" r="28" fill="#b4bec8"/>
+                                                <text x="36" y="41.5" textAnchor="middle" fontSize="12" fontWeight="900" fill="#1a2030">{secondInitials}</text>
+                                            </>
+                                        )}
+                                    </svg>
+                                    <div className="podium-name truncate">{second?.name || "Anonymous"}</div>
+                                    <div className="podium-coins">
+                                        ⚡ {second ? second.xp.toLocaleString() : "0"}
+                                    </div>
+                                    <div className="podium-coins-label">XP</div>
+                                </div>
+                                <div className="podium-block">2</div>
+                            </motion.div>
+
+                            {/* Rank 1 - Gold */}
+                            <motion.div 
+                                initial={{ opacity: 0, y: 60, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                                className="podium-card rank-1"
+                            >
+                                <div className="podium-card-inner">
+                                    <div className="podium-crown" aria-hidden="true">
+                                        <svg width="32" height="28" viewBox="0 0 32 28" fill="none">
+                                            <polygon points="4,24 4,10 10,16 16,4 22,16 28,10 28,24" fill="#f0c81a" opacity="0.9"/>
+                                            <rect x="3" y="23" width="26" height="4" rx="2" fill="#f0c81a" opacity="0.7"/>
+                                            <circle cx="16" cy="4" r="2.5" fill="#fff" opacity="0.9"/>
+                                            <circle cx="4" cy="10" r="2" fill="#fff" opacity="0.7"/>
+                                            <circle cx="28" cy="10" r="2" fill="#fff" opacity="0.7"/>
+                                        </svg>
+                                    </div>
+                                    <svg className="podium-rank-badge" width="28" height="28" viewBox="0 0 28 28" style={{ margin: "0 auto 8px", display: "block" }}>
+                                        <circle cx="14" cy="14" r="13" fill="#f0c81a" opacity="0.25" stroke="#f0c81a" strokeWidth="1.5"/>
+                                        <text x="14" y="18.5" textAnchor="middle" fontSize="12" fontWeight="900" fill="#f0c81a">1</text>
+                                    </svg>
+                                    <svg width="80" height="80" viewBox="0 0 80 80" className="block mx-auto mb-3">
+                                        <defs>
+                                            <filter id="gold-glow">
+                                                <feGaussianBlur stdDeviation="3" result="blur"/>
+                                                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                            </filter>
+                                        </defs>
+                                        <circle cx="40" cy="40" r="38" fill="none" stroke="#f0c81a" strokeWidth="2.5" filter="url(#gold-glow)" opacity="0.8">
+                                            <animateTransform attributeName="transform" type="rotate" values="0 40 40;-360 40 40" dur="8s" repeatCount="indefinite"/>
+                                        </circle>
+                                        <circle cx="40" cy="40" r="38" fill="none" stroke="#f0c81a" strokeWidth="1" strokeDasharray="4 8" opacity="0.4">
+                                            <animateTransform attributeName="transform" type="rotate" values="0 40 40;360 40 40" dur="12s" repeatCount="indefinite"/>
+                                        </circle>
+                                        {first?.image ? (
+                                            <>
+                                                <clipPath id="gold-clip">
+                                                    <circle cx="40" cy="40" r="31" />
+                                                </clipPath>
+                                                <g clipPath="url(#gold-clip)">
+                                                    <image href={first.image} x="9" y="9" width="62" height="62" preserveAspectRatio="xMidYMid slice" />
+                                                </g>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <circle cx="40" cy="40" r="31" fill="#f0c81a" filter="url(#gold-glow)"/>
+                                                <text x="40" y="45.5" textAnchor="middle" fontSize="14" fontWeight="900" fill="#1a1200">{firstInitials}</text>
+                                            </>
+                                        )}
+                                    </svg>
+                                    <div className="podium-name truncate">{first?.name || "Anonymous"}</div>
+                                    <div className="podium-coins">
+                                        ⚡ {first ? first.xp.toLocaleString() : "0"}
+                                    </div>
+                                    <div className="podium-coins-label">XP</div>
+                                </div>
+                                <div className="podium-block">1</div>
+                            </motion.div>
+
+                            {/* Rank 3 - Bronze */}
+                            <motion.div 
+                                initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                                className="podium-card rank-3"
+                            >
+                                <div className="podium-card-inner">
+                                    <svg className="podium-rank-badge" width="28" height="28" viewBox="0 0 28 28" style={{ margin: "0 auto 8px", display: "block" }}>
+                                        <circle cx="14" cy="14" r="13" fill="#cd7f32" opacity="0.25" stroke="#cd7f32" strokeWidth="1.5"/>
+                                        <text x="14" y="18.5" textAnchor="middle" fontSize="12" fontWeight="900" fill="#cd7f32">3</text>
+                                    </svg>
+                                    <svg width="72" height="72" viewBox="0 0 72 72" className="block mx-auto mb-3">
+                                        <circle cx="36" cy="36" r="34" fill="none" stroke="#cd7f32" strokeWidth="2" strokeDasharray="4 4" opacity="0.6">
+                                            <animateTransform attributeName="transform" type="rotate" values="360 36 36;0 36 36" dur="10s" repeatCount="indefinite"/>
+                                        </circle>
+                                        {third?.image ? (
+                                            <>
+                                                <clipPath id="bronze-clip">
+                                                    <circle cx="36" cy="36" r="28" />
+                                                </clipPath>
+                                                <g clipPath="url(#bronze-clip)">
+                                                    <image href={third.image} x="8" y="8" width="56" height="56" preserveAspectRatio="xMidYMid slice" />
+                                                </g>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <circle cx="36" cy="36" r="28" fill="#cd7f32"/>
+                                                <text x="36" y="41.5" textAnchor="middle" fontSize="12" fontWeight="900" fill="#1a0f00">{thirdInitials}</text>
+                                            </>
+                                        )}
+                                    </svg>
+                                    <div className="podium-name truncate">{third?.name || "Anonymous"}</div>
+                                    <div className="podium-coins">
+                                        ⚡ {third ? third.xp.toLocaleString() : "0"}
+                                    </div>
+                                    <div className="podium-coins-label">XP</div>
+                                </div>
+                                <div className="podium-block">3</div>
+                            </motion.div>
+                        </div>
+                    )}
+
+                    {/* SVG Podium Stage Base */}
+                    <svg className="podium-svg-stage" viewBox="0 0 680 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ marginTop: "-2px" }}>
+                        <rect x="230" y="0"  width="220" height="60" rx="0" fill="#f0c81a" opacity="0.06"/>
+                        <rect x="80"  y="20" width="160" height="40" rx="0" fill="#b4bec8" opacity="0.05"/>
+                        <rect x="440" y="30" width="160" height="30" rx="0" fill="#cd7f32" opacity="0.05"/>
+                        <line x1="230" y1="0"  x2="450" y2="0"  stroke="#f0c81a" strokeWidth="1.5" opacity="0.4"/>
+                        <line x1="80"  y1="20" x2="240" y2="20" stroke="#b4bec8" strokeWidth="1"   opacity="0.35"/>
+                        <line x1="440" y1="30" x2="600" y2="30" stroke="#cd7f32" strokeWidth="1"   opacity="0.35"/>
+                        <line x1="0" y1="59" x2="680" y2="59" stroke="#f0c81a" strokeWidth="1.5" opacity="0.3" />
+                    </svg>
+                </div>
+            </section>
+
+            {/* MAIN LEADERBOARD TABLE */}
+            <section className="py-12 relative">
+                <div className="container mx-auto px-4 max-w-5xl">
+                    {/* Toolbar */}
+                    <div className="lb-toolbar">
+                        <div className="lb-search-wrap">
+                            <span className="lb-search-icon" style={{ display: "flex", alignItems: "center" }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                </svg>
+                            </span>
+                            <input 
+                                type="text" 
+                                className="lb-search-input" 
+                                placeholder="Search by builder name or tier..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                autoComplete="off"
+                            />
+                        </div>
+                        <div className="lb-filter-group">
                             {[
-                                { id: "daily", label: "Daily" },
-                                { id: "monthly", label: "Monthly" }
-                            ].map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id as any)}
-                                    className={`px-6 md:px-10 py-2.5 md:py-3 rounded-xl font-bold transition-all text-sm md:text-base ${activeTab === tab.id
-                                        ? "bg-background text-primary shadow-lg shadow-black/5"
-                                        : "text-muted-foreground hover:text-foreground"
-                                        }`}
+                                { id: "all", label: "All Builders" },
+                                { id: "elite", label: "Elite" },
+                                { id: "builder", label: "Builders" },
+                                { id: "rising", label: "Rising Stars" }
+                            ].map((filter) => (
+                                <button 
+                                    key={filter.id}
+                                    className={`lb-filter-chip ${activeFilter === filter.id ? "active" : ""}`}
+                                    onClick={() => setActiveFilter(filter.id as any)}
                                 >
-                                    {tab.label}
+                                    {filter.label}
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Top 3 Podium */}
-                    <div className="flex justify-center items-end gap-2 md:gap-12 mb-16 relative scale-[0.9] sm:scale-100 origin-bottom">
-                        {loading ? (
-                            <>
-                                {/* 2nd Place Skeleton */}
-                                <div className="text-center w-24 sm:w-28 md:w-44 animate-pulse">
-                                    <div className="relative mb-6">
-                                        <div className="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-[20px] md:rounded-[24px] overflow-hidden border-4 border-border/50 shadow-2xl bg-muted p-1.5 md:p-2">
-                                            <div className="w-full h-full rounded-[18px] bg-muted/60" />
-                                        </div>
-                                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-muted text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">2</div>
-                                    </div>
-                                    <div className="w-24 h-5 mx-auto rounded bg-muted mb-2" />
-                                    <div className="w-16 h-4 mx-auto rounded bg-muted" />
+                    {/* Rankings Table */}
+                    <div className="lb-table-wrap">
+                        <div className="lb-table-header">
+                            <div>Rank</div>
+                            <div>Builder</div>
+                            <div className="col-tier">Tier</div>
+                            <div className="col-skill text-left">Projects</div>
+                            <div>XP</div>
+                            <div className="col-hackathons text-center">Streak</div>
+                        </div>
 
-                                    {/* Podium Block */}
-                                    <div className="w-24 sm:w-28 md:w-44 h-32 mt-6 bg-gradient-to-t from-muted to-card rounded-t-[24px] md:rounded-t-[32px] border-x border-t border-border shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center pt-8">
-                                        <span className="text-sm font-bold text-muted-foreground/30 uppercase tracking-widest">Silver</span>
-                                        <div className="text-2xl font-black text-muted-foreground/10">2nd</div>
+                        <div className="divide-y divide-border">
+                            {loading ? (
+                                Array.from({ length: 6 }).map((_, index) => (
+                                    <div
+                                        key={index}
+                                        className="lb-row animate-pulse pointer-events-none"
+                                    >
+                                        <Skeleton className="w-6 h-5 rounded" />
+                                        <div className="flex items-center gap-3">
+                                            <Skeleton className="w-10 h-10 rounded-full" />
+                                            <div className="space-y-1.5">
+                                                <Skeleton className="w-28 h-4 rounded" />
+                                                <Skeleton className="w-36 h-3 rounded" />
+                                            </div>
+                                        </div>
+                                        <div className="col-tier flex items-center">
+                                            <Skeleton className="w-20 h-5 rounded-full" />
+                                        </div>
+                                        <div className="col-skill flex items-center">
+                                            <Skeleton className="w-16 h-4 rounded" />
+                                        </div>
+                                        <Skeleton className="w-16 h-5 rounded" />
+                                        <div className="col-hackathons flex justify-center">
+                                            <Skeleton className="w-8 h-5 rounded" />
+                                        </div>
                                     </div>
+                                ))
+                            ) : filteredUsers.length === 0 ? (
+                                <div className="lb-empty-state block!">
+                                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none" className="mx-auto mb-3 block">
+                                        <circle cx="28" cy="28" r="27" stroke="currentColor" strokeWidth="1.5" opacity="0.15"/>
+                                        <circle cx="26" cy="24" r="10" stroke="currentColor" strokeWidth="2" opacity="0.4"/>
+                                        <line x1="33" y1="32" x2="44" y2="44" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" opacity="0.4"/>
+                                        <line x1="20" y1="18" x2="32" y2="30" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" opacity="0.25"/>
+                                    </svg>
+                                    <div className="text-lg font-bold text-foreground mb-2">No results found</div>
+                                    <div className="text-sm text-muted-foreground">Try adjusting your search or filter.</div>
                                 </div>
-
-                                {/* 1st Place Skeleton */}
-                                <div className="text-center w-28 sm:w-36 md:w-56 -mt-12 relative z-10 animate-pulse">
-                                    <div className="relative mb-6">
-                                        <div className="absolute -top-12 left-1/2 -translate-x-1/2">
-                                            <Crown className="w-12 h-12 text-[#FFB703]/30 drop-shadow-lg" />
-                                        </div>
-                                        <div className="w-28 h-28 md:w-44 md:h-44 mx-auto rounded-[24px] md:rounded-[32px] overflow-hidden border-[4px] md:border-[6px] border-[#FFB703]/10 shadow-2xl bg-muted p-1.5 md:p-2">
-                                            <div className="w-full h-full rounded-[24px] bg-muted/60" />
-                                        </div>
-                                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-muted text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">1</div>
-                                    </div>
-                                    <div className="w-32 h-6 mx-auto rounded bg-muted mb-2" />
-                                    <div className="w-20 h-5 mx-auto rounded bg-muted" />
-
-                                    {/* Podium Block */}
-                                    <div className="w-28 sm:w-36 md:w-56 h-48 mt-6 bg-gradient-to-t from-[#FFB703]/5 to-card rounded-t-[32px] md:rounded-t-[40px] border-x border-t border-[#FFB703]/10 shadow-[inset_0_2px_10px_rgba(255,183,3,0.05)] flex flex-col items-center pt-10">
-                                        <span className="text-sm font-bold text-[#FFB703]/30 uppercase tracking-widest">Gold</span>
-                                        <div className="text-4xl font-black text-[#FFB703]/10">1st</div>
-                                    </div>
-                                </div>
-
-                                {/* 3rd Place Skeleton */}
-                                <div className="text-center w-24 sm:w-28 md:w-44 animate-pulse">
-                                    <div className="relative mb-6">
-                                        <div className="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-[20px] md:rounded-[24px] overflow-hidden border-4 border-[#F4A261]/10 shadow-2xl bg-muted p-1.5 md:p-2">
-                                            <div className="w-full h-full rounded-[18px] bg-muted/60" />
-                                        </div>
-                                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-muted text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">3</div>
-                                    </div>
-                                    <div className="w-24 h-5 mx-auto rounded bg-muted mb-2" />
-                                    <div className="w-16 h-4 mx-auto rounded bg-muted" />
-
-                                    {/* Podium Block */}
-                                    <div className="w-24 sm:w-28 md:w-44 h-24 mt-6 bg-gradient-to-t from-[#F4A261]/5 to-card rounded-t-[24px] md:rounded-t-[32px] border-x border-t border-[#F4A261]/10 shadow-[inset_0_2px_10px_rgba(244,162,97,0.02)] flex flex-col items-center pt-6">
-                                        <span className="text-sm font-bold text-[#F4A261]/30 uppercase tracking-widest">Bronze</span>
-                                        <div className="text-2xl font-black text-[#F4A261]/10">3rd</div>
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                {/* 2nd Place */}
-                                <div className="text-center group animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
-                                    <div className="relative mb-6">
-                                        <div className="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-[20px] md:rounded-[24px] overflow-hidden border-4 border-border/50 shadow-2xl bg-background p-1.5 md:p-2 group-hover:scale-105 transition-transform">
-                                            {top3[1]?.avatarSrc ? (
-                                                <Image
-                                                    src={top3[1].avatarSrc}
-                                                    alt={top3[1]?.name || 'User avatar'}
-                                                    width={128}
-                                                    height={128}
-                                                    className="w-full h-full object-cover rounded-[18px]"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full bg-gray-200 rounded-[18px] flex items-center justify-center">
-                                                    <span className="text-muted-foreground text-2xl">👤</span>
+                            ) : (
+                                filteredUsers.map((user, index) => {
+                                    const tier = getTier(user.xp);
+                                    const isTop = user.rank <= 3;
+                                    return (
+                                        <motion.div
+                                            key={user.id}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.4) }}
+                                            className={`lb-row ${isTop ? "top-row" : ""} ${session?.user?.name === user.name ? "bg-primary/5!" : ""}`}
+                                        >
+                                            <div className="lb-rank-cell">
+                                                <span className="lb-rank-num">#{user.rank}</span>
+                                                {getChangeIcon(user.change)}
+                                            </div>
+                                            <div className="lb-user-cell">
+                                                {getAvatarHtml(user, index)}
+                                                <div>
+                                                    <div className="lb-user-name truncate max-w-37.5 sm:max-w-60">{user.name || "Anonymous"}</div>
+                                                    <div className="text-xs text-muted-foreground">Level {user.level}</div>
                                                 </div>
-                                            )}
-                                        </div>
-                                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gray-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">2</div>
-                                    </div>
-                                    <h3 className="text-foreground font-bold text-lg mb-1">{top3[1]?.name || 'Anonymous'}</h3>
-                                    <div className="flex items-center justify-center gap-1.5 mb-2 text-[#219EBC] font-semibold text-sm">
-                                        <Diamond className="w-4 h-4" />
-                                        {top3[1]?.xp?.toLocaleString() || 0} XP
-                                    </div>
-
-                                    {/* Podium Block */}
-                                    <div className="w-24 sm:w-28 md:w-44 h-32 mt-6 bg-gradient-to-t from-muted to-card rounded-t-[24px] md:rounded-t-[32px] border-x border-t border-border shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center pt-8">
-                                        <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Silver</span>
-                                        <div className="text-2xl font-black text-muted-foreground/30">2nd</div>
-                                    </div>
-                                </div>
-
-                                {/* 1st Place */}
-                                <div className="text-center group -mt-12 relative z-10 animate-in fade-in slide-in-from-bottom-12 duration-700">
-                                    <div className="relative mb-6">
-                                        <div className="absolute -top-12 left-1/2 -translate-x-1/2">
-                                            <Crown className="w-12 h-12 text-[#FFB703] drop-shadow-lg animate-bounce" />
-                                        </div>
-                                        <div className="w-28 h-28 md:w-44 md:h-44 mx-auto rounded-[24px] md:rounded-[32px] overflow-hidden border-[4px] md:border-[6px] border-[#FFB703]/30 shadow-2xl shadow-[#FFB703]/20 bg-background p-1.5 md:p-2 group-hover:scale-110 transition-transform">
-                                            {top3[0]?.avatarSrc ? (
-                                                <Image
-                                                    src={top3[0].avatarSrc}
-                                                    alt={top3[0]?.name || 'User avatar'}
-                                                    width={176}
-                                                    height={176}
-                                                    className="w-full h-full object-cover rounded-[24px]"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full bg-gray-200 rounded-[24px] flex items-center justify-center">
-                                                    <span className="text-muted-foreground text-4xl">👤</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-[#FFB703] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">1</div>
-                                    </div>
-                                    <h3 className="text-foreground font-black text-2xl mb-1">{top3[0]?.name || 'Anonymous'}</h3>
-                                    <div className="flex items-center justify-center gap-1.5 mb-2 bg-[#FF10F0]/10 rounded-full px-4 py-1.5 mx-auto w-fit text-[#FF10F0] font-bold text-sm shadow-sm">
-                                        <Diamond className="w-4 h-4 animate-pulse" />
-                                        {top3[0]?.xp?.toLocaleString() || 0} XP
-                                    </div>
-
-                                    {/* Podium Block */}
-                                    <div className="w-28 sm:w-36 md:w-56 h-48 mt-6 bg-gradient-to-t from-[#FFB703]/10 to-card rounded-t-[32px] md:rounded-t-[40px] border-x border-t border-[#FFB703]/20 shadow-[inset_0_2px_10px_rgba(255,183,3,0.05)] flex flex-col items-center pt-10">
-                                        <span className="text-sm font-bold text-[#FFB703] uppercase tracking-widest">Gold</span>
-                                        <div className="text-4xl font-black text-[#FFB703]/50">1st</div>
-                                    </div>
-                                </div>
-
-                                {/* 3rd Place */}
-                                <div className="text-center group animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
-                                    <div className="relative mb-6">
-                                        <div className="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-[20px] md:rounded-[24px] overflow-hidden border-4 border-[#F4A261]/30 shadow-2xl bg-background p-1.5 md:p-2 group-hover:scale-105 transition-transform">
-                                            {top3[2]?.avatarSrc ? (
-                                                <Image
-                                                    src={top3[2].avatarSrc}
-                                                    alt={top3[2]?.name || 'User avatar'}
-                                                    width={128}
-                                                    height={128}
-                                                    className="w-full h-full object-cover rounded-[18px]"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full bg-gray-200 rounded-[18px] flex items-center justify-center">
-                                                    <span className="text-muted-foreground text-2xl">👤</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#F4A261] text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">3</div>
-                                    </div>
-                                    <h3 className="text-foreground font-bold text-lg mb-1">{top3[2]?.name || 'Anonymous'}</h3>
-                                    <div className="flex items-center justify-center gap-1.5 mb-2 text-[#2A9D8F] font-semibold text-sm">
-                                        <Diamond className="w-4 h-4" />
-                                        {top3[2]?.xp?.toLocaleString() || 0} XP
-                                    </div>
-
-                                    {/* Podium Block */}
-                                    <div className="w-24 sm:w-28 md:w-44 h-24 mt-6 bg-gradient-to-t from-[#F4A261]/10 to-card rounded-t-[24px] md:rounded-t-[32px] border-x border-t border-[#F4A261]/20 shadow-[inset_0_2px_10px_rgba(244,162,97,0.02)] flex flex-col items-center pt-6">
-                                        <span className="text-sm font-bold text-[#F4A261] uppercase tracking-widest">Bronze</span>
-                                        <div className="text-2xl font-black text-[#F4A261]/50">3rd</div>
-                                    </div>
-                                </div>
-                            </>
-                        )}
+                                            </div>
+                                            <div className="col-tier">
+                                                <span className={`lb-tier-badge ${tier}`}>{getTierLabel(tier)}</span>
+                                            </div>
+                                            <div className="lb-score-cell col-skill">
+                                                <div className="lb-score-num">{user.projects} {user.projects === 1 ? "project" : "projects"}</div>
+                                            </div>
+                                            <div className="lb-coins-cell">
+                                                ⚡ {user.xp.toLocaleString()}<span className="vx-label">XP</span>
+                                            </div>
+                                            <div className="lb-hackathon-cell col-hackathons">
+                                                🔥 {user.currentStreak}
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })
+                            )}
+                        </div>
                     </div>
 
-
+                    {/* Your Rank Widget */}
+                    {showYourRank && (
+                        <div className="your-rank-section">
+                            <div className="your-rank-left">
+                                <div className="your-rank-avatar">{yourInitials}</div>
+                                <div>
+                                    <div className="your-rank-info-title">Your Position</div>
+                                    <div className="your-rank-name">{session?.user?.name || "Rishi Pandey"}</div>
+                                    <div className="your-rank-pos">
+                                        {yourRank !== "--" ? `Ranked #${yourRank}` : "Not Ranked"} — {yourTierLabel}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="your-rank-stats">
+                                <div className="your-rank-stats-inner flex gap-6">
+                                    <div className="your-rank-stat">
+                                        <div className="your-rank-stat-num">⚡ {userXp.toLocaleString()}</div>
+                                        <div className="your-rank-stat-label">XP</div>
+                                    </div>
+                                    <div className="your-rank-stat">
+                                        <div className="your-rank-stat-num">{yourProjects}</div>
+                                        <div className="your-rank-stat-label">Projects</div>
+                                    </div>
+                                    <div className="your-rank-stat">
+                                        <div className="your-rank-stat-num">🔥 {yourStreak}</div>
+                                        <div className="your-rank-stat-label">Streak</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <Link href="/dashboard/student" className="btn-redesign btn-redesign-primary btn-redesign-sm flex items-center justify-center font-bold">
+                                View Dashboard ⚡
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </section>
 
-            {/* User Stats Section */}
-            <section className="py-12 bg-muted/30 relative">
+            {/* HOW TO CLIMB SECTION */}
+            <section className="earn-section">
                 <div className="container mx-auto px-4 max-w-5xl">
-                    <div className="grid md:grid-cols-12 gap-8 items-center">
-                        <div className="md:col-span-8">
-                            <h2 className="text-xl md:text-2xl font-black text-foreground mb-6 flex items-center gap-3">
-                                <Medal className="w-5 h-5 md:w-6 md:h-6 text-[#219EBC]" />
-                                Rankings Table
-                            </h2>
-                            <div className="bg-background rounded-[32px] border border-border shadow-sm overflow-hidden">
-                                {/* Table Header */}
-                                <div className="grid grid-cols-12 gap-4 px-4 md:px-8 py-5 border-b border-border text-muted-foreground text-[10px] md:text-xs font-bold uppercase tracking-widest bg-muted/50">
-                                    <div className="col-span-2 md:col-span-1">#</div>
-                                    <div className="col-span-6 md:col-span-5">Champion</div>
-                                    <div className="hidden md:block md:col-span-3 text-center">Activity</div>
-                                    <div className="col-span-4 md:col-span-3 text-right">XP Points</div>
-                                </div>
-
-                                {/* Table Body */}
-                                <div className="divide-y divide-border">
-                                    {loading ? (
-                                        Array.from({ length: 5 }).map((_, index) => (
-                                            <div
-                                                key={index}
-                                                className="grid grid-cols-12 gap-4 px-4 md:px-8 py-4 md:py-5 items-center bg-background animate-pulse"
-                                            >
-                                                <div className="col-span-2 md:col-span-1">
-                                                    <Skeleton className="w-4 h-4 rounded" />
-                                                </div>
-                                                <div className="col-span-6 md:col-span-5 flex items-center gap-3 md:gap-4">
-                                                    <Skeleton className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl" />
-                                                    <div className="space-y-2">
-                                                        <Skeleton className="w-28 h-4 rounded" />
-                                                        <Skeleton className="w-12 h-3 rounded" />
-                                                    </div>
-                                                </div>
-                                                <div className="hidden md:flex md:col-span-3 items-center justify-center gap-4">
-                                                    <div className="text-center">
-                                                        <Skeleton className="w-6 h-4 rounded mx-auto" />
-                                                    </div>
-                                                    <div className="w-px h-6 bg-border"></div>
-                                                    <div className="text-center">
-                                                        <Skeleton className="w-6 h-4 rounded mx-auto" />
-                                                    </div>
-                                                    <div className="w-px h-6 bg-border"></div>
-                                                    <div className="text-center">
-                                                        <Skeleton className="w-6 h-4 rounded mx-auto" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-span-4 md:col-span-3 text-right">
-                                                    <Skeleton className="w-16 h-6 rounded ml-auto animate-pulse" />
-                                                </div>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        EXTENDED_LEADERBOARD.map((user, index) => (
-                                            <div
-                                                key={user.id}
-                                                className={`grid grid-cols-12 gap-4 px-4 md:px-8 py-4 md:py-5 items-center hover:bg-muted/50 transition-all cursor-pointer group ${session?.user?.name === user.name ? 'bg-[#219EBC]/5' : ''}`}
-                                            >
-                                                <div className="col-span-2 md:col-span-1 font-bold text-muted-foreground group-hover:text-[#219EBC]">{user.rank}</div>
-                                                <div className="col-span-6 md:col-span-5 flex items-center gap-3 md:gap-4">
-                                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex-shrink-0 overflow-hidden border-2 border-border group-hover:border-[#219EBC]/30 transition-colors">
-                                                        <Image src={user.avatarSrc} alt={user.name || 'User'} width={48} height={48} className="w-full h-full object-cover" />
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <p className="font-bold text-foreground group-hover:text-[#219EBC] transition-colors truncate text-sm md:text-base">{user.name || 'Anonymous'}</p>
-                                                        <Badge variant="outline" className="text-[9px] md:text-[10px] uppercase font-bold text-muted-foreground py-0 px-1 md:px-2 rounded-md">Lvl {user.level}</Badge>
-                                                    </div>
-                                                </div>
-                                                <div className="hidden md:flex md:col-span-3 items-center justify-center gap-4">
-                                                    <div className="text-center">
-                                                        <p className="text-sm font-bold text-foreground">{user.projects ?? 0}</p>
-                                                        <p className="text-[10px] uppercase font-bold text-muted-foreground">Projects</p>
-                                                    </div>
-                                                    <div className="w-px h-6 bg-border"></div>
-                                                    <div className="text-center">
-                                                        <p className="text-sm font-bold text-foreground">{user.badges ?? 0}</p>
-                                                        <p className="text-[10px] uppercase font-bold text-muted-foreground">Badges</p>
-                                                    </div>
-                                                    <div className="w-px h-6 bg-border"></div>
-                                                    <div className="text-center">
-                                                        <p className="text-sm font-bold text-foreground">{user.currentStreak ?? 0}</p>
-                                                        <p className="text-[10px] uppercase font-bold text-muted-foreground">Streak</p>
-                                                    </div>
-                                                </div>
-                                                <div className="col-span-4 md:col-span-3 text-right">
-                                                    <div className="flex items-center justify-end gap-1 font-black text-foreground text-base md:text-lg">
-                                                        <Diamond className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#219EBC]" />
-                                                        {user.xp.toLocaleString()}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            </div>
+                    <div className="text-center mb-10">
+                        <div className="section-label-redesign justify-center inline-flex mb-4">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="mr-1.5 inline-block">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            Climb Ranks
                         </div>
+                        <h2 className="text-3xl font-black text-foreground mb-4">How do you climb the ranks?</h2>
+                        <p className="text-muted-foreground max-w-2xl mx-auto">Every action you take in the Velonx ecosystem contributes to your profile and XP.</p>
+                    </div>
 
+                    <div className="earn-grid">
+                        {/* Card 1: Win Hackathons */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6, delay: 0.05, ease: "easeOut" }}
+                            className="earn-card"
+                        >
+                            <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="48" height="48" rx="12" fill="#f0c81a" fillOpacity="0.12"/>
+                                <path d="M14 10h20v14a10 10 0 0 1-20 0V10Z" stroke="#f0c81a" strokeWidth="2" strokeLinejoin="round"/>
+                                <path d="M14 16H10a4 4 0 0 0 0 8h4" stroke="#f0c81a" strokeWidth="2" strokeLinecap="round"/>
+                                <path d="M34 16h4a4 4 0 0 1 0 8h-4" stroke="#f0c81a" strokeWidth="2" strokeLinecap="round"/>
+                                <path d="M20 36v3M28 36v3M18 39h12" stroke="#f0c81a" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                            <div className="earn-card-title">Win Hackathons</div>
+                            <div className="earn-card-desc">Compete in national online or in-person hackathons hosted or partnered by Velonx. Prize positions reward massive XP boosts.</div>
+                            <div className="earn-card-points">+500 to +2,000 XP per win</div>
+                        </motion.div>
 
+                        {/* Card 2: Ship Projects */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+                            className="earn-card"
+                        >
+                            <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="48" height="48" rx="12" fill="#226CE0" fillOpacity="0.1"/>
+                                <path d="M24 8 C24 8 36 14 36 26 L24 38 L12 26 C12 14 24 8 24 8Z" stroke="#226CE0" strokeWidth="2" strokeLinejoin="round"/>
+                                <circle cx="24" cy="26" r="4" fill="#226CE0" opacity="0.4"/>
+                                <path d="M24 8v6M36 26h-6M12 26h6" stroke="#226CE0" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+                            </svg>
+                            <div className="earn-card-title">Ship Projects</div>
+                            <div className="earn-card-desc">Submit completed projects to the Velonx Project Hub. Community upvotes, GitHub stars, and mentor endorsements determine XP rewards.</div>
+                            <div className="earn-card-points">+50 to +400 XP per project</div>
+                        </motion.div>
+
+                        {/* Card 3: Land Placements */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6, delay: 0.25, ease: "easeOut" }}
+                            className="earn-card"
+                        >
+                            <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="48" height="48" rx="12" fill="#22c55e" fillOpacity="0.1"/>
+                                <rect x="12" y="20" width="24" height="18" rx="2" stroke="#22c55e" strokeWidth="2"/>
+                                <path d="M18 20v-4a6 6 0 0 1 12 0v4" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"/>
+                                <circle cx="24" cy="29" r="3" fill="#22c55e" opacity="0.5"/>
+                                <path d="M24 32v3" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                            <div className="earn-card-title">Land Placements</div>
+                            <div className="earn-card-desc">When you get selected through our career pipeline, you earn a one-time XP bonus proportional to your CTC.</div>
+                            <div className="earn-card-points">+300 to +1,500 XP on placement</div>
+                        </motion.div>
+
+                        {/* Card 4: Complete Resources */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6, delay: 0.05, ease: "easeOut" }}
+                            className="earn-card"
+                        >
+                            <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="48" height="48" rx="12" fill="#a855f7" fillOpacity="0.1"/>
+                                <path d="M16 10h16a2 2 0 0 1 2 2v24a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2V12a2 2 0 0 1 2-2Z" stroke="#a855f7" strokeWidth="2"/>
+                                <path d="M19 18h10M19 23h10M19 28h6" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"/>
+                                <circle cx="34" cy="34" r="7" fill="#a855f7" fillOpacity="0.15" stroke="#a855f7" strokeWidth="1.5"/>
+                                <path d="M31 34l2 2 4-4" stroke="#a855f7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            <div className="earn-card-title">Complete Resources</div>
+                            <div className="earn-card-desc">Finish roadmap tracks, obtain certifications, and submit proof of completion on the Velonx Resources platform for XP rewards.</div>
+                            <div className="earn-card-points">+20 to +150 XP per certification</div>
+                        </motion.div>
+
+                        {/* Card 5: Refer & Mentor */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+                            className="earn-card"
+                        >
+                            <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="48" height="48" rx="12" fill="#F0771A" fillOpacity="0.1"/>
+                                <circle cx="18" cy="18" r="6" stroke="#F0771A" strokeWidth="2"/>
+                                <circle cx="34" cy="18" r="5" stroke="#F0771A" strokeWidth="1.5" opacity="0.6"/>
+                                <path d="M8 36c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="#F0771A" strokeWidth="2" strokeLinecap="round"/>
+                                <path d="M34 26c3.866 0 7 2.91 7 6.5" stroke="#F0771A" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+                            </svg>
+                            <div className="earn-card-title">Refer &amp; Mentor</div>
+                            <div className="earn-card-desc">Refer a friend who joins Velonx and becomes active, or volunteer as a peer mentor in Q&amp;A sessions to earn recurring XP monthly.</div>
+                            <div className="earn-card-points">+100 XP per active referral</div>
+                        </motion.div>
+
+                        {/* Card 6: Write Blog Posts */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6, delay: 0.25, ease: "easeOut" }}
+                            className="earn-card"
+                        >
+                            <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="48" height="48" rx="12" fill="#0891b2" fillOpacity="0.1"/>
+                                <path d="M32 10l6 6-18 18-8 2 2-8L32 10Z" stroke="#0891b2" strokeWidth="2" strokeLinejoin="round"/>
+                                <path d="M29 13l6 6" stroke="#0891b2" strokeWidth="1.5" strokeLinecap="round"/>
+                                <path d="M14 36h20" stroke="#0891b2" strokeWidth="1.5" strokeLinecap="round" opacity="0.4"/>
+                            </svg>
+                            <div className="earn-card-title">Write Dev Blog Posts</div>
+                            <div className="earn-card-desc">Publish technical articles, tutorials, and case studies on the Velonx Blog. Top-performing posts are rewarded with XP.</div>
+                            <div className="earn-card-points">+30 to +200 XP per post</div>
+                        </motion.div>
                     </div>
                 </div>
             </section>

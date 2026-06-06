@@ -6,14 +6,7 @@ import { GroupCardSkeletonLoader } from "./GroupCardSkeleton";
 import { CommunityGroupData } from "@/lib/types/community.types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Plus, Filter } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Plus } from 'lucide-react';
 
 interface GroupListProps {
   groups: CommunityGroupData[];

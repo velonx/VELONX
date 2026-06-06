@@ -1,16 +1,27 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import '@testing-library/jest-dom';
 import EventCard from '../EventCard';
-import { Event } from '@/lib/api/types';
+import { Event } from '../../../lib/api/types';
 
 describe('EventCard', () => {
+  // Use a fixed hour to prevent crossing calendar days when Date.now() is late at night
+  const getEventDates = () => {
+    const start = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    start.setHours(10, 0, 0, 0);
+    const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+    return { date: start.toISOString(), endDate: end.toISOString() };
+  };
+  const { date: startIso, endDate: endIso } = getEventDates();
+
   const mockEvent: Event = {
     id: '1',
+    slug: 'react-workshop',
     title: 'React Workshop',
     description: 'Learn React fundamentals and advanced patterns',
     type: 'WORKSHOP',
-    date: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // 2 days from now
-    endDate: new Date(Date.now() + 50 * 60 * 60 * 1000).toISOString(), // 2 hours duration
+    date: startIso,
+    endDate: endIso,
     location: 'Google Meet',
     meetingLink: 'https://meet.google.com/test',
     imageUrl: null,
@@ -184,7 +195,7 @@ describe('EventCard', () => {
       render(<EventCard event={mockEvent} />);
       const link = screen.getByRole('link', { name: `View details for ${mockEvent.title}` });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute('href', `/events/${mockEvent.id}`);
+      expect(link).toHaveAttribute('href', `/events/${mockEvent.slug || mockEvent.id}`);
       expect(link).toHaveAttribute('target', '_blank');
     });
 

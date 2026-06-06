@@ -1,5 +1,4 @@
 import { Heading, Link, Text } from '@react-email/components';
-import * as React from 'react';
 import { EmailLayout, button, heading, paragraph, highlight } from './base-layout';
 
 interface ResetPasswordEmailProps {
@@ -61,7 +60,7 @@ const smallText = {
 };
 
 const linkStyle = {
-    color: '#219EBC',
+    color: '#226CE0',
     textDecoration: 'underline',
     wordBreak: 'break-all' as const,
 };

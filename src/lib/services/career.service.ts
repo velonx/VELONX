@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { MockInterviewInput, UpdateMockInterviewInput, OpportunityInput, UpdateOpportunityInput } from "@/lib/validations/career";
+import { generateUniqueOpportunitySlug } from "@/lib/utils/slug";
 
 // Mock Interview Services
 export class MockInterviewService {
@@ -66,9 +67,11 @@ export class MockInterviewService {
 // Opportunity Services
 export class OpportunityService {
   static async create(data: OpportunityInput, postedBy: string) {
+    const slug = await generateUniqueOpportunitySlug(data.title);
     return prisma.opportunity.create({
       data: {
         ...data,
+        slug,
         postedBy,
         status: data.status || "ACTIVE",
       },
@@ -93,16 +96,59 @@ export class OpportunityService {
     });
   }
 
-  static async getById(id: string) {
-    return prisma.opportunity.findUnique({
-      where: { id },
+  static async getById(idOrSlug: string) {
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(idOrSlug);
+    // Fetch by id if it's a valid ObjectId, otherwise query by unique slug
+    let opportunity = await prisma.opportunity.findUnique({
+      where: isObjectId ? { id: idOrSlug } : { slug: idOrSlug },
     });
+
+    if (opportunity && !opportunity.slug) {
+      try {
+        const newSlug = await generateUniqueOpportunitySlug(opportunity.title);
+        opportunity = await prisma.opportunity.update({
+          where: { id: opportunity.id },
+          data: { slug: newSlug },
+        });
+      } catch (e) {
+        console.error("Failed to backfill slug for opportunity:", opportunity.id, e);
+      }
+    }
+
+    return opportunity;
   }
 
   static async update(id: string, data: UpdateOpportunityInput) {
+    const updateData: any = { ...data };
+    
+    // Check if title is being updated, if so update the slug
+    if (data.title !== undefined) {
+      // Find existing to check if title changed
+      const existing = await prisma.opportunity.findUnique({
+        where: { id },
+        select: { title: true, slug: true },
+      });
+      if (existing) {
+        if (data.title !== existing.title) {
+          updateData.slug = await generateUniqueOpportunitySlug(data.title, id);
+        } else if (!existing.slug) {
+          updateData.slug = await generateUniqueOpportunitySlug(data.title, id);
+        }
+      }
+    } else {
+      // If title is not being updated, check if it's missing slug and backfill it
+      const existing = await prisma.opportunity.findUnique({
+        where: { id },
+        select: { title: true, slug: true },
+      });
+      if (existing && !existing.slug) {
+        updateData.slug = await generateUniqueOpportunitySlug(existing.title, id);
+      }
+    }
+
     return prisma.opportunity.update({
       where: { id },
-      data,
+      data: updateData,
     });
   }
 

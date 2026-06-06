@@ -82,7 +82,7 @@ export default function AboutPage() {
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <Card className="border border-border shadow-xl shadow-black/5 rounded-[32px] bg-card text-center p-8 hover:scale-[1.02] transition-transform">
+                                <Card className="border border-border shadow-xl shadow-black/5 rounded-4xl bg-card text-center p-8 hover:scale-[1.02] transition-transform">
                                     <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-primary">
                                         <stat.icon className="w-6 h-6" />
                                     </div>
@@ -178,10 +178,10 @@ export default function AboutPage() {
                             Join thousands of students who are already building the future on Velonx.
                         </p>
                         <div className="flex flex-wrap justify-center gap-6 relative z-10">
-                            <button className="h-16 px-10 bg-primary text-primary-foreground font-black rounded-[24px] hover:bg-primary/90 transition-all text-lg shadow-lg shadow-primary/20">
+                            <button className="h-16 px-10 bg-primary text-primary-foreground font-black rounded-3xl hover:bg-primary/90 transition-all text-lg shadow-lg shadow-primary/20">
                                 Join the Community
                             </button>
-                            <button className="h-16 px-10 bg-transparent border border-border text-foreground font-black rounded-[24px] hover:bg-muted transition-all text-lg">
+                            <button className="h-16 px-10 bg-transparent border border-border text-foreground font-black rounded-3xl hover:bg-muted transition-all text-lg">
                                 Contact Our Team
                             </button>
                         </div>

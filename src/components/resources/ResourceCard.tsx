@@ -1,89 +1,51 @@
 /**
  * ResourceCard Component
- * Feature: resources-page-ui-improvements, resource-pdf-upload
- * 
- * Displays individual resource information in a card layout with image,
- * title, description, category, type badge, and access count.
- * Supports PDF resources with view and download functionality.
- * 
- * Requirements:
- * - 4.1: Display title, description, category, type, and image
- * - 4.2: Display image with Next.js Image component
- * - 4.3: Fallback placeholder images by category
- * - 4.4: Description truncation (150 characters)
- * - 4.5: Display type as visual badge
- * - 9.1: Track resource visits with API call
- * - 9.3: Non-blocking navigation on tracking failure
- * - 9.4: Display access count as popularity indicator
- * 
- * PDF Upload Feature Requirements:
- * - 4.1: Display PDF indicator icon when pdfUrl exists
- * - 4.2: Display PDF file name
- * - 4.3: Show appropriate UI based on available access methods
- * - 4.4: Display URL only, PDF only, or both
- * - 4.5: Format and display file size
- * - 5.1: Provide view PDF button that opens in new tab
- * - 5.2: Provide download PDF button
- * - 5.3: Track visits for PDF access
+ * Redesigned to match resources.html
+ * Text-focused glassmorphic card layout with category-based emoji icons and download stats.
  */
 
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Resource } from '@/lib/api/types';
 import { ResourceCategory, ResourceType } from '@/lib/types/resources.types';
-import { getCategoryPlaceholder } from '@/lib/utils/resource-placeholders';
 import { trackResourceVisit } from '@/lib/utils/resource-visit-tracking';
-import {
-  Eye,
-  BookOpen,
-  Video,
-  GraduationCap,
-  Book,
-  Wrench,
-  FileText,
-  FileDown,
-  ExternalLink,
-  Download,
-  Share2,
-  Check
-} from 'lucide-react';
+import { getCategoryPlaceholder } from '@/lib/utils/resource-placeholders';
+import { FileText, Share2, Check, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 export interface ResourceCardProps {
   resource: Resource;
 }
 
-/**
- * Get type icon component
- */
-function getTypeIcon(type: ResourceType) {
-  const iconProps = { className: 'h-3 w-3', 'aria-hidden': true };
-
-  switch (type) {
-    case ResourceType.ARTICLE:
-      return <FileText {...iconProps} />;
-    case ResourceType.VIDEO:
-      return <Video {...iconProps} />;
-    case ResourceType.COURSE:
-      return <GraduationCap {...iconProps} />;
-    case ResourceType.BOOK:
-      return <Book {...iconProps} />;
-    case ResourceType.TOOL:
-      return <Wrench {...iconProps} />;
-    case ResourceType.DOCUMENTATION:
-      return <BookOpen {...iconProps} />;
-    default:
-      return <FileText {...iconProps} />;
+function getCategoryEmoji(category: ResourceCategory): string {
+  switch (category) {
+    case ResourceCategory.PROGRAMMING: return '🌳';
+    case ResourceCategory.WEB: return '🚀';
+    case ResourceCategory.MOBILE: return '📱';
+    case ResourceCategory.DATA_SCIENCE: return '📊';
+    case ResourceCategory.DESIGN: return '🎨';
+    case ResourceCategory.DEVOPS: return '🌐';
+    case ResourceCategory.BUSINESS: return '💼';
+    default: return '📦';
   }
 }
 
-/**
- * Get type badge styling
- */
+function getCategoryLabel(category: ResourceCategory): string {
+  const labels: Record<ResourceCategory, string> = {
+    [ResourceCategory.PROGRAMMING]: 'Programming',
+    [ResourceCategory.DESIGN]: 'Design',
+    [ResourceCategory.BUSINESS]: 'Business',
+    [ResourceCategory.DATA_SCIENCE]: 'Data Science',
+    [ResourceCategory.DEVOPS]: 'DevOps',
+    [ResourceCategory.MOBILE]: 'Mobile',
+    [ResourceCategory.WEB]: 'Web',
+    [ResourceCategory.OTHER]: 'Other',
+  };
+  return labels[category] || category;
+}
+
 function getTypeBadgeClass(type: ResourceType): string {
   const classes: Record<ResourceType, string> = {
     [ResourceType.ARTICLE]: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
@@ -97,38 +59,13 @@ function getTypeBadgeClass(type: ResourceType): string {
   return classes[type] || classes[ResourceType.ARTICLE];
 }
 
-/**
- * Get category display name
- */
-function getCategoryDisplayName(category: ResourceCategory): string {
-  const names: Record<ResourceCategory, string> = {
-    [ResourceCategory.PROGRAMMING]: 'Programming',
-    [ResourceCategory.DESIGN]: 'Design',
-    [ResourceCategory.BUSINESS]: 'Business',
-    [ResourceCategory.DATA_SCIENCE]: 'Data Science',
-    [ResourceCategory.DEVOPS]: 'DevOps',
-    [ResourceCategory.MOBILE]: 'Mobile',
-    [ResourceCategory.WEB]: 'Web',
-    [ResourceCategory.OTHER]: 'Other',
-  };
-
-  return names[category] || 'Other';
-}
-
-/**
- * Truncate description to specified length
- */
 function truncateDescription(description: string, maxLength: number = 150): string {
   if (description.length <= maxLength) {
     return description;
   }
-
   return description.slice(0, maxLength).trim() + '...';
 }
 
-/**
- * Format access count for display
- */
 function formatAccessCount(count: number): string {
   if (count >= 1000000) {
     return `${(count / 1000000).toFixed(1)}M`;
@@ -139,9 +76,6 @@ function formatAccessCount(count: number): string {
   return count.toString();
 }
 
-/**
- * Format file size for display
- */
 function formatFileSize(bytes: number): string {
   if (bytes >= 1048576) {
     return `${(bytes / 1048576).toFixed(1)} MB`;
@@ -152,18 +86,10 @@ function formatFileSize(bytes: number): string {
   return `${bytes} B`;
 }
 
-/**
- * ResourceCard Component
- * 
- * Displays a resource summary with image, title, description, and metadata.
- * Handles visit tracking on click and navigates to resource URL.
- * Supports PDF resources with view and download options.
- * Memoized to prevent unnecessary re-renders.
- */
 const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
-  const [imageError, setImageError] = React.useState(false);
   const [isVisiting, setIsVisiting] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
+  const [imageError, setImageError] = React.useState(false);
 
   const handleShare = async () => {
     const url = resource.url || `${window.location.origin}/resources?id=${resource.id}`;
@@ -183,29 +109,18 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
 
   const category = resource.category as ResourceCategory;
   const type = resource.type as ResourceType;
-  const imageUrl = resource.imageUrl && !imageError
-    ? resource.imageUrl
-    : getCategoryPlaceholder(category);
   const truncatedDescription = truncateDescription(resource.description);
   const formattedAccessCount = formatAccessCount(resource.accessCount);
 
-  // Determine available access methods
   const hasURL = Boolean(resource.url);
   const hasPDF = Boolean(resource.pdfUrl);
   const formattedFileSize = resource.pdfFileSize ? formatFileSize(resource.pdfFileSize) : null;
 
-  /**
-   * Handle URL click - track visit and navigate to resource URL
-   * Requirements: 9.1, 9.3
-   */
   const handleURLClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isVisiting || !resource.url) return;
-
     setIsVisiting(true);
-
     try {
-      // Track visit asynchronously (non-blocking)
       await trackResourceVisit(resource.id);
     } catch (error) {
       console.error('Failed to track resource visit:', error);
@@ -215,28 +130,15 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
     }
   };
 
-  /**
-   * Handle PDF view - track visit and open PDF in new tab
-   * Uses authenticated proxy route to ensure secure access
-   */
   const handlePDFView = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isVisiting || !resource.pdfPublicId) return;
-
     setIsVisiting(true);
-
     try {
       await trackResourceVisit(resource.id);
-      
-      // Get signed URL from proxy route
       const response = await fetch(`/api/resources/pdf/${encodeURIComponent(resource.pdfPublicId)}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to access PDF');
-      }
-      
+      if (!response.ok) throw new Error('Failed to access PDF');
       const data = await response.json();
-      
       if (data.success && data.data?.url) {
         window.open(data.data.url, '_blank', 'noopener,noreferrer');
       } else {
@@ -244,34 +146,21 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
       }
     } catch (error) {
       console.error('Failed to access PDF:', error);
-      alert('Failed to access PDF. Please try again or contact support.');
+      alert('Failed to access PDF. Please try again.');
     } finally {
       setIsVisiting(false);
     }
   };
 
-  /**
-   * Handle PDF download
-   * Uses authenticated proxy route to ensure secure access
-   */
   const handlePDFDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!resource.pdfPublicId || !resource.pdfFileName) return;
-
     try {
       await trackResourceVisit(resource.id);
-      
-      // Get signed URL from proxy route
       const response = await fetch(`/api/resources/pdf/${encodeURIComponent(resource.pdfPublicId)}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to access PDF');
-      }
-      
+      if (!response.ok) throw new Error('Failed to access PDF');
       const data = await response.json();
-      
       if (data.success && data.data?.url) {
-        // Create a temporary anchor element to trigger download
         const link = document.createElement('a');
         link.href = data.data.url;
         link.download = resource.pdfFileName;
@@ -284,173 +173,120 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
       }
     } catch (error) {
       console.error('Failed to download PDF:', error);
-      alert('Failed to download PDF. Please try again or contact support.');
+      alert('Failed to download PDF. Please try again.');
     }
   };
 
-  const handleImageError = () => {
-    setImageError(true);
-  };
+  const stop = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
-    <Card
-      className={cn(
-        'relative overflow-hidden transition-all duration-300',
-        'hover:shadow-xl hover:-translate-y-1',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-        'flex flex-col h-full bg-card border border-border rounded-2xl'
-      )}
+    <div
+      className="p-resource-card group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       role="article"
       aria-label={`Resource: ${resource.title}`}
     >
-      {/* Image Section */}
-      <div className="relative w-full h-48 bg-muted overflow-hidden">
+      {/* Card Image Banner */}
+      <div className="relative w-full h-40 mb-4 rounded-xl overflow-hidden bg-muted border border-border/50">
         <Image
-          src={imageUrl}
+          src={imageError ? getCategoryPlaceholder(category) : (resource.imageUrl || getCategoryPlaceholder(category))}
           alt={resource.title}
           fill
+          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          onError={handleImageError}
+          onError={() => setImageError(true)}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+        {/* Overlay type badge */}
+        <span className={cn('absolute top-2 right-2 badge-event text-xs font-semibold px-2.5 py-1 border bg-background/80 backdrop-blur-md', getTypeBadgeClass(type))}>
+          {type}
+        </span>
       </div>
 
-      {/* Content Section */}
-      <article className="flex flex-col flex-1 p-4 gap-3">
-        {/* Type & PDF Badges */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge className={cn('text-xs border shadow-none py-1 px-2.5 rounded-lg', getTypeBadgeClass(type))}>
-            {getTypeIcon(type)}
-            <span className="ml-1.5 font-semibold">{type}</span>
-          </Badge>
-          {hasPDF && (
-            <Badge className="text-xs border shadow-none bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 py-1 px-2.5 rounded-lg">
-              <FileDown className="h-3 w-3" aria-hidden="true" />
-              <span className="ml-1.5 font-semibold">PDF</span>
-            </Badge>
-          )}
-        </div>
-
-        {/* Title */}
-        <h3 className="text-lg font-bold leading-tight line-clamp-2 text-foreground">
+      {/* Title & Description */}
+      <div className="flex flex-col gap-1 mb-2">
+        <span className="text-xs font-bold text-primary dark:text-[#A78BFA] uppercase tracking-wider">
+          {getCategoryLabel(category)}
+        </span>
+        <h3 className="p-resource-title group-hover:text-primary dark:group-hover:text-cyan-light transition-colors m-0">
           {resource.title}
         </h3>
+      </div>
+      <p className="p-resource-desc line-clamp-3">
+        {truncatedDescription}
+      </p>
 
-        {/* Description */}
-        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed flex-1">
-          {truncatedDescription}
-        </p>
-
-        {/* PDF Information */}
+      {/* Action Buttons Section */}
+      <div className="flex flex-col gap-2 mt-auto mb-4" onClick={stop}>
+        {/* PDF Details if applicable */}
         {hasPDF && resource.pdfFileName && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <FileText className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-            <span className="truncate" title={resource.pdfFileName}>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+            <FileText className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate max-w-50" title={resource.pdfFileName}>
               {resource.pdfFileName}
             </span>
             {formattedFileSize && (
-              <span className="text-xs text-muted-foreground/70">
-                ({formattedFileSize})
-              </span>
+              <span className="text-xs opacity-70">({formattedFileSize})</span>
             )}
           </div>
         )}
 
-        {/* Access Buttons */}
-        <div className="flex flex-col gap-2">
-          {/* URL Access Button */}
+        {/* Access buttons */}
+        <div className="flex gap-2 w-full">
           {hasURL && (
             <button
               onClick={handleURLClick}
               disabled={isVisiting}
-              className={cn(
-                'flex items-center justify-center gap-2 px-4 py-2 rounded-lg',
-                'bg-primary text-primary-foreground font-medium text-sm',
-                'hover:bg-primary/90 transition-colors',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-                'disabled:opacity-50 disabled:cursor-not-allowed'
-              )}
+              className="flex-1 btn-redesign btn-redesign-primary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer"
               aria-label="Visit resource URL"
             >
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              <span>Visit Resource</span>
+              {isVisiting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Visit Resource"}
             </button>
           )}
 
-          {/* PDF Access Buttons */}
           {hasPDF && (
-            <div className="flex gap-2">
+            <>
               <button
                 onClick={handlePDFView}
                 disabled={isVisiting}
-                className={cn(
-                  'flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg',
-                  'bg-secondary text-secondary-foreground font-medium text-sm',
-                  'hover:bg-secondary/80 transition-colors',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2',
-                  'disabled:opacity-50 disabled:cursor-not-allowed'
-                )}
-                aria-label="View PDF"
+                className="flex-1 btn-redesign btn-redesign-secondary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer"
               >
-                <Eye className="h-4 w-4" aria-hidden="true" />
-                <span>View PDF</span>
+                {isVisiting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "View PDF"}
               </button>
               <button
                 onClick={handlePDFDownload}
-                className={cn(
-                  'flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg',
-                  'bg-secondary text-secondary-foreground font-medium text-sm',
-                  'hover:bg-secondary/80 transition-colors',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2'
-                )}
-                aria-label="Download PDF"
+                className="flex-1 btn-redesign btn-redesign-primary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer"
               >
-                <Download className="h-4 w-4" aria-hidden="true" />
-                <span>Download</span>
+                Download
               </button>
-            </div>
+            </>
           )}
         </div>
+      </div>
 
-        {/* Footer: Category, Access Count, Share */}
-        <footer className="flex items-center justify-between gap-2 pt-2 border-t border-border">
-          <Badge variant="outline" className="text-xs border-border font-medium">
-            {getCategoryDisplayName(category)}
-          </Badge>
+      {/* Footer Section */}
+      <footer className="p-resource-footer" onClick={stop}>
+        <div className="p-resource-stats" aria-label={`${resource.accessCount} views`}>
+          <span>{formattedAccessCount}</span> visits
+        </div>
 
-          <div className="flex items-center gap-2">
-            <div
-              className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium"
-              aria-label={`${resource.accessCount} views`}
-            >
-              <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-              <span>{formattedAccessCount}</span>
-            </div>
-
-            {/* Share Button */}
-            <button
-              onClick={handleShare}
-              title={copied ? 'Link copied!' : 'Share'}
-              className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all"
-              aria-label={`Share ${resource.title}`}
-            >
-              {copied ? (
-                <Check className="h-3.5 w-3.5 text-green-500" aria-hidden="true" />
-              ) : (
-                <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
-              )}
-            </button>
-          </div>
-        </footer>
-      </article>
-    </Card>
+        {/* Share Button */}
+        <button
+          onClick={handleShare}
+          title={copied ? 'Link copied!' : 'Share'}
+          className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"
+          aria-label={`Share ${resource.title}`}
+        >
+          {copied ? (
+            <Check className="h-3.5 w-3.5 text-green-500" aria-hidden="true" />
+          ) : (
+            <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
+          )}
+        </button>
+      </footer>
+    </div>
   );
 };
 
-/**
- * Memoized ResourceCard to prevent unnecessary re-renders
- */
 export const ResourceCard = React.memo(ResourceCardComponent, (prevProps, nextProps) => {
   return (
     prevProps.resource.id === nextProps.resource.id &&

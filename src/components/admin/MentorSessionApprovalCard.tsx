@@ -83,7 +83,7 @@ export default function MentorSessionApprovalCard({
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <CardTitle className="text-lg font-bold text-[#023047] mb-2">
+              <CardTitle className="text-lg font-bold text-[#1A234A] mb-2">
                 {session.title}
               </CardTitle>
               <div className="flex flex-wrap gap-2">
@@ -103,9 +103,9 @@ export default function MentorSessionApprovalCard({
         <CardContent className="space-y-4">
           {/* Student Info */}
           <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
-            <User className="w-5 h-5 text-[#219EBC]" />
+            <User className="w-5 h-5 text-[#226CE0]" />
             <div>
-              <p className="text-sm font-semibold text-[#023047]">Student</p>
+              <p className="text-sm font-semibold text-[#1A234A]">Student</p>
               <p className="text-sm text-muted-foreground">{session.student.name}</p>
               <p className="text-xs text-muted-foreground">{session.student.email}</p>
             </div>
@@ -113,9 +113,9 @@ export default function MentorSessionApprovalCard({
 
           {/* Mentor Info */}
           <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
-            <BookOpen className="w-5 h-5 text-[#219EBC]" />
+            <BookOpen className="w-5 h-5 text-[#226CE0]" />
             <div>
-              <p className="text-sm font-semibold text-[#023047]">Mentor</p>
+              <p className="text-sm font-semibold text-[#1A234A]">Mentor</p>
               <p className="text-sm text-muted-foreground">{session.mentor.name}</p>
             </div>
           </div>
@@ -123,9 +123,9 @@ export default function MentorSessionApprovalCard({
           {/* Session Details */}
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2 p-3 bg-muted rounded-xl">
-              <Calendar className="w-4 h-4 text-[#219EBC]" />
+              <Calendar className="w-4 h-4 text-[#226CE0]" />
               <div>
-                <p className="text-xs font-semibold text-[#023047]">Date</p>
+                <p className="text-xs font-semibold text-[#1A234A]">Date</p>
                 <p className="text-sm text-muted-foreground">
                   {new Date(session.date).toLocaleDateString('en-US', {
                     month: 'short',
@@ -136,9 +136,9 @@ export default function MentorSessionApprovalCard({
               </div>
             </div>
             <div className="flex items-center gap-2 p-3 bg-muted rounded-xl">
-              <Clock className="w-4 h-4 text-[#219EBC]" />
+              <Clock className="w-4 h-4 text-[#226CE0]" />
               <div>
-                <p className="text-xs font-semibold text-[#023047]">Duration</p>
+                <p className="text-xs font-semibold text-[#1A234A]">Duration</p>
                 <p className="text-sm text-muted-foreground">{session.duration} min</p>
               </div>
             </div>
@@ -147,7 +147,7 @@ export default function MentorSessionApprovalCard({
           {/* Notes */}
           {session.notes && (
             <div className="p-3 bg-muted rounded-xl">
-              <p className="text-xs font-semibold text-[#023047] mb-1">Notes</p>
+              <p className="text-xs font-semibold text-[#1A234A] mb-1">Notes</p>
               <p className="text-sm text-muted-foreground">{session.notes}</p>
             </div>
           )}

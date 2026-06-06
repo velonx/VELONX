@@ -17,8 +17,6 @@
 
 'use client';
 
-import React from 'react';
-import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -41,62 +39,53 @@ export interface SkeletonLoaderProps {
   className?: string;
 }
 
-/**
- * Single skeleton card matching ProjectCard layout
- */
 function SkeletonCard() {
   return (
-    <Card
+    <div
       className={cn(
-        'relative overflow-hidden p-4 gap-4',
-        'skeleton-shimmer'
+        'p-project-card skeleton-shimmer',
+        'pointer-events-none select-none'
       )}
       aria-hidden="true"
     >
-      {/* Colored top border placeholder */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-muted" />
+      {/* Header: Category badge and Star rating placeholder */}
+      <div className="p-project-header">
+        <Skeleton className="h-6 w-20 rounded-full" />
+        <Skeleton className="h-5 w-12 rounded-md" />
+      </div>
 
-      {/* Header: Category and Status badges */}
-      <div className="flex items-start justify-between gap-2 pt-2">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-5 w-20" />
+      {/* Title & Description */}
+      <div className="flex flex-col grow">
+        <Skeleton className="h-6 w-3/4 rounded-md mb-2" />
+        <div className="space-y-2 mb-5">
+          <Skeleton className="h-4 w-full rounded-md" />
+          <Skeleton className="h-4 w-5/6 rounded-md" />
         </div>
-        <Skeleton className="h-5 w-16" />
       </div>
 
-      {/* Title and Description */}
-      <div className="space-y-2">
-        <Skeleton className="h-6 w-3/4" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-5/6" />
+      {/* Tech Stack Tags */}
+      <div className="p-project-tags">
+        <Skeleton className="h-6 w-16 rounded-full" />
+        <Skeleton className="h-6 w-20 rounded-full" />
+        <Skeleton className="h-6 w-14 rounded-full" />
+        <Skeleton className="h-6 w-18 rounded-full" />
       </div>
 
-      {/* Tech Stack */}
-      <div className="flex flex-wrap gap-1.5">
-        <Skeleton className="h-5 w-16" />
-        <Skeleton className="h-5 w-20" />
-        <Skeleton className="h-5 w-14" />
-        <Skeleton className="h-5 w-18" />
-        <Skeleton className="h-5 w-16" />
-      </div>
-
-      {/* Team Avatars */}
-      <div className="flex items-center gap-1">
-        <Skeleton className="h-8 w-8 rounded-full" />
-        <Skeleton className="h-8 w-8 rounded-full -ml-2" />
-        <Skeleton className="h-8 w-8 rounded-full -ml-2" />
-        <Skeleton className="h-8 w-8 rounded-full -ml-2" />
-      </div>
-
-      {/* Footer: Quick Actions and Join Button */}
-      <div className="flex items-center justify-between gap-2 pt-2 border-t">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-8 w-8 rounded" />
-          <Skeleton className="h-8 w-8 rounded" />
+      {/* Footer: Avatars & CTA Actions */}
+      <div className="p-project-footer">
+        {/* Team Avatars / Owner name */}
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-7 w-20 rounded-full" />
         </div>
-        <Skeleton className="h-8 w-32 rounded" />
+
+        {/* Buttons / Actions */}
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-8 w-8 rounded-lg" />
+          <Skeleton className="h-8 w-8 rounded-lg" />
+          <Skeleton className="h-8 w-24 rounded-full" />
+        </div>
       </div>
-    </Card>
+    </div>
   );
 }
 

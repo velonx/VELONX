@@ -195,7 +195,7 @@ const ResourcesGridComponent = ({
 
       {/* Responsive grid layout */}
       <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        className="p-resource-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         role="region"
         aria-label="Resources grid"
         aria-live="polite"

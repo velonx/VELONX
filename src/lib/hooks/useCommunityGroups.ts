@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { ApiClientError } from '@/lib/api/client';
-import { getCSRFToken, secureFetch } from '@/lib/utils/csrf';
+import { secureFetch } from '@/lib/utils/csrf';
 import type { CommunityGroupData } from '@/lib/types/community.types';
 import toast from 'react-hot-toast';
 

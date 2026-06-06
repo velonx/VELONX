@@ -24,7 +24,7 @@ export default function CommunityGuidelinesPage() {
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+            <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
 
             {/* Core Values */}
             <section className="py-16 bg-background">
@@ -73,7 +73,7 @@ export default function CommunityGuidelinesPage() {
                                     ["Report Issues:", "If you see inappropriate behavior, report it to moderators."],
                                 ].map(([label, text], i) => (
                                     <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle className="w-5 h-5 text-emerald-500 mt-1 flex-shrink-0" />
+                                        <CheckCircle className="w-5 h-5 text-emerald-500 mt-1 shrink-0" />
                                         <div>
                                             <strong className="text-foreground">{label}</strong>
                                             <span className="text-muted-foreground"> {text}</span>
@@ -100,7 +100,7 @@ export default function CommunityGuidelinesPage() {
                                     ["No Personal Attacks:", "Criticize ideas, not people. Keep discussions professional and constructive."],
                                 ].map(([label, text], i) => (
                                     <li key={i} className="flex items-start gap-3">
-                                        <XCircle className="w-5 h-5 text-destructive mt-1 flex-shrink-0" />
+                                        <XCircle className="w-5 h-5 text-destructive mt-1 shrink-0" />
                                         <div>
                                             <strong className="text-foreground">{label}</strong>
                                             <span className="text-muted-foreground"> {text}</span>
@@ -124,7 +124,7 @@ export default function CommunityGuidelinesPage() {
                                     ["Be Patient:", "Remember that everyone is learning. Give others time to respond."],
                                 ].map(([label, text], i) => (
                                     <li key={i} className="flex items-start gap-3">
-                                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center mt-1 flex-shrink-0">
+                                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center mt-1 shrink-0">
                                             <span className="text-primary-foreground text-xs font-bold">{i + 1}</span>
                                         </div>
                                         <div>

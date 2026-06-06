@@ -78,7 +78,7 @@ export default function AvatarSelector({ currentAvatar, onSelectAvatar, trigger 
                             >
                                 {/* Card Background */}
                                 <div className={`rounded-2xl p-1 ${isSelected
-                                    ? `bg-gradient-to-br ${rarityColor}`
+                                    ? `bg-linear-to-br ${rarityColor}`
                                     : "bg-white/5 hover:bg-white/10"
                                     } transition-colors`}>
                                     <div className="bg-[#0a0a0f] rounded-xl p-2">
@@ -102,7 +102,7 @@ export default function AvatarSelector({ currentAvatar, onSelectAvatar, trigger 
 
                                 {/* Selection Indicator */}
                                 {isSelected && (
-                                    <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-br ${rarityColor} flex items-center justify-center animate-scale-in`}>
+                                    <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full bg-linear-to-br ${rarityColor} flex items-center justify-center animate-scale-in`}>
                                         <Check className="w-4 h-4 text-white" />
                                     </div>
                                 )}
@@ -131,7 +131,7 @@ export default function AvatarSelector({ currentAvatar, onSelectAvatar, trigger 
                     </div>
                     <Button
                         onClick={handleConfirm}
-                        className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-black font-semibold rounded-full px-8"
+                        className="bg-linear-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-black font-semibold rounded-full px-8"
                     >
                         Confirm Avatar
                     </Button>

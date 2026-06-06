@@ -148,15 +148,15 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
     return (
       <Card className="bg-white border-0 shadow-lg rounded-3xl overflow-hidden">
         <CardHeader className="p-8 border-b border-gray-100">
-          <h3 className="text-2xl font-black text-[#023047] flex items-center gap-2">
-            <FolderKanban className="w-6 h-6 text-[#219EBC]" />
+          <h3 className="text-2xl font-black text-[#1A234A] flex items-center gap-2">
+            <FolderKanban className="w-6 h-6 text-[#226CE0]" />
             My Projects - Join Requests
           </h3>
           <p className="text-gray-400 text-sm mt-1">Manage who joins your projects</p>
         </CardHeader>
         <CardContent className="p-8">
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#219EBC] mx-auto mb-3"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#226CE0] mx-auto mb-3"></div>
             <p className="text-gray-600 text-sm">Loading projects...</p>
           </div>
         </CardContent>
@@ -170,8 +170,8 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
     return (
       <Card className="bg-white border-0 shadow-lg rounded-3xl overflow-hidden">
         <CardHeader className="p-8 border-b border-gray-100">
-          <h3 className="text-2xl font-black text-[#023047] flex items-center gap-2">
-            <FolderKanban className="w-6 h-6 text-[#219EBC]" />
+          <h3 className="text-2xl font-black text-[#1A234A] flex items-center gap-2">
+            <FolderKanban className="w-6 h-6 text-[#226CE0]" />
             My Projects - Join Requests
           </h3>
           <p className="text-gray-400 text-sm mt-1">Manage who joins your projects</p>
@@ -191,8 +191,8 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
     return (
       <Card className="bg-white border-0 shadow-lg rounded-3xl overflow-hidden">
         <CardHeader className="p-8 border-b border-gray-100">
-          <h3 className="text-2xl font-black text-[#023047] flex items-center gap-2">
-            <FolderKanban className="w-6 h-6 text-[#219EBC]" />
+          <h3 className="text-2xl font-black text-[#1A234A] flex items-center gap-2">
+            <FolderKanban className="w-6 h-6 text-[#226CE0]" />
             My Projects - Join Requests
           </h3>
           <p className="text-gray-400 text-sm mt-1">Manage who joins your projects</p>
@@ -211,8 +211,8 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
   return (
     <Card className="bg-white border-0 shadow-lg rounded-3xl overflow-hidden">
       <CardHeader className="p-8 border-b border-gray-100">
-        <h3 className="text-2xl font-black text-[#023047] flex items-center gap-2">
-          <FolderKanban className="w-6 h-6 text-[#219EBC]" />
+        <h3 className="text-2xl font-black text-[#1A234A] flex items-center gap-2">
+          <FolderKanban className="w-6 h-6 text-[#226CE0]" />
           My Projects - Join Requests
         </h3>
         <p className="text-gray-400 text-sm mt-1">Manage who joins your projects</p>
@@ -223,7 +223,7 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
             <div key={project.id} className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
               {/* Project Header */}
               <div className="mb-4 pb-4 border-b border-gray-200">
-                <h4 className="text-lg font-bold text-[#023047] mb-2">{project.title}</h4>
+                <h4 className="text-lg font-bold text-[#1A234A] mb-2">{project.title}</h4>
                 <p className="text-sm text-gray-600 mb-3">{project.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {project.techStack.slice(0, 5).map((tech, idx) => (
@@ -247,14 +247,14 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
                   >
                     <div className="flex items-center gap-4">
                       {/* User Avatar */}
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#219EBC] to-[#023047] flex items-center justify-center text-white font-black text-lg flex-shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#226CE0] to-[#1A234A] flex items-center justify-center text-white font-black text-lg flex-shrink-0">
                         {request.user?.name?.[0] || 'U'}
                       </div>
 
                       {/* User Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h5 className="font-bold text-[#023047]">{request.user?.name}</h5>
+                          <h5 className="font-bold text-[#1A234A]">{request.user?.name}</h5>
                           <Badge className="bg-purple-50 text-purple-700 border-0 text-xs">
                             <Award className="w-3 h-3 mr-1" />
                             Level {request.user?.level}

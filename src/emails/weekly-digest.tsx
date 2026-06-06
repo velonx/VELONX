@@ -1,5 +1,4 @@
 import { Heading, Link, Text } from '@react-email/components';
-import * as React from 'react';
 import { EmailLayout, button, heading, paragraph } from './base-layout';
 
 interface WeeklyDigestEmailProps {
@@ -122,7 +121,7 @@ const statCard = {
 const statNumber = {
     fontSize: '32px',
     fontWeight: 'bold',
-    color: '#219EBC',
+    color: '#226CE0',
     margin: '0',
     lineHeight: '1',
 };
@@ -138,15 +137,15 @@ const statLabel = {
 const sectionTitle = {
     fontSize: '18px',
     fontWeight: 'bold',
-    color: '#023047',
+    color: '#1A234A',
     margin: '24px 0 12px',
 };
 
 const secondaryButton = {
     backgroundColor: 'transparent',
-    border: '2px solid #219EBC',
+    border: '2px solid #226CE0',
     borderRadius: '8px',
-    color: '#219EBC',
+    color: '#226CE0',
     fontSize: '14px',
     fontWeight: 'bold',
     textDecoration: 'none',
@@ -165,7 +164,7 @@ const unsubscribeText = {
 };
 
 const linkStyle = {
-    color: '#219EBC',
+    color: '#226CE0',
     textDecoration: 'underline',
 };
 

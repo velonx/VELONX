@@ -76,7 +76,7 @@ const container = {
 const header = {
     padding: '32px 20px',
     textAlign: 'center' as const,
-    background: 'linear-gradient(135deg, #219EBC 0%, #023047 100%)',
+    background: 'linear-gradient(135deg, #226CE0 0%, #1A234A 100%)',
 };
 
 const logo = {
@@ -126,13 +126,13 @@ const footerSmall = {
 };
 
 const link = {
-    color: '#219EBC',
+    color: '#226CE0',
     textDecoration: 'none',
 };
 
 // Common button style
 export const button = {
-    backgroundColor: '#219EBC',
+    backgroundColor: '#226CE0',
     borderRadius: '8px',
     color: '#ffffff',
     fontSize: '16px',
@@ -146,7 +146,7 @@ export const button = {
 
 // Common text styles
 export const heading = {
-    color: '#023047',
+    color: '#1A234A',
     fontSize: '24px',
     fontWeight: 'bold',
     margin: '0 0 16px',

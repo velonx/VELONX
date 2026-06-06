@@ -7,7 +7,7 @@
  * and celebration data.
  */
 
-import { Project, ProjectMember, ProjectCategory, ProjectDifficulty, ProjectStatus } from '../api/types';
+import { Project, ProjectCategory, ProjectDifficulty, ProjectStatus } from '../api/types';
 
 // Re-export types from API types for convenience
 export type { ProjectCategory, ProjectDifficulty, ProjectStatus };

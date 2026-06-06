@@ -18,44 +18,7 @@ import { TaskItem } from '@tiptap/extension-task-item'
 import { TaskList } from '@tiptap/extension-task-list'
 import { Subscript } from '@tiptap/extension-subscript'
 import { Superscript } from '@tiptap/extension-superscript'
-import { 
-  Bold, 
-  Italic, 
-  Underline as UnderlineIcon, 
-  Link as LinkIcon, 
-  List, 
-  ListOrdered, 
-  Heading1, 
-  Heading2, 
-  Type,
-  Unlink,
-  Plus,
-  Minus,
-  Table as TableIcon,
-  BetweenHorizontalEnd,
-  BetweenHorizontalStart,
-  BetweenVerticalEnd,
-  BetweenVerticalStart,
-  Trash2,
-  Trash,
-  SplitSquareHorizontal,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  Highlighter,
-  Palette,
-  CheckSquare,
-  Quote,
-  Code,
-  MinusSquare,
-  Undo2,
-  Redo2,
-  Subscript as SubscriptIcon,
-  Superscript as SuperscriptIcon,
-  RemoveFormatting,
-  Image as ImageIcon
-} from "lucide-react";
+import { Bold, Italic, Underline as UnderlineIcon, Link as LinkIcon, List, ListOrdered, Heading1, Heading2, Type, Unlink, Plus, Minus, Table as TableIcon, BetweenHorizontalEnd, BetweenHorizontalStart, BetweenVerticalEnd, BetweenVerticalStart, Trash2, Trash, SplitSquareHorizontal, AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlighter, CheckSquare, Quote, Code, MinusSquare, Undo2, Redo2, Subscript as SubscriptIcon, Superscript as SuperscriptIcon, RemoveFormatting, Image as ImageIcon } from 'lucide-react';
 import { useEffect } from "react";
 
 // Custom Font Size Extension
@@ -127,7 +90,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
   const btnClass = (active: boolean) => 
     `p-2 rounded-lg transition-colors flex items-center justify-center ${
       active 
-        ? "bg-[#219EBC] text-white" 
+        ? "bg-[#226CE0] text-white" 
         : "text-gray-600 hover:bg-gray-100"
     }`;
 
@@ -177,7 +140,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
         {/* Font Size Controls */}
         <div className="flex items-center gap-1 bg-white rounded-xl border border-gray-100 p-1 mx-1">
           <button type="button" onClick={() => changeFontSize('down')} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors" title="Decrease Size"><Minus className="w-3.5 h-3.5" /></button>
-          <span className="text-[10px] font-bold w-10 text-center text-[#023047]">{getCurrentFontSize()}</span>
+          <span className="text-[10px] font-bold w-10 text-center text-[#1A234A]">{getCurrentFontSize()}</span>
           <button type="button" onClick={() => changeFontSize('up')} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors" title="Increase Size"><Plus className="w-3.5 h-3.5" /></button>
         </div>
 
@@ -275,7 +238,7 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-[#219EBC] underline cursor-pointer",
+          class: "text-[#226CE0] underline cursor-pointer",
         },
       }),
       Placeholder.configure({
@@ -288,7 +251,7 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
     },
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[300px] max-w-none px-4 py-2 border rounded-xl border-transparent focus-within:border-[#219EBC]/30",
+        class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[300px] max-w-none px-4 py-2 border rounded-xl border-transparent focus-within:border-[#226CE0]/30",
       },
     },
   });
@@ -300,7 +263,7 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
   }, [content, editor]);
 
   return (
-    <div className="w-full bg-white border border-gray-100 shadow-sm rounded-[32px] p-6 focus-within:ring-2 focus-within:ring-[#219EBC] transition-all">
+    <div className="w-full bg-white border border-gray-100 shadow-sm rounded-4xl p-6 focus-within:ring-2 focus-within:ring-[#226CE0] transition-all">
       <MenuBar editor={editor} />
       <div className="px-2 pb-2">
         <EditorContent editor={editor} />

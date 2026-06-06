@@ -65,7 +65,7 @@ export const FilterPanelComponent = ({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="gap-2"
+            className="gap-2 bg-card"
             aria-label="Open filter panel"
             aria-expanded="false"
           >
@@ -111,7 +111,7 @@ export const FilterPanelComponent = ({
             )}
           </div>
 
-          <ScrollArea className="h-[500px]">
+          <ScrollArea className="h-125">
             <div className="p-4 space-y-6">
               {/* Category Filter */}
               <div>

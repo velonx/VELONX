@@ -234,7 +234,7 @@ export default function AdminBookingApprovalPanel({
   return (
     <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
       <CardHeader className="p-12 border-b border-gray-50">
-        <CardTitle className="text-3xl font-black text-[#023047] mb-2">
+        <CardTitle className="text-3xl font-black text-[#1A234A] mb-2">
           Booking Approvals
         </CardTitle>
         <CardDescription className="text-muted-foreground">
@@ -247,24 +247,24 @@ export default function AdminBookingApprovalPanel({
           <TabsList className="mb-8 bg-muted p-1 rounded-2xl">
             <TabsTrigger 
               value="mentor-sessions" 
-              className="px-6 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm flex items-center gap-2"
+              className="px-6 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm flex items-center gap-2"
             >
               <Calendar className="w-4 h-4" />
               Mentor Sessions
               {pendingSessions.length > 0 && (
-                <Badge className="ml-2 bg-[#219EBC] text-white">
+                <Badge className="ml-2 bg-[#226CE0] text-white">
                   {pendingSessions.length}
                 </Badge>
               )}
             </TabsTrigger>
             <TabsTrigger 
               value="mock-interviews" 
-              className="px-6 py-3 rounded-xl data-[state=active]:bg-[#023047] data-[state=active]:text-white font-bold text-sm flex items-center gap-2"
+              className="px-6 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm flex items-center gap-2"
             >
               <Briefcase className="w-4 h-4" />
               Mock Interviews
               {pendingInterviews.length > 0 && (
-                <Badge className="ml-2 bg-[#219EBC] text-white">
+                <Badge className="ml-2 bg-[#226CE0] text-white">
                   {pendingInterviews.length}
                 </Badge>
               )}
@@ -275,7 +275,7 @@ export default function AdminBookingApprovalPanel({
           <TabsContent value="mentor-sessions">
             {loadingSessions ? (
               <div className="flex flex-col items-center justify-center py-16">
-                <Loader2 className="w-12 h-12 text-[#219EBC] animate-spin mb-4" />
+                <Loader2 className="w-12 h-12 text-[#226CE0] animate-spin mb-4" />
                 <p className="text-muted-foreground font-medium">Loading pending sessions...</p>
               </div>
             ) : error && activeTab === 'mentor-sessions' ? (
@@ -289,7 +289,7 @@ export default function AdminBookingApprovalPanel({
                 <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-4">
                   <Calendar className="w-10 h-10 text-muted-foreground" />
                 </div>
-                <p className="text-xl font-bold text-[#023047] mb-2">No pending mentor sessions</p>
+                <p className="text-xl font-bold text-[#1A234A] mb-2">No pending mentor sessions</p>
                 <p className="text-muted-foreground">All mentor session requests have been processed</p>
               </div>
             ) : (
@@ -310,7 +310,7 @@ export default function AdminBookingApprovalPanel({
           <TabsContent value="mock-interviews">
             {loadingInterviews ? (
               <div className="flex flex-col items-center justify-center py-16">
-                <Loader2 className="w-12 h-12 text-[#219EBC] animate-spin mb-4" />
+                <Loader2 className="w-12 h-12 text-[#226CE0] animate-spin mb-4" />
                 <p className="text-muted-foreground font-medium">Loading pending interviews...</p>
               </div>
             ) : error && activeTab === 'mock-interviews' ? (
@@ -324,7 +324,7 @@ export default function AdminBookingApprovalPanel({
                 <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-4">
                   <Briefcase className="w-10 h-10 text-muted-foreground" />
                 </div>
-                <p className="text-xl font-bold text-[#023047] mb-2">No pending mock interviews</p>
+                <p className="text-xl font-bold text-[#1A234A] mb-2">No pending mock interviews</p>
                 <p className="text-muted-foreground">All mock interview requests have been processed</p>
               </div>
             ) : (

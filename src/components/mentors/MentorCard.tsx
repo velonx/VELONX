@@ -1,15 +1,14 @@
 /**
- * MentorCard Component — Card7 Horizontal Layout
- * Premium horizontal card with image, details, and social icons
+ * MentorCard Component
+ * Premium vertical card with circular avatar, company badge overlap, and booking CTA
  */
 
 'use client';
 
 import React from 'react';
 import Image from 'next/image';
-import { Linkedin, Github, Twitter, MessageCircle, Star } from 'lucide-react';
+import { Linkedin, Star } from 'lucide-react';
 import type { Mentor } from '@/lib/api/types';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 export interface MentorCardProps {
     mentor: Mentor;
@@ -18,151 +17,118 @@ export interface MentorCardProps {
     index?: number;
 }
 
-const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face';
-
-interface SocialIconConfig {
-    icon: typeof Linkedin;
-    label: string;
-    urlKey: 'linkedinUrl' | 'githubUrl' | 'twitterUrl' | null;
-    getUrl: (mentor: Mentor) => string | null | undefined;
-}
-
-const socialIcons: SocialIconConfig[] = [
-    {
-        icon: Linkedin,
-        label: 'LinkedIn',
-        urlKey: 'linkedinUrl',
-        getUrl: (mentor) => mentor.linkedinUrl,
-    },
-    {
-        icon: Github,
-        label: 'GitHub',
-        urlKey: 'githubUrl',
-        getUrl: (mentor) => mentor.githubUrl,
-    },
-    {
-        icon: Twitter,
-        label: 'Twitter',
-        urlKey: 'twitterUrl',
-        getUrl: (mentor) => mentor.twitterUrl,
-    },
-    {
-        icon: MessageCircle,
-        label: 'Message',
-        urlKey: null,
-        getUrl: () => null,
-    },
-];
-
 export const MentorCard: React.FC<MentorCardProps> = ({
     mentor,
     onBookSession,
     onLinkedinClick,
     index = 0,
 }) => {
-    const handleSocialClick = (config: SocialIconConfig) => {
-        const url = config.getUrl(mentor);
+    const initials = mentor.name
+        ? mentor.name
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .substring(0, 2)
+              .toUpperCase()
+        : 'M';
 
-        // Handle special cases
-        if (config.label === 'LinkedIn' && url) {
-            onLinkedinClick(mentor.name);
-            return;
-        }
+    const avatarColors = [
+        { bg: 'rgba(124, 58, 237, 0.15)', text: '#A78BFA' }, // Violet
+        { bg: 'rgba(6, 182, 212, 0.15)', text: '#22D3EE' },  // Cyan
+        { bg: 'rgba(16, 185, 129, 0.15)', text: '#34D399' }, // Green
+        { bg: 'rgba(245, 158, 11, 0.15)', text: '#FCD34D' }, // Yellow
+        { bg: 'rgba(236, 72, 153, 0.15)', text: '#F9A8D4' }, // Pink
+    ];
+    const colorIndex = index % avatarColors.length;
+    const avatarStyle = avatarColors[colorIndex];
 
-        if (config.label === 'Message') {
-            onBookSession(mentor);
-            return;
-        }
-
-        // Handle external social profile links
-        if (url) {
-            window.open(url, '_blank', 'noopener,noreferrer');
-        }
-    };
+    const hasImage = !!mentor.imageUrl;
 
     return (
-        <div className="card-7">
-            <Image
-                src={mentor.imageUrl || PLACEHOLDER_IMAGE}
-                alt={mentor.name}
-                width={200}
-                height={260}
-                loading="lazy"
-                style={{ objectFit: 'cover' }}
-            />
-            <div>
-                {/* Availability badge */}
-                <div
-                    className={`card-7-badge ${mentor.available ? 'available' : 'busy'}`}
+        <article className="p-mentor-card">
+            {/* LinkedIn floating button */}
+            {mentor.linkedinUrl && (
+                <button
+                    onClick={() => onLinkedinClick(mentor.name)}
+                    className="absolute top-4 right-4 text-muted-foreground hover:text-primary transition-colors touch-target"
+                    aria-label={`LinkedIn profile of ${mentor.name}`}
+                    type="button"
                 >
-                    <span
+                    <Linkedin className="w-4 h-4" />
+                </button>
+            )}
+
+            {/* Avatar wrapper */}
+            <div className="p-mentor-avatar-wrapper">
+                {hasImage ? (
+                    <div className="w-full h-full rounded-full border-[3px] border-border overflow-hidden relative">
+                        <Image
+                            src={mentor.imageUrl!}
+                            alt={mentor.name}
+                            fill
+                            sizes="96px"
+                            className="object-cover"
+                            priority={index < 4}
+                        />
+                    </div>
+                ) : (
+                    <div
+                        className="p-mentor-img"
                         style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: '50%',
-                            background: mentor.available ? '#10b981' : '#f59e0b',
-                            display: 'inline-block',
+                            backgroundColor: avatarStyle.bg,
+                            color: avatarStyle.text,
+                            background: avatarStyle.bg
                         }}
-                    />
-                    {mentor.available ? 'Available' : 'Busy'}
-                </div>
-
-                <h2>{mentor.name}</h2>
-                <h3>
-                    {mentor.company}
-                    {mentor.rating > 0 && (
-                        <span style={{ marginLeft: 8, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                            <Star style={{ width: 13, height: 13, fill: '#f59e0b', color: '#f59e0b' }} />
-                            {mentor.rating.toFixed(1)}
-                        </span>
-                    )}
-                </h3>
-                <p>{mentor.bio}</p>
-
-                <div className="socials">
-                    {socialIcons.map((config) => {
-                        const { icon: Icon, label } = config;
-                        const url = config.getUrl(mentor);
-                        const isAvailable = label === 'Message' || !!url;
-                        const isDisabled = !isAvailable;
-
-                        const button = (
-                            <button
-                                key={label}
-                                onClick={() => !isDisabled && handleSocialClick(config)}
-                                aria-label={`${label} — ${mentor.name}`}
-                                disabled={isDisabled}
-                                type="button"
-                                style={{
-                                    opacity: isDisabled ? 0.4 : 1,
-                                    cursor: isDisabled ? 'not-allowed' : 'pointer',
-                                }}
-                            >
-                                <span className="social-icon-inner">
-                                    <Icon style={{ width: 22, height: 22 }} />
-                                </span>
-                            </button>
-                        );
-
-                        // Wrap disabled icons with tooltip
-                        if (isDisabled) {
-                            return (
-                                <Tooltip key={label}>
-                                    <TooltipTrigger asChild>
-                                        {button}
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        {label} profile not available
-                                    </TooltipContent>
-                                </Tooltip>
-                            );
-                        }
-
-                        return button;
-                    })}
-                </div>
+                    >
+                        {initials}
+                    </div>
+                )}
+                {mentor.company && (
+                    <div className="p-mentor-company-badge">
+                        {mentor.company}
+                    </div>
+                )}
             </div>
-        </div>
+
+            {/* Mentor Info */}
+            <h2 className="p-mentor-name">{mentor.name}</h2>
+            
+            {/* Subtitle/Role */}
+            <p className="p-mentor-role">
+                {mentor.expertise[0] || 'Tech Mentor'}
+                {mentor.rating > 0 && (
+                    <span className="inline-flex items-center gap-0.5 ml-2 text-yellow-500 font-bold">
+                        <Star className="w-3 h-3 fill-current" />
+                        {mentor.rating.toFixed(1)}
+                    </span>
+                )}
+            </p>
+
+            {/* Expertise tags */}
+            {mentor.expertise && mentor.expertise.length > 0 && (
+                <div className="p-mentor-tags">
+                    {mentor.expertise.slice(0, 3).map((exp, i) => (
+                        <span key={i} className="tag p-mentor-tag">
+                            {exp}
+                        </span>
+                    ))}
+                </div>
+            )}
+
+            {/* Card Footer */}
+            <div className="p-mentor-footer">
+                <div className="p-mentor-slots">
+                    {mentor.available ? "📅 Slots Free This Week" : "📅 Fully Booked"}
+                </div>
+                <button
+                    className="btn-redesign btn-redesign-primary btn-redesign-sm w-full font-bold"
+                    onClick={() => onBookSession(mentor)}
+                    type="button"
+                >
+                    Book Session
+                </button>
+            </div>
+        </article>
     );
 };
 

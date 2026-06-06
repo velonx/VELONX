@@ -4,21 +4,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import {
-  Flag,
-  ChevronDown,
-  ChevronUp,
-  Image as ImageIcon,
-  Video,
-  Filter,
-  RefreshCw,
-  CheckCircle2,
-  Clock,
-  XCircle,
-  AlertCircle,
-  Loader2,
-  User,
-} from "lucide-react";
+import { Flag, ChevronDown, ChevronUp, Image as ImageIcon, Video, RefreshCw, CheckCircle2, Clock, XCircle, AlertCircle, Loader2, User } from 'lucide-react';
 
 /* ─── Types ─────────────────────────────────────── */
 type ReportStatus = "OPEN" | "IN_REVIEW" | "RESOLVED" | "DISMISSED";
@@ -179,7 +165,7 @@ export function ReportsAdmin() {
                 onClick={() => setStatusFilter(s)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
                   statusFilter === s
-                    ? "bg-[#219EBC] text-white shadow-md shadow-[#219EBC]/30"
+                    ? "bg-[#226CE0] text-white shadow-md shadow-[#226CE0]/30"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
@@ -211,13 +197,13 @@ export function ReportsAdmin() {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-10 h-10 animate-spin text-[#219EBC]" />
+          <Loader2 className="w-10 h-10 animate-spin text-[#226CE0]" />
         </div>
       )}
 
       {/* Empty */}
       {!loading && !error && filtered.length === 0 && (
-        <Card className="border-0 rounded-[24px] p-12 text-center bg-muted/50">
+        <Card className="border-0 rounded-3xl p-12 text-center bg-muted/50">
           <Flag className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <p className="text-foreground font-bold">No reports found</p>
           <p className="text-muted-foreground text-sm mt-1">
@@ -239,7 +225,7 @@ export function ReportsAdmin() {
             return (
               <Card
                 key={report.id}
-                className="border border-border rounded-[24px] overflow-hidden bg-card"
+                className="border border-border rounded-3xl overflow-hidden bg-card"
               >
                 {/* Row header */}
                 <button
@@ -375,7 +361,7 @@ export function ReportsAdmin() {
                         }
                         placeholder="Add internal notes..."
                         rows={3}
-                        className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC] transition-all resize-none"
+                        className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0] transition-all resize-none"
                       />
                     </div>
 

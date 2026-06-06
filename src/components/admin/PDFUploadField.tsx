@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { FileText, Upload, X, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { FileText, Upload, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { getCSRFToken } from "@/lib/utils/csrf";
 import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 /**
@@ -225,7 +224,7 @@ export default function PDFUploadField({
 
       <div 
         className={`bg-gray-50 rounded-[32px] p-6 space-y-4 transition-colors ${
-          isDragging ? "bg-blue-50/50 ring-2 ring-[#219EBC] ring-inset" : ""
+          isDragging ? "bg-blue-50/50 ring-2 ring-[#226CE0] ring-inset" : ""
         }`}
         {...dragHandlers}
       >
@@ -244,11 +243,11 @@ export default function PDFUploadField({
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600 font-medium">Uploading PDF...</span>
-              <span className="text-[#219EBC] font-bold">{uploadProgress}%</span>
+              <span className="text-[#226CE0] font-bold">{uploadProgress}%</span>
             </div>
             <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#219EBC] transition-all duration-300 ease-out"
+                className="h-full bg-[#226CE0] transition-all duration-300 ease-out"
                 style={{ width: `${uploadProgress}%` }}
               />
             </div>
@@ -268,7 +267,7 @@ export default function PDFUploadField({
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-[#023047] truncate">
+                    <p className="text-sm font-bold text-[#1A234A] truncate">
                       {uploadedPDF.fileName}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
@@ -286,7 +285,7 @@ export default function PDFUploadField({
                     type="button"
                     onClick={handleUploadClick}
                     disabled={disabled || isUploading}
-                    className="text-xs font-bold text-[#219EBC] hover:text-[#1a7a94] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-xs font-bold text-[#226CE0] hover:text-[#334DAF] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Replace
                   </button>
@@ -311,14 +310,14 @@ export default function PDFUploadField({
             type="button"
             onClick={handleUploadClick}
             disabled={disabled}
-            className="w-full h-32 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-2xl cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+            className="w-full h-32 bg-white border-2 border-dashed border-gray-300 hover:border-[#226CE0] rounded-2xl cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
           >
             <div className="flex flex-col items-center justify-center gap-3">
-              <div className="w-12 h-12 bg-gray-100 group-hover:bg-[#219EBC]/10 rounded-xl flex items-center justify-center transition-colors">
-                <Upload className="w-6 h-6 text-gray-400 group-hover:text-[#219EBC] transition-colors" />
+              <div className="w-12 h-12 bg-gray-100 group-hover:bg-[#226CE0]/10 rounded-xl flex items-center justify-center transition-colors">
+                <Upload className="w-6 h-6 text-gray-400 group-hover:text-[#226CE0] transition-colors" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-bold text-gray-600 group-hover:text-[#219EBC] transition-colors">
+                <p className="text-sm font-bold text-gray-600 group-hover:text-[#226CE0] transition-colors">
                   {isDragging ? "Drop PDF here" : "Click or drag to upload PDF"}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">

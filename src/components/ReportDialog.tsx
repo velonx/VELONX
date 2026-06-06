@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
 import {
   Flag,
   Upload,
@@ -262,7 +261,7 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 z-9999 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="report-dialog-title"
@@ -320,7 +319,7 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
               </p>
               <Button
                 onClick={handleClose}
-                className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-2xl px-8"
+                className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-2xl px-8"
               >
                 Done
               </Button>
@@ -339,7 +338,7 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
                   id="report-category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value as ReportCategory)}
-                  className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC] transition-all"
+                  className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0] transition-all"
                 >
                   {(Object.keys(CATEGORY_LABELS) as ReportCategory[]).map((cat) => (
                     <option key={cat} value={cat}>
@@ -364,7 +363,7 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Brief summary of the issue..."
                   maxLength={120}
-                  className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC] transition-all"
+                  className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0] transition-all"
                 />
                 <p className="text-xs text-muted-foreground mt-1 text-right">
                   {title.length}/120
@@ -386,7 +385,7 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
                   placeholder="Describe the issue in detail. Include steps to reproduce, what you expected vs. what happened, etc."
                   rows={4}
                   maxLength={2000}
-                  className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#219EBC] transition-all resize-none"
+                  className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0] transition-all resize-none"
                 />
                 <p className="text-xs text-muted-foreground mt-1 text-right">
                   {description.length}/2000
@@ -407,8 +406,8 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
                   onClick={() => fileInputRef.current?.click()}
                   className={`relative border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${
                     isDragging
-                      ? "border-[#219EBC] bg-[#219EBC]/5"
-                      : "border-border hover:border-[#219EBC]/50 hover:bg-muted/50"
+                      ? "border-[#226CE0] bg-[#226CE0]/5"
+                      : "border-border hover:border-[#226CE0]/50 hover:bg-muted/50"
                   }`}
                 >
                   <div className="flex flex-col items-center gap-2">

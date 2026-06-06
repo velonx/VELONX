@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { Video, Briefcase, GraduationCap, Plus, Edit, Trash2, CheckCircle, XCircle, Calendar, Clock, Mail, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Video, Briefcase, GraduationCap, Plus, Edit, Trash2, CheckCircle, Calendar, Mail, Loader2 } from 'lucide-react';
 import toast from "react-hot-toast";
 import { getCSRFToken } from "@/lib/utils/csrf";
 
@@ -310,7 +310,7 @@ export default function CareerManagement() {
                 <TabsContent value="mock-interviews" className="space-y-4">
                     {loading ? (
                         <div className="flex justify-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-[#219EBC]" />
+                            <Loader2 className="w-8 h-8 animate-spin text-[#226CE0]" />
                         </div>
                     ) : mockInterviews.length > 0 ? (
                         <div className="grid gap-4">
@@ -375,14 +375,14 @@ export default function CareerManagement() {
                             setOpportunityForm({ ...opportunityForm, type: "INTERNSHIP" });
                             setShowOpportunityDialog(true);
                         }}
-                        className="bg-[#219EBC] hover:bg-[#1a7a94]"
+                        className="bg-[#226CE0] hover:bg-[#334DAF]"
                     >
                         <Plus className="w-4 h-4 mr-2" /> Add Internship
                     </Button>
 
                     {loading ? (
                         <div className="flex justify-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-[#219EBC]" />
+                            <Loader2 className="w-8 h-8 animate-spin text-[#226CE0]" />
                         </div>
                     ) : opportunities.length > 0 ? (
                         <div className="grid gap-4">
@@ -441,14 +441,14 @@ export default function CareerManagement() {
                             setOpportunityForm({ ...opportunityForm, type: "JOB" });
                             setShowOpportunityDialog(true);
                         }}
-                        className="bg-[#219EBC] hover:bg-[#1a7a94]"
+                        className="bg-[#226CE0] hover:bg-[#334DAF]"
                     >
                         <Plus className="w-4 h-4 mr-2" /> Add Job
                     </Button>
 
                     {loading ? (
                         <div className="flex justify-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-[#219EBC]" />
+                            <Loader2 className="w-8 h-8 animate-spin text-[#226CE0]" />
                         </div>
                     ) : opportunities.length > 0 ? (
                         <div className="grid gap-4">
@@ -617,7 +617,7 @@ export default function CareerManagement() {
                             <Button type="button" variant="outline" onClick={() => setShowOpportunityDialog(false)}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading} className="bg-[#219EBC] hover:bg-[#1a7a94]">
+                            <Button type="submit" disabled={loading} className="bg-[#226CE0] hover:bg-[#334DAF]">
                                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : editingOpportunity ? "Update" : "Create"}
                             </Button>
                         </div>
@@ -681,7 +681,7 @@ export default function CareerManagement() {
                             <Button type="button" variant="outline" onClick={() => setShowInterviewDialog(false)}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading} className="bg-[#219EBC] hover:bg-[#1a7a94]">
+                            <Button type="submit" disabled={loading} className="bg-[#226CE0] hover:bg-[#334DAF]">
                                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Update"}
                             </Button>
                         </div>

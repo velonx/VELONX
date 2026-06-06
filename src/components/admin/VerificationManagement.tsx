@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, Search, User, QrCode, Plus, X, Trash2, Calendar, FileText } from "lucide-react";
+import { CheckCircle, Search, User, QrCode, Plus, X, Calendar, FileText } from 'lucide-react';
 import toast from "react-hot-toast";
 import { secureFetch } from "@/lib/utils/csrf";
 import { QRCodeSVG } from "qrcode.react";
@@ -151,12 +151,12 @@ export default function VerificationManagement() {
         <CardHeader className="p-12 border-b border-gray-50">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-3xl font-black text-[#023047] mb-2 text-wrap">Verification System</h3>
+              <h3 className="text-3xl font-black text-[#1A234A] mb-2 text-wrap">Verification System</h3>
               <p className="text-muted-foreground">Issue and manage verifiable credentials for members</p>
             </div>
             <Button
               onClick={() => setShowForm(!showForm)}
-              className="h-14 px-8 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-2xl shadow-lg"
+              className="h-14 px-8 bg-[#226CE0] hover:bg-[#334DAF] text-white font-black rounded-2xl shadow-lg"
             >
               {showForm ? (
                 <>
@@ -180,7 +180,7 @@ export default function VerificationManagement() {
                 <div className="space-y-4">
                   <Label className="text-sm font-bold text-foreground">1. Select User *</Label>
                   {selectedUser ? (
-                    <div className="flex items-center justify-between p-4 bg-background border border-[#219EBC] rounded-2xl">
+                    <div className="flex items-center justify-between p-4 bg-background border border-[#226CE0] rounded-2xl">
                       <div className="flex items-center gap-3">
                         <Avatar>
                           <AvatarImage src={selectedUser.image || ""} />
@@ -211,7 +211,7 @@ export default function VerificationManagement() {
                       />
                       {searchingUsers && (
                         <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                          <div className="w-4 h-4 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
                         </div>
                       )}
                       {users.length > 0 && (
@@ -249,7 +249,7 @@ export default function VerificationManagement() {
                     id="type"
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value as VerificationType })}
-                    className="w-full h-12 bg-background border border-border rounded-xl px-4 outline-none focus:ring-2 focus:ring-[#219EBC]"
+                    className="w-full h-12 bg-background border border-border rounded-xl px-4 outline-none focus:ring-2 focus:ring-[#226CE0]"
                   >
                     <option value="INTERNSHIP">Internship</option>
                     <option value="EVENT_PROJECT">Event Project</option>
@@ -278,7 +278,7 @@ export default function VerificationManagement() {
                     placeholder="Provide some details about the achievement..."
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full h-32 bg-background border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#219EBC] resize-none"
+                    className="w-full h-32 bg-background border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#226CE0] resize-none"
                   />
                 </div>
 
@@ -298,7 +298,7 @@ export default function VerificationManagement() {
                 <Button
                   type="submit"
                   disabled={!selectedUser || !formData.title}
-                  className="h-12 px-8 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+                  className="h-12 px-8 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
                 >
                   Issue Verification
                 </Button>
@@ -318,7 +318,7 @@ export default function VerificationManagement() {
         <CardContent className="p-12">
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : verifications.length === 0 ? (
             <div className="text-center py-20">
@@ -330,7 +330,7 @@ export default function VerificationManagement() {
               {verifications.map((v) => (
                 <div
                   key={v.id}
-                  className="bg-muted/30 p-6 rounded-2xl border border-border hover:border-[#219EBC]/30 transition-all group"
+                  className="bg-muted/30 p-6 rounded-2xl border border-border hover:border-[#226CE0]/30 transition-all group"
                 >
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div className="flex items-center gap-4">
@@ -341,7 +341,7 @@ export default function VerificationManagement() {
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-bold text-foreground">{v.title}</h4>
-                          <Badge variant="outline" className="text-[10px] bg-[#219EBC]/10 text-[#219EBC] border-[#219EBC]/20">
+                          <Badge variant="outline" className="text-[10px] bg-[#226CE0]/10 text-[#226CE0] border-[#226CE0]/20">
                             {v.type}
                           </Badge>
                         </div>
@@ -359,7 +359,7 @@ export default function VerificationManagement() {
                           variant="outline"
                           size="sm"
                           onClick={() => setViewingQR(v)}
-                          className="h-10 px-4 rounded-xl border-[#219EBC] text-[#219EBC] hover:bg-[#219EBC]/10 font-bold"
+                          className="h-10 px-4 rounded-xl border-[#226CE0] text-[#226CE0] hover:bg-[#226CE0]/10 font-bold"
                         >
                           <QrCode className="w-4 h-4 mr-2" />
                           Show QR
@@ -386,12 +386,12 @@ export default function VerificationManagement() {
       <Dialog open={!!viewingQR} onOpenChange={(open) => !open && setViewingQR(null)}>
         <DialogContent className="sm:max-w-md rounded-[32px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-black text-[#023047] text-center">Verification QR Code</DialogTitle>
+            <DialogTitle className="text-2xl font-black text-[#1A234A] text-center">Verification QR Code</DialogTitle>
             <DialogDescription className="text-center">
               Scan this QR code to verify the {viewingQR?.type.toLowerCase().replace("_", " ")} for {viewingQR?.user.name}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl border-2 border-dashed border-[#219EBC]/20">
+          <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl border-2 border-dashed border-[#226CE0]/20">
             {viewingQR && (
               <>
                 <QRCodeSVG
@@ -401,7 +401,7 @@ export default function VerificationManagement() {
                   includeMargin={true}
                 />
                 <div className="mt-6 text-center">
-                  <p className="text-xs font-bold text-[#023047] uppercase tracking-widest mb-1">ID: {viewingQR.verificationToken}</p>
+                  <p className="text-xs font-bold text-[#1A234A] uppercase tracking-widest mb-1">ID: {viewingQR.verificationToken}</p>
                   <p className="text-[10px] text-muted-foreground max-w-[200px] break-all">
                     {getVerificationUrl(viewingQR.verificationToken)}
                   </p>
@@ -412,7 +412,7 @@ export default function VerificationManagement() {
           <div className="flex justify-center pt-4">
             <Button
               onClick={() => setViewingQR(null)}
-              className="w-full h-12 bg-[#023047] text-white font-bold rounded-xl"
+              className="w-full h-12 bg-[#1A234A] text-white font-bold rounded-xl"
             >
               Done
             </Button>

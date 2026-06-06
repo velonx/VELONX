@@ -11,9 +11,9 @@ import Image from "next/image";
 export default function SignupPageWrapper() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-slate-100 dark:bg-[#0f1624] flex items-center justify-center">
+            <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="text-center">
-                    <Rocket className="w-16 h-16 mx-auto mb-4 animate-pulse text-[#219EBC]" />
+                    <Rocket className="w-16 h-16 mx-auto mb-4 animate-pulse text-[#226CE0]" />
                     <p className="text-lg text-slate-500 dark:text-slate-400">Loading signup...</p>
                 </div>
             </div>
@@ -123,7 +123,7 @@ function SignupPage() {
     };
 
     return (
-        <div className="h-screen overflow-hidden flex items-center justify-center bg-slate-100 dark:bg-[#0f1624] font-outfit transition-colors duration-300 pt-20 pb-4 px-4">
+        <div className="h-screen overflow-hidden flex items-center justify-center bg-background font-outfit transition-colors duration-300 pt-20 pb-4 px-4">
 
             {/* Card */}
             <div className="w-full max-w-5xl h-full max-h-[calc(100vh-6rem)] flex rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-[#1e2d45]">
@@ -134,7 +134,7 @@ function SignupPage() {
 
                         {/* Brand */}
                         <div className="mb-4">
-                            <span className="text-2xl font-black tracking-tight bg-gradient-to-r from-[#219EBC] via-[#4FC3F7] to-[#E9C46A] bg-clip-text text-transparent">
+                            <span className="text-2xl font-black tracking-tight bg-linear-to-r from-[#226CE0] via-[#4FC3F7] to-[#E9C46A] bg-clip-text text-transparent">
                                 Velonx
                             </span>
                             <h1 className="mt-1 text-2xl font-bold text-slate-800 dark:text-white leading-tight">
@@ -156,7 +156,7 @@ function SignupPage() {
                                 </p>
                                 <p className="text-xs text-slate-400 dark:text-slate-500 mt-6">
                                     Once verified, you can {" "}
-                                    <Link href="/auth/login" className="text-[#219EBC] hover:underline font-semibold transition-colors">
+                                    <Link href="/auth/login" className="text-[#226CE0] hover:underline font-semibold transition-colors">
                                         sign in
                                     </Link>
                                     {" "}to continue.
@@ -185,7 +185,7 @@ function SignupPage() {
                                             value={firstName}
                                             onChange={handleFieldChange(setFirstName)}
                                             required
-                                            className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#219EBC]/40 focus:border-[#219EBC] transition-all"
+                                            className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#226CE0]/40 focus:border-[#226CE0] transition-all"
                                         />
                                     </div>
                                 </div>
@@ -201,7 +201,7 @@ function SignupPage() {
                                             value={lastName}
                                             onChange={handleFieldChange(setLastName)}
                                             required
-                                            className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#219EBC]/40 focus:border-[#219EBC] transition-all"
+                                            className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#226CE0]/40 focus:border-[#226CE0] transition-all"
                                         />
                                     </div>
                                 </div>
@@ -220,7 +220,7 @@ function SignupPage() {
                                         value={email}
                                         onChange={handleFieldChange(setEmail)}
                                         required
-                                        className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#219EBC]/40 focus:border-[#219EBC] transition-all"
+                                        className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#226CE0]/40 focus:border-[#226CE0] transition-all"
                                     />
                                 </div>
                             </div>
@@ -238,7 +238,7 @@ function SignupPage() {
                                         value={password}
                                         onChange={handleFieldChange(setPassword)}
                                         required
-                                        className="w-full pl-9 pr-10 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#219EBC]/40 focus:border-[#219EBC] transition-all"
+                                        className="w-full pl-9 pr-10 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#226CE0]/40 focus:border-[#226CE0] transition-all"
                                     />
                                     <button
                                         type="button"
@@ -263,11 +263,11 @@ function SignupPage() {
                                         value={referralCode}
                                         onChange={handleReferralCodeChange}
                                         onBlur={handleReferralCodeBlur}
-                                        className={`w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#219EBC]/40 focus:border-[#219EBC] transition-all ${referralCodeError ? 'border-yellow-400 dark:border-yellow-500' : 'border-slate-200 dark:border-[#2a3e5c]'}`}
+                                        className={`w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#226CE0]/40 focus:border-[#226CE0] transition-all ${referralCodeError ? 'border-yellow-400 dark:border-yellow-500' : 'border-slate-200 dark:border-[#2a3e5c]'}`}
                                     />
                                     {referralCodeValidating && (
                                         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                            <div className="w-4 h-4 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                                            <div className="w-4 h-4 border-2 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
                                         </div>
                                     )}
                                 </div>
@@ -284,13 +284,13 @@ function SignupPage() {
                                     id="terms"
                                     checked={agreedToTerms}
                                     onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                    className="w-3.5 h-3.5 rounded accent-[#219EBC] cursor-pointer mt-0.5"
+                                    className="w-3.5 h-3.5 rounded accent-[#226CE0] cursor-pointer mt-0.5"
                                 />
                                 <label htmlFor="terms" className="text-xs text-slate-500 dark:text-slate-400 leading-tight cursor-pointer select-none">
                                     I agree to the{" "}
-                                    <Link href="/terms" className="text-[#219EBC] hover:text-[#1a7a94] transition-colors">Terms of Service</Link>
+                                    <Link href="/terms" className="text-[#226CE0] hover:text-[#334DAF] transition-colors">Terms of Service</Link>
                                     {" "}and{" "}
-                                    <Link href="/privacy" className="text-[#219EBC] hover:text-[#1a7a94] transition-colors">Privacy Policy</Link>
+                                    <Link href="/privacy" className="text-[#226CE0] hover:text-[#334DAF] transition-colors">Privacy Policy</Link>
                                 </label>
                             </div>
 
@@ -298,7 +298,7 @@ function SignupPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#219EBC] to-[#1a7a94] hover:from-[#1a7a94] hover:to-[#156880] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl py-2.5 transition-all duration-200 shadow-md shadow-[#219EBC]/20 mt-1 group"
+                                className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#226CE0] to-[#334DAF] hover:from-[#334DAF] hover:to-[#156880] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl py-2.5 transition-all duration-200 shadow-md shadow-[#226CE0]/20 mt-1 group"
                             >
                                 {loading ? (
                                     <span className="flex items-center gap-2">
@@ -358,7 +358,7 @@ function SignupPage() {
                 </div>
 
                 {/* ───── RIGHT — Illustration ───── */}
-                <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-[#fdf9f0] via-[#faf5e8] to-[#f5eedd] dark:from-[#1a1810] dark:via-[#1c1a12] dark:to-[#1e1c14] transition-colors duration-300 p-6 relative overflow-hidden">
+                <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-linear-to-br from-[#fdf9f0] via-[#faf5e8] to-[#f5eedd] dark:from-[#1a1810] dark:via-[#1c1a12] dark:to-[#1e1c14] transition-colors duration-300 p-6 relative overflow-hidden">
 
                     {/* Decorative circles matching gold/yellow theme */}
                     <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-[#E9C46A]/10 dark:bg-[#E9C46A]/5 -translate-y-16 translate-x-16" />

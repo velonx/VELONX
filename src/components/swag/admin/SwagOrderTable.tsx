@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Package, Zap, MapPin, Phone, User, ChevronDown, Loader2, Eye, X } from "lucide-react";
+import { Package, Zap, MapPin, Phone, User, Loader2, Eye, X } from 'lucide-react';
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { secureFetch } from "@/lib/utils/csrf";
@@ -78,7 +78,7 @@ export default function SwagOrderTable() {
             { label: "Pending", value: stats.pending, color: "text-amber-500" },
             { label: "Processing", value: stats.processing, color: "text-blue-500" },
             { label: "Shipped", value: stats.shipped, color: "text-violet-500" },
-            { label: "XP Redeemed", value: `${(stats.totalXpRedeemed || 0).toLocaleString()}`, color: "text-[#219EBC]" },
+            { label: "XP Redeemed", value: `${(stats.totalXpRedeemed || 0).toLocaleString()}`, color: "text-[#226CE0]" },
           ].map(s => (
             <div key={s.label} className="bg-card border border-border rounded-2xl p-4">
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">{s.label}</p>
@@ -91,7 +91,7 @@ export default function SwagOrderTable() {
       {/* Filter */}
       <div className="flex gap-2 flex-wrap">
         {STATUSES.map(s => (
-          <button key={s} onClick={() => setFilterStatus(s)} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${filterStatus === s ? "bg-[#023047] text-white border-[#023047]" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+          <button key={s} onClick={() => setFilterStatus(s)} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${filterStatus === s ? "bg-[#1A234A] text-white border-[#1A234A]" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
             {s}
           </button>
         ))}
@@ -99,7 +99,7 @@ export default function SwagOrderTable() {
 
       {/* Table */}
       {loading ? (
-        <div className="flex items-center justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-[#219EBC]" /></div>
+        <div className="flex items-center justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-[#226CE0]" /></div>
       ) : (
         <div className="bg-card border border-border rounded-3xl overflow-hidden">
           <div className="overflow-x-auto">
@@ -154,7 +154,7 @@ export default function SwagOrderTable() {
                       {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                     </td>
                     <td className="px-5 py-4">
-                      <button onClick={() => setViewOrder(order)} className="w-8 h-8 rounded-lg bg-muted hover:bg-[#219EBC]/10 hover:text-[#219EBC] flex items-center justify-center transition-colors">
+                      <button onClick={() => setViewOrder(order)} className="w-8 h-8 rounded-lg bg-muted hover:bg-[#226CE0]/10 hover:text-[#226CE0] flex items-center justify-center transition-colors">
                         <Eye className="w-3.5 h-3.5" />
                       </button>
                     </td>
@@ -187,13 +187,13 @@ export default function SwagOrderTable() {
               <div className={`inline-flex px-3 py-1 rounded-lg text-xs font-bold border ${STATUS_COLORS[viewOrder.status]}`}>{viewOrder.status}</div>
 
               <div className="bg-muted/30 rounded-2xl p-4 space-y-2">
-                <div className="flex items-center gap-2 text-[#219EBC] mb-2"><User className="w-4 h-4" /><span className="text-xs font-bold uppercase tracking-widest">Student</span></div>
+                <div className="flex items-center gap-2 text-[#226CE0] mb-2"><User className="w-4 h-4" /><span className="text-xs font-bold uppercase tracking-widest">Student</span></div>
                 <p className="font-bold text-foreground">{viewOrder.user?.name}</p>
                 <p className="text-muted-foreground text-sm">{viewOrder.user?.email}</p>
               </div>
 
               <div className="bg-muted/30 rounded-2xl p-4 space-y-2">
-                <div className="flex items-center gap-2 text-[#219EBC] mb-2"><MapPin className="w-4 h-4" /><span className="text-xs font-bold uppercase tracking-widest">Delivery</span></div>
+                <div className="flex items-center gap-2 text-[#226CE0] mb-2"><MapPin className="w-4 h-4" /><span className="text-xs font-bold uppercase tracking-widest">Delivery</span></div>
                 <p className="font-bold text-foreground">{viewOrder.fullName}</p>
                 <div className="flex items-center gap-1.5 text-muted-foreground text-sm"><Phone className="w-3.5 h-3.5" />{viewOrder.phone}</div>
                 <p className="text-muted-foreground text-sm">{viewOrder.address}</p>
@@ -202,7 +202,7 @@ export default function SwagOrderTable() {
               </div>
 
               <div className="bg-muted/30 rounded-2xl p-4">
-                <div className="flex items-center gap-2 text-[#219EBC] mb-2"><Package className="w-4 h-4" /><span className="text-xs font-bold uppercase tracking-widest">Item</span></div>
+                <div className="flex items-center gap-2 text-[#226CE0] mb-2"><Package className="w-4 h-4" /><span className="text-xs font-bold uppercase tracking-widest">Item</span></div>
                 <p className="font-bold text-foreground">{viewOrder.item?.name}</p>
                 <div className="flex items-center gap-1 text-amber-500 font-bold text-sm mt-1"><Zap className="w-3.5 h-3.5" />{viewOrder.xpSpent.toLocaleString()} XP</div>
               </div>

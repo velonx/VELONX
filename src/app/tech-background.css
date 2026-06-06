@@ -11,8 +11,8 @@
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(rgba(33, 158, 188, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(33, 158, 188, 0.03) 1px, transparent 1px);
+        linear-gradient(rgba(34, 108, 224, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 108, 224, 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
     animation: gridMove 20s linear infinite;
 }
@@ -21,7 +21,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 20% 30%, rgba(33, 158, 188, 0.15) 0%, transparent 50%),
+    background: radial-gradient(ellipse at 20% 30%, rgba(34, 108, 224, 0.15) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 70%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
         radial-gradient(ellipse at 50% 50%, rgba(233, 196, 106, 0.08) 0%, transparent 60%);
 }
@@ -223,8 +223,8 @@
 .neon-line-vertical {
     width: 2px;
     height: 100%;
-    background: linear-gradient(180deg, transparent, rgba(33, 158, 188, 0.8), transparent);
-    box-shadow: 0 0 10px rgba(33, 158, 188, 0.5);
+    background: linear-gradient(180deg, transparent, rgba(34, 108, 224, 0.8), transparent);
+    box-shadow: 0 0 10px rgba(34, 108, 224, 0.5);
     animation: neonPulse 3s ease-in-out infinite 1.5s;
 }
 
@@ -245,9 +245,9 @@
     position: absolute;
     width: 2px;
     height: 2px;
-    background: rgba(33, 158, 188, 0.6);
+    background: rgba(34, 108, 224, 0.6);
     border-radius: 50%;
-    box-shadow: 0 0 5px rgba(33, 158, 188, 0.8);
+    box-shadow: 0 0 5px rgba(34, 108, 224, 0.8);
     animation: particleFloat 15s linear infinite;
 }
 

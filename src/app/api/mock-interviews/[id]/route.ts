@@ -4,7 +4,6 @@ import { MockInterviewService } from "@/lib/services/career.service";
 import { mockInterviewService } from "@/lib/services/mock-interview.service";
 import { updateMockInterviewSchema } from "@/lib/validations/career";
 import { interviewApprovalSchema } from "@/lib/validations/mock-interview";
-import { ZodError } from "zod";
 import { handleError } from "@/lib/utils/errors";
 
 // GET - Get single mock interview

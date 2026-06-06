@@ -1,0 +1,289 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/Users/rishipandey/VELONX[39m
+
+ [31m❯[39m src/components/resources/__tests__/ResourceCard.test.tsx [2m([22m[2m9 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 54[2mms[22m[39m
+[31m     [31m×[31m renders resource with all fields[39m[32m 20[2mms[22m[39m
+     [32m✓[39m renders with missing imageUrl and uses placeholder[32m 3[2mms[22m[39m
+     [32m✓[39m truncates long descriptions[32m 2[2mms[22m[39m
+     [32m✓[39m calls trackResourceVisit and opens URL when clicked[32m 8[2mms[22m[39m
+     [32m✓[39m opens URL even if visit tracking fails[32m 4[2mms[22m[39m
+[31m     [31m×[31m formats access count correctly[39m[32m 2[2mms[22m[39m
+     [32m✓[39m displays correct type badge and icon[32m 9[2mms[22m[39m
+     [32m✓[39m is keyboard accessible[32m 5[2mms[22m[39m
+     [32m✓[39m has proper ARIA labels[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/components/resources/__tests__/ResourceCard.test.tsx[2m > [22mResourceCard[2m > [22mrenders resource with all fields
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: 1.2K. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33maria-label[39m=[32m"Resource: Test Resource"[39m
+      [33mclass[39m=[32m"p-resource-card group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"[39m
+      [33mrole[39m=[32m"article"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative w-full h-40 mb-4 rounded-xl overflow-hidden bg-muted border border-border/50"[39m
+      [36m>[39m
+        [36m<img[39m
+          [33malt[39m=[32m"Test Resource"[39m
+          [33mclass[39m=[32m"w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"[39m
+          [33msrc[39m=[32m"https://example.com/image.jpg"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"absolute top-2 right-2 badge-event text-xs font-semibold px-2.5 py-1 border backdrop-blur-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"[39m
+        [36m>[39m
+          [0mARTICLE[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col gap-1 mb-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs font-bold text-primary dark:text-[#A78BFA] uppercase tracking-wider"[39m
+        [36m>[39m
+          [0mProgramming[0m
+        [36m</span>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"p-resource-title group-hover:text-primary dark:group-hover:text-cyan-light transition-colors m-0"[39m
+        [36m>[39m
+          [0mTest Resource[0m
+        [36m</h3>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"p-resource-desc line-clamp-3"[39m
+      [36m>[39m
+        [0mThis is a test resource description[0m
+      [36m</p>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col gap-2 mt-auto mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex gap-2 w-full"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Visit resource URL"[39m
+            [33mclass[39m=[32m"flex-1 btn-redesign btn-redesign-primary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer"[39m
+          [36m>[39m
+            [0mVisit Resource[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<footer[39m
+        [33mclass[39m=[32m"p-resource-footer"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"1234 views"[39m
+          [33mclass[39m=[32m"p-resource-stats"[39m
+        [36m>[39m
+          [0m1.2K[0m
+          [0m visits[0m
+        [36m</div>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"Share Test Resource"[39m
+          [33mclass[39m=[32m"flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"[39m
+          [33mtitle[39m=[32m"Share"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-share2 lucide-share-2 h-3.5 w-3.5"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"24"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"24"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"18"[39m
+              [33mcy[39m=[32m"5"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"6"[39m
+              [33mcy[39m=[32m"12"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"18"[39m
+              [33mcy[39m=[32m"19"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<line[39m
+              [33mx1[39m=[32m"8.59"[39m
+              [33mx2[39m=[32m"15.42"[39m
+              [33my1[39m=[32m"13.51"[39m
+              [33my2[39m=[32m"17.49"[39m
+            [36m/>[39m
+            [36m<line[39m
+              [33mx1[39m=[32m"15.41"[39m
+              [33mx2[39m=[32m"8.59"[39m
+              [33my1[39m=[32m"6.51"[39m
+              [33my2[39m=[32m"10.49"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</button>[39m
+      [36m</footer>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/components/resources/__tests__/ResourceCard.test.tsx:[2m58:19[22m[39m
+    [90m 56| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'ARTICLE'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m 57| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'Programming'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m 58| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'1.2K'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 59| [39m  })[33m;[39m
+    [90m 60| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/resources/__tests__/ResourceCard.test.tsx[2m > [22mResourceCard[2m > [22mformats access count correctly
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: 42. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33maria-label[39m=[32m"Resource: Test Resource"[39m
+      [33mclass[39m=[32m"p-resource-card group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"[39m
+      [33mrole[39m=[32m"article"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative w-full h-40 mb-4 rounded-xl overflow-hidden bg-muted border border-border/50"[39m
+      [36m>[39m
+        [36m<img[39m
+          [33malt[39m=[32m"Test Resource"[39m
+          [33mclass[39m=[32m"w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"[39m
+          [33msrc[39m=[32m"https://example.com/image.jpg"[39m
+        [36m/>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"absolute top-2 right-2 badge-event text-xs font-semibold px-2.5 py-1 border backdrop-blur-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"[39m
+        [36m>[39m
+          [0mARTICLE[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col gap-1 mb-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs font-bold text-primary dark:text-[#A78BFA] uppercase tracking-wider"[39m
+        [36m>[39m
+          [0mProgramming[0m
+        [36m</span>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"p-resource-title group-hover:text-primary dark:group-hover:text-cyan-light transition-colors m-0"[39m
+        [36m>[39m
+          [0mTest Resource[0m
+        [36m</h3>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"p-resource-desc line-clamp-3"[39m
+      [36m>[39m
+        [0mThis is a test resource description[0m
+      [36m</p>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col gap-2 mt-auto mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex gap-2 w-full"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Visit resource URL"[39m
+            [33mclass[39m=[32m"flex-1 btn-redesign btn-redesign-primary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer"[39m
+          [36m>[39m
+            [0mVisit Resource[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<footer[39m
+        [33mclass[39m=[32m"p-resource-footer"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"42 views"[39m
+          [33mclass[39m=[32m"p-resource-stats"[39m
+        [36m>[39m
+          [0m42[0m
+          [0m visits[0m
+        [36m</div>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"Share Test Resource"[39m
+          [33mclass[39m=[32m"flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"[39m
+          [33mtitle[39m=[32m"Share"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-share2 lucide-share-2 h-3.5 w-3.5"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"24"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"24"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"18"[39m
+              [33mcy[39m=[32m"5"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"6"[39m
+              [33mcy[39m=[32m"12"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"18"[39m
+              [33mcy[39m=[32m"19"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<line[39m
+              [33mx1[39m=[32m"8.59"[39m
+              [33mx2[39m=[32m"15.42"[39m
+              [33my1[39m=[32m"13.51"[39m
+              [33my2[39m=[32m"17.49"[39m
+            [36m/>[39m
+            [36m<line[39m
+              [33mx1[39m=[32m"15.41"[39m
+              [33mx2[39m=[32m"8.59"[39m
+              [33my1[39m=[32m"6.51"[39m
+              [33my2[39m=[32m"10.49"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</button>[39m
+      [36m</footer>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/components/resources/__tests__/ResourceCard.test.tsx:[2m132:21[22m[39m
+    [90m130| [39m      const { rerender } = render(<ResourceCard resource={resource} />…
+    [90m131| [39m
+    [90m132| [39m      [34mexpect[39m(screen[33m.[39m[34mgetByText[39m(expected))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m133| [39m
+    [90m134| [39m      [90m// Clean up for next iteration[39m
+[90m [2m❯[22m src/components/resources/__tests__/ResourceCard.test.tsx:[2m128:15[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 19:41:59
+[2m   Duration [22m 622ms[2m (transform 64ms, setup 90ms, import 107ms, tests 54ms, environment 305ms)[22m
+

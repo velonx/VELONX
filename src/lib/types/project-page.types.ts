@@ -3,7 +3,7 @@
  * Feature: project-page-ui-improvements
  */
 
-import { Project, ProjectMember, ProjectCategory, ProjectDifficulty } from '../api/types';
+import { Project, ProjectCategory, ProjectDifficulty } from '../api/types';
 
 // Re-export types from API types for convenience
 export type { ProjectCategory, ProjectDifficulty };
@@ -68,7 +68,7 @@ export interface CategoryConfig {
 export const CATEGORY_COLORS: Record<ProjectCategory, CategoryConfig> = {
   WEB_DEV: {
     label: 'Web Dev',
-    color: '#219EBC',
+    color: '#226CE0',
     bgColor: 'bg-blue-100',
     borderColor: 'border-blue-500',
   },

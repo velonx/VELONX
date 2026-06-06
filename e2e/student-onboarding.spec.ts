@@ -9,8 +9,8 @@
  * Requirements: 4.3
  */
 
-import { test, expect, Page } from '@playwright/test'
-import { expectToBeOnPage, expectToastVisible } from './helpers/assertions.helper'
+import { test, expect } from '@playwright/test';
+import { expectToBeOnPage } from './helpers/assertions.helper';
 import { waitForPageLoad } from './helpers/navigation.helper'
 
 // Generate unique test user data

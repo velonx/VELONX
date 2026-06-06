@@ -116,7 +116,7 @@ export default function ProjectSubmissions() {
     return (
       <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
         <CardHeader className="p-12 border-b border-gray-50">
-          <h3 className="text-3xl font-black text-[#023047] mb-2 flex items-center gap-2">
+          <h3 className="text-3xl font-black text-[#1A234A] mb-2 flex items-center gap-2">
             <Lightbulb className="w-8 h-8 text-orange-500" />
             Project Submissions
           </h3>
@@ -124,7 +124,7 @@ export default function ProjectSubmissions() {
         </CardHeader>
         <CardContent className="p-12">
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#226CE0] mx-auto mb-4"></div>
             <p className="text-gray-600">Loading submissions...</p>
           </div>
         </CardContent>
@@ -135,7 +135,7 @@ export default function ProjectSubmissions() {
   return (
     <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
       <CardHeader className="p-12 border-b border-gray-50">
-        <h3 className="text-3xl font-black text-[#023047] mb-2 flex items-center gap-2">
+        <h3 className="text-3xl font-black text-[#1A234A] mb-2 flex items-center gap-2">
           <Lightbulb className="w-8 h-8 text-orange-500" />
           Project Submissions
         </h3>
@@ -167,7 +167,7 @@ export default function ProjectSubmissions() {
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <h4 className="text-2xl font-black text-[#023047] mb-2">{projectData.title}</h4>
+                          <h4 className="text-2xl font-black text-[#1A234A] mb-2">{projectData.title}</h4>
                           <div className="flex items-center gap-3 text-sm text-gray-500">
                             <span className="flex items-center gap-1">
                               <Users className="w-4 h-4" />
@@ -191,7 +191,7 @@ export default function ProjectSubmissions() {
                       {projectData.techStack && projectData.techStack.length > 0 && (
                         <div className="mb-4">
                           <div className="flex items-center gap-2 mb-3">
-                            <Code className="w-4 h-4 text-[#219EBC]" />
+                            <Code className="w-4 h-4 text-[#226CE0]" />
                             <span className="text-sm font-bold text-gray-700">Tech Stack</span>
                           </div>
                           <div className="flex flex-wrap gap-2">

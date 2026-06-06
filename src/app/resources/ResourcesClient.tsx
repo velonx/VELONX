@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Suspense } from 'react';
-import { Sparkles, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import {
   ResourcesGrid,
   Pagination,
@@ -12,6 +12,7 @@ import { useResources } from '@/lib/hooks/useResources';
 import { useResourceFilters } from '@/lib/hooks/useResourceFilters';
 import { ResourceCategory, ResourceType } from '@/lib/types/resources.types';
 import { ScreenReaderAnnouncer } from '@/components/screen-reader-announcer';
+import { cn } from '@/lib/utils';
 
 function ResourcesPage() {
   // Screen reader announcements
@@ -129,86 +130,65 @@ function ResourcesPage() {
       setIsRetrying(false);
     }
   }, [retry]);
-
   return (
     <div className="min-h-screen pt-24 bg-background">
       {/* Screen Reader Announcements */}
       <ScreenReaderAnnouncer message={announcement} politeness="polite" />
 
-      {/* Hero Section / Header */}
-      <section className="relative py-16 bg-background overflow-hidden" aria-labelledby="page-title">
+      {/* Page Hero */}
+      <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center" aria-labelledby="page-title">
+        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
+          <span className="p-section-label">CURATED REPOSITORY</span>
+          <h1 id="page-title" className="p-display-1">
+            Tech <span className="gradient-text font-black">Resources</span>
+          </h1>
+          <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
+            Expertly structured, handpicked roadmaps, cheatsheets, and interview kits designed to level the career playing field.
+          </p>
+        </div>
+      </header>
 
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <div className="max-w-3xl mx-auto">
-            {/* Title */}
-            <h1
-              id="page-title"
-              className="text-4xl md:text-6xl mb-6 text-foreground font-bold tracking-tight"
-            >
-              Master New <span className="text-primary">Skills</span> Every Day
-            </h1>
+      {/* Resource Filter Tabs Section */}
+      <section className="pb-8 bg-background" aria-labelledby="filters-heading">
+        <div className="container mx-auto px-4">
+          <h2 id="filters-heading" className="sr-only">Filter Resources</h2>
+          {/* Search bar and Filters container */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div className="relative flex-1 md:max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search resources, cheat sheets, PDF guides..."
+                value={filters.search || ''}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full pl-11 pr-10 py-2.5 rounded-full bg-card border border-border focus:border-primary focus:outline-none text-sm text-foreground placeholder:text-muted-foreground transition-all shadow-sm"
+              />
+              {filters.search && (
+                <button
+                  onClick={() => handleSearchChange('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
 
-            {/* Description */}
-            <p
-              className="text-muted-foreground text-xl mb-8 mx-auto"
-            >
-              Curated tutorials, articles, courses, and tools to accelerate your learning journey.
-            </p>
-
-            {/* Search Bar - Matching Events/Projects Style */}
-            <div className="w-full max-w-md mx-auto pt-2 md:pt-4">
-              <div className="relative">
-                <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground"
-                  aria-hidden="true"
-                />
-                <input
-                  placeholder="Search resources by title or description..."
-                  className="w-full pl-12 pr-12 py-3 md:py-4 rounded-full bg-card border-2 border-border focus:border-primary outline-none text-foreground placeholder:text-muted-foreground transition-all shadow-sm hover:shadow-md focus:shadow-lg"
-                  aria-label="Search resources"
-                  type="search"
-                  value={filters.search || ''}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                />
-                {filters.search && (
-                  <button
-                    onClick={() => handleSearchChange('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors"
-                    aria-label="Clear search"
-                  >
-                    <X className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                )}
-              </div>
+            <div className="flex items-center gap-3">
+              {/* Filter Panel - Right Side for Types */}
+              <FilterPanel
+                selectedCategories={filters.categories}
+                selectedTypes={filters.types}
+                onCategoryToggle={handleCategoryToggle}
+                onTypeToggle={handleTypeToggle}
+                onClearAll={handleClearAllFilters}
+                resourceCount={pagination?.totalCount}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-
-      {/* Filters Section */}
-      <section className="py-8 bg-background" aria-labelledby="filters-heading">
-        <div className="container mx-auto px-4">
-          <h2 id="filters-heading" className="sr-only">Filter Resources</h2>
-
-          <div className="flex items-center justify-end">
-            {/* Filter Panel - Right Side */}
-            <FilterPanel
-              selectedCategories={filters.categories}
-              selectedTypes={filters.types}
-              onCategoryToggle={handleCategoryToggle}
-              onTypeToggle={handleTypeToggle}
-              onClearAll={handleClearAllFilters}
-              resourceCount={pagination?.totalCount}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
 
       {/* Resources Grid Section */}
       <main className="py-12 bg-background" aria-labelledby="resources-heading">

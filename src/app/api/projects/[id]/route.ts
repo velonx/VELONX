@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { projectService } from "@/lib/services/project.service";
-import { requireAuth, requireAdmin } from "@/lib/middleware/auth.middleware";
+import { requireAuth } from '@/lib/middleware/auth.middleware';
 import { handleError, AuthorizationError } from "@/lib/utils/errors";
 import { updateProjectSchema } from "@/lib/validations/project";
 import { awardXP, XP_REWARDS } from "@/lib/utils/xp";

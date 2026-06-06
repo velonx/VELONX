@@ -169,7 +169,7 @@ export function ErrorState({
             <Button
               onClick={onRetry}
               disabled={isRetrying}
-              className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold px-6 py-3 retry-button-hover"
+              className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-semibold px-6 py-3 retry-button-hover"
               aria-label={isRetrying ? 'Retrying...' : 'Retry loading resources'}
             >
               <RefreshCw

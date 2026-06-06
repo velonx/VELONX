@@ -1,5 +1,4 @@
 import { Heading, Link, Text } from '@react-email/components';
-import * as React from 'react';
 import { EmailLayout, button, heading, paragraph } from './base-layout';
 
 interface ProjectInviteEmailProps {
@@ -61,13 +60,13 @@ const projectCard = {
     padding: '20px',
     borderRadius: '8px',
     margin: '20px 0',
-    borderLeft: '4px solid #219EBC',
+    borderLeft: '4px solid #226CE0',
 };
 
 const projectCardTitle = {
     fontSize: '20px',
     fontWeight: 'bold',
-    color: '#023047',
+    color: '#1A234A',
     margin: '0 0 12px',
 };
 

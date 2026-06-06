@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
               justify-content: center;
               min-height: 100vh;
               margin: 0;
-              background: linear-gradient(135deg, #219EBC 0%, #023047 100%);
+              background: linear-gradient(135deg, #226CE0 0%, #1A234A 100%);
             }
             .container {
               background: white;
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
               box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             }
             h1 {
-              color: #023047;
+              color: #1A234A;
               margin: 0 0 16px;
               font-size: 32px;
             }
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
             }
             a {
               display: inline-block;
-              background: #219EBC;
+              background: #226CE0;
               color: white;
               padding: 12px 32px;
               border-radius: 8px;
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
               transition: background 0.2s;
             }
             a:hover {
-              background: #023047;
+              background: #1A234A;
             }
           </style>
         </head>

@@ -46,7 +46,7 @@ export default function MentorApplications({
     <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
       <CardHeader className="p-12 border-b border-border">
         <div className="flex items-center gap-3">
-          <Users className="w-8 h-8 text-[#219EBC]" />
+          <Users className="w-8 h-8 text-[#226CE0]" />
           <div>
             <CardTitle className="text-3xl font-bold text-foreground mb-1">
               Mentor Applications
@@ -60,7 +60,7 @@ export default function MentorApplications({
       <CardContent className="p-12">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-[#219EBC]" />
+            <Loader2 className="w-8 h-8 animate-spin text-[#226CE0]" />
           </div>
         ) : applications.length === 0 ? (
           <div className="text-center py-20">
@@ -87,7 +87,7 @@ export default function MentorApplications({
                 <CardContent className="p-6">
                   <div className="flex items-start gap-6">
                     {/* Avatar */}
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#219EBC] to-[#023047] flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#226CE0] to-[#1A234A] flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                       {displayName[0]?.toUpperCase() || 'U'}
                     </div>
                     
@@ -123,7 +123,7 @@ export default function MentorApplications({
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {parsedData.expertise.map((skill: string, idx: number) => (
-                              <Badge key={idx} className="bg-[#219EBC]/10 text-[#219EBC] border-[#219EBC]/20 text-xs">
+                              <Badge key={idx} className="bg-[#226CE0]/10 text-[#226CE0] border-[#226CE0]/20 text-xs">
                                 {skill}
                               </Badge>
                             ))}

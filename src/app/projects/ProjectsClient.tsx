@@ -3,12 +3,10 @@
 import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusCircle, CheckCircle, Clock, Search, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useProjects } from "@/lib/api/hooks";
-import { SearchBar } from "@/components/projects/SearchBar";
 import { FilterPanel } from "@/components/projects/FilterPanel";
 import { SortControl } from "@/components/projects/SortControl";
 import { ProjectsGrid } from "@/components/projects/ProjectsGrid";
@@ -17,6 +15,7 @@ import { ErrorState } from "@/components/projects/ErrorState";
 import { useProjectCompletion } from "@/lib/hooks/useProjectCompletion";
 import { CompletionConfirmDialog } from "@/components/projects/CompletionConfirmDialog";
 import { CompletionCelebration } from "@/components/projects/CompletionCelebration";
+import { cn } from "@/lib/utils";
 
 // Code splitting: Lazy load ProjectModal since it's only needed when user clicks a project
 const ProjectModal = lazy(() =>
@@ -375,69 +374,83 @@ function ProjectsPageContent() {
 
     return (
         <div className="min-h-screen pt-24 bg-background">
-            {/* Hero Section */}
-            <section className="relative py-16 bg-background overflow-hidden">
+            {/* Page Hero */}
+            <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center">
+                <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
+                    <span className="p-section-label">PORTFOLIO ENGINE</span>
+                    <h1 className="p-display-1">
+                        Student <span className="gradient-text font-black">Projects</span>
+                    </h1>
+                    <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
+                        Ditch the dry resumes. Build high-quality tech products, showcase your source code, and get discovered by top recruitment leads.
+                    </p>
+                </div>
+            </header>
 
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <div className="max-w-3xl mx-auto">
-                        <h1 className="text-4xl md:text-6xl text-foreground font-bold tracking-tight mb-4">
-                            Build Projects That Matter
-                        </h1>
-                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
-                            Join projects, collaborate with peers, and build impactful solutions
-                        </p>
+            {/* Submit Project Banner */}
+            <section className="pb-8">
+                <div className="container mx-auto px-4">
+                    <div className="p-submit-project-banner">
+                        <div className="text-left">
+                            <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">Showcase Your Creative Creation</h2>
+                            <p className="text-muted-foreground max-w-145 text-sm md:text-base leading-relaxed">
+                                Have you built an application, open-source script, or machine learning model recently? Submit it today, gain stars, collect feedback, and earn 150 Velonx Coins.
+                            </p>
+                        </div>
+                        <button
+                            onClick={handleSubmitClick}
+                            className="btn-redesign btn-redesign-primary px-6 py-3 font-semibold rounded-full shrink-0 cursor-pointer"
+                        >
+                            Submit Project 🚀
+                        </button>
+                    </div>
+                </div>
+            </section>
 
-                        {/* Search Bar - Matching Events Page Style */}
-                        <div className="w-full max-w-md mx-auto pt-2 md:pt-4">
-                            <div className="relative">
-                                <Search
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground"
-                                    aria-hidden="true"
-                                />
-                                <input
-                                    placeholder="Search projects by title, tech stack, or category..."
-                                    className="w-full pl-12 pr-12 py-3 md:py-4 rounded-full bg-card border-2 border-border focus:border-primary outline-none text-foreground placeholder:text-muted-foreground transition-all shadow-sm hover:shadow-md focus:shadow-lg"
-                                    aria-label="Search projects"
-                                    type="search"
-                                    value={searchTerm}
-                                    onChange={(e) => handleSearchChange(e.target.value)}
-                                />
-                                {searchTerm && (
-                                    <button
-                                        onClick={() => handleSearchChange("")}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors"
-                                        aria-label="Clear search"
-                                    >
-                                        <X className="w-4 h-4 text-muted-foreground" />
-                                    </button>
-                                )}
-                            </div>
+            <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
+
+            {/* Filters & Search Section */}
+            <section className="py-8 bg-background">
+                <div className="container mx-auto px-4">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        {/* Search control on the left */}
+                        <div className="relative w-full lg:w-64">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <input
+                                type="text"
+                                placeholder="Search projects..."
+                                value={searchTerm}
+                                onChange={(e) => handleSearchChange(e.target.value)}
+                                className="w-full pl-9 pr-8 py-2.5 rounded-full bg-card border border-border focus:border-primary focus:outline-none text-sm text-foreground placeholder:text-muted-foreground transition-all"
+                            />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => handleSearchChange("")}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                >
+                                    <X className="w-3.5 h-3.5" />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Sort and Filter controls on the right */}
+                        <div className="flex items-center gap-3 w-full lg:w-auto justify-end">
+                            <SortControl
+                                value={sortBy}
+                                onChange={handleSortChange}
+                            />
+                            <FilterPanel
+                                filters={filters}
+                                onChange={handleFilterChange}
+                                availableTechStacks={availableTechStacks}
+                                projectCount={currentProjects.length}
+                            />
                         </div>
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-
-            {/* Filters Section */}
-            <section className="py-8 bg-background">
-                <div className="container mx-auto px-4">
-                    <div className="flex items-center justify-end gap-3">
-                        <FilterPanel
-                            filters={filters}
-                            onChange={handleFilterChange}
-                            availableTechStacks={availableTechStacks}
-                            projectCount={currentProjects.length}
-                        />
-                        <SortControl
-                            value={sortBy}
-                            onChange={handleSortChange}
-                        />
-                    </div>
-                </div>
-            </section>
-
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+            <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
 
             {/* Projects Section */}
             <section className="py-16 animate-on-scroll">
@@ -449,7 +462,7 @@ function ProjectsPageContent() {
                             <TabsList className="bg-muted/50 backdrop-blur-sm border border-border p-1 rounded-2xl shadow-lg">
                                 <TabsTrigger
                                     value="running"
-                                    className="px-6 py-2.5 rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/80 font-semibold gap-2 transition-all duration-300 ease-out"
+                                    className="px-6 py-2.5 rounded-xl data-[state=active]:bg-linear-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/80 font-semibold gap-2 transition-all duration-300 ease-out"
                                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                                 >
                                     <Clock className="w-4 h-4" />
@@ -462,7 +475,7 @@ function ProjectsPageContent() {
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="completed"
-                                    className="px-6 py-2.5 rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/80 font-semibold gap-2 transition-all duration-300 ease-out"
+                                    className="px-6 py-2.5 rounded-xl data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/80 font-semibold gap-2 transition-all duration-300 ease-out"
                                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                                 >
                                     <CheckCircle className="w-4 h-4" />
@@ -565,22 +578,6 @@ function ProjectsPageContent() {
                 })()}
             </Suspense>
 
-            {/* Floating Action Button - Submit Idea */}
-            <button
-                onClick={handleSubmitClick}
-                className="fixed bottom-8 right-8 z-50 group"
-                aria-label="Submit project idea"
-            >
-                <div className="relative">
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-violet-600 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
-                    {/* Button */}
-                    <div className="relative flex items-center gap-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white px-6 py-4 rounded-full shadow-2xl transition-all duration-300 group-hover:scale-110 group-active:scale-95">
-                        <PlusCircle className="w-5 h-5" />
-                        <span className="font-semibold" style={{ fontFamily: "'Montserrat', sans-serif" }}>Submit Idea</span>
-                    </div>
-                </div>
-            </button>
 
             {/* Completion Confirmation Dialog */}
             {showConfirmDialog && pendingCompletion && (

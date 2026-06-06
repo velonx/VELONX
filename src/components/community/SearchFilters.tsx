@@ -2,12 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  MessageSquareIcon,
-  UsersIcon,
-  FileTextIcon,
-  UserIcon,
-} from 'lucide-react';
+import { UsersIcon, FileTextIcon, UserIcon } from 'lucide-react';
 
 /**
  * Search Filter Type

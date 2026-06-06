@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { AlertCircle, RefreshCw, WifiOff } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 export interface ErrorStateProps {
@@ -115,7 +115,7 @@ export function ErrorState({
             <Button
               onClick={onRetry}
               disabled={isRetrying}
-              className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-semibold px-6 py-3"
+              className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-semibold px-6 py-3"
               aria-label={isRetrying ? "Retrying..." : "Retry loading projects"}
             >
               <RefreshCw

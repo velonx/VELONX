@@ -1,15 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import {
-    getCalendarDays,
-    getMonthName,
-    type CalendarDay,
-} from "@/lib/calendar-utils";
+import { getCalendarDays, getMonthName } from '@/lib/calendar-utils';
 import { Event } from "@/lib/api/types";
 
 interface EventCalendarProps {

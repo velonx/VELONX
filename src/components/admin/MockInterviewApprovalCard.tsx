@@ -104,7 +104,7 @@ export default function MockInterviewApprovalCard({
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <CardTitle className="text-lg font-bold text-[#023047] mb-2">
+              <CardTitle className="text-lg font-bold text-[#1A234A] mb-2">
                 Mock Interview Request
               </CardTitle>
               <div className="flex flex-wrap gap-2">
@@ -125,9 +125,9 @@ export default function MockInterviewApprovalCard({
         <CardContent className="space-y-4">
           {/* User Info */}
           <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
-            <User className="w-5 h-5 text-[#219EBC]" />
+            <User className="w-5 h-5 text-[#226CE0]" />
             <div>
-              <p className="text-sm font-semibold text-[#023047]">Candidate</p>
+              <p className="text-sm font-semibold text-[#1A234A]">Candidate</p>
               <p className="text-sm text-muted-foreground">{interview.user.name}</p>
               <p className="text-xs text-muted-foreground">{interview.user.email}</p>
             </div>
@@ -136,18 +136,18 @@ export default function MockInterviewApprovalCard({
           {/* Interview Details */}
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2 p-3 bg-muted rounded-xl">
-              <Briefcase className="w-4 h-4 text-[#219EBC]" />
+              <Briefcase className="w-4 h-4 text-[#226CE0]" />
               <div>
-                <p className="text-xs font-semibold text-[#023047]">Type</p>
+                <p className="text-xs font-semibold text-[#1A234A]">Type</p>
                 <p className="text-sm text-muted-foreground">
                   {interviewTypeLabels[interview.interviewType] || interview.interviewType}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 p-3 bg-muted rounded-xl">
-              <TrendingUp className="w-4 h-4 text-[#219EBC]" />
+              <TrendingUp className="w-4 h-4 text-[#226CE0]" />
               <div>
-                <p className="text-xs font-semibold text-[#023047]">Level</p>
+                <p className="text-xs font-semibold text-[#1A234A]">Level</p>
                 <p className="text-sm text-muted-foreground">
                   {experienceLevelLabels[interview.experienceLevel] || interview.experienceLevel}
                 </p>
@@ -158,9 +158,9 @@ export default function MockInterviewApprovalCard({
           {/* Preferred Schedule */}
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2 p-3 bg-muted rounded-xl">
-              <Calendar className="w-4 h-4 text-[#219EBC]" />
+              <Calendar className="w-4 h-4 text-[#226CE0]" />
               <div>
-                <p className="text-xs font-semibold text-[#023047]">Preferred Date</p>
+                <p className="text-xs font-semibold text-[#1A234A]">Preferred Date</p>
                 <p className="text-sm text-muted-foreground">
                   {new Date(interview.preferredDate).toLocaleDateString('en-US', {
                     month: 'short',
@@ -171,9 +171,9 @@ export default function MockInterviewApprovalCard({
               </div>
             </div>
             <div className="flex items-center gap-2 p-3 bg-muted rounded-xl">
-              <Clock className="w-4 h-4 text-[#219EBC]" />
+              <Clock className="w-4 h-4 text-[#226CE0]" />
               <div>
-                <p className="text-xs font-semibold text-[#023047]">Preferred Time</p>
+                <p className="text-xs font-semibold text-[#1A234A]">Preferred Time</p>
                 <p className="text-sm text-muted-foreground">{interview.preferredTime}</p>
               </div>
             </div>

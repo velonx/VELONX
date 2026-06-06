@@ -99,7 +99,7 @@ export const eventQuerySchema = z.object({
   page: z.string().nullable().optional().transform((val) => (val ? parseInt(val, 10) : 1)),
   pageSize: z.string().nullable().optional().transform((val) => (val ? parseInt(val, 10) : 10)),
   type: z.enum(["HACKATHON", "WORKSHOP", "WEBINAR"]).nullable().optional().transform((val) => val ?? undefined),
-  status: z.enum(["UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"]).nullable().optional().transform((val) => val ?? undefined),
+  status: z.enum(["UPCOMING", "ONGOING", "COMPLETED", "CANCELLED", "ACTIVE"]).nullable().optional().transform((val) => val ?? undefined),
   startDate: z.string().datetime().nullable().optional().transform((val) => val ?? undefined),
   endDate: z.string().datetime().nullable().optional().transform((val) => val ?? undefined),
 });

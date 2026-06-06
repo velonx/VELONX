@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { blogService } from "@/lib/services/blog.service";
 
 export const dynamic = "force-dynamic";
-import { requireAuth, requireAdmin } from "@/lib/middleware/auth.middleware";
+import { requireAuth } from '@/lib/middleware/auth.middleware';
 import { handleError, AuthorizationError } from "@/lib/utils/errors";
 import { updateBlogPostSchema } from "@/lib/validations/blog";
 

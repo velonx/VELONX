@@ -11,9 +11,9 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import { performanceMonitor } from '@/lib/services/performance-monitor.service'
-import { cacheService } from '@/lib/services/cache.service'
-import { getRedisClient } from '@/lib/redis'
+import { performanceMonitor } from '../../lib/services/performance-monitor.service'
+import { cacheService } from '../../lib/services/cache.service'
+import { getRedisClient } from '../../lib/redis'
 import { execSync } from 'child_process'
 import { readFileSync, statSync } from 'fs'
 import { join } from 'path'
@@ -179,7 +179,7 @@ describe.skip('Integration: Performance Validation (Requires DB/Redis)', () => {
     }, 30000)
 
     it('should measure page load times', async () => {
-      const pages = ['/community/feed', '/events', '/projects']
+      const pages = ['/community', '/events', '/projects']
 
       for (const page of pages) {
         // Simulate page load time (in real scenario, this would be from browser)

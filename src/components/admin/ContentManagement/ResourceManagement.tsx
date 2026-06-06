@@ -185,16 +185,16 @@ export default function ResourceManagement() {
   return (
     <div className="space-y-12">
       {/* Manage Resources Section */}
-      <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+      <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
         <CardHeader className="p-12 border-b border-gray-50">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-3xl font-black text-[#023047] mb-2">Manage Resources</h3>
+              <h3 className="text-3xl font-black text-[#1A234A] mb-2">Manage Resources</h3>
               <p className="text-gray-400">View, edit, and delete learning resources</p>
             </div>
             <Button
               onClick={handleNewResource}
-              className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl transition-all hover:shadow-lg hover:shadow-[#219EBC]/20 hover:scale-105"
+              className="h-12 px-6 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl transition-all hover:shadow-lg hover:shadow-[#226CE0]/20 hover:scale-105"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Resource
@@ -215,7 +215,7 @@ export default function ResourceManagement() {
             <select
               value={filterPDF}
               onChange={(e) => setFilterPDF(e.target.value as "all" | "with-pdf" | "without-pdf")}
-              className="h-12 px-4 bg-gray-50 border-0 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-[#219EBC] outline-none"
+              className="h-12 px-4 bg-gray-50 border-0 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-[#226CE0] outline-none"
             >
               <option value="all">All Resources</option>
               <option value="with-pdf">With PDF</option>
@@ -226,7 +226,7 @@ export default function ResourceManagement() {
         <CardContent className="p-12">
           {loadingResources ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#219EBC] mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#226CE0] mx-auto mb-4"></div>
               <p className="text-gray-600">Loading resources...</p>
             </div>
           ) : filteredResources.length === 0 ? (
@@ -246,7 +246,7 @@ export default function ResourceManagement() {
               {filteredResources.map((resource) => (
                 <div
                   key={resource.id}
-                  className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#219EBC]/20 hover:-translate-y-1"
+                  className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#226CE0]/20 hover:-translate-y-1"
                 >
                   {/* Resource Thumbnail */}
                   <div className="relative w-full h-48 bg-gray-100 overflow-hidden group">
@@ -259,7 +259,7 @@ export default function ResourceManagement() {
                          width={500} height={500} />
                       </>
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#219EBC]/10 to-[#023047]/10 transition-all duration-300 group-hover:from-[#219EBC]/20 group-hover:to-[#023047]/20">
+                      <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-[#226CE0]/10 to-[#1A234A]/10 transition-all duration-300 group-hover:from-[#226CE0]/20 group-hover:to-[#1A234A]/20">
                         <BookOpen className="w-16 h-16 text-gray-300 transition-transform duration-300 group-hover:scale-110" />
                       </div>
                     )}
@@ -268,7 +268,7 @@ export default function ResourceManagement() {
                   {/* Resource Info */}
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-3">
-                      <h4 className="text-lg font-bold text-[#023047] line-clamp-2 flex-1">
+                      <h4 className="text-lg font-bold text-[#1A234A] line-clamp-2 flex-1">
                         {resource.title}
                       </h4>
                     </div>
@@ -333,9 +333,9 @@ export default function ResourceManagement() {
 
       {/* Add/Edit Resource Form */}
       <div ref={resourceFormRef}>
-        <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+        <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
           <CardHeader className="p-12 border-b border-gray-50">
-            <h3 className="text-3xl font-black text-[#023047] mb-2">
+            <h3 className="text-3xl font-black text-[#1A234A] mb-2">
               {editingResource ? 'Edit Resource' : 'Add New Resource'}
             </h3>
             <p className="text-gray-400">
@@ -447,7 +447,7 @@ export default function ResourceManagement() {
                   name="description"
                   required
                   rows={4}
-                  className="w-full bg-gray-50 border-0 rounded-[32px] p-6 outline-none focus:ring-2 focus:ring-[#219EBC] transition-all"
+                  className="w-full bg-gray-50 border-0 rounded-4xl p-6 outline-none focus:ring-2 focus:ring-[#226CE0] transition-all"
                   placeholder="Describe the resource and what learners will gain from it..."
                   defaultValue={editingResource?.description || ''}
                   minLength={10}
@@ -460,7 +460,7 @@ export default function ResourceManagement() {
                   <select
                     name="category"
                     required
-                    className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
+                    className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#226CE0] outline-none"
                     defaultValue={editingResource?.category || ''}
                   >
                     <option value="">Select a category</option>
@@ -479,7 +479,7 @@ export default function ResourceManagement() {
                   <select
                     name="type"
                     required
-                    className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#219EBC] outline-none"
+                    className="flex h-14 w-full rounded-2xl border-0 bg-gray-50 px-6 py-2 text-sm focus:ring-2 focus:ring-[#226CE0] outline-none"
                     defaultValue={editingResource?.type || ''}
                   >
                     <option value="">Select a type</option>
@@ -527,7 +527,7 @@ export default function ResourceManagement() {
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Resource Image</label>
-                <div className="bg-gray-50 rounded-[32px] p-6 space-y-4">
+                <div className="bg-gray-50 rounded-4xl p-6 space-y-4">
                   {resourceImagePreview && (
                     <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">
                       <Image
@@ -640,11 +640,11 @@ export default function ResourceManagement() {
                     <label
                       htmlFor="resourceImageUpload"
                       {...dragHandlers}
-                      className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#219EBC] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#219EBC] font-medium ${uploadingResourceImage ? 'opacity-50 cursor-not-allowed' : ''} ${isDragging ? 'border-[#219EBC] bg-[#219EBC]/10' : ''}`}
+                      className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#226CE0] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#226CE0] font-medium ${uploadingResourceImage ? 'opacity-50 cursor-not-allowed' : ''} ${isDragging ? 'border-[#226CE0] bg-[#226CE0]/10' : ''}`}
                     >
                       {uploadingResourceImage ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
                           Uploading...
                         </>
                       ) : (
@@ -661,7 +661,7 @@ export default function ResourceManagement() {
               <Button
                 type="submit"
                 disabled={loadingResources}
-                className="w-full h-16 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-black rounded-[24px] text-lg shadow-xl shadow-[#219EBC]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-16 bg-[#226CE0] hover:bg-[#334DAF] text-white font-black rounded-3xl text-lg shadow-xl shadow-[#226CE0]/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loadingResources ? (
                   <>

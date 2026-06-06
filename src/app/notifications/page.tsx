@@ -109,7 +109,7 @@ export default function NotificationsPage() {
     const getTypeIcon = (type: string) => {
         switch (type) {
             case "AWARD": return <Award className="w-5 h-5 text-amber-500" />;
-            case "EVENT": return <Calendar className="w-5 h-5 text-[#219EBC]" />;
+            case "EVENT": return <Calendar className="w-5 h-5 text-[#226CE0]" />;
             case "SUCCESS": return <Star className="w-5 h-5 text-green-500" />;
             case "WARNING": return <Bell className="w-5 h-5 text-orange-500" />;
             default: return <Bell className="w-5 h-5 text-blue-500" />;
@@ -145,7 +145,7 @@ export default function NotificationsPage() {
                         <Button
                             variant="ghost"
                             onClick={markAllRead}
-                            className="text-sm font-bold text-[#219EBC] hover:bg-accent rounded-xl"
+                            className="text-sm font-bold text-[#226CE0] hover:bg-accent rounded-xl"
                             disabled={loading || unreadCount === 0}
                         >
                             Mark all as read
@@ -178,7 +178,7 @@ export default function NotificationsPage() {
                         <p className="text-muted-foreground mb-4">{error}</p>
                         <Button
                             onClick={fetchNotifications}
-                            className="bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-xl"
+                            className="bg-[#226CE0] hover:bg-[#334DAF] text-white rounded-xl"
                         >
                             Try Again
                         </Button>
@@ -196,7 +196,7 @@ export default function NotificationsPage() {
                                     className={`p-6 rounded-[32px] border transition-all flex gap-5 ${notif.actionUrl ? 'cursor-pointer hover:shadow-lg' : ''
                                         } ${notif.read
                                             ? "bg-card border-border"
-                                            : "bg-[#219EBC]/5 border-[#219EBC]/20 shadow-lg shadow-[#219EBC]/5"
+                                            : "bg-[#226CE0]/5 border-[#226CE0]/20 shadow-lg shadow-[#226CE0]/5"
                                         }`}
                                 >
                                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${notif.read ? "bg-muted text-muted-foreground" : "bg-card shadow-md"
@@ -211,7 +211,7 @@ export default function NotificationsPage() {
                                         <p className="text-muted-foreground text-sm leading-relaxed">{notif.description}</p>
                                     </div>
                                     {!notif.read && (
-                                        <div className="w-2.5 h-2.5 rounded-full bg-[#219EBC] mt-2 shadow-lg shadow-[#219EBC]/40" />
+                                        <div className="w-2.5 h-2.5 rounded-full bg-[#226CE0] mt-2 shadow-lg shadow-[#226CE0]/40" />
                                     )}
                                 </motion.div>
                             ))

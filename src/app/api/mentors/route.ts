@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { mentorService } from "@/lib/services/mentor.service";
-import { requireAuth, requireAdmin } from "@/lib/middleware/auth.middleware";
+import { requireAdmin } from '@/lib/middleware/auth.middleware';
 import { handleError } from "@/lib/utils/errors";
 import { createMentorSchema, mentorQuerySchema } from "@/lib/validations/mentor";
 

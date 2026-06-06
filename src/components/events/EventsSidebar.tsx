@@ -76,10 +76,10 @@ export default function EventsSidebar({
             {/* Header */}
             <div>
                 <div className="flex items-center gap-2 mb-2">
-                    <LayoutGrid className="w-5 h-5 text-cyan-400" />
-                    <h3 className="text-white font-bold text-lg">Events Navigation</h3>
+                    <LayoutGrid className="w-5 h-5 text-[#226CE0]" />
+                    <h3 className="text-[#1A234A] dark:text-white font-bold text-lg">Events Navigation</h3>
                 </div>
-                <p className="text-gray-400 text-xs leading-relaxed">Filter events by type and choose your preferred view options.</p>
+                <p className="text-[#7582B3] dark:text-gray-400 text-xs leading-relaxed">Filter events by type and choose your preferred view options.</p>
             </div>
 
             {/* View Selection */}
@@ -89,17 +89,17 @@ export default function EventsSidebar({
                         key={item.id}
                         onClick={item.action}
                         className={`
-                            w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all border
+                            w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all border text-left cursor-pointer
                             ${item.active
-                                ? "bg-[#1e293b] border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10"
-                                : "bg-transparent border-white/5 text-gray-400 hover:bg-white/5 hover:border-white/10"
+                                ? "bg-[#226CE0]/10 border-[#226CE0]/30 text-[#226CE0] dark:text-[#226CE0] shadow-sm"
+                                : "bg-transparent border-transparent text-[#7582B3] dark:text-gray-400 hover:bg-[#226CE0]/5 hover:text-[#226CE0]"
                             }
                         `}
                     >
                         <item.icon className="w-4 h-4" />
                         <span className="text-sm font-medium">{item.label}</span>
                         {item.active && (
-                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#226CE0] shadow-[0_0_8px_rgba(34,108,224,0.6)]" />
                         )}
                     </button>
                 ))}
@@ -108,25 +108,25 @@ export default function EventsSidebar({
             {/* Status Section */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2 mb-1 px-1">
-                    <BarChart3 className="w-4 h-4 text-gray-500" />
-                    <h4 className="text-gray-100 text-xs font-bold uppercase tracking-wider">Status</h4>
+                    <BarChart3 className="w-4 h-4 text-[#7582B3]" />
+                    <h4 className="text-[#1A234A] dark:text-white text-xs font-bold uppercase tracking-wider">Status</h4>
                 </div>
                 {statusItems.map((item) => (
                     <button
                         key={item.id}
                         onClick={item.action}
                         className={`
-                            w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all border
+                            w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all border text-left cursor-pointer
                             ${item.active
-                                ? "bg-[#1e293b] border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10"
-                                : "bg-transparent border-white/5 text-gray-400 hover:bg-white/5 hover:border-white/10"
+                                ? "bg-[#226CE0]/10 border-[#226CE0]/30 text-[#226CE0] dark:text-[#226CE0] shadow-sm"
+                                : "bg-transparent border-transparent text-[#7582B3] dark:text-gray-400 hover:bg-[#226CE0]/5 hover:text-[#226CE0]"
                             }
                         `}
                     >
                         <item.icon className="w-4 h-4" />
                         <span className="text-sm font-medium">{item.label}</span>
                         {item.active && (
-                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#226CE0] shadow-[0_0_8px_rgba(34,108,224,0.6)]" />
                         )}
                     </button>
                 ))}
@@ -134,10 +134,10 @@ export default function EventsSidebar({
 
             {/* Admin Section */}
             {isAdmin && (
-                <div className="pt-6 border-t border-white/10">
+                <div className="pt-6 border-t border-border">
                     <button
                         onClick={onAddEvent}
-                        className="w-full h-12 coral-gradient text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-lg shadow-orange-500/20"
+                        className="w-full h-12 bg-[#F0771A] hover:bg-[#e0650d] text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-[#F0771A]/20 cursor-pointer"
                     >
                         <Plus className="w-5 h-5" /> Add Event
                     </button>
@@ -150,7 +150,7 @@ export default function EventsSidebar({
         <>
             {/* Desktop Sidebar */}
             <div className="hidden lg:block sticky top-24 self-start">
-                <div className="bg-[#0f172a] rounded-[24px] p-6 border border-white/10 w-72 shadow-2xl">
+                <div className="card-glass-redesign rounded-3xl p-6 border w-72 shadow-2xl">
                     <SidebarContent />
                 </div>
             </div>
@@ -161,14 +161,14 @@ export default function EventsSidebar({
                     <SheetTrigger asChild>
                         <Button
                             size="icon"
-                            className="w-14 h-14 rounded-full coral-gradient text-white shadow-2xl hover:scale-110 active:scale-95 transition-all"
+                            className="w-14 h-14 rounded-full bg-[#F0771A] hover:bg-[#e0650d] text-white shadow-2xl hover:scale-110 active:scale-95 transition-all cursor-pointer"
                         >
                             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="bg-[#0f172a] border-white/10 p-6">
+                    <SheetContent side="left" className="card-glass-redesign border-border p-6 text-foreground">
                         <SheetHeader>
-                            <SheetTitle className="text-white text-left font-bold">Events Navigation</SheetTitle>
+                            <SheetTitle className="text-[#1A234A] dark:text-white text-left font-bold">Events Navigation</SheetTitle>
                         </SheetHeader>
                         <div className="mt-8">
                             <SidebarContent />

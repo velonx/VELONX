@@ -1,8 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { XPService } from './xp.service';
 import { NotificationService } from './notification.service';
-import { AuditLogger } from './audit.service';
-import { Project, ProjectMember, User } from '@prisma/client';
+import { Project, ProjectMember } from '@prisma/client';
 import { cacheService, CacheKeys } from './cache.service';
 
 /**

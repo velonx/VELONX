@@ -331,12 +331,12 @@ export default function MentorCRUD() {
   );
 
   return (
-    <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
+    <Card className="bg-background border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
       <CardHeader className="p-12 border-b border-border">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
-              <Users className="w-8 h-8 text-[#219EBC]" />
+              <Users className="w-8 h-8 text-[#226CE0]" />
               Mentor Management
             </CardTitle>
             <p className="text-muted-foreground">
@@ -345,7 +345,7 @@ export default function MentorCRUD() {
           </div>
           <Button
             onClick={() => handleOpenDialog()}
-            className="h-12 px-6 bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+            className="h-12 px-6 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
           >
             <Plus className="w-5 h-5 mr-2" />
             Add Mentor
@@ -370,7 +370,7 @@ export default function MentorCRUD() {
         {/* Mentors List */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-[#219EBC]" />
+            <Loader2 className="w-8 h-8 animate-spin text-[#226CE0]" />
           </div>
         ) : filteredMentors.length === 0 ? (
           <div className="text-center py-20">
@@ -393,7 +393,7 @@ export default function MentorCRUD() {
               >
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#219EBC] to-[#023047] flex items-center justify-center text-white font-bold text-xl flex-shrink-0 overflow-hidden">
+                    <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#226CE0] to-[#1A234A] flex items-center justify-center text-white font-bold text-xl shrink-0 overflow-hidden">
                       {mentor.imageUrl ? (
                         <Image
                           src={mentor.imageUrl}
@@ -450,7 +450,7 @@ export default function MentorCRUD() {
                     {mentor.expertise.slice(0, 3).map((skill, idx) => (
                       <Badge
                         key={idx}
-                        className="bg-[#219EBC]/10 text-[#219EBC] border-[#219EBC]/20 text-xs"
+                        className="bg-[#226CE0]/10 text-[#226CE0] border-[#226CE0]/20 text-xs"
                       >
                         {skill}
                       </Badge>
@@ -531,7 +531,7 @@ export default function MentorCRUD() {
                   <Label
                     htmlFor="image-upload"
                     {...dragHandlers}
-                    className={`inline-flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-xl cursor-pointer font-bold text-sm transition-all ${isDragging ? 'ring-2 ring-[#219EBC] bg-[#219EBC]/10' : ''}`}
+                    className={`inline-flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-xl cursor-pointer font-bold text-sm transition-all ${isDragging ? 'ring-2 ring-[#226CE0] bg-[#226CE0]/10' : ''}`}
                   >
                     {uploading ? (
                       <>
@@ -646,7 +646,7 @@ export default function MentorCRUD() {
                   {formData.expertise.map((skill, index) => (
                     <Badge
                       key={index}
-                      className="bg-[#219EBC]/10 text-[#219EBC] border-[#219EBC]/20 cursor-pointer hover:bg-[#219EBC]/20"
+                      className="bg-[#226CE0]/10 text-[#226CE0] border-[#226CE0]/20 cursor-pointer hover:bg-[#226CE0]/20"
                       onClick={() => handleRemoveExpertise(index)}
                     >
                       {skill} ×
@@ -724,7 +724,7 @@ export default function MentorCRUD() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[#219EBC] hover:bg-[#1a7a94] text-white rounded-xl"
+                className="bg-[#226CE0] hover:bg-[#334DAF] text-white rounded-xl"
               >
                 {loading ? (
                   <>

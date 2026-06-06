@@ -19,8 +19,7 @@
 
 'use client';
 
-import React from 'react';
-import { Search, Code, CheckCircle, Filter } from 'lucide-react';
+import { Search, Code, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

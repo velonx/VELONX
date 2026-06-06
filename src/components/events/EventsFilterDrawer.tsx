@@ -226,7 +226,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
           variant="outline"
           size="lg"
           className={cn(
-            'w-full justify-between gap-2 h-11 min-h-[44px] bg-[#0f172a] border-white/10 text-white hover:bg-white/5',
+            'w-full justify-between gap-2 h-11 min-h-11 bg-[#0f172a] border-white/10 text-white hover:bg-white/5',
             className
           )}
           aria-label={`Open filters, ${activeFilterCount} active`}
@@ -307,7 +307,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
               {EVENT_TYPE_OPTIONS.map((option) => (
                 <div
                   key={option.value}
-                  className="flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-white/5 transition-colors min-h-[44px]"
+                  className="flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-white/5 transition-colors min-h-11"
                 >
                   <Checkbox
                     id={`drawer-type-${option.value}`}
@@ -315,7 +315,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
                     onCheckedChange={() => handleTypeToggle(option.value)}
                     aria-label={`Filter by ${option.label} events`}
                     aria-describedby={`drawer-type-${option.value}-desc`}
-                    className="border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500 min-w-[20px] min-h-[20px]"
+                    className="border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500 min-w-5 min-h-5"
                   />
                   <label
                     htmlFor={`drawer-type-${option.value}`}
@@ -355,7 +355,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
                     key={preset.label}
                     onClick={() => handleDateRangeChange(preset.getValue())}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all border text-left min-h-[44px]',
+                      'w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all border text-left min-h-11',
                       isActive
                         ? 'bg-[#1e293b] border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10'
                         : 'bg-transparent border-white/5 text-gray-400 hover:bg-white/5 hover:border-white/10'
@@ -393,7 +393,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
                       </div>
                       <button
                         onClick={() => handleDateRangeChange({})}
-                        className="mt-2 text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 min-h-[44px]"
+                        className="mt-2 text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 min-h-11"
                         aria-label="Clear custom date range"
                       >
                         <X className="w-3 h-3" aria-hidden="true" /> Clear
@@ -427,7 +427,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
                     key={option.value}
                     onClick={() => handleAvailabilityChange(option.value)}
                     className={cn(
-                      'w-full flex items-start gap-3 px-3 py-3 rounded-lg transition-all border text-left min-h-[44px]',
+                      'w-full flex items-start gap-3 px-3 py-3 rounded-lg transition-all border text-left min-h-11',
                       isActive
                         ? 'bg-[#1e293b] border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10'
                         : 'bg-transparent border-white/5 text-gray-400 hover:bg-white/5 hover:border-white/10'
@@ -472,7 +472,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
             <button
               onClick={() => handleMyEventsToggle(!localFilters.myEvents)}
               className={cn(
-                'w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all border min-h-[44px]',
+                'w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all border min-h-11',
                 localFilters.myEvents
                   ? 'bg-[#1e293b] border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10'
                   : 'bg-transparent border-white/5 text-gray-400 hover:bg-white/5 hover:border-white/10'
@@ -507,7 +507,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
               variant="outline"
               size="lg"
               onClick={handleClearAll}
-              className="w-full h-12 min-h-[44px] bg-transparent border-white/20 text-white hover:bg-white/5"
+              className="w-full h-12 min-h-11 bg-transparent border-white/20 text-white hover:bg-white/5"
               aria-label="Clear all filters"
             >
               <X className="w-4 h-4 mr-2" />
@@ -520,7 +520,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
               variant="outline"
               size="lg"
               onClick={handleCancel}
-              className="flex-1 h-12 min-h-[44px] bg-transparent border-white/20 text-white hover:bg-white/5"
+              className="flex-1 h-12 min-h-11 bg-transparent border-white/20 text-white hover:bg-white/5"
               aria-label="Cancel and close"
             >
               Cancel
@@ -529,7 +529,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
             <Button
               size="lg"
               onClick={handleApply}
-              className="flex-1 h-12 min-h-[44px] bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/20"
+              className="flex-1 h-12 min-h-11 bg-linear-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/20"
               aria-label="Apply filters and close"
             >
               Apply Filters

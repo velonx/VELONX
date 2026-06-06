@@ -49,6 +49,7 @@ export interface User {
 
 export interface Event {
   id: string;
+  slug?: string | null;
   title: string;
   description: string;
   type: 'HACKATHON' | 'WORKSHOP' | 'WEBINAR';
@@ -320,7 +321,7 @@ export interface PaginationParams {
 
 export interface EventFilters extends PaginationParams {
   type?: 'HACKATHON' | 'WORKSHOP' | 'WEBINAR';
-  status?: 'UPCOMING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED';
+  status?: 'UPCOMING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED' | 'ACTIVE';
   startDate?: string;
   endDate?: string;
 }

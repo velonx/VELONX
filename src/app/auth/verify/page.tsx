@@ -41,11 +41,11 @@ function VerifyContent() {
   }, [token, email, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#0f1624] px-4 font-outfit">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 font-outfit">
       <div className="bg-white dark:bg-[#131c2e] p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-[#1e2d45]">
         {status === "loading" && (
           <div className="flex flex-col items-center">
-            <Loader2 className="w-12 h-12 text-[#219EBC] animate-spin mb-4" />
+            <Loader2 className="w-12 h-12 text-[#226CE0] animate-spin mb-4" />
             <h2 className="text-xl font-bold text-slate-800 dark:text-white">Verifying...</h2>
             <p className="text-slate-500 dark:text-slate-400 mt-2">Please wait while we verify your email address.</p>
           </div>
@@ -60,7 +60,7 @@ function VerifyContent() {
             </p>
             <Link
               href="/auth/login"
-              className="inline-flex items-center justify-center bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl py-3 px-6 transition-all w-full shadow-md shadow-[#219EBC]/20"
+              className="inline-flex items-center justify-center bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl py-3 px-6 transition-all w-full shadow-md shadow-[#226CE0]/20"
             >
               Go to Login
             </Link>
@@ -89,7 +89,7 @@ function VerifyContent() {
 
 export default function VerifyPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-100 dark:bg-[#0f1624] flex items-center justify-center"><Loader2 className="w-12 h-12 animate-spin text-[#219EBC]" /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-12 h-12 animate-spin text-[#226CE0]" /></div>}>
       <VerifyContent />
     </Suspense>
   );

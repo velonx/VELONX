@@ -15,7 +15,6 @@ import React from 'react';
 import { Filter, X, Calendar as CalendarIcon, Users, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { EventType, EventAvailability, DateRange } from '@/lib/types/events.types';
 

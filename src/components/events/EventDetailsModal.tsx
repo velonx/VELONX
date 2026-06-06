@@ -14,24 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Video,
-  CheckCircle2,
-  Download,
-  ExternalLink,
-  AlertCircle,
-  Sparkles,
-  User,
-  ChevronDown,
-  ChevronUp,
-  XCircle,
-  Ban,
-  UserX
-} from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Video, CheckCircle2, ExternalLink, AlertCircle, Sparkles, User, ChevronDown, ChevronUp, XCircle, Ban } from 'lucide-react';
 import { Event } from "@/lib/api/types";
 import { eventsApi } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
@@ -289,7 +272,7 @@ export default function EventDetailsModal({
         {/* Header with Image or Gradient Background */}
         <div className={cn(
           "relative",
-          !event.imageUrl ? `bg-gradient-to-br ${getTypeColor()}` : 'bg-card',
+          !event.imageUrl ? `bg-linear-to-br ${getTypeColor()}` : 'bg-card',
           "p-6 pb-10 sm:p-8 sm:pb-12",
           "h-48 sm:h-64 flex items-end justify-center"
         )}>
@@ -306,7 +289,7 @@ export default function EventDetailsModal({
                 priority
               />
               {/* Dark overlay for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/20" />
             </>
           ) : null}
           <button
@@ -314,8 +297,8 @@ export default function EventDetailsModal({
             className={cn(
               "absolute top-4 right-4 z-20 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-md transition-all",
               "p-2.5 sm:p-2",
-              // Minimum 44x44px touch target for mobile
-              "min-w-[44px] min-h-[44px] flex items-center justify-center"
+               // Minimum 44x44px touch target for mobile
+              "min-w-11 min-h-11 flex items-center justify-center"
             )}
             aria-label="Close modal"
           >
@@ -378,19 +361,19 @@ export default function EventDetailsModal({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {/* Date */}
               <div className="flex items-start gap-3 p-3 sm:p-4 bg-muted/30 rounded-xl border border-border">
-                <div className="p-2 bg-primary/20 rounded-lg flex-shrink-0">
+                <div className="p-2 bg-primary/20 rounded-lg shrink-0">
                   <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Date</p>
-                  <p className="text-foreground font-medium text-sm sm:text-base break-words">{dateString}</p>
+                  <p className="text-foreground font-medium text-sm sm:text-base wrap-break-word">{dateString}</p>
                 </div>
               </div>
 
               {/* Time */}
               <div className="flex items-start gap-3 p-3 sm:p-4 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10">
-                <div className="p-2 bg-[#219EBC]/20 rounded-lg flex-shrink-0">
-                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-[#219EBC]" />
+                <div className="p-2 bg-[#226CE0]/20 rounded-lg shrink-0">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-[#226CE0]" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-xs text-muted-foreground dark:text-gray-300 uppercase tracking-wider font-semibold mb-1">Time</p>
@@ -401,7 +384,7 @@ export default function EventDetailsModal({
               {/* Duration */}
               {duration && (
                 <div className="flex items-start gap-3 p-3 sm:p-4 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10">
-                  <div className="p-2 bg-purple-500/20 rounded-lg flex-shrink-0">
+                  <div className="p-2 bg-purple-500/20 rounded-lg shrink-0">
                     <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -414,19 +397,19 @@ export default function EventDetailsModal({
               {/* Platform/Location */}
               {platformInfo && (
                 <div className="flex items-start gap-3 p-3 sm:p-4 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10">
-                  <div className={cn("p-2 rounded-lg flex-shrink-0", platformInfo.color.replace('text-', 'bg-') + '/20')}>
+                  <div className={cn("p-2 rounded-lg shrink-0", platformInfo.color.replace('text-', 'bg-') + '/20')}>
                     <platformInfo.icon className={cn("w-4 h-4 sm:w-5 sm:h-5", platformInfo.color)} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs text-muted-foreground dark:text-gray-300 uppercase tracking-wider font-semibold mb-1">Platform</p>
-                    <p className="text-foreground dark:text-white font-medium text-sm sm:text-base break-words">{platformInfo.name}</p>
+                    <p className="text-foreground dark:text-white font-medium text-sm sm:text-base wrap-break-word">{platformInfo.name}</p>
                   </div>
                 </div>
               )}
 
               {/* Attendees */}
               <div className="flex items-start gap-3 p-3 sm:p-4 bg-muted/30 rounded-xl border border-border sm:col-span-2">
-                <div className="p-2 bg-orange-500/20 rounded-lg flex-shrink-0">
+                <div className="p-2 bg-orange-500/20 rounded-lg shrink-0">
                   <Users className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -434,7 +417,7 @@ export default function EventDetailsModal({
                   <div className="flex items-center justify-between mb-2 gap-2">
                     <p className="text-foreground dark:text-white font-medium text-sm sm:text-base">{attendeeCount} {event.maxSeats ? `/ ${event.maxSeats}` : '(No Limit)'} registered</p>
                     {event.maxSeats && !isFull && (
-                      <p className="text-xs sm:text-sm text-muted-foreground dark:text-gray-300 flex-shrink-0">{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground dark:text-gray-300 shrink-0">{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left</p>
                     )}
                   </div>
                   <div className="h-2 bg-muted/50 dark:bg-white/5 rounded-full overflow-hidden">
@@ -457,7 +440,7 @@ export default function EventDetailsModal({
               <div className="p-3.5 sm:p-5 bg-red-500/10 border-2 border-red-500/30 rounded-xl">
                 <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
                   {ClosureIcon && (
-                    <div className="p-2.5 sm:p-3 bg-red-500/20 rounded-lg flex-shrink-0">
+                    <div className="p-2.5 sm:p-3 bg-red-500/20 rounded-lg shrink-0">
                       <ClosureIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
                     </div>
                   )}
@@ -533,9 +516,9 @@ export default function EventDetailsModal({
                   Event Organizer
                 </h3>
                 <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10">
-                  <Avatar className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-[#219EBC] flex-shrink-0">
+                  <Avatar className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-[#226CE0] shrink-0">
                     <AvatarImage src={event.creator.image || undefined} alt={event.creator.name || 'Organizer'} />
-                    <AvatarFallback className="bg-[#219EBC] text-foreground dark:text-white text-lg sm:text-xl font-bold">
+                    <AvatarFallback className="bg-[#226CE0] text-foreground dark:text-white text-lg sm:text-xl font-bold">
                       {event.creator.name?.[0]?.toUpperCase() || <User className="w-6 h-6 sm:w-8 sm:h-8" />}
                     </AvatarFallback>
                   </Avatar>
@@ -561,8 +544,8 @@ export default function EventDetailsModal({
                       You're registered! Use the link below to join the event.
                     </p>
                     <div className="flex items-center gap-2 p-2 sm:p-3 bg-muted/30 dark:bg-[#0a0f1a] rounded-lg border border-border dark:border-white/5">
-                      <Video className="w-4 h-4 sm:w-5 sm:h-5 text-[#219EBC] flex-shrink-0" />
-                      <code className="text-[#219EBC] text-xs sm:text-sm flex-1 truncate">
+                      <Video className="w-4 h-4 sm:w-5 sm:h-5 text-[#226CE0] shrink-0" />
+                      <code className="text-[#226CE0] text-xs sm:text-sm flex-1 truncate">
                         {event.meetingLink}
                       </code>
                     </div>
@@ -580,7 +563,7 @@ export default function EventDetailsModal({
                           }, 3000);
                         }}
                         variant="outline"
-                        className="w-full h-11 sm:h-auto border-2 border-border dark:border-white/10 hover:border-[#219EBC] text-foreground dark:text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
+                        className="w-full h-11 sm:h-auto border-2 border-border dark:border-white/10 hover:border-[#226CE0] text-foreground dark:text-white hover:text-[#226CE0] font-semibold rounded-xl transition-all bg-transparent"
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -591,7 +574,7 @@ export default function EventDetailsModal({
                         onClick={() => {
                           window.open(event.meetingLink!, '_blank', 'noopener,noreferrer');
                         }}
-                        className="w-full h-11 sm:h-auto bg-gradient-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] text-foreground dark:text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20"
+                        className="w-full h-11 sm:h-auto bg-linear-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] text-foreground dark:text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20"
                       >
                         <ExternalLink className="w-4 h-4 mr-2" />
                         Join Meeting
@@ -610,7 +593,7 @@ export default function EventDetailsModal({
                   <h3 className="text-lg sm:text-xl font-bold text-foreground dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
                     <span className="text-xl sm:text-2xl">👥</span>
                     Registered Attendees
-                    <Badge className="bg-[#219EBC]/20 text-[#219EBC] border-0 ml-2 text-xs">
+                    <Badge className="bg-[#226CE0]/20 text-[#226CE0] border-0 ml-2 text-xs">
                       {attendees.length}
                     </Badge>
                   </h3>
@@ -618,7 +601,7 @@ export default function EventDetailsModal({
                   {isLoadingAttendees ? (
                     <div className="flex items-center justify-center p-6 sm:p-8">
                       <div className="flex flex-col items-center gap-3">
-                        <div className="w-8 h-8 border-4 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+                        <div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
                         <p className="text-muted-foreground dark:text-gray-400 text-xs sm:text-sm">Loading attendees...</p>
                       </div>
                     </div>
@@ -646,14 +629,14 @@ export default function EventDetailsModal({
                         ).map((attendee) => (
                           <div
                             key={attendee.id}
-                            className="flex flex-col items-center gap-2 p-2.5 sm:p-3 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10 hover:bg-border dark:bg-white/10 transition-colors"
+                            className="flex flex-col items-center gap-2 p-2.5 sm:p-3 bg-muted/50 dark:bg-white/5 rounded-xl border border-border dark:border-white/10 hover:bg-border dark:hover:bg-white/10 transition-colors"
                           >
-                            <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-[#219EBC]">
+                            <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-[#226CE0]">
                               <AvatarImage
                                 src={attendee.user.image || undefined}
                                 alt={attendee.user.name || 'Attendee'}
                               />
-                              <AvatarFallback className="bg-[#219EBC] text-foreground dark:text-white text-xs sm:text-sm font-bold">
+                              <AvatarFallback className="bg-[#226CE0] text-foreground dark:text-white text-xs sm:text-sm font-bold">
                                 {attendee.user.name?.[0]?.toUpperCase() || <User className="w-5 h-5 sm:w-6 sm:h-6" />}
                               </AvatarFallback>
                             </Avatar>
@@ -670,7 +653,7 @@ export default function EventDetailsModal({
                           <Button
                             onClick={() => setShowAllAttendees(!showAllAttendees)}
                             variant="outline"
-                            className="h-11 sm:h-auto border-2 border-border dark:border-white/10 hover:border-[#219EBC] text-foreground dark:text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
+                            className="h-11 sm:h-auto border-2 border-border dark:border-white/10 hover:border-[#226CE0] text-foreground dark:text-white hover:text-[#226CE0] font-semibold rounded-xl transition-all bg-transparent"
                           >
                             {showAllAttendees ? (
                               <>
@@ -702,7 +685,7 @@ export default function EventDetailsModal({
             isRegistered={isRegistered}
             variant="outline"
             size="default"
-            className="w-full min-h-[44px] h-12 sm:h-12 border-2 border-border dark:border-white/10 hover:border-[#219EBC] text-foreground dark:text-white hover:text-[#219EBC] font-semibold rounded-xl transition-all bg-transparent"
+            className="w-full min-h-11 h-12 sm:h-12 border-2 border-border dark:border-white/10 hover:border-[#226CE0] text-foreground dark:text-white hover:text-[#226CE0] font-semibold rounded-xl transition-all bg-transparent"
           />
 
           {/* Register/Unregister Button - full width on mobile with min 44px height */}
@@ -710,7 +693,7 @@ export default function EventDetailsModal({
             <Button
               onClick={() => onUnregister?.(event.id)}
               disabled={isLoading}
-              className="w-full min-h-[44px] h-12 sm:h-12 bg-green-600 hover:bg-green-700 text-foreground dark:text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
+              className="w-full min-h-11 h-12 sm:h-12 bg-green-600 hover:bg-green-700 text-foreground dark:text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
               aria-label="You are registered for this event. Click to unregister."
             >
               <CheckCircle2 className="w-5 h-5" />
@@ -721,10 +704,10 @@ export default function EventDetailsModal({
               onClick={() => onRegister?.(event.id)}
               disabled={!registrationStatus.isOpen || isLoading}
               className={cn(
-                "w-full min-h-[44px] h-12 sm:h-12 font-bold rounded-xl flex items-center justify-center gap-2 transition-all",
+                "w-full min-h-11 h-12 sm:h-12 font-bold rounded-xl flex items-center justify-center gap-2 transition-all",
                 !registrationStatus.isOpen || isLoading
                   ? "bg-gray-600 cursor-not-allowed opacity-50"
-                  : "bg-gradient-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-600/20"
+                  : "bg-linear-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-600/20"
               )}
               aria-label={
                 !registrationStatus.isOpen

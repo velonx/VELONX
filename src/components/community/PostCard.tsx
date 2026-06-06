@@ -129,7 +129,7 @@ export function PostCard({
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = `${window.location.origin}/community/feed?postId=${post.id}`;
+    const url = `${window.location.origin}/community?postId=${post.id}`;
     const shareData = {
       title: 'Community Post',
       text: `Check out this post: ${post.content.substring(0, 50)}...`,
@@ -276,12 +276,12 @@ export function PostCard({
                     <h2 className="text-lg sm:text-xl font-bold text-foreground mb-2 leading-snug">
                       {post.content.split('\n\n')[0]}
                     </h2>
-                    <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">
+                    <p className="text-sm text-foreground/80 whitespace-pre-wrap wrap-break-word leading-relaxed">
                       {post.content.substring(post.content.indexOf('\n\n') + 2)}
                     </p>
                   </>
                 ) : (
-                  <p className="text-sm sm:text-base text-foreground whitespace-pre-wrap break-words leading-relaxed">
+                  <p className="text-sm sm:text-base text-foreground whitespace-pre-wrap wrap-break-word leading-relaxed">
                     {post.content}
                   </p>
                 )}
@@ -328,7 +328,7 @@ export function PostCard({
               <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-primary" onClick={() => handleVote('upvote')}>
                 <ChevronUpIcon className="size-4" />
               </Button>
-              <span className="text-xs font-bold tabular-nums min-w-[20px] text-center">{localScore}</span>
+              <span className="text-xs font-bold tabular-nums min-w-5 text-center">{localScore}</span>
               <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-destructive" onClick={() => handleVote('downvote')}>
                 <ChevronDownIcon className="size-4" />
               </Button>

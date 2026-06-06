@@ -3,15 +3,13 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, Video, Calendar, CheckCircle, Clock, Briefcase, GraduationCap, ArrowRight, Loader2, Search, ChevronRight, ExternalLink, MapPin, DollarSign, Sparkles, FileText, Users, Share2, Check, LogIn, X, Lock } from "lucide-react";
+import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, DollarSign, Share2, Check, LogIn, X, Lock } from 'lucide-react';
 import toast from "react-hot-toast";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function CareerPage() {
     const { data: session, status } = useSession();
@@ -24,9 +22,10 @@ export default function CareerPage() {
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [pendingAction, setPendingAction] = useState<string>("");
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const handleShare = async (id: string, title: string, type: 'internship' | 'job') => {
-        const url = `${window.location.origin}/career?tab=${type}&id=${id}`;
+    const handleShare = async (idOrSlug: string, originalId: string, title: string, type: 'internship' | 'job') => {
+        const url = `${window.location.origin}/career/${idOrSlug}`;
         const shareData = {
             title,
             text: `Check out this ${type}: ${title}`,
@@ -36,7 +35,7 @@ export default function CareerPage() {
             try { await navigator.share(shareData); } catch { /* cancelled */ }
         } else {
             await navigator.clipboard.writeText(url);
-            setCopiedId(id);
+            setCopiedId(originalId);
             setTimeout(() => setCopiedId(null), 2000);
         }
     };
@@ -139,6 +138,109 @@ export default function CareerPage() {
         router.push(`/auth/login?callbackUrl=/career`);
     };
 
+    const filteredInternships = internships.filter(item => {
+        const query = searchQuery.toLowerCase();
+        return item.title.toLowerCase().includes(query) ||
+               item.company.toLowerCase().includes(query) ||
+               item.location.toLowerCase().includes(query) ||
+               item.requirements.some((req: string) => req.toLowerCase().includes(query));
+    });
+
+    const filteredJobs = jobs.filter(item => {
+        const query = searchQuery.toLowerCase();
+        return item.title.toLowerCase().includes(query) ||
+               item.company.toLowerCase().includes(query) ||
+               item.location.toLowerCase().includes(query) ||
+               item.requirements.some((req: string) => req.toLowerCase().includes(query));
+    });
+
+    const renderOpportunityCard = (item: any, type: 'internship' | 'job') => {
+        const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
+        
+        const logoColors = [
+            '#A78BFA', // Violet
+            '#22D3EE', // Cyan
+            '#34D399', // Green
+            '#FCD34D', // Yellow
+            '#F9A8D4', // Pink
+        ];
+        const charCode = item.company ? item.company.charCodeAt(0) : 0;
+        const logoColor = logoColors[charCode % logoColors.length];
+
+        return (
+            <article className="p-job-card" key={item.id}>
+                {/* Logo wrapper */}
+                {item.imageUrl ? (
+                    <div className="shrink-0 w-14 h-14 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center relative">
+                        <Image 
+                            src={item.imageUrl} 
+                            alt={item.company} 
+                            width={56} 
+                            height={56} 
+                            className="object-contain" 
+                        />
+                    </div>
+                ) : (
+                    <div className="p-job-logo shrink-0" style={{ color: logoColor }}>
+                        {initials}
+                    </div>
+                )}
+
+                {/* Main info */}
+                <div className="p-job-info-main">
+                    <h2 className="p-job-title">
+                        <Link href={`/career/${item.slug || item.id}`} className="hover:underline hover:text-primary transition-colors">
+                            {item.title}
+                        </Link>
+                        {item.salary && (item.salary.includes('45,000') || item.salary.includes('LPA') || item.salary.includes('80,000')) && (
+                            <span className="badge badge-cyan text-[10px] py-0.5 px-2 rounded-full font-bold ml-2">HOT</span>
+                        )}
+                    </h2>
+                    <div className="p-job-details-meta">
+                        <span className="font-semibold text-foreground">🏢 {item.company}</span>
+                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
+                        {item.duration && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {item.duration}</span>}
+                        {item.salary && <span className="p-job-salary flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" /> {item.salary}</span>}
+                    </div>
+                    {item.requirements && item.requirements.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                            {item.requirements.slice(0, 3).map((req: string, idx: number) => (
+                                <span key={idx} className="tag text-[10px] py-1 px-2.5 rounded-md font-medium">
+                                    {req}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Actions Block */}
+                <div className="p-job-action">
+                    <span className="badge badge-green badge-live font-bold py-1 px-3.5 rounded-full text-[10px] tracking-wide">ACTIVE</span>
+                    
+                    <Link
+                        href={`/career/${item.slug || item.id}`}
+                        className="btn-redesign btn-redesign-primary btn-redesign-sm font-bold text-xs inline-flex items-center gap-1"
+                    >
+                        View Details <ExternalLink className="w-4 h-4" />
+                    </Link>
+
+                    <button
+                        onClick={() => handleShare(item.slug || item.id, item.id, item.title, type)}
+                        title={copiedId === item.id ? 'Link copied!' : 'Share'}
+                        className="btn-redesign btn-redesign-secondary btn-redesign-sm p-2 rounded-lg flex items-center justify-center hover:bg-muted"
+                        type="button"
+                    >
+                        {copiedId === item.id ? (
+                            <Check className="w-4 h-4 text-green-500" />
+                        ) : (
+                            <Share2 className="w-4 h-4 text-muted-foreground" />
+                        )}
+                    </button>
+                </div>
+            </article>
+        );
+    };
+
     return (
         <div className="min-h-screen pt-24 bg-background">
             {/* Login Required Modal */}
@@ -152,8 +254,7 @@ export default function CareerPage() {
                         className="relative w-full max-w-md bg-card border border-border rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Top accent bar */}
-                        <div className="h-1.5 w-full bg-gradient-to-r from-[#219EBC] via-[#F4A261] to-[#219EBC]" />
+                        <div className="h-1.5 w-full bg-linear-to-r from-[#fb923c] to-[#f97316]" />
 
                         <button
                             onClick={() => setShowLoginModal(false)}
@@ -164,40 +265,39 @@ export default function CareerPage() {
                         </button>
 
                         <div className="px-8 py-10 text-center">
-                            <div className="w-16 h-16 rounded-2xl bg-[#219EBC]/10 border border-[#219EBC]/20 flex items-center justify-center mx-auto mb-5">
-                                <Lock className="w-8 h-8 text-[#219EBC]" />
+                            <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-5">
+                                <Lock className="w-8 h-8 text-primary" />
                             </div>
 
                             <h2 className="text-2xl font-bold text-foreground mb-2">Login Required</h2>
                             <p className="text-muted-foreground text-sm mb-1">
                                 You need to be logged in to apply for
                             </p>
-                            <p className="text-[#219EBC] font-semibold text-base mb-6">
+                            <p className="text-primary font-semibold text-base mb-6">
                                 &ldquo;{pendingAction}&rdquo;
                             </p>
 
                             <div className="space-y-3">
-                                <Button
+                                <button
                                     onClick={handleLoginRedirect}
-                                    className="w-full h-12 bg-gradient-to-r from-[#219EBC] to-blue-500 hover:brightness-110 text-white font-bold rounded-xl text-base shadow-lg shadow-[#219EBC]/20 transition-all gap-2"
+                                    className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-base shadow-lg transition-all flex items-center justify-center gap-2"
                                 >
                                     <LogIn className="w-5 h-5" />
                                     Login to Apply
-                                </Button>
-                                <Button
+                                </button>
+                                <button
                                     onClick={() => setShowLoginModal(false)}
-                                    variant="ghost"
-                                    className="w-full h-11 rounded-xl text-muted-foreground hover:text-foreground font-medium"
+                                    className="w-full h-11 text-muted-foreground hover:text-foreground font-medium transition-colors"
                                 >
                                     Maybe Later
-                                </Button>
+                                </button>
                             </div>
 
                             <p className="text-xs text-muted-foreground mt-5">
                                 Don&apos;t have an account?{" "}
                                 <button
                                     onClick={() => router.push("/auth/signup?callbackUrl=/career")}
-                                    className="text-[#219EBC] font-semibold hover:underline"
+                                    className="text-primary font-semibold hover:underline"
                                 >
                                     Sign up for free
                                 </button>
@@ -207,299 +307,210 @@ export default function CareerPage() {
                 </div>
             )}
 
-            {/* Hero Section */}
-            <section className="relative py-16 bg-background overflow-hidden">
+            {/* Page Hero */}
+            <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center" aria-labelledby="page-title">
+                <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
+                    <span className="p-section-label">DEMOCRATIZING PLACEMENTS</span>
+                    <h1 id="page-title" className="p-display-1">
+                        Opportunities <span className="gradient-text font-black">Hub</span>
+                    </h1>
+                    <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
+                        Vetted internships and entry-level developer roles with verified stipends and fair, skill-first selection rounds.
+                    </p>
+                </div>
+            </header>
 
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <div className="max-w-3xl mx-auto">
+            {/* Filter Chips & Search Toolbar */}
+            <section className="pb-8 bg-background" aria-labelledby="filters-heading">
+                <div className="container mx-auto px-4">
+                    <h2 id="filters-heading" className="sr-only">Opportunity Filters</h2>
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-border pb-8">
+                        <div className="p-filter-chips justify-center md:justify-start">
+                            <button
+                                onClick={() => setActiveTab("internships")}
+                                className={`p-filter-chip ${activeTab === "internships" ? "active" : ""}`}
+                            >
+                                <span className="inline-flex items-center gap-1.5">
+                                    <GraduationCap className="w-4 h-4" /> Internships
+                                </span>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("jobs")}
+                                className={`p-filter-chip ${activeTab === "jobs" ? "active" : ""}`}
+                            >
+                                <span className="inline-flex items-center gap-1.5">
+                                    <Briefcase className="w-4 h-4" /> Jobs
+                                </span>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("mock")}
+                                className={`p-filter-chip ${activeTab === "mock" ? "active" : ""}`}
+                            >
+                                <span className="inline-flex items-center gap-1.5">
+                                    <Video className="w-4 h-4" /> Mock Interview
+                                </span>
+                            </button>
+                        </div>
 
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground tracking-tight font-bold mb-6">
-                            Launch Your <span className="text-[#219EBC]">Career</span>
-                        </h1>
-                        <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
-                            Practice interviews, explore internships, and find job opportunities.
-                        </p>
+                        {activeTab !== "mock" && (
+                            <div className="p-search-bar">
+                                <Search className="w-5 h-5 text-muted-foreground shrink-0" />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search by title, tech stack, or company..."
+                                    aria-label="Search opportunities"
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
 
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-
-            {/* Services Tabs */}
-            <section className="py-16 animate-on-scroll bg-background">
+            {/* Main Content Area */}
+            <section className="py-12 bg-muted/10">
                 <div className="container mx-auto px-4">
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <div className="flex justify-center mb-10">
-                            <TabsList className="bg-muted border border-border p-1.5 rounded-xl">
-                                <TabsTrigger value="internships" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-white font-medium gap-2">
-                                    <GraduationCap className="w-4 h-4" /> Internships
-                                </TabsTrigger>
-                                <TabsTrigger value="jobs" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-white font-medium gap-2">
-                                    <Briefcase className="w-4 h-4" /> Jobs
-                                </TabsTrigger>
-                                <TabsTrigger value="mock" className="px-6 py-3 rounded-lg data-[state=active]:bg-[#219EBC] data-[state=active]:text-white font-medium gap-2">
-                                    <Video className="w-4 h-4" /> Mock Interview
-                                </TabsTrigger>
-                            </TabsList>
-                        </div>
+                    {activeTab === "mock" && (
+                        <div className="max-w-2xl mx-auto py-8">
+                            <div className="p-mentor-card p-8 border border-border relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full -mr-20 -mt-20" />
+                                <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 blur-3xl rounded-full -ml-20 -mb-20" />
 
-                        <TabsContent value="mock">
-                            <div className="max-w-2xl mx-auto">
-                                <Card className="bg-background border border-border shadow-xl overflow-hidden">
-                                    <div className="h-2 bg-[#F4A261]" />
-                                    <CardHeader className="text-center">
-                                        <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mx-auto mb-4 border border-orange-100">
-                                            <Video className="w-8 h-8 text-[#F4A261]" />
+                                <div className="text-center mb-8 relative z-10">
+                                    <div className="w-16 h-16 rounded-full bg-orange-500/10 flex items-center justify-center mx-auto mb-4 border border-orange-500/20">
+                                        <Video className="w-8 h-8 text-[#f97316]" />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-foreground">Apply for Mock Interview</h2>
+                                    <p className="text-muted-foreground mt-1">Practice with real interview questions</p>
+                                </div>
+
+                                <form onSubmit={handleMockSchedule} className="space-y-6 relative z-10 text-left">
+                                    <div className="space-y-2">
+                                        <Label className="text-foreground font-semibold">Email Address *</Label>
+                                        <Input
+                                            type="email"
+                                            placeholder="your.email@example.com"
+                                            value={mockFormData.email}
+                                            onChange={(e) => setMockFormData({ ...mockFormData, email: e.target.value })}
+                                            className="bg-background border-border text-foreground h-11 rounded-lg"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-foreground font-semibold">Preferred Date *</Label>
+                                            <Input
+                                                type="date"
+                                                value={mockFormData.preferredDate}
+                                                onChange={(e) => setMockFormData({ ...mockFormData, preferredDate: e.target.value })}
+                                                min={new Date().toISOString().split('T')[0]}
+                                                className="bg-background border-border text-foreground h-11 rounded-lg"
+                                                required
+                                            />
                                         </div>
-                                        <CardTitle className="text-foreground text-2xl">Apply for Mock Interview</CardTitle>
-                                        <CardDescription className="text-muted-foreground">Practice with real interview questions</CardDescription>
-                                    </CardHeader>
-                                    <form onSubmit={handleMockSchedule}>
-                                        <CardContent className="space-y-5">
-                                            <div className="space-y-2">
-                                                <Label className="text-foreground">Email Address *</Label>
-                                                <Input
-                                                    type="email"
-                                                    placeholder="your.email@example.com"
-                                                    value={mockFormData.email}
-                                                    onChange={(e) => setMockFormData({ ...mockFormData, email: e.target.value })}
-                                                    className="bg-muted border-border text-foreground"
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-2">
-                                                    <Label className="text-foreground">Preferred Date *</Label>
-                                                    <Input
-                                                        type="date"
-                                                        value={mockFormData.preferredDate}
-                                                        onChange={(e) => setMockFormData({ ...mockFormData, preferredDate: e.target.value })}
-                                                        min={new Date().toISOString().split('T')[0]}
-                                                        className="bg-muted border-border text-foreground"
-                                                        required
+                                        <div className="space-y-2">
+                                            <Label className="text-foreground font-semibold">Time Slot *</Label>
+                                            <Input
+                                                type="time"
+                                                value={mockFormData.preferredTime}
+                                                onChange={(e) => setMockFormData({ ...mockFormData, preferredTime: e.target.value })}
+                                                className="bg-background border-border text-foreground h-11 rounded-lg"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-foreground font-semibold">Interview Type *</Label>
+                                        <select
+                                            value={mockFormData.interviewType}
+                                            onChange={(e) => setMockFormData({ ...mockFormData, interviewType: e.target.value })}
+                                            className="w-full flex h-11 rounded-lg border border-border bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground"
+                                        >
+                                            <option value="TECHNICAL_FRONTEND">Technical (Frontend)</option>
+                                            <option value="TECHNICAL_BACKEND">Technical (Backend)</option>
+                                            <option value="DSA">Data Structures & Algorithms</option>
+                                            <option value="SYSTEM_DESIGN">System Design</option>
+                                            <option value="BEHAVIORAL">Behavioral / HR</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-foreground font-semibold">Experience Level *</Label>
+                                        <div className="flex gap-4">
+                                            {["INTERN", "JUNIOR", "SENIOR"].map((level) => (
+                                                <label key={level} className="flex-1">
+                                                    <input
+                                                        type="radio"
+                                                        name="level"
+                                                        value={level}
+                                                        checked={mockFormData.experienceLevel === level}
+                                                        onChange={(e) => setMockFormData({ ...mockFormData, experienceLevel: e.target.value })}
+                                                        className="hidden peer"
                                                     />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label className="text-foreground">Time Slot *</Label>
-                                                    <Input
-                                                        type="time"
-                                                        value={mockFormData.preferredTime}
-                                                        onChange={(e) => setMockFormData({ ...mockFormData, preferredTime: e.target.value })}
-                                                        className="bg-muted border-border text-foreground"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label className="text-foreground">Interview Type *</Label>
-                                                <select
-                                                    value={mockFormData.interviewType}
-                                                    onChange={(e) => setMockFormData({ ...mockFormData, interviewType: e.target.value })}
-                                                    className="w-full flex h-10 rounded-md border border-border bg-muted px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#219EBC] text-foreground"
-                                                >
-                                                    <option value="TECHNICAL_FRONTEND">Technical (Frontend)</option>
-                                                    <option value="TECHNICAL_BACKEND">Technical (Backend)</option>
-                                                    <option value="DSA">Data Structures & Algorithms</option>
-                                                    <option value="SYSTEM_DESIGN">System Design</option>
-                                                    <option value="BEHAVIORAL">Behavioral / HR</option>
-                                                </select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label className="text-foreground">Experience Level *</Label>
-                                                <div className="flex gap-4 flex-wrap sm:flex-nowrap">
-                                                    {["INTERN", "JUNIOR", "SENIOR"].map((level) => (
-                                                        <label key={level} className="flex-1">
-                                                            <input
-                                                                type="radio"
-                                                                name="level"
-                                                                value={level}
-                                                                checked={mockFormData.experienceLevel === level}
-                                                                onChange={(e) => setMockFormData({ ...mockFormData, experienceLevel: e.target.value })}
-                                                                className="hidden peer"
-                                                            />
-                                                            <div className="text-center py-2 px-2 sm:px-0 border rounded-lg cursor-pointer border-border peer-checked:border-[#219EBC] peer-checked:bg-[#219EBC]/10 peer-checked:text-[#219EBC] text-muted-foreground transition-all">
-                                                                {level.charAt(0) + level.slice(1).toLowerCase()}
-                                                            </div>
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                        <CardFooter>
-                                            <Button type="submit" disabled={isSubmitting} className="w-full bg-[#F4A261] hover:bg-[#e78d45] text-white font-bold rounded-full py-6 text-lg">
-                                                {isSubmitting ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Submitting...</> : "Submit Application"}
-                                            </Button>
-                                        </CardFooter>
-                                    </form>
-                                </Card>
+                                                    <div className="text-center py-2.5 px-3 border rounded-lg cursor-pointer border-border peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-primary text-muted-foreground font-medium transition-all">
+                                                        {level.charAt(0) + level.slice(1).toLowerCase()}
+                                                    </div>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="btn-redesign btn-redesign-primary text-base font-bold w-full py-3 h-12 flex items-center justify-center mt-8 gap-2"
+                                    >
+                                        {isSubmitting ? (
+                                            <><Loader2 className="w-5 h-5 animate-spin" /> Submitting...</>
+                                        ) : (
+                                            "Submit Application"
+                                        )}
+                                    </button>
+                                </form>
                             </div>
-                        </TabsContent>
+                        </div>
+                    )}
 
-                        <TabsContent value="internships">
+                    {activeTab === "internships" && (
+                        <div>
                             {loading ? (
                                 <div className="flex justify-center py-20">
-                                    <Loader2 className="w-8 h-8 animate-spin text-[#219EBC]" />
+                                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                                 </div>
-                            ) : internships.length > 0 ? (
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    {internships.map((internship) => (
-                                        <Card key={internship.id} className="bg-card border-border hover:shadow-2xl hover:shadow-[#219EBC]/10 transition-all rounded-[2rem] overflow-hidden">
-                                            <div className="h-1.5 w-full bg-gradient-to-r from-[#219EBC] to-blue-500" />
-                                            <CardHeader className="p-6 sm:p-8">
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex-1 min-w-0 pr-4">
-                                                        <CardTitle className="text-foreground text-xl md:text-2xl mb-2 font-bold tracking-tight">{internship.title}</CardTitle>
-                                                        <CardDescription className="text-muted-foreground font-medium text-sm md:text-base">{internship.company}</CardDescription>
-                                                    </div>
-                                                    {internship.imageUrl && (
-                                                        <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center">
-                                                            <Image src={internship.imageUrl} alt={internship.company} width={64} height={64} className="w-full h-full object-contain" />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex flex-wrap gap-2 mt-3">
-                                                    <Badge className="bg-blue-500/10 text-blue-500 dark:text-blue-400 border-0 flex items-center gap-1">
-                                                        <MapPin className="w-3 h-3" /> {internship.location}
-                                                    </Badge>
-                                                    {internship.duration && (
-                                                        <Badge className="bg-purple-500/10 text-purple-500 dark:text-purple-400 border-0 flex items-center gap-1">
-                                                            <Clock className="w-3 h-3" /> {internship.duration}
-                                                        </Badge>
-                                                    )}
-                                                    {internship.salary && (
-                                                        <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-0 flex items-center gap-1">
-                                                            <DollarSign className="w-3 h-3" /> {internship.salary}
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className="px-6 sm:px-8">
-                                                <p className="text-muted-foreground text-sm md:text-base line-clamp-3 mb-4 leading-relaxed">{internship.description}</p>
-                                                <div className="space-y-2 bg-muted/50 p-4 rounded-xl border border-border">
-                                                    <p className="text-sm font-semibold text-foreground">Requirements:</p>
-                                                    <ul className="text-sm text-muted-foreground space-y-1.5">
-                                                        {internship.requirements.slice(0, 3).map((req: string, idx: number) => (
-                                                            <li key={idx} className="flex items-start gap-2">
-                                                                <span className="text-[#219EBC] mt-0.5">•</span>
-                                                                <span>{req}</span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            </CardContent>
-                                            <CardFooter className="px-6 sm:px-8 pb-8 flex gap-3">
-                                                <Button
-                                                    onClick={() => handleApply(internship.applyUrl, internship.title)}
-                                                    className="flex-1 bg-gradient-to-r from-orange-400 to-[#FFB703] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#FFB703]/20 border border-orange-300 transition-all"
-                                                >
-                                                    Apply Now <ExternalLink className="w-5 h-5 ml-2" />
-                                                </Button>
-                                                <Button
-                                                    onClick={() => handleShare(internship.id, internship.title, 'internship')}
-                                                    variant="outline"
-                                                    title={copiedId === internship.id ? 'Link copied!' : 'Share'}
-                                                    className="h-12 w-12 rounded-xl shrink-0"
-                                                >
-                                                    {copiedId === internship.id ? (
-                                                        <Check className="w-5 h-5 text-green-500" />
-                                                    ) : (
-                                                        <Share2 className="w-5 h-5 text-muted-foreground" />
-                                                    )}
-                                                </Button>
-                                            </CardFooter>
-                                        </Card>
-                                    ))}
+                            ) : filteredInternships.length > 0 ? (
+                                <div className="p-job-list">
+                                    {filteredInternships.map((internship) => renderOpportunityCard(internship, 'internship'))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-muted/50 rounded-3xl border border-border">
-                                    <GraduationCap className="w-16 h-16 text-muted-foreground opacity-50 mx-auto mb-4" />
-                                    <p className="text-muted-foreground text-lg font-medium">No internships available at the moment. Check back soon!</p>
+                                <div className="text-center py-20 bg-card rounded-2xl border border-border italic text-muted-foreground shadow-sm">
+                                    No internships available at the moment. Try a different query!
                                 </div>
                             )}
-                        </TabsContent>
+                        </div>
+                    )}
 
-                        <TabsContent value="jobs">
+                    {activeTab === "jobs" && (
+                        <div>
                             {loading ? (
                                 <div className="flex justify-center py-20">
-                                    <Loader2 className="w-8 h-8 animate-spin text-[#219EBC]" />
+                                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                                 </div>
-                            ) : jobs.length > 0 ? (
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    {jobs.map((job) => (
-                                        <Card key={job.id} className="bg-card border-border hover:shadow-2xl hover:shadow-[#219EBC]/10 transition-all rounded-[2rem] overflow-hidden">
-                                            <div className="h-1.5 w-full bg-gradient-to-r from-[#219EBC] to-teal-400" />
-                                            <CardHeader className="p-6 sm:p-8">
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex-1 min-w-0 pr-4">
-                                                        <CardTitle className="text-foreground text-xl md:text-2xl mb-2 font-bold tracking-tight">{job.title}</CardTitle>
-                                                        <CardDescription className="text-muted-foreground font-medium text-sm md:text-base">{job.company}</CardDescription>
-                                                    </div>
-                                                    {job.imageUrl && (
-                                                        <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center">
-                                                            <Image src={job.imageUrl} alt={job.company} width={64} height={64} className="w-full h-full object-contain" />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex flex-wrap gap-2 mt-3">
-                                                    <Badge className="bg-blue-500/10 text-blue-500 dark:text-blue-400 border-0 flex items-center gap-1">
-                                                        <MapPin className="w-3 h-3" /> {job.location}
-                                                    </Badge>
-                                                    {job.salary && (
-                                                        <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-0 flex items-center gap-1">
-                                                            <DollarSign className="w-3 h-3" /> {job.salary}
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className="px-6 sm:px-8">
-                                                <p className="text-muted-foreground text-sm md:text-base line-clamp-3 mb-4 leading-relaxed">{job.description}</p>
-                                                <div className="space-y-2 bg-muted/50 p-4 rounded-xl border border-border">
-                                                    <p className="text-sm font-semibold text-foreground">Requirements:</p>
-                                                    <ul className="text-sm text-muted-foreground space-y-1.5">
-                                                        {job.requirements.slice(0, 3).map((req: string, idx: number) => (
-                                                            <li key={idx} className="flex items-start gap-2">
-                                                                <span className="text-[#219EBC] mt-0.5">•</span>
-                                                                <span>{req}</span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            </CardContent>
-                                            <CardFooter className="px-6 sm:px-8 pb-8 flex gap-3">
-                                                <Button
-                                                    onClick={() => handleApply(job.applyUrl, job.title)}
-                                                    className="flex-1 bg-gradient-to-r from-teal-400 to-[#219EBC] hover:brightness-110 text-white font-bold rounded-xl h-12 text-base shadow-lg shadow-[#219EBC]/20 border border-teal-300 transition-all"
-                                                >
-                                                    Apply Now <ExternalLink className="w-5 h-5 ml-2" />
-                                                </Button>
-                                                <Button
-                                                    onClick={() => handleShare(job.id, job.title, 'job')}
-                                                    variant="outline"
-                                                    title={copiedId === job.id ? 'Link copied!' : 'Share'}
-                                                    className="h-12 w-12 rounded-xl shrink-0"
-                                                >
-                                                    {copiedId === job.id ? (
-                                                        <Check className="w-5 h-5 text-green-500" />
-                                                    ) : (
-                                                        <Share2 className="w-5 h-5 text-muted-foreground" />
-                                                    )}
-                                                </Button>
-                                            </CardFooter>
-                                        </Card>
-                                    ))}
+                            ) : filteredJobs.length > 0 ? (
+                                <div className="p-job-list">
+                                    {filteredJobs.map((job) => renderOpportunityCard(job, 'job'))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-muted/50 rounded-3xl border border-border">
-                                    <Briefcase className="w-16 h-16 text-muted-foreground opacity-50 mx-auto mb-4" />
-                                    <p className="text-muted-foreground text-lg font-medium">No jobs available at the moment. Check back soon!</p>
+                                <div className="text-center py-20 bg-card rounded-2xl border border-border italic text-muted-foreground shadow-sm">
+                                    No jobs available at the moment. Try a different query!
                                 </div>
                             )}
-                        </TabsContent>
-                    </Tabs>
+                        </div>
+                    )}
                 </div>
             </section>
         </div>
     );
 }
-
-

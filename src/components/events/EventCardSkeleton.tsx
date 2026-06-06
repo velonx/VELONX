@@ -20,8 +20,7 @@
 
 'use client';
 
-import React from 'react';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -40,78 +39,50 @@ export interface EventCardSkeletonProps {
  */
 export function EventCardSkeleton({ className }: EventCardSkeletonProps) {
   return (
-    <Card 
+    <div 
       className={cn(
-        "bg-[#0f172a] border-0 rounded-[24px] overflow-hidden shadow-2xl",
-        "skeleton-shimmer",
+        "event-card relative animate-pulse skeleton-shimmer bg-[#0f172a] border-0 rounded-3xl shadow-2xl",
         className
       )}
       aria-hidden="true"
     >
-      {/* Top Section - Gradient Header Placeholder */}
-      <div className="h-40 bg-gradient-to-br from-gray-700 to-gray-800 relative flex items-center justify-center">
-        {/* Urgency Badges Placeholder */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2">
-          <Skeleton className="h-6 w-16 bg-white/10" />
+      {/* Top Section - Banner Placeholder */}
+      <div className="event-banner bg-linear-to-br h-40 bg-muted/20 mb-4 rounded-[14px] relative flex items-center justify-center">
+        {/* Status Tag Badge Placeholder */}
+        <div className="absolute top-3 left-3">
+          <Skeleton className="h-5 w-16 bg-muted/30 rounded-full" />
         </div>
-
-        {/* Event Type Badge Placeholder */}
-        <div className="absolute top-4 left-4">
-          <Skeleton className="h-6 w-24 bg-white/10" />
-        </div>
-
-        {/* Icon Placeholder */}
-        <Skeleton className="h-16 w-16 rounded-full bg-white/10" />
       </div>
 
-      {/* Content Section */}
-      <CardHeader className="p-6 pb-0">
-        {/* Date and Time Placeholder */}
-        <div className="flex items-center gap-4 mb-3">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-4 w-20" />
-        </div>
+      {/* Date and Time / Location Meta Placeholder */}
+      <div className="flex items-center gap-4 mb-2.5 px-6">
+        <Skeleton className="h-3.5 w-24 bg-muted/30" />
+        <Skeleton className="h-3.5 w-16 bg-muted/30" />
+      </div>
 
-        {/* Title Placeholder - 2 lines */}
-        <div className="space-y-2 mb-3">
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-3/4" />
-        </div>
+      {/* Title Placeholder */}
+      <div className="p-6">
+        <Skeleton className="h-5 w-3/4 bg-muted/40 mb-2 rounded" />
+      </div>
 
-        {/* Description Placeholder - 2 lines */}
-        <div className="space-y-2 mb-4">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-        </div>
+      {/* Description Placeholder */}
+      <div className="space-y-1.5 mb-5 grow px-6">
+        <Skeleton className="h-3.5 w-full bg-muted/20" />
+        <Skeleton className="h-3.5 w-5/6 bg-muted/20" />
+        <Skeleton className="h-3.5 w-4/6 bg-muted/20" />
+      </div>
 
-        {/* Meta Information Placeholder */}
-        <div className="flex flex-wrap gap-3 mb-4">
-          <Skeleton className="h-4 w-12" />
-          <Skeleton className="h-4 w-24" />
-        </div>
-
-        {/* Dynamic Tags Placeholder */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          <Skeleton className="h-5 w-20" />
-          <Skeleton className="h-5 w-16" />
-        </div>
-
-        {/* Attendee Progress Placeholder */}
-        <div className="space-y-2 mb-6">
-          <div className="flex justify-between">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-4 w-12" />
-          </div>
-          <Skeleton className="h-2 w-full rounded-full" />
-        </div>
-      </CardHeader>
+      {/* Attendee progress bar placeholder */}
+      <div className="px-6 mb-4">
+        <Skeleton className="h-2 w-full rounded-full bg-muted/20" />
+      </div>
 
       {/* Footer - Action Buttons Placeholder */}
-      <CardFooter className="p-6 pt-0 flex gap-3">
-        <Skeleton className="flex-1 h-12 rounded-xl" />
-        <Skeleton className="flex-1 h-12 rounded-xl" />
-      </CardFooter>
-    </Card>
+      <div className="flex justify-between items-center border-t border-border mt-auto p-6 pt-0">
+        <Skeleton className="h-4 w-16 bg-muted/30 rounded" />
+        <Skeleton className="h-8 w-24 bg-muted/40 rounded-full" />
+      </div>
+    </div>
   );
 }
 
@@ -150,7 +121,7 @@ export function EventCardSkeletonLoader({
       aria-live="polite"
       aria-label="Loading events"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="events-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {skeletons.map((index) => (
           <EventCardSkeleton key={`event-skeleton-${index}`} />
         ))}

@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { getRedisClient } from "@/lib/redis";
 import { NotFoundError, ValidationError, AuthorizationError } from "@/lib/utils/errors";
 
 /**

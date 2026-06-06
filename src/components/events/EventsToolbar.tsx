@@ -89,7 +89,7 @@ export default function EventsToolbar({
             placeholder="Search events..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#219EBC] transition-colors"
+            className="pl-10 h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#226CE0] transition-colors"
             aria-label="Search events by title or description"
             aria-describedby="search-hint"
           />
@@ -98,7 +98,7 @@ export default function EventsToolbar({
           </span>
           {isSearching && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2" role="status" aria-label="Searching">
-              <div className="w-4 h-4 border-2 border-[#219EBC] border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
               <span className="sr-only">Searching events...</span>
             </div>
           )}
@@ -111,7 +111,7 @@ export default function EventsToolbar({
             <ArrowUpDown className="w-4 h-4 text-gray-500 hidden sm:block" aria-hidden="true" />
             <Select value={sortBy} onValueChange={(value) => onSortChange(value as EventSortOption)}>
               <SelectTrigger 
-                className="h-10 bg-gray-50 border-gray-200 hover:bg-white hover:border-[#219EBC] transition-colors min-w-[180px]"
+                className="h-10 bg-gray-50 border-gray-200 hover:bg-white hover:border-[#226CE0] transition-colors min-w-[180px]"
                 aria-label="Sort events by"
               >
                 <SelectValue placeholder="Sort by..." />

@@ -1,8 +1,7 @@
 import { verificationService } from "@/lib/services/verification.service";
 import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, ShieldCheck, Calendar, User, Globe, ArrowLeft, Award, Briefcase, Star, Zap } from "lucide-react";
+import { ShieldCheck, Calendar, Globe, ArrowLeft, Award, Briefcase, Star, Zap } from 'lucide-react';
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -30,14 +29,14 @@ export default async function VerificationPage({ params }: { params: Promise<{ t
       case "ACHIEVEMENT": return "text-yellow-600 bg-yellow-500/10 border-yellow-500/20";
       case "EXCELLENCE": return "text-purple-500 bg-purple-500/10 border-purple-500/20";
       case "CONTRIBUTION": return "text-green-500 bg-green-500/10 border-green-500/20";
-      default: return "text-[#219EBC] bg-[#219EBC]/10 border-[#219EBC]/20";
+      default: return "text-[#226CE0] bg-[#226CE0]/10 border-[#226CE0]/20";
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 md:p-12 font-sans selection:bg-[#219EBC]/30">
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 md:p-12 font-sans selection:bg-[#226CE0]/30">
       <div className="max-w-2xl w-full space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-[#219EBC] transition-colors font-medium">
+        <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-[#226CE0] transition-colors font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Velonx
         </Link>
 
@@ -59,7 +58,7 @@ export default async function VerificationPage({ params }: { params: Promise<{ t
 
               {/* Main Content */}
               <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl font-black text-[#023047] leading-tight">
+                <h1 className="text-4xl md:text-5xl font-black text-[#1A234A] leading-tight">
                   {verification.title}
                 </h1>
                 <p className="text-xl text-slate-500 max-w-md mx-auto">
@@ -68,15 +67,15 @@ export default async function VerificationPage({ params }: { params: Promise<{ t
               </div>
 
               {/* User Identity */}
-              <div className="flex flex-col items-center gap-4 bg-slate-50 p-8 rounded-[32px] w-full border border-slate-100">
+              <div className="flex flex-col items-center gap-4 bg-slate-50 p-8 rounded-4xl w-full border border-slate-100">
                 <Avatar className="w-24 h-24 border-4 border-white shadow-xl">
                   <AvatarImage src={verification.user.image || ""} />
-                  <AvatarFallback className="bg-[#219EBC] text-white text-2xl font-black">
+                  <AvatarFallback className="bg-[#226CE0] text-white text-2xl font-black">
                     {verification.user.name?.[0] || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="text-2xl font-black text-[#023047]">{verification.user.name}</h3>
+                  <h3 className="text-2xl font-black text-[#1A234A]">{verification.user.name}</h3>
                   <p className="text-slate-500 font-medium">{verification.user.email}</p>
                 </div>
               </div>
@@ -89,7 +88,7 @@ export default async function VerificationPage({ params }: { params: Promise<{ t
                   </div>
                   <div className="text-left">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Issue Date</p>
-                    <p className="font-bold text-[#023047]">{new Date(verification.issuedAt).toLocaleDateString('en-US', {
+                    <p className="font-bold text-[#1A234A]">{new Date(verification.issuedAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric'
@@ -102,13 +101,13 @@ export default async function VerificationPage({ params }: { params: Promise<{ t
                   </div>
                   <div className="text-left">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Verification ID</p>
-                    <p className="font-mono text-sm font-bold text-[#023047] truncate max-w-[150px]">{verification.verificationToken}</p>
+                    <p className="font-mono text-sm font-bold text-[#1A234A] truncate max-w-37.5">{verification.verificationToken}</p>
                   </div>
                 </div>
               </div>
 
               {verification.description && (
-                <div className="w-full text-left bg-slate-50/50 p-8 rounded-[32px] border border-dashed border-slate-200">
+                <div className="w-full text-left bg-slate-50/50 p-8 rounded-4xl border border-dashed border-slate-200">
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Description & Outcomes</p>
                   <p className="text-slate-600 leading-relaxed italic">
                     "{verification.description}"
@@ -119,8 +118,8 @@ export default async function VerificationPage({ params }: { params: Promise<{ t
               {/* Footer Trust Info */}
               <div className="pt-8 border-t border-slate-50 w-full flex flex-col items-center gap-6">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-[#023047] rounded-lg flex items-center justify-center text-white font-black text-xs">V</div>
-                  <span className="font-black text-[#023047] tracking-tight text-xl italic">VELONX</span>
+                  <div className="w-8 h-8 bg-[#1A234A] rounded-lg flex items-center justify-center text-white font-black text-xs">V</div>
+                  <span className="font-black text-[#1A234A] tracking-tight text-xl italic">VELONX</span>
                 </div>
                 <p className="text-xs text-slate-400 text-center max-w-sm leading-loose">
                   This credential was issued by Velonx Platform and is cryptographically unique. 

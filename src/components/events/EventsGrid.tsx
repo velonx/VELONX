@@ -130,7 +130,7 @@ export default function EventsGrid({
           - Tablet (768px-1024px): 2 columns
           - Desktop (>1024px): 3 columns
       */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6" role="list">
+      <div className="events-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list">
         {events.map((event, index) => (
           <div
             key={event.id}

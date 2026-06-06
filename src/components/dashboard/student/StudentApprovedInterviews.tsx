@@ -120,7 +120,7 @@ export default function StudentApprovedInterviews({ userId }: StudentApprovedInt
           </p>
           <Button
             onClick={() => router.push('/career')}
-            className="bg-[#219EBC] hover:bg-[#1a7a94] text-white font-bold rounded-xl"
+            className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
           >
             Request interview
           </Button>
@@ -192,7 +192,7 @@ export default function StudentApprovedInterviews({ userId }: StudentApprovedInt
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <TrendingUp className="w-4 h-4 text-[#219EBC]" />
+                      <TrendingUp className="w-4 h-4 text-[#226CE0]" />
                       <span className="font-medium">{formatExperienceLevel(interview.experienceLevel)} Level</span>
                     </div>
                   </div>
@@ -201,14 +201,14 @@ export default function StudentApprovedInterviews({ userId }: StudentApprovedInt
                 {/* Interview Details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4 text-[#219EBC]" />
+                    <Calendar className="w-4 h-4 text-[#226CE0]" />
                     <div>
                       <span className="font-medium">Preferred Date: </span>
                       <span>{formatDate(interview.preferredDate)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4 text-[#219EBC]" />
+                    <Clock className="w-4 h-4 text-[#226CE0]" />
                     <div>
                       <span className="font-medium">Preferred Time: </span>
                       <span>{interview.preferredTime}</span>
