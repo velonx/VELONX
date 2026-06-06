@@ -253,12 +253,12 @@ function StudentDashboardContent() {
 
     // Sidebar menu items
     const menuItems = [
-        { key: "overview", emoji: "📊", label: "Overview Workspace" },
-        { key: "community", emoji: "👥", label: "My Community" },
-        { key: "tracking", emoji: "⚡", label: "Activity Tracking" },
-        { key: "swag", emoji: "🛍️", label: "My Redemptions" },
-        { key: "report", emoji: "🚩", label: "Reports" },
-        { key: "settings", emoji: "⚙️", label: "Workspace Settings" },
+        { key: "overview", emoji: "📊", label: "Overview Workspace", shortLabel: "Overview" },
+        { key: "community", emoji: "👥", label: "My Community", shortLabel: "Community" },
+        { key: "tracking", emoji: "⚡", label: "Activity Tracking", shortLabel: "Activity" },
+        { key: "swag", emoji: "🛍️", label: "My Redemptions", shortLabel: "Redemptions" },
+        { key: "report", emoji: "🚩", label: "Reports", shortLabel: "Reports" },
+        { key: "settings", emoji: "⚙️", label: "Workspace Settings", shortLabel: "Settings" },
     ];
 
     // Map real projects to display format
@@ -322,9 +322,9 @@ function StudentDashboardContent() {
     activityItems.sort((a, b) => b.time.localeCompare(a.time));
 
     return (
-        <div className="container dashboard-layout">
+        <div className="container dashboard-layout px-4 md:px-8 pb-24 md:pb-16">
             {/* ====== Sidebar ====== */}
-            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:flex rounded-2xl w-20 fixed left-0">
+            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:flex rounded-2xl">
                 <div className="sr-only">Dashboard Setting</div>
                 <div className="dashboard-user-profile">
                     {session.user?.image ? (
@@ -365,14 +365,14 @@ function StudentDashboardContent() {
                             }`}
                         >
                             <span className="text-base">{item.emoji}</span>
-                            <span className="truncate max-w-14">{item.label.split(' ')[0]}</span>
+                            <span className="truncate max-w-14">{item.shortLabel || item.label}</span>
                         </button>
                     ))}
                 </nav>
             </div>
 
             {/* ====== Main Content Panel Area ====== */}
-            <main className="md:ml-20 md:mr-96" style={{ width: '100%' }}>
+            <main className="w-full min-w-0">
                 {/* Bento Stats Row */}
                 <section className="dashboard-bento">
                     <div className="dashboard-widget-card">
@@ -406,12 +406,9 @@ function StudentDashboardContent() {
                         Your workspace is up to date. Keep participating in events and pushing code to earn more XP.
                     </p>
 
-                    {/* Daily Check-in */}
-                    <div className="mb-8">
-                        <DailyCheckIn />
-                    </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '2rem' }} className="max-lg:grid-cols-1">
+
+                    <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8">
                         {/* Left: Activity Timeline */}
                         <div className="bg-card border border-border rounded-2xl p-6">
                             <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.25rem' }}>Recent Workspace Activity</h3>
@@ -432,6 +429,9 @@ function StudentDashboardContent() {
 
                         {/* Right: Badges & Skill Bars */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                            {/* Daily Check-in */}
+                            <DailyCheckIn />
+
                             <div className="bg-card border border-border rounded-2xl p-6">
                                 <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>Earned Badges</h3>
                                 <div className="dashboard-badge-list">
@@ -1050,7 +1050,7 @@ function StudentDashboardContent() {
                     </p>
 
                     <div className="bg-card border border-border rounded-2xl p-8">
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }} className="max-sm:grid-cols-1">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                             <div className="dashboard-form-group">
                                 <label className="dashboard-form-label">Full Name</label>
                                 <input type="text" className="dashboard-form-input" placeholder={session.user?.name || 'Your Name'} defaultValue={session.user?.name || ''} readOnly />
@@ -1094,16 +1094,7 @@ function StudentDashboardContent() {
                 </div>
             </main>
 
-            {/* ====== Right Sidebar - Calendar ====== */}
-            <aside className="hidden md:block w-96 fixed right-0 bg-card p-10 border-l border-border top-20 bottom-0 z-20 overflow-y-auto" aria-label="Calendar sidebar">
-                <div className="mb-8">
-                    <h2 className="text-2xl font-black text-foreground">Calendar</h2>
-                </div>
-                {/* Daily Check-in Component */}
-                <div className="mb-8">
-                    <DailyCheckIn />
-                </div>
-            </aside>
+
 
             {/* Review Dialog */}
             {selectedSessionForReview && (
