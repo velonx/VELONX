@@ -275,13 +275,13 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
 
                         {/* Title */}
                         <h1
+                            className="text-[#29292B] dark:text-[#FFFBDB]"
                             style={{
                                 fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
                                 fontWeight: 900,
                                 lineHeight: 1.2,
                                 letterSpacing: "-0.02em",
                                 marginBottom: "1rem",
-                                color: "var(--foreground)",
                             }}
                         >
                             {event.title}

@@ -4120,7 +4120,11 @@ body {
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1.05;
-  color: var(--foreground);
+  color: #29292B;
+}
+
+.dark .p-display-1 {
+  color: #FFFBDB;
 }
 
 .p-submit-project-banner {
@@ -5173,6 +5177,11 @@ body {
       line-height: 1.05;
       letter-spacing: -0.03em;
       margin-bottom: 1rem;
+      color: #29292B;
+    }
+
+    .dark .leaderboard-hero-title {
+      color: #FFFBDB;
     }
 
     .leaderboard-hero-title .title-accent {

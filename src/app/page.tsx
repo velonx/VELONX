@@ -163,7 +163,7 @@ export default function Home() {
                             India&apos;s #1 Student Tech Career Platform
                         </motion.div>
 
-                        <h1 className="text-4xl sm:text-5xl md:text-[54px] lg:text-[64px] font-black tracking-tight leading-[1.1] text-[#1A234A] dark:text-white">
+                        <h1 className="text-4xl sm:text-5xl md:text-[54px] lg:text-[64px] font-black tracking-tight leading-[1.1] text-[#29292B] dark:text-[#FFFBDB]">
                             Your Future<br />
                             Has No Limits.<br />
                             <motion.span

@@ -14,7 +14,7 @@ export default function CommunityGuidelinesPage() {
                             <Shield className="w-4 h-4" />
                             Community Standards
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-foreground">
+                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-[#29292B] dark:text-[#FFFBDB]">
                             Community <span className="text-primary">Guidelines</span>
                         </h1>
                         <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">

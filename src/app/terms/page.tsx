@@ -19,7 +19,7 @@ export default function TermsPage() {
                     <motion.h1
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-4xl md:text-5xl font-black text-foreground mb-6"
+                        className="text-4xl md:text-5xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-6"
                     >
                         Terms of <span className="text-primary">Service</span>
                     </motion.h1>
@@ -68,7 +68,7 @@ export default function TermsPage() {
                                 transition={{ delay: i * 0.1 }}
                                 className="group flex flex-col md:flex-row gap-8 bg-card p-8 md:p-12 rounded-[48px] border border-border hover:border-primary/30 transition-all shadow-xl shadow-black/5"
                             >
-                                <div className="w-16 h-16 bg-muted/50 rounded-[24px] flex items-center justify-center text-primary group-hover:scale-110 transition-transform shrink-0">
+                                <div className="w-16 h-16 bg-muted/50 rounded-3xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform shrink-0">
                                     <term.icon className="w-8 h-8" />
                                 </div>
                                 <div>

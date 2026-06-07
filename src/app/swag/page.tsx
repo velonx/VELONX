@@ -130,7 +130,7 @@ export default function SwagPage() {
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-semibold text-primary mb-4">
             <Sparkles className="w-3.5 h-3.5" /> GAMIFIED REWARDS
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-foreground mb-4 tracking-tight leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-4 tracking-tight leading-tight">
             Velonx <span className="text-primary">Swag Store</span>
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base max-w-xl mx-auto leading-relaxed">

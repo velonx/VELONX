@@ -179,7 +179,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="text-5xl md:text-7xl font-black text-foreground mb-6 leading-tight tracking-tight"
+            className="text-5xl md:text-7xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-6 leading-tight tracking-tight"
           >
             Get in{" "}
             <span className="relative">

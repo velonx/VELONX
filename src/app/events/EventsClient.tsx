@@ -260,7 +260,7 @@ function EventsPage() {
             {/* Hero Section - Redesigned Page Hero */}
             <section className="relative pt-12 pb-8 md:pt-16 md:pb-12 text-center z-10 animate-fade-in" role="banner">
                 <div className="container mx-auto px-4 max-w-4xl relative">
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-[#1A234A] dark:text-white leading-none">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-[#29292B] dark:text-[#FFFBDB] leading-none">
                         Upcoming Events
                     </h1>
                     <p className="text-[#7582B3] dark:text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mt-4 leading-relaxed">

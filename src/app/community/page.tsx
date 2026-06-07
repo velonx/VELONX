@@ -270,6 +270,11 @@ export default function CommunityPage() {
           font-weight: 900;
           letter-spacing: -0.04em;
           line-height: 1.05;
+          color: #29292B;
+        }
+
+        .dark .display-1 {
+          color: #FFFBDB;
         }
 
         .display-2 {

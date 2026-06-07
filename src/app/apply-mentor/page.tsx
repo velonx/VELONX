@@ -222,15 +222,15 @@ export default function ApplyMentorPage() {
               <h3 className="font-bold text-foreground mb-3">What happens next?</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                   <span>Our team reviews your application</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                   <span>We&apos;ll contact you for a brief interview</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                   <span>Once approved, you&apos;ll be added to our mentor directory</span>
                 </li>
               </ul>
@@ -273,7 +273,7 @@ export default function ApplyMentorPage() {
             <Sparkles className="w-4 h-4" />
             Become a Mentor
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-foreground mb-4">
+          <h1 className="text-4xl md:text-5xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-4">
             Share Your Knowledge
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
@@ -285,7 +285,7 @@ export default function ApplyMentorPage() {
       {/* Form */}
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-4xl">
-          <Card className="bg-card border border-border shadow-lg rounded-[32px] overflow-hidden">
+          <Card className="bg-card border border-border shadow-lg rounded-4xl overflow-hidden">
             <CardHeader className="p-10 border-b border-border">
               <CardTitle className="text-2xl font-black text-foreground">
                 Mentor Application

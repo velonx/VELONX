@@ -40,7 +40,7 @@ export default function PrivacyPage() {
                     <motion.h1
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-4xl md:text-5xl font-black text-foreground mb-6"
+                        className="text-4xl md:text-5xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-6"
                     >
                         Privacy <span className="text-primary">Policy</span>
                     </motion.h1>
@@ -78,7 +78,7 @@ export default function PrivacyPage() {
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         {section.list.map((item, i) => (
                                             <div key={i} className="flex items-center gap-3 text-muted-foreground font-medium">
-                                                <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                                                <CheckCircle className="w-5 h-5 text-primary shrink-0" />
                                                 {item}
                                             </div>
                                         ))}
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
                     {/* Contact Banner */}
                     <div className="mt-24 p-12 bg-card border border-border rounded-[48px]">
                         <div className="flex flex-col md:flex-row gap-8 items-center">
-                            <div className="w-24 h-24 bg-primary/10 rounded-[32px] flex items-center justify-center shrink-0">
+                            <div className="w-24 h-24 bg-primary/10 rounded-4xl flex items-center justify-center shrink-0">
                                 <FileText className="w-12 h-12 text-primary" />
                             </div>
                             <div>
