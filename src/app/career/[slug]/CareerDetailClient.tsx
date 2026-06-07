@@ -379,9 +379,26 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
   // Link copy sharing helper
   const handleShare = async () => {
     const url = `${window.location.origin}/career/${job?.slug || id}`;
-    let copySuccessful = false;
 
-    // 1. Attempt Clipboard Copy
+    // 1. Check navigator.share first to keep user gesture context intact
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${job?.company} — ${job?.title}`,
+          text: `Check out this listing on Velonx!`,
+          url,
+        });
+        return; // Successfully shared
+      } catch (shareErr: any) {
+        if (shareErr.name === "AbortError") {
+          return; // User cancelled, do not fallback to copy
+        }
+        console.warn("Native share failed, falling back to copy to clipboard:", shareErr);
+      }
+    }
+
+    // 2. Fallback to copy to clipboard
+    let copySuccessful = false;
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(url);
@@ -409,21 +426,6 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
     } else {
       toast.error("Failed to copy link");
     }
-
-    // 2. Isolated Native Share Attempt
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${job?.company} — ${job?.title}`,
-          text: `Check out this listing on Velonx!`,
-          url,
-        });
-      } catch (shareErr: any) {
-        if (shareErr.name !== "AbortError") {
-          console.warn("Native web share failed or was cancelled:", shareErr);
-        }
-      }
-    }
   };
 
   // Open apply trigger (checks session first)
@@ -432,7 +434,12 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
       setShowLoginModal(true);
       return;
     }
-    setShowApplyModal(true);
+    if (job?.applyUrl) {
+      window.open(job.applyUrl, "_blank", "noopener,noreferrer");
+      toast.success(`Opening application for ${job.title}...`);
+    } else {
+      toast.error("Application link not available");
+    }
   };
 
   // File drag-drop handlers
