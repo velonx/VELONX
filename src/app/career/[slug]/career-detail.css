@@ -108,6 +108,7 @@
   opacity: 0;
   transition: opacity var(--transition-normal);
   border-radius: inherit;
+  pointer-events: none;
 }
 
 .card:hover {
@@ -566,6 +567,8 @@
   transition: all var(--transition-fast);
   background: transparent;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 
 .btn-action-outline:hover {

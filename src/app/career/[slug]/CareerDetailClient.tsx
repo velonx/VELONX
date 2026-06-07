@@ -376,6 +376,47 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
     }
   };
 
+  const copyToClipboard = async (text: string) => {
+    let copySuccessful = false;
+    
+    // 1. Try modern navigator.clipboard first
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(text);
+        copySuccessful = true;
+      } catch (err) {
+        console.warn("navigator.clipboard.writeText failed, falling back to textarea copy:", err);
+      }
+    }
+
+    // 2. Fallback to off-screen textarea method
+    if (!copySuccessful) {
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "absolute";
+        textArea.style.left = "-9999px";
+        textArea.setAttribute("readonly", "");
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        copySuccessful = document.execCommand("copy");
+        document.body.removeChild(textArea);
+      } catch (err) {
+        console.error("Fallback execCommand copy failed:", err);
+      }
+    }
+
+    // Show copy result toast
+    if (copySuccessful) {
+      setIsShareCopied(true);
+      toast.success("Listing link copied to clipboard! 📋");
+      setTimeout(() => setIsShareCopied(false), 2000);
+    } else {
+      toast.error("Failed to copy link");
+    }
+  };
+
   // Link copy sharing helper
   const handleShare = async () => {
     const url = `${window.location.origin}/career/${job?.slug || id}`;
@@ -388,43 +429,16 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
           text: `Check out this listing on Velonx!`,
           url,
         });
-        return; // Successfully shared
+        toast.success("Shared successfully! 🎉");
       } catch (shareErr: any) {
         if (shareErr.name === "AbortError") {
           return; // User cancelled, do not fallback to copy
         }
         console.warn("Native share failed, falling back to copy to clipboard:", shareErr);
+        copyToClipboard(url);
       }
-    }
-
-    // 2. Fallback to copy to clipboard
-    let copySuccessful = false;
-    try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(url);
-        copySuccessful = true;
-      } else {
-        // Fallback copy using hidden textarea (works on insecure contexts / HTTP)
-        const textArea = document.createElement("textarea");
-        textArea.value = url;
-        textArea.style.position = "fixed";
-        textArea.style.opacity = "0";
-        document.body.appendChild(textArea);
-        textArea.select();
-        copySuccessful = document.execCommand("copy");
-        document.body.removeChild(textArea);
-      }
-    } catch (err) {
-      console.error("Clipboard copy error:", err);
-    }
-
-    // Show copy result toast
-    if (copySuccessful) {
-      setIsShareCopied(true);
-      toast.success("Listing link copied to clipboard! 📋");
-      setTimeout(() => setIsShareCopied(false), 2000);
     } else {
-      toast.error("Failed to copy link");
+      copyToClipboard(url);
     }
   };
 
@@ -963,22 +977,27 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
             {/* Action panel widget */}
             <div className="card card-glass action-panel-card">
               <button 
+                type="button"
                 onClick={openApplyFlow}
                 className="btn btn-primary w-full flex items-center justify-center py-3.5 font-bold"
               >
                 Apply For This Role ⚡
               </button>
-              
+            </div>
+
+            {/* Standalone Share Widget */}
+            <div className="card card-glass p-5 flex items-center justify-center">
               <button 
+                type="button"
                 onClick={handleShare}
-                className="btn-action-outline w-full flex items-center justify-center py-2.5 font-bold mt-2"
+                className="btn-action-outline w-full flex items-center justify-center py-2.5 font-bold"
               >
                 {isShareCopied ? (
                   <Check className="w-4.5 h-4.5 text-green-500 mr-2" />
                 ) : (
                   <Share2 className="w-4.5 h-4.5 mr-2" />
                 )}
-                Share Job
+                {isShareCopied ? "Link Copied!" : "Share Job"}
               </button>
             </div>
 
