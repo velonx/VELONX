@@ -16,8 +16,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import fc from 'fast-check'
-import StudentDashboard from '@/app/dashboard/student/page'
-import { PROPERTY_TEST_CONFIG } from '@/__tests__/config/property-test.config'
+import StudentDashboard from '../../app/dashboard/student/page'
+import { PROPERTY_TEST_CONFIG } from '../config/property-test.config'
 
 // Mock Next.js dependencies
 vi.mock('next-auth/react', () => ({
