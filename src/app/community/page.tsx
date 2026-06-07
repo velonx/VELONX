@@ -213,7 +213,7 @@ export default function CommunityPage() {
   };
 
   return (
-    <div className="mesh-gradient-bg min-h-screen pt-24 pb-28">
+    <div className="min-h-screen pt-24 pb-28">
       {/* Scope Style */}
       <style dangerouslySetInnerHTML={{ __html: `
         :root {
@@ -284,11 +284,7 @@ export default function CommunityPage() {
         }
 
         .gradient-text {
-          background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          color: transparent;
+          color: #f97316;
         }
 
         .container {

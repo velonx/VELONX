@@ -130,7 +130,7 @@ function SearchPageContent() {
         </div>
       </section>
 
-      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <div className="h-px bg-border" />
 
       {/* Search Results */}
       <section className="py-12 bg-background">

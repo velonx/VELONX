@@ -123,7 +123,7 @@ export default function JoinRequestList({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3 max-h-[400px] overflow-y-auto">
+        <div className="space-y-3 max-h-100 overflow-y-auto">
           {requests.map((request) => {
             const requestDate = new Date(request.createdAt).toLocaleDateString('en-US', {
               month: 'short',
@@ -142,7 +142,7 @@ export default function JoinRequestList({
                     src={request.user.image || undefined} 
                     alt={request.user.name || "User"} 
                   />
-                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+                  <AvatarFallback className="bg-purple-600 text-white">
                     {getInitials(request.user.name)}
                   </AvatarFallback>
                 </Avatar>

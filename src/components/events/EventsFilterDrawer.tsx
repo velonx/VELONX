@@ -529,7 +529,7 @@ export const EventsFilterDrawer: React.FC<EventsFilterDrawerProps> = ({
             <Button
               size="lg"
               onClick={handleApply}
-              className="flex-1 h-12 min-h-11 bg-linear-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/20"
+              className="flex-1 h-12 min-h-11 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold shadow-lg shadow-cyan-500/20"
               aria-label="Apply filters and close"
             >
               Apply Filters

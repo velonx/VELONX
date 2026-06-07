@@ -47,7 +47,7 @@ export function EventCardSkeleton({ className }: EventCardSkeletonProps) {
       aria-hidden="true"
     >
       {/* Top Section - Banner Placeholder */}
-      <div className="event-banner bg-linear-to-br h-40 bg-muted/20 mb-4 rounded-[14px] relative flex items-center justify-center">
+      <div className="event-banner h-40 bg-muted/20 mb-4 rounded-[14px] relative flex items-center justify-center">
         {/* Status Tag Badge Placeholder */}
         <div className="absolute top-3 left-3">
           <Skeleton className="h-5 w-16 bg-muted/30 rounded-full" />

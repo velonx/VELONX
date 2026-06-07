@@ -240,7 +240,7 @@ export default function GroupDetailPage() {
           <li>/</li>
           <li><Link href="/community/groups" className="hover:text-foreground transition-colors">Groups</Link></li>
           <li>/</li>
-          <li className="text-foreground font-medium truncate max-w-[200px]">{group.name}</li>
+          <li className="text-foreground font-medium truncate max-w-50">{group.name}</li>
         </ol>
       </nav>
 
@@ -436,7 +436,7 @@ export default function GroupDetailPage() {
                     {linkUrls.map((url, i) => (
                       <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 bg-muted/50 rounded-full text-xs border border-border/30">
                         <LinkIcon className="size-3 text-muted-foreground" />
-                        <span className="truncate max-w-[200px] text-primary">{url}</span>
+                        <span className="truncate max-w-50 text-primary">{url}</span>
                         <button onClick={() => setLinkUrls(prev => prev.filter((_, idx) => idx !== i))} className="hover:text-destructive">
                           <XIcon className="size-3" />
                         </button>
@@ -504,7 +504,7 @@ export default function GroupDetailPage() {
               </div>
             ) : (
               <div className="flex items-center gap-3 cursor-pointer" onClick={openComposer}>
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
                   {session?.user?.name?.[0] || "U"}
                 </div>
                 <div className="flex-1 px-4 py-2.5 rounded-full bg-muted/60 border border-border/40 text-muted-foreground text-sm hover:bg-muted transition-colors">

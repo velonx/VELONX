@@ -67,7 +67,7 @@ export default function GroupList({
         {onCreateGroup && (
           <Button
             onClick={onCreateGroup}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 text-white font-bold rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-purple-600/20"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-purple-600/20"
           >
             <Plus className="w-4 h-4" aria-hidden="true" />
             Create First Group

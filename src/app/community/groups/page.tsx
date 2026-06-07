@@ -123,7 +123,7 @@ export default function GroupsPage() {
         </div>
       </section>
 
-      <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
+      <div className="h-px bg-border" />
 
       {/* Filters and Actions */}
       <section className="py-8 bg-background">
@@ -164,7 +164,7 @@ export default function GroupsPage() {
         </div>
       </section>
 
-      <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
+      <div className="h-px bg-border" />
 
       {/* Groups List */}
       <section className="py-12 bg-background">

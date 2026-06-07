@@ -253,7 +253,7 @@ function EventsPage() {
     }) : [];
 
     return (
-        <div className="relative min-h-screen pt-16 md:pt-24 bg-background overflow-hidden mesh-gradient-bg">
+        <div className="relative min-h-screen pt-16 md:pt-24 bg-background overflow-hidden">
             {/* Background Canvas Particles */}
             <CanvasParticles />
 
@@ -362,7 +362,7 @@ function EventsPage() {
                 </div>
             </section>
 
-             <div className="h-px bg-linear-to-r from-transparent via-border to-transparent z-10 relative" role="separator" aria-hidden="true" />
+             <div className="h-px bg-border z-10 relative" role="separator" aria-hidden="true" />
 
             {/* Main Content */}
             <section

@@ -123,152 +123,182 @@ export default function SwagPage() {
   const activeCategoryLabel = CATEGORIES.find(c => c.value === activeCategory);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       {/* Page Hero */}
-      <header className="page-hero">
-        <div className="page-hero-bg"></div>
-        <div className="container text-center py-16">
-          <span className="section-label-redesign justify-center inline-flex mb-4">GAMIFIED REWARDS</span>
-          <h1 className="display-1 text-5xl font-black text-foreground mb-4">
-            Velonx <span className="title-accent">Swag Store</span>
+      <header className="relative pt-28 pb-12 overflow-hidden border-b border-border/30">
+        <div className="container mx-auto px-4 max-w-5xl text-center relative z-10">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-semibold text-primary mb-4">
+            <Sparkles className="w-3.5 h-3.5" /> GAMIFIED REWARDS
+          </span>
+          <h1 className="text-4xl sm:text-5xl font-black text-foreground mb-4 tracking-tight leading-tight">
+            Velonx <span className="text-primary">Swag Store</span>
           </h1>
-          <p className="text-muted-foreground text-sm max-w-xl mx-auto leading-relaxed">
+          <p className="text-muted-foreground text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
             Participate in learning events, showcase projects, assist community members, earn XP, and redeem premium swag.
           </p>
         </div>
       </header>
 
       {/* XP Wallet Banner */}
-      <section className="py-4">
+      <section className="py-8">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="coins-header">
-            <div>
-              <h2 className="text-lg font-bold text-foreground mb-1.5">Your Wallet &amp; XP Ledger</h2>
-              <p className="text-xs text-muted-foreground max-w-lg leading-relaxed">
+          <div className="card-redesign card-glass-redesign flex flex-col md:flex-row justify-between items-center gap-6 p-6 sm:p-8">
+            <div className="text-center md:text-left space-y-2">
+              <h2 className="text-xl font-bold text-foreground">Your Wallet &amp; XP Ledger</h2>
+              <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
                 You earn 50 XP for attending webinars, 100 for hackathons, 150 for projects, and 200 for winning coding competitions.
               </p>
             </div>
-            <div className="coins-count-box">
-              <div className="text-left">
+            <div className="flex items-center gap-4 bg-muted/10 border border-border/40 p-4 px-6 rounded-2xl shrink-0 w-full md:w-auto justify-between md:justify-start">
+              <div className="text-left space-y-1">
                 <div className="text-[10px] text-muted-foreground font-black uppercase tracking-wider">Balance</div>
-                <div className="coins-num flex items-center gap-1.5">
-                  {session
-                    ? userXp !== null
-                      ? `${userXp.toLocaleString()} XP`
-                      : "..."
-                    : "Not Signed In"
-                  }
+                <div className="flex items-center gap-1.5">
+                  {session ? (
+                    userXp !== null ? (
+                      <span className="text-2xl sm:text-3xl font-black text-primary font-mono">{userXp.toLocaleString()} XP</span>
+                    ) : (
+                      <span className="text-2xl font-black text-muted-foreground animate-pulse">...</span>
+                    )
+                  ) : (
+                    <span className="text-sm font-bold text-muted-foreground">Sign in to view XP</span>
+                  )}
                 </div>
               </div>
-              <span className="text-2xl" role="img" aria-label="coin">🪙</span>
+              <span className="text-3xl shrink-0" role="img" aria-label="coin">🪙</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* ─── PRODUCTS SECTION ──────────────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-4 py-12">
+      <section className="max-w-5xl mx-auto px-4 py-6">
         {/* Search & Filter Row */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto flex-1">
-            {/* Search Input */}
-            <div className="relative w-full sm:max-w-md group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-muted-foreground transition-colors" />
-              <input
-                type="text"
-                placeholder="Search premium swag..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-11 pr-10 py-3.5 rounded-2xl border border-border text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium bg-muted/20"
-              />
-              {search && (
-                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40 hover:text-muted-foreground transition-colors">
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-10">
+          {/* Search Input */}
+          <div className="relative w-full sm:max-w-md group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-muted-foreground transition-colors" />
+            <input
+              type="text"
+              placeholder="Search premium swag..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-11 pr-10 py-3.5 rounded-2xl border border-border text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium bg-muted/20"
+            />
+            {search && (
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40 hover:text-muted-foreground transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
 
-            {/* Category Chips */}
-            <div className="filter-chips">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat.value}
-                  onClick={() => setActiveCategory(cat.value)}
-                  className={`filter-chip ${activeCategory === cat.value ? "active" : ""}`}
-                >
-                  <span className="mr-1.5">{cat.emoji}</span>
-                  {cat.label}
-                </button>
-              ))}
-            </div>
+          {/* Category Dropdown */}
+          <div className="relative w-full sm:w-64" ref={dropdownRef}>
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl border border-border bg-muted/20 hover:bg-muted/30 text-foreground transition-all text-sm font-medium focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5"
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-base">{activeCategoryLabel?.emoji}</span>
+                <span>{activeCategoryLabel?.label}</span>
+              </span>
+              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute left-0 right-0 mt-2 p-1.5 bg-card border border-border rounded-2xl shadow-xl z-50 max-h-80 overflow-y-auto">
+                {CATEGORIES.map(cat => (
+                  <button
+                    key={cat.value}
+                    onClick={() => {
+                      setActiveCategory(cat.value);
+                      setDropdownOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left text-sm font-medium transition-colors hover:bg-muted/40 ${
+                      activeCategory === cat.value ? "bg-primary/10 text-primary" : "text-foreground"
+                    }`}
+                  >
+                    <span className="text-base">{cat.emoji}</span>
+                    <span>{cat.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Grid */}
         {loading ? (
-          <div className="swag-grid">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="card swag-card pointer-events-none border border-border bg-card/40 rounded-2xl p-4 flex flex-col gap-3">
-                <Skeleton className="swag-img-container h-50 rounded-xl" />
-                <Skeleton className="h-5 rounded w-3/4 mb-1 mt-4" />
-                <Skeleton className="h-4 rounded w-full mb-3" />
-                <Skeleton className="h-8 rounded w-1/2 mt-auto" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="card-redesign card-glass-redesign swag-card pointer-events-none flex flex-col justify-between gap-4">
+                <div className="flex flex-col flex-1 gap-3">
+                  <Skeleton className="w-full h-48 rounded-xl bg-muted/20" />
+                  <Skeleton className="h-5 rounded w-3/4 mt-4 bg-muted/20" />
+                  <Skeleton className="h-4 rounded w-full bg-muted/20" />
+                  <Skeleton className="h-4 rounded w-5/6 bg-muted/20" />
+                </div>
+                <div className="flex justify-between items-center pt-4 border-t border-border/40 mt-6">
+                  <Skeleton className="h-6 rounded w-1/3 bg-muted/20" />
+                  <Skeleton className="h-8 rounded w-1/4 bg-muted/20" />
+                </div>
               </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-28">
-            <Package className="w-16 h-16 text-muted-foreground/10 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-muted-foreground/50 mb-2">No items found</h3>
-            <p className="text-muted-foreground/30 text-sm">Try a different category or clear your search</p>
+          <div className="text-center py-28 border border-dashed border-border/50 rounded-3xl bg-muted/5">
+            <Package className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-muted-foreground/60 mb-2">No items found</h3>
+            <p className="text-muted-foreground/40 text-sm">Try a different category or clear your search</p>
           </div>
         ) : (
-          <div className="swag-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {filtered.map(item => {
               const canAfford = session && userXp !== null && userXp >= item.xpCost;
               const isOutOfStock = item.stock === 0;
               return (
                 <div
                   key={item.id}
-                  className={`card swag-card ${isOutOfStock ? "opacity-50" : ""}`}
+                  className={`card-redesign card-glass-redesign swag-card flex flex-col justify-between transition-all duration-300 group relative ${isOutOfStock ? "opacity-50" : ""}`}
                 >
-                  {isOutOfStock && (
-                    <span className="badge badge-amber" style={{ position: "absolute", top: "12px", left: "12px", zIndex: 2 }}>
-                      OUT OF STOCK
-                    </span>
-                  )}
-                  {item.stock !== -1 && item.stock > 0 && item.stock <= 5 && (
-                    <span className="badge badge-green" style={{ position: "absolute", top: "12px", left: "12px", zIndex: 2 }}>
-                      ONLY {item.stock} LEFT!
-                    </span>
-                  )}
-                  
-                  <div className="swag-img-container">
-                    {item.imageUrl ? (
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      />
-                    ) : (
-                      <span className="swag-graphic">{CATEGORY_ICONS[item.category] || "🎁"}</span>
+                  <div className="flex flex-col flex-1 relative">
+                    {isOutOfStock && (
+                      <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/25 text-[10px] font-extrabold uppercase tracking-wider text-red-500">
+                        OUT OF STOCK
+                      </span>
                     )}
+                    {item.stock !== -1 && item.stock > 0 && item.stock <= 5 && (
+                      <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-lg bg-orange-500/10 border border-orange-500/25 text-[10px] font-extrabold uppercase tracking-wider text-orange-500">
+                        ONLY {item.stock} LEFT!
+                      </span>
+                    )}
+                    
+                    <div className="swag-img-container w-full h-48 rounded-xl bg-muted/15 border border-border/40 flex items-center justify-center mb-4 relative overflow-hidden">
+                      {item.imageUrl ? (
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      ) : (
+                        <span className="swag-graphic text-4xl group-hover:scale-115 transition-transform duration-500">{CATEGORY_ICONS[item.category] || "🎁"}</span>
+                      )}
+                    </div>
+
+                    <h2 className="text-lg font-bold text-foreground mb-2 line-clamp-1 group-hover:text-primary transition-colors">{item.name}</h2>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-6 grow">{item.description}</p>
                   </div>
 
-                  <h2 className="swag-title line-clamp-1">{item.name}</h2>
-                  <p className="swag-desc line-clamp-2">{item.description}</p>
-
-                  <div className="swag-price-box">
-                    <span className="swag-coins">{item.xpCost.toLocaleString()} XP</span>
+                  <div className="swag-price-box flex items-center justify-between pt-4 border-t border-border/40 mt-auto">
+                    <span className="swag-coins font-mono text-base font-bold text-primary">{item.xpCost.toLocaleString()} XP</span>
                     <button
                       onClick={() => handleRedeem(item)}
                       disabled={isOutOfStock || (!canAfford && !!session && userXp !== null)}
-                      className={`btn-redesign ${
+                      className={`btn-redesign text-xs py-2 px-4 font-bold shadow-md cursor-pointer transition-all ${
                         isOutOfStock || (!canAfford && !!session && userXp !== null)
-                          ? "btn-redesign-secondary cursor-not-allowed text-xs py-2 px-3"
-                          : "btn-redesign-primary text-xs py-2 px-3"
+                          ? "btn-redesign-secondary cursor-not-allowed opacity-50"
+                          : "btn-redesign-primary hover:scale-[1.03] active:scale-[0.97]"
                       }`}
                     >
                       {isOutOfStock

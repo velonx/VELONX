@@ -137,7 +137,7 @@ export default function CreateGroupDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle>Create Community Group</DialogTitle>
           <DialogDescription>
@@ -268,7 +268,7 @@ export default function CreateGroupDialog({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 text-white font-bold"
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
             >
               {isSubmitting ? (
                 <>

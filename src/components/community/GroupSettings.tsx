@@ -238,7 +238,7 @@ export default function GroupSettings({
           <Button
             onClick={handleSaveChanges}
             disabled={isSaving}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white font-bold"
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold"
           >
             {isSaving ? (
               <>
@@ -275,7 +275,7 @@ export default function GroupSettings({
                           src={member.user.image || undefined}
                           alt={member.user.name || "User"}
                         />
-                        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-xs">
+                        <AvatarFallback className="bg-purple-600 text-white text-xs">
                           {getInitials(member.user?.name)}
                         </AvatarFallback>
                       </Avatar>

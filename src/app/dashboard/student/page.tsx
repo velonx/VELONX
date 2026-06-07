@@ -324,7 +324,7 @@ function StudentDashboardContent() {
     return (
         <div className="container dashboard-layout px-4 md:px-8 pb-24 md:pb-16">
             {/* ====== Sidebar ====== */}
-            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:flex rounded-2xl w-20 fixed left-0">
+            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:flex rounded-2xl w-full">
                 <div className="sr-only">Dashboard Setting</div>
                 <div className="dashboard-user-profile">
                     {session.user?.image ? (
@@ -372,7 +372,7 @@ function StudentDashboardContent() {
             </div>
 
             {/* ====== Main Content Panel Area ====== */}
-            <main className="md:ml-20 md:mr-96 w-full min-w-0">
+            <main className="w-full min-w-0">
                 {/* Bento Stats Row */}
                 <section className="dashboard-bento">
                     <div className="dashboard-widget-card">
@@ -1094,12 +1094,6 @@ function StudentDashboardContent() {
                 </div>
             </main>
 
-            {/* ====== Right Sidebar - Calendar ====== */}
-            <aside className="hidden md:block w-96 fixed right-0 bg-card p-10 border-l border-border top-20 bottom-0 z-20 overflow-y-auto" aria-label="Calendar sidebar">
-                <div className="mb-8">
-                    <h2 className="text-2xl font-black text-foreground">Calendar</h2>
-                </div>
-            </aside>
 
             {/* Review Dialog */}
             {selectedSessionForReview && (

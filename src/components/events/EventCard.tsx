@@ -102,8 +102,7 @@ export default function EventCard({
   const displayButtonText = (buttonText === 'Register Now' && event.type === 'WEBINAR') ? 'Set Reminder' : buttonText;
 
   return (
-    <Link
-      href={`/events/${event.slug || event.id}`}
+    <div
       className={cn(
         "event-card event-card-hover relative transition-all duration-300 ease-out cursor-pointer block no-underline",
         "active:scale-[0.98] touch-manipulation",
@@ -114,6 +113,14 @@ export default function EventCard({
       aria-label={`Event: ${event.title}. ${registrationStatus.message}`}
       aria-describedby={`event-status-${event.id}`}
     >
+      {/* Absolute overlay link to avoid nested <a> tags */}
+      <Link
+        href={`/events/${event.slug || event.id}`}
+        className="absolute inset-0 z-10"
+        tabIndex={-1}
+        aria-hidden="true"
+      />
+
       {/* Event Banner */}
       <div className="event-banner relative w-full overflow-hidden">
         {event.imageUrl ? (
@@ -128,7 +135,7 @@ export default function EventCard({
               loading="lazy"
             />
             {/* Subtle bottom overlay */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/5 to-transparent" />
+            <div className="absolute inset-0 bg-black/30" />
           </>
         ) : (
           <div className="event-banner-label">
@@ -235,7 +242,7 @@ export default function EventCard({
       )}
 
       {/* Event Footer */}
-      <div className="event-footer mt-4" onClick={(e) => e.preventDefault()}>
+      <div className="event-footer mt-4 relative z-20" onClick={(e) => e.preventDefault()}>
         <div className="event-price">
           FREE
           {event.type === 'HACKATHON' ? (
@@ -251,7 +258,7 @@ export default function EventCard({
           target="_blank"
           className="text-xs text-blue-600 hover:text-blue-800 font-semibold underline"
           aria-label={`View details for ${event.title}`}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); }}
         >
           View Details
         </Link>
@@ -294,11 +301,10 @@ export default function EventCard({
         )}
       </div>
 
-      {/* Screen reader helper */}
       <div id={`event-status-${event.id}`} className="sr-only">
         {isRegistrationClosed ? `Registration is closed. ${registrationStatus.message}` : `Registration is open. ${registrationStatus.message}`}
       </div>
-    </Link>
+    </div>
   );
 }
 

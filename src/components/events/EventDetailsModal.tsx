@@ -222,13 +222,13 @@ export default function EventDetailsModal({
   const getTypeColor = () => {
     switch (event.type) {
       case 'HACKATHON':
-        return 'from-red-500 to-rose-600';
+        return 'bg-red-600';
       case 'WORKSHOP':
-        return 'from-blue-600 to-cyan-500';
+        return 'bg-blue-600';
       case 'WEBINAR':
-        return 'from-indigo-600 to-blue-700';
+        return 'bg-indigo-600';
       default:
-        return 'from-purple-600 to-pink-600';
+        return 'bg-purple-600';
     }
   };
 
@@ -269,10 +269,10 @@ export default function EventDetailsModal({
           {statusAnnouncement}
         </div>
 
-        {/* Header with Image or Gradient Background */}
+        {/* Header with Image or Solid Background */}
         <div className={cn(
           "relative",
-          !event.imageUrl ? `bg-linear-to-br ${getTypeColor()}` : 'bg-card',
+          !event.imageUrl ? getTypeColor() : 'bg-card',
           "p-6 pb-10 sm:p-8 sm:pb-12",
           "h-48 sm:h-64 flex items-end justify-center"
         )}>
@@ -289,7 +289,7 @@ export default function EventDetailsModal({
                 priority
               />
               {/* Dark overlay for text readability */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/20" />
+              <div className="absolute inset-0 bg-black/60" />
             </>
           ) : null}
           <button
@@ -574,7 +574,7 @@ export default function EventDetailsModal({
                         onClick={() => {
                           window.open(event.meetingLink!, '_blank', 'noopener,noreferrer');
                         }}
-                        className="w-full h-11 sm:h-auto bg-linear-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] text-foreground dark:text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20"
+                        className="w-full h-11 sm:h-auto bg-blue-600 hover:scale-[1.02] active:scale-[0.98] text-foreground dark:text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20"
                       >
                         <ExternalLink className="w-4 h-4 mr-2" />
                         Join Meeting
@@ -707,7 +707,7 @@ export default function EventDetailsModal({
                 "w-full min-h-11 h-12 sm:h-12 font-bold rounded-xl flex items-center justify-center gap-2 transition-all",
                 !registrationStatus.isOpen || isLoading
                   ? "bg-gray-600 cursor-not-allowed opacity-50"
-                  : "bg-linear-to-r from-blue-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-600/20"
+                  : "bg-blue-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-600/20"
               )}
               aria-label={
                 !registrationStatus.isOpen

@@ -93,7 +93,7 @@ export function GroupCard({
             />
           </div>
         ) : (
-          <div className="w-full h-32 mb-3 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+          <div className="w-full h-32 mb-3 rounded-lg bg-purple-500/10 flex items-center justify-center">
             <Users className="w-12 h-12 text-purple-500/50" aria-hidden="true" />
           </div>
         )}
@@ -174,7 +174,7 @@ export function GroupCard({
               "flex-1 font-semibold transition-all",
               group.isPrivate
                 ? "bg-amber-600 hover:bg-amber-700 text-white"
-                : "bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 text-white"
+                : "bg-purple-600 hover:bg-purple-700 text-white"
             )}
             aria-label={group.isPrivate ? `Request to join ${group.name}` : `Join ${group.name}`}
           >

@@ -133,7 +133,7 @@ export default function GroupMembers({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3 max-h-[500px] overflow-y-auto">
+        <div className="space-y-3 max-h-125 overflow-y-auto">
           {sortedMembers.map((member) => {
             const role = getMemberRole(member.userId);
             const joinDate = new Date(member.joinedAt).toLocaleDateString('en-US', {
@@ -149,7 +149,7 @@ export default function GroupMembers({
               >
                 <Avatar className="w-10 h-10">
                   <AvatarImage src={member.user?.image || undefined} alt={member.user?.name || "User"} />
-                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+                  <AvatarFallback className="bg-purple-600 text-white">
                     {getInitials(member.user?.name ?? null)}
                   </AvatarFallback>
                 </Avatar>

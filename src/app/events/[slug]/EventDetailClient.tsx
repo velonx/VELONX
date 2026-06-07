@@ -107,7 +107,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                 <AlertCircle className="w-14 h-14 text-red-500" />
                 <h2 className="text-3xl font-bold">Event not found</h2>
                 <p className="text-muted-foreground">The event could not be retrieved.</p>
-                <Link href="/events" className="inline-flex items-center gap-2 px-7 py-3 bg-linear-to-r from-[#7C3AED] to-[#06B6D4] text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
+                <Link href="/events" className="inline-flex items-center gap-2 px-7 py-3 bg-[#7C3AED] text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
                     <ArrowLeft className="w-4 h-4" /> Back to Events
                 </Link>
             </div>
@@ -158,7 +158,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
             return (
                 <button
                     onClick={() => setShowUnregisterDialog(true)}
-                    className={cn(baseClass, "bg-linear-to-r from-green-500 to-emerald-500 text-white hover:opacity-90 shadow-lg shadow-green-500/20")}
+                    className={cn(baseClass, "bg-green-600 text-white hover:opacity-90 shadow-lg shadow-green-500/20")}
                 >
                     <CheckCircle2 className="w-4 h-4" /> Registered ✓
                 </button>
@@ -177,7 +177,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
             <button
                 onClick={handleRegisterClick}
                 disabled={isRegistering}
-                className={cn(baseClass, "bg-linear-to-r from-[#7C3AED] to-[#06B6D4] text-white hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#7C3AED]/30")}
+                className={cn(baseClass, "bg-[#7C3AED] text-white hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#7C3AED]/30")}
                 style={{ boxShadow: "0 0 30px rgba(124,58,237,0.4), 0 4px 15px rgba(0,0,0,0.3)" }}
             >
                 {isRegistering ? (
@@ -191,13 +191,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
 
     return (
         <div className="min-h-screen text-foreground" style={{ background: "var(--background)" }}>
-            {/* ── Animated mesh background ── */}
-            <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-                <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full opacity-80"
-                    style={{ background: "radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 60%)", animation: "mesh-drift 20s ease-in-out infinite alternate" }} />
-                <div className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full opacity-80"
-                    style={{ background: "radial-gradient(ellipse, rgba(6,182,212,0.10) 0%, transparent 60%)", animation: "mesh-drift 25s ease-in-out infinite alternate-reverse" }} />
-            </div>
+
 
             {/* ── Back button ── */}
             <div className="relative z-10 pt-20 pb-4">
@@ -239,7 +233,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                                         quality={90}
                                         priority
                                     />
-                                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent" />
+                                    <div className="absolute inset-0 bg-black/40" />
                                 </>
                             ) : (
                                 <span
@@ -390,7 +384,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                             >
                                 <Avatar className="w-12 h-12 ring-2 ring-[#7C3AED]/30 shrink-0">
                                     <AvatarImage src={event.creator.image || undefined} />
-                                    <AvatarFallback className="bg-linear-to-br from-[#7C3AED] to-[#06B6D4] text-white font-bold">
+                                    <AvatarFallback className="bg-[#7C3AED] text-white font-bold">
                                         {event.creator.name?.[0] || 'V'}
                                     </AvatarFallback>
                                 </Avatar>
@@ -450,7 +444,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                                     <div className="mb-6">
                                         <div className="h-1.5 rounded-full overflow-hidden bg-white/5">
                                             <div
-                                                className="h-full rounded-full bg-linear-to-r from-[#7C3AED] to-[#06B6D4] transition-all duration-1000"
+                                                className="h-full rounded-full bg-[#7C3AED] transition-all duration-1000"
                                                 style={{ width: `${Math.min((attendeeCount / event.maxSeats) * 100, 100)}%` }}
                                             />
                                         </div>
@@ -581,7 +575,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                         <Button
                             onClick={() => router.push('/auth/login')}
                             className="w-full h-12 font-semibold rounded-xl text-white border-none cursor-pointer"
-                            style={{ background: "linear-gradient(135deg, #7C3AED 0%, #06B6D4 100%)" }}
+                            style={{ background: "#7C3AED" }}
                         >
                             Sign In
                         </Button>

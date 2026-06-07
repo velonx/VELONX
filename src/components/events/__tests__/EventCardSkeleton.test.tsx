@@ -42,10 +42,10 @@ describe('EventCardSkeleton', () => {
     it('matches EventCard structure with gradient header', () => {
       const { container } = render(<EventCardSkeleton />);
       
-      // Check for gradient header section
-      const gradientHeader = container.querySelector('.bg-linear-to-br');
-      expect(gradientHeader).toBeInTheDocument();
-      expect(gradientHeader).toHaveClass('h-40');
+      // Check for header section
+      const header = container.querySelector('.event-banner');
+      expect(header).toBeInTheDocument();
+      expect(header).toHaveClass('h-40');
     });
 
     it('has correct card styling matching EventCard', () => {

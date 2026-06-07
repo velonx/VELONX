@@ -48,15 +48,11 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
 
 
 
-// ─── Mesh Gradient Background ──────────────────────────────────────────────────
+// ─── Solid Background for Hero ──────────────────────────────────────────────────
 const MeshGradientHero = () => (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {/* Base warm cream */}
+        {/* Base background */}
         <div className="absolute inset-0 bg-background" />
-        {/* Animated orbs */}
-        <div className="absolute -top-40 -left-40 w-150 h-150 rounded-full bg-[#226ce0]/8 blur-[120px] animate-[float-slow_18s_ease-in-out_infinite]" />
-        <div className="absolute top-20 right-0 w-125 h-125 rounded-full bg-[#f0771a]/6 blur-[100px] animate-[float-slow_22s_ease-in-out_infinite_reverse]" />
-        <div className="absolute bottom-0 left-1/3 w-100 h-100 rounded-full bg-[#334DAF]/5 blur-[90px] animate-[float-slow_15s_ease-in-out_infinite]" />
         {/* Noise overlay for premium texture */}
         <div className="absolute inset-0 opacity-[0.025]"
             style={{
@@ -266,131 +262,14 @@ export default function Home() {
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative w-full flex items-center justify-center min-h-115 md:min-h-130 lg:min-h-150 select-none"
+                        className="relative w-full flex items-center justify-center select-none"
                     >
-                        {/* Organic blob backgrounds */}
-                        <div className="absolute w-[85%] h-[85%] rounded-[60%_40%_70%_30%/50%_60%_40%_50%] bg-[#226ce0]/5 dark:bg-[#226ce0]/10 blur-xl pointer-events-none z-0" />
-                        <div className="absolute w-[90%] h-[90%] rounded-[50%_50%_30%_70%/50%_60%_40%_60%] bg-amber-500/5 dark:bg-amber-500/10 blur-2xl pointer-events-none z-0 animate-[pulse_8s_ease-in-out_infinite]" />
-
-                        {/* Concentric rings */}
-                        <div className="absolute w-[80%] h-[80%] max-w-125 aspect-square rounded-full border border-dashed border-primary/20 animate-[spin_90s_linear_infinite] pointer-events-none z-0" />
-                        <div className="absolute w-[60%] h-[60%] max-w-95 aspect-square rounded-full border border-primary/10 animate-[spin_45s_linear_infinite_reverse] pointer-events-none z-0" />
-
                         {/* Main Hero Image */}
                         <motion.img
                             src="/hero.jpeg"
                             alt="Velonx Hero Illustration"
-                            className="relative w-full max-w-145 lg:max-w-160 h-auto object-contain drop-shadow-[0_20px_50px_rgba(34,108,224,0.15)] z-10 rounded-2xl"
-                            initial={{ y: 0 }}
-                            animate={{ y: [0, -3, 0] }}
-                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                            whileHover={{ scale: 1.01, transition: { duration: 0.4 } }}
+                            className="w-full max-w-145 lg:max-w-160 h-auto object-contain rounded-2xl"
                         />
-
-                        {/* Floating Card 1: Placement Alert */}
-                        <motion.div
-                            className="absolute top-[5%] right-[2%] lg:right-[-6%] z-20"
-                            animate={{ y: [0, -6, 0] }}
-                            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                        >
-                            <motion.div
-                                className="flex items-center gap-3.5 p-4 py-3 rounded-2xl bg-white dark:bg-[#101626]/95 border border-border/40 shadow-lg shadow-orange-500/5 backdrop-blur-sm cursor-pointer"
-                                whileHover={{ scale: 1.05, boxShadow: "0 12px 32px rgba(34,197,94,0.15)" }}
-                                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                data-cursor="link"
-                            >
-                                <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 shrink-0 text-xl">🎉</div>
-                                <div className="text-left leading-tight">
-                                    <div className="text-[9px] font-bold tracking-wider text-muted-foreground uppercase">PLACEMENT ALERT</div>
-                                    <div className="text-sm font-black text-emerald-600 dark:text-emerald-400">Offer Received!</div>
-                                    <div className="text-[10px] text-muted-foreground font-medium">₹33 LPA - Razorpay</div>
-                                </div>
-                            </motion.div>
-                        </motion.div>
-
-                        {/* Floating Card 2: Hackathon Win */}
-                        <motion.div
-                            className="absolute top-[28%] right-[-2%] lg:right-[-10%] z-20"
-                            animate={{ y: [0, 6, 0] }}
-                            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                        >
-                            <motion.div
-                                className="flex items-center gap-3.5 p-4 py-3 rounded-2xl bg-white dark:bg-[#101626]/95 border border-border/40 shadow-lg shadow-yellow-500/5 backdrop-blur-sm cursor-pointer"
-                                whileHover={{ scale: 1.05, boxShadow: "0 12px 32px rgba(234,179,8,0.15)" }}
-                                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                data-cursor="link"
-                            >
-                                <div className="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-600 shrink-0 text-xl">🏆</div>
-                                <div className="text-left leading-tight">
-                                    <div className="text-[9px] font-bold tracking-wider text-muted-foreground uppercase">HACKATHON WIN</div>
-                                    <div className="text-sm font-black text-[#1A234A] dark:text-white">#1 Winner</div>
-                                    <div className="text-[10px] text-muted-foreground font-medium">Solana Builder Sprint</div>
-                                </div>
-                            </motion.div>
-                        </motion.div>
-
-                        {/* Floating Badge: Coder */}
-                        <motion.div
-                            className="absolute top-[35%] left-[5%] lg:left-[-2%] z-20"
-                            animate={{ y: [0, -4, 0] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                        >
-                            <motion.div
-                                className="w-11 h-11 rounded-full bg-white dark:bg-[#101626]/95 border border-border/40 shadow-lg flex items-center justify-center backdrop-blur-sm cursor-pointer"
-                                whileHover={{ scale: 1.12, rotate: -5 }}
-                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                                data-cursor="link"
-                            >
-                                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center">
-                                    <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
-                                    </svg>
-                                </div>
-                            </motion.div>
-                        </motion.div>
-
-                        {/* Floating Badge: Book */}
-                        <motion.div
-                            className="absolute top-[50%] right-[5%] lg:right-[0%] z-20"
-                            animate={{ y: [0, 4, 0] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                        >
-                            <motion.div
-                                className="w-11 h-11 rounded-xl bg-white dark:bg-[#101626]/95 border border-border/40 shadow-lg flex items-center justify-center backdrop-blur-sm cursor-pointer"
-                                whileHover={{ scale: 1.12, rotate: 5 }}
-                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                                data-cursor="link"
-                            >
-                                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                                    <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                                    </svg>
-                                </div>
-                            </motion.div>
-                        </motion.div>
-
-                        {/* Sparkling Stars */}
-                        <FourPointedStar className="absolute top-[12%] left-[45%] text-blue-500/50 z-10 animate-pulse" size={18} />
-                        <FourPointedStar className="absolute top-[20%] right-[8%] text-[#f0771a]/60 z-10 animate-pulse [animation-duration:3s]" size={14} />
-                        <FourPointedStar className="absolute bottom-[25%] right-[2%] text-[#f0771a]/40 z-10 animate-pulse [animation-duration:4s]" size={16} />
-
-                        {/* Curved Dashed Flight Path */}
-                        <svg viewBox="0 0 200 100" className="absolute top-[-10%] right-[10%] w-48 h-24 stroke-blue-400/25 dark:stroke-blue-500/15 fill-none z-0 pointer-events-none">
-                            <path d="M 0 80 Q 80 40 180 10" strokeDasharray="4 4" strokeWidth="1.5" />
-                        </svg>
-
-                        {/* Paper Plane */}
-                        <motion.div
-                            className="absolute -top-8 -right-4 z-20"
-                            animate={{ y: [0, -10, 0], rotate: [0, 6, 0] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        >
-                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="28" cy="28" r="28" fill="#226ce0" fillOpacity="0.12" />
-                                <path d="M14 28L42 14L34 42L27 31L14 28Z" fill="#226ce0" fillOpacity="0.9" stroke="#226ce0" strokeWidth="1.5" strokeLinejoin="round" />
-                                <path d="M27 31L34 24" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-                            </svg>
-                        </motion.div>
                     </motion.div>
                 </div>
             </header>
@@ -1206,9 +1085,7 @@ export default function Home() {
                             <ellipse cx="180" cy="150" rx="220" ry="150" fill="#226CE0" opacity="0.08" />
                             <ellipse cx="720" cy="150" rx="220" ry="150" fill="#226CE0" opacity="0.06" />
                         </svg>
-                        {/* Animated orbs */}
-                        <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#f0771a]/5 blur-3xl pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#226ce0]/5 blur-3xl pointer-events-none" />
+
 
                         <div className="relative z-10 space-y-6">
                             {/* Shield icon */}

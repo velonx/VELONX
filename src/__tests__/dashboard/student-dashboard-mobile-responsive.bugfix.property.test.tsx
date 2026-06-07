@@ -161,28 +161,17 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
           console.log(`\n=== Testing viewport width: ${viewportWidth}px ===`)
 
           // Check left sidebar - should be hidden on mobile (AFTER FIX)
-          // Find sidebar by looking for aside elements (there are 2 sidebars)
+          // Find sidebar by looking for aside elements
           const sidebars = container.querySelectorAll('aside')
+          expect(sidebars.length).toBe(1)
           const leftSidebar = sidebars[0] // First aside is left sidebar
           const leftSidebarClasses = leftSidebar?.className || ''
           
           console.log(`Left sidebar classes: ${leftSidebarClasses}`)
           
-          // AFTER FIX: Should have 'hidden' and 'md:block' classes
-          // ON UNFIXED CODE: Will only have 'w-80' without responsive modifiers
+          // AFTER FIX: Should have 'hidden' and 'md:flex' classes
           expect(leftSidebarClasses).toContain('hidden')
           expect(leftSidebarClasses).toContain('md:flex')
-
-          // Check right sidebar - should be hidden on mobile (AFTER FIX)
-          const rightSidebar = sidebars[1] // Second aside is right sidebar
-          const rightSidebarClasses = rightSidebar?.className || ''
-          
-          console.log(`Right sidebar classes: ${rightSidebarClasses}`)
-          
-          // AFTER FIX: Should have 'hidden' and 'md:block' classes
-          // ON UNFIXED CODE: Will only have 'w-96' without responsive modifiers
-          expect(rightSidebarClasses).toContain('hidden')
-          expect(rightSidebarClasses).toContain('md:block')
 
           // Check main content - should not have fixed margins on mobile (AFTER FIX)
           const mainContent = container.querySelector('main')
@@ -190,13 +179,9 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
           
           console.log(`Main content classes: ${mainContentClasses}`)
           
-          // AFTER FIX: Should have 'md:ml-20' and 'md:mr-96' (responsive margins)
-          // ON UNFIXED CODE: Will have 'ml-20' and 'mr-96' (fixed margins)
-          expect(mainContentClasses).toContain('md:ml-20')
-          expect(mainContentClasses).toContain('md:mr-96')
-          
-          // AFTER FIX: Should NOT have non-responsive margin classes
-          // ON UNFIXED CODE: Will have these classes causing overflow
+          // AFTER FIX: Should not have left/right margin classes on main
+          expect(mainContentClasses).not.toContain('md:ml-20')
+          expect(mainContentClasses).not.toContain('md:mr-96')
           expect(mainContentClasses.split(' ')).not.toContain('ml-20')
           expect(mainContentClasses.split(' ')).not.toContain('mr-96')
         }),
@@ -224,33 +209,25 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
 
       // Check sidebars - find by aside elements
       const sidebars = container.querySelectorAll('aside')
+      expect(sidebars.length).toBe(1)
       const leftSidebar = sidebars[0]
-      const rightSidebar = sidebars[1]
       const leftSidebarClasses = leftSidebar?.className || ''
-      const rightSidebarClasses = rightSidebar?.className || ''
 
       console.log(`Left sidebar classes: ${leftSidebarClasses}`)
-      console.log(`Right sidebar classes: ${rightSidebarClasses}`)
-      console.log(`Expected: Both sidebars should have 'hidden md:block' classes`)
-      console.log(`Actual on unfixed code: Sidebars visible without responsive modifiers`)
 
       // AFTER FIX: These assertions should pass
       expect(leftSidebarClasses).toContain('hidden')
       expect(leftSidebarClasses).toContain('md:flex')
-      expect(rightSidebarClasses).toContain('hidden')
-      expect(rightSidebarClasses).toContain('md:block')
 
       // Check main content
       const mainContent = container.querySelector('main')
       const mainContentClasses = mainContent?.className || ''
 
       console.log(`Main content classes: ${mainContentClasses}`)
-      console.log(`Expected: Should have 'md:ml-20 md:mr-96' (responsive margins)`)
-      console.log(`Actual on unfixed code: Has 'ml-80 mr-96' (fixed margins causing overflow)`)
 
       // AFTER FIX: These assertions should pass
-      expect(mainContentClasses).toContain('md:ml-20')
-      expect(mainContentClasses).toContain('md:mr-96')
+      expect(mainContentClasses).not.toContain('md:ml-20')
+      expect(mainContentClasses).not.toContain('md:mr-96')
       expect(mainContentClasses.split(' ')).not.toContain('ml-20')
       expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
@@ -267,27 +244,23 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
       console.log(`\n=== Counterexample: Standard Mobile (414px) ===`)
 
       const sidebars = container.querySelectorAll('aside')
+      expect(sidebars.length).toBe(1)
       const leftSidebar = sidebars[0]
-      const rightSidebar = sidebars[1]
       const mainContent = container.querySelector('main')
 
       const leftSidebarClasses = leftSidebar?.className || ''
-      const rightSidebarClasses = rightSidebar?.className || ''
       const mainContentClasses = mainContent?.className || ''
 
       console.log(`Left sidebar: ${leftSidebarClasses}`)
-      console.log(`Right sidebar: ${rightSidebarClasses}`)
       console.log(`Main content: ${mainContentClasses}`)
 
       // AFTER FIX: Sidebars should be hidden on mobile
       expect(leftSidebarClasses).toContain('hidden')
       expect(leftSidebarClasses).toContain('md:flex')
-      expect(rightSidebarClasses).toContain('hidden')
-      expect(rightSidebarClasses).toContain('md:block')
 
-      // AFTER FIX: Main content should have responsive margins
-      expect(mainContentClasses).toContain('md:ml-20')
-      expect(mainContentClasses).toContain('md:mr-96')
+      // AFTER FIX: Main content should not have margin classes
+      expect(mainContentClasses).not.toContain('md:ml-20')
+      expect(mainContentClasses).not.toContain('md:mr-96')
       expect(mainContentClasses.split(' ')).not.toContain('ml-20')
       expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
@@ -304,27 +277,23 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
       console.log(`\n=== Counterexample: Small Tablet (600px) ===`)
 
       const sidebars = container.querySelectorAll('aside')
+      expect(sidebars.length).toBe(1)
       const leftSidebar = sidebars[0]
-      const rightSidebar = sidebars[1]
       const mainContent = container.querySelector('main')
 
       const leftSidebarClasses = leftSidebar?.className || ''
-      const rightSidebarClasses = rightSidebar?.className || ''
       const mainContentClasses = mainContent?.className || ''
 
       console.log(`Left sidebar: ${leftSidebarClasses}`)
-      console.log(`Right sidebar: ${rightSidebarClasses}`)
       console.log(`Main content: ${mainContentClasses}`)
 
       // AFTER FIX: Sidebars should be hidden on mobile
       expect(leftSidebarClasses).toContain('hidden')
       expect(leftSidebarClasses).toContain('md:flex')
-      expect(rightSidebarClasses).toContain('hidden')
-      expect(rightSidebarClasses).toContain('md:block')
 
-      // AFTER FIX: Main content should have responsive margins
-      expect(mainContentClasses).toContain('md:ml-20')
-      expect(mainContentClasses).toContain('md:mr-96')
+      // AFTER FIX: Main content should not have margin classes
+      expect(mainContentClasses).not.toContain('md:ml-20')
+      expect(mainContentClasses).not.toContain('md:mr-96')
       expect(mainContentClasses.split(' ')).not.toContain('ml-20')
       expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
@@ -341,28 +310,24 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
       console.log(`\n=== Counterexample: Breakpoint Edge (767px) ===`)
 
       const sidebars = container.querySelectorAll('aside')
+      expect(sidebars.length).toBe(1)
       const leftSidebar = sidebars[0]
-      const rightSidebar = sidebars[1]
       const mainContent = container.querySelector('main')
 
       const leftSidebarClasses = leftSidebar?.className || ''
-      const rightSidebarClasses = rightSidebar?.className || ''
       const mainContentClasses = mainContent?.className || ''
 
       console.log(`Left sidebar: ${leftSidebarClasses}`)
-      console.log(`Right sidebar: ${rightSidebarClasses}`)
       console.log(`Main content: ${mainContentClasses}`)
       console.log(`Note: At 767px (just below md:768px breakpoint), layout should still be mobile`)
 
       // AFTER FIX: Sidebars should be hidden on mobile
       expect(leftSidebarClasses).toContain('hidden')
       expect(leftSidebarClasses).toContain('md:flex')
-      expect(rightSidebarClasses).toContain('hidden')
-      expect(rightSidebarClasses).toContain('md:block')
 
-      // AFTER FIX: Main content should have responsive margins
-      expect(mainContentClasses).toContain('md:ml-20')
-      expect(mainContentClasses).toContain('md:mr-96')
+      // AFTER FIX: Main content should not have margin classes
+      expect(mainContentClasses).not.toContain('md:ml-20')
+      expect(mainContentClasses).not.toContain('md:mr-96')
       expect(mainContentClasses.split(' ')).not.toContain('ml-20')
       expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
@@ -384,22 +349,17 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
 
       console.log(`\n=== Overflow Analysis at 375px ===`)
       console.log(`Viewport width: 375px`)
-      console.log(`Left sidebar width: 320px (w-80)`)
-      console.log(`Right sidebar width: 384px (w-96)`)
-      console.log(`Main content left margin: 320px (ml-80)`)
-      console.log(`Main content right margin: 384px (mr-96)`)
-      console.log(`Total required width: 320 + 384 = 704px`)
-      console.log(`Overflow: 704px - 375px = 329px of content pushed off-screen`)
-      console.log(`Result: Horizontal scrollbar and inaccessible content`)
+      console.log(`Left sidebar is hidden on mobile`)
+      console.log(`Main content expands to full viewport width`)
+      console.log(`Result: No horizontal scrollbar and accessible content`)
 
       // On unfixed code, the layout structure exists but causes overflow
       const sidebars = container.querySelectorAll('aside')
+      expect(sidebars.length).toBe(1)
       const leftSidebar = sidebars[0]
-      const rightSidebar = sidebars[1]
       const mainContent = container.querySelector('main')
 
       expect(leftSidebar).toBeTruthy()
-      expect(rightSidebar).toBeTruthy()
       expect(mainContent).toBeTruthy()
 
       // The bug is that these elements don't have responsive classes

@@ -98,13 +98,13 @@ export default function RegistrationConfirmDialog({
   const getTypeColor = () => {
     switch (event.type) {
       case 'HACKATHON':
-        return 'from-red-500 to-rose-600';
+        return 'bg-red-600';
       case 'WORKSHOP':
-        return 'from-blue-600 to-cyan-500';
+        return 'bg-blue-600';
       case 'WEBINAR':
-        return 'from-indigo-600 to-blue-700';
+        return 'bg-indigo-600';
       default:
-        return 'from-purple-600 to-pink-600';
+        return 'bg-purple-600';
     }
   };
 
@@ -136,9 +136,9 @@ export default function RegistrationConfirmDialog({
           "max-h-[90vh] overflow-y-auto"
         )}
       >
-        {/* Header with Gradient */}
+        {/* Header with Solid Background */}
         <div className={cn(
-          "relative bg-linear-to-br",
+          "relative",
           getTypeColor(),
           "p-5 sm:p-6 pb-6 sm:pb-8"
         )}>
