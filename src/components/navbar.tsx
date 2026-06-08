@@ -20,17 +20,23 @@ import toast from "react-hot-toast";
 import { UnreadCountBadge } from "@/components/unread-count-badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const navLinks = [
+const primaryNavLinks = [
     { href: "/events", label: "Events" },
     { href: "/projects", label: "Projects" },
-    { href: "/community", label: "Community" },
-    { href: "/resources", label: "Resources" },
     { href: "/mentors", label: "Mentors" },
     { href: "/career", label: "Career" },
-    { href: "/blog", label: "Blog" },
+    { href: "/community", label: "Community" },
     { href: "/leaderboard", label: "Leaderboard" },
+];
+
+const moreNavLinks = [
+    { href: "/resources", label: "Resources" },
+    { href: "/blog", label: "Blog" },
     { href: "/swag", label: "Swag 🛍️" },
 ];
+
+// Keep flat list for mobile drawer
+const navLinks = [...primaryNavLinks, ...moreNavLinks];
 
 export function Navbar() {
     const [open, setOpen] = useState(false);
@@ -69,7 +75,7 @@ export function Navbar() {
  
                 {/* Desktop Navigation */}
                 <nav className="hidden lg:flex items-center space-x-1">
-                    {navLinks.map((link) => (
+                    {primaryNavLinks.map((link) => (
                         <Link
                             key={link.href}
                             href={link.href}
@@ -79,6 +85,23 @@ export function Navbar() {
                             {link.label}
                         </Link>
                     ))}
+                    {/* More dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-1 text-muted-foreground hover:text-foreground px-3 py-2 rounded-full transition-all duration-200 hover:bg-muted text-sm font-medium">
+                                More <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-44 p-1 bg-card border border-border shadow-xl rounded-2xl">
+                            {moreNavLinks.map((link) => (
+                                <DropdownMenuItem key={link.href} asChild className="cursor-pointer rounded-xl py-2.5 focus:bg-muted">
+                                    <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                                        {link.label}
+                                    </Link>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </nav>
  
                 {/* Desktop Auth Section */}

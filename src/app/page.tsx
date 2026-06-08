@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import toast from "react-hot-toast";
+
 
 
 
@@ -76,14 +78,16 @@ const CanvasParticles = () => {
         let H = (canvas.height = window.innerHeight);
         const handleResize = () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; };
         window.addEventListener("resize", handleResize);
-        const particles = Array.from({ length: 55 }, () => ({
+        const particles = Array.from({ length: 35 }, () => ({
             x: Math.random() * W, y: Math.random() * H,
             size: Math.random() * 2 + 0.5,
-            sx: Math.random() * 0.35 - 0.175, sy: Math.random() * 0.35 - 0.175,
-            color: Math.random() > 0.5 ? "rgba(34,108,224,0.22)" : "rgba(240,119,26,0.12)",
+            sx: Math.random() * 0.3 - 0.15, sy: Math.random() * 0.3 - 0.15,
+            color: Math.random() > 0.5 ? "rgba(34,108,224,0.20)" : "rgba(240,119,26,0.10)",
         }));
         let animId: number;
+        let paused = false;
         const render = () => {
+            if (paused) return;
             ctx.clearRect(0, 0, W, H);
             particles.forEach((p) => {
                 p.x += p.sx; p.y += p.sy;
@@ -96,15 +100,25 @@ const CanvasParticles = () => {
             });
             animId = requestAnimationFrame(render);
         };
+        const handleVisibility = () => {
+            paused = document.hidden;
+            if (!paused) render();
+        };
+        document.addEventListener("visibilitychange", handleVisibility);
         render();
-        return () => { window.removeEventListener("resize", handleResize); cancelAnimationFrame(animId); };
+        return () => {
+            window.removeEventListener("resize", handleResize);
+            document.removeEventListener("visibilitychange", handleVisibility);
+            cancelAnimationFrame(animId);
+        };
     }, []);
-    return <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />;
+    return <canvas ref={canvasRef} aria-hidden="true" className="absolute inset-0 z-0 pointer-events-none" />;
 };
+
 
 // ─── Four-Pointed Star ─────────────────────────────────────────────────────────
 const FourPointedStar = ({ className, size = 16, fill = "currentColor" }: { className?: string; size?: number; fill?: string }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
         <path d="M12 0L15.5 8.5L24 12L15.5 15.5L12 24L8.5 15.5L0 12L8.5 8.5Z" fill={fill} />
     </svg>
 );
@@ -134,12 +148,47 @@ const SectionHeader = ({ label, title, subtitle }: { label?: string; title: Reac
 
 // ─── Main Export ───────────────────────────────────────────────────────────────
 export default function Home() {
-    const handleJoinClick = () => toast.success("Welcome to the Velonx family! Redirecting to sign up...");
+    const [showStickyCTA, setShowStickyCTA] = useState(false);
+    const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+    const handleJoinClick = () => toast.success("Opening sign up — let's build your future! 🚀");
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowStickyCTA(window.scrollY > window.innerHeight * 0.3);
+        };
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     return (
         <div className="min-h-screen bg-background font-sans overflow-x-hidden relative text-foreground transition-colors duration-300">
             {/* Persistent background particles */}
             <CanvasParticles />
+
+            {/* ── Sticky CTA Bar ── */}
+            <AnimatePresence>
+                {showStickyCTA && (
+                    <motion.div
+                        initial={{ y: 80, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 80, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border shadow-2xl px-4 py-3 flex items-center justify-between gap-4 md:hidden"
+                    >
+                        <p className="text-sm font-bold text-foreground leading-tight">Join 15,000+ students building their future</p>
+                        <Link href="/auth/signup" onClick={handleJoinClick}>
+                            <motion.button
+                                className="btn-redesign btn-redesign-primary text-xs font-bold py-2.5 px-5 shrink-0 shadow-lg"
+                                whileTap={{ scale: 0.96 }}
+                            >
+                                Join Free →
+                            </motion.button>
+                        </Link>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
 
             {/* ==================== 1. HERO SECTION ==================== */}
             <header className="relative pt-28 pb-16 md:pt-36 md:pb-24 flex items-center justify-center z-10 overflow-hidden">
@@ -243,15 +292,13 @@ export default function Home() {
                             </div>
                             <div className="flex flex-col gap-0.5">
                                 <span className="text-sm font-bold text-[#1A234A] dark:text-white leading-tight">Trusted by students</span>
-                                <div className="flex items-center gap-0.5">
-                                    {[1, 2, 3, 4].map((s) => (
-                                        <svg key={s} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                <div className="flex items-center gap-0.5" aria-label="4.9 out of 5 stars">
+                                    {[1, 2, 3, 4, 5].map((s) => (
+                                        <svg key={s} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                         </svg>
                                     ))}
-                                    <svg className="w-3.5 h-3.5 text-amber-200 dark:text-amber-700" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
+                                    <span className="text-xs text-muted-foreground ml-1 font-semibold">4.9</span>
                                 </div>
                             </div>
                         </motion.div>
@@ -264,15 +311,44 @@ export default function Home() {
                         transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
                         className="relative w-full flex items-center justify-center select-none"
                     >
-                        {/* Main Hero Image */}
-                        <motion.img
+                        <Image
                             src="/hero.jpeg"
-                            alt="Velonx Hero Illustration"
-                            className="w-full max-w-145 lg:max-w-160 h-auto object-contain rounded-2xl"
+                            alt="Students building projects and growing their careers with Velonx"
+                            width={720}
+                            height={540}
+                            priority
+                            className="w-full max-w-[580px] lg:max-w-[640px] h-auto object-contain rounded-2xl"
                         />
                     </motion.div>
                 </div>
             </header>
+
+
+            {/* ==================== 2. STATS STRIP ==================== */}
+            <SectionReveal className="py-12 border-t border-border/30 relative z-10 bg-muted/20">
+                <div className="container mx-auto px-6 max-w-5xl">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x divide-border/40">
+                        {[
+                            { value: "15,000+", label: "Active Students", color: "text-[#226ce0]" },
+                            { value: "120+", label: "Industry Mentors", color: "text-[#f0771a]" },
+                            { value: "₹10L+", label: "In Prizes Awarded", color: "text-emerald-600" },
+                            { value: "500+", label: "Projects Shipped", color: "text-purple-600" },
+                        ].map((stat, i) => (
+                            <motion.div
+                                key={stat.label}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: i * 0.1 }}
+                                className="flex flex-col items-center text-center px-4 py-2"
+                            >
+                                <span className={`text-3xl md:text-4xl font-black tracking-tight ${stat.color}`}>{stat.value}</span>
+                                <span className="text-xs font-semibold text-muted-foreground mt-1 uppercase tracking-wider">{stat.label}</span>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </SectionReveal>
 
 
             {/* ==================== 4. HOW IT WORKS ==================== */}
@@ -354,13 +430,19 @@ export default function Home() {
                                     whileHover={{ scale: 1.03, y: -4 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 20 }}
                                 >
-                                    <motion.img
-                                        src={step.image}
-                                        alt={step.title}
-                                        className="w-full h-full object-contain select-none"
+                                    <motion.div
+                                        className="w-full h-full relative"
                                         whileHover={{ scale: 1.05 }}
                                         transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                                    />
+                                    >
+                                        <Image
+                                            src={step.image}
+                                            alt={step.title}
+                                            width={400}
+                                            height={300}
+                                            className="w-full h-full object-contain select-none"
+                                        />
+                                    </motion.div>
                                 </motion.div>
 
                                 {/* Text */}
@@ -474,21 +556,21 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                bg: "V-HACK", badge: "LIVE", badgeColor: "bg-emerald-500", badgeAnimate: true,
+                                image: "/event-vhack.png", badge: "LIVE", badgeColor: "bg-emerald-500", badgeAnimate: true,
                                 date: "📅 June 15-18, 2026", loc: "📍 Online (Discord)",
                                 title: "Velonx Summer Hackathon 2026",
                                 desc: "A premium 72-hour national hackathon challenging student builders to create AI-powered solutions for local businesses. Over ₹1.5 Lakhs in prizes, custom swags, and placement calls.",
                                 price: "FREE", strikethrough: "₹499", cta: "Register Now"
                             },
                             {
-                                bg: "REACT", badge: "UPCOMING", badgeColor: "bg-primary", badgeAnimate: false,
+                                image: "/event-react.png", badge: "UPCOMING", badgeColor: "bg-primary", badgeAnimate: false,
                                 date: "📅 June 22, 2026", loc: "📍 Live Zoom Session",
                                 title: "Mastering React Server Components",
                                 desc: "Deep dive into modern web architecture with NextJS experts. Hands-on coding workshop on optimizing load speeds, Server Actions, and rendering pipelines.",
                                 price: "FREE", strikethrough: "₹999", cta: "Register Now"
                             },
                             {
-                                bg: "MAANG PANEL", badge: "UPCOMING", badgeColor: "bg-primary", badgeAnimate: false,
+                                image: "/event-maang.png", badge: "UPCOMING", badgeColor: "bg-primary", badgeAnimate: false,
                                 date: "📅 June 29, 2026", loc: "📍 YouTube Live",
                                 title: "Cracking Placements from Tier-3",
                                 desc: "Panel discussion with senior engineers at Amazon, Google, and Uber. Get actionable strategies on building portfolios, cold emailing, and off-campus placements.",
@@ -505,8 +587,14 @@ export default function Home() {
                                 whileHover={{ y: -5 }}
                             >
                                 <div>
-                                    <div className="h-44 bg-muted border border-border/40 rounded-xl mb-6 relative overflow-hidden flex items-center justify-center">
-                                        <span className="text-2xl font-black opacity-10 select-none tracking-widest">{ev.bg}</span>
+                                    <div className="h-44 rounded-xl mb-6 relative overflow-hidden">
+                                        <Image
+                                            src={ev.image}
+                                            alt={ev.title}
+                                            width={480}
+                                            height={176}
+                                            className="w-full h-full object-cover"
+                                        />
                                         <span className={`absolute top-3 left-3 ${ev.badgeColor} text-white font-bold text-[9px] py-1 px-3 rounded-full ${ev.badgeAnimate ? "animate-pulse" : ""}`}>{ev.badge}</span>
                                     </div>
                                     <div className="flex flex-col gap-1.5 text-xs text-muted-foreground mb-4 font-semibold">
@@ -762,20 +850,20 @@ export default function Home() {
                         {[
                             {
                                 badge: "✔ Placed at Razorpay — ₹22 LPA", badgeColor: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600",
-                                quote: "\"I came from a no-name college in Bihar. Velonx's project hub and mentor sessions changed my life. Got an offer in 4 months.\"",
-                                initials: "KS", name: "Karthik Suresh", sub: "BITS Pilani · SWE @ Razorpay",
+                                quote: "\"I came from a no-name college in Bihar. Velonx's project hub and mentor sessions changed my life. Got a full-time offer in just 4 months.\"",
+                                initials: "PN", name: "Priya Nair", sub: "Amrita University · SWE @ Razorpay",
                                 avatarColor: "bg-primary/10 text-primary ring-primary/10"
                             },
                             {
                                 badge: "✔ Won Solana Hackathon — ₹1.5L prize", badgeColor: "bg-amber-500/10 border border-amber-500/20 text-amber-600",
-                                quote: "\"The hackathon community on Velonx is unreal. Found my co-founder here, won my first prize, and now we are building a startup.\"",
-                                initials: "AT", name: "Ananya Tiwari", sub: "NIT Silchar · Co-founder @ BuildAI",
+                                quote: "\"The hackathon community on Velonx is unreal. Found my co-founder here, won my first prize, and now we are building a startup together.\"",
+                                initials: "DB", name: "Devraj Bansal", sub: "Thapar University · Co-founder @ BuildAI",
                                 avatarColor: "bg-accent/10 text-accent ring-accent/10"
                             },
                             {
                                 badge: "✔ Internship at Google via Velonx", badgeColor: "bg-purple-500/10 border border-purple-500/20 text-purple-600",
-                                quote: "\"I had zero connections from my college. The blind-screen career pipeline at Velonx meant my LPU tag did not matter — only my GitHub did.\"",
-                                initials: "RM", name: "Rohan Mehta", sub: "IIIT Hyderabad · SWE Intern @ Google",
+                                quote: "\"I had zero connections from my college. The blind-screen career pipeline at Velonx meant my college tag didn't matter — only my GitHub did.\"",
+                                initials: "SK", name: "Simran Kaur", sub: "PEC Chandigarh · SWE Intern @ Google",
                                 avatarColor: "bg-emerald-500/10 text-emerald-600 ring-emerald-500/10"
                             }
                         ].map((t, idx) => (
@@ -910,9 +998,9 @@ export default function Home() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { emoji: "🧥", title: "Velonx Premium Hoodie", desc: "Comfortable heavy cotton pitch black hoodie featuring embroidered minimalist Velonx branding. Limit 1 per builder.", price: "2,000 VX" },
-                            { emoji: "🏷️", title: "Developer Sticker Pack", desc: "10 high-quality matte finish die-cut stickers for your laptop, featuring premium code, crypto, and developer humor memes.", price: "250 VX" },
-                            { emoji: "🧪", title: "Hydro Flask Bottle", desc: "Double-walled insulated stainless steel bottle to keep your drinks ice-cold during long coding sessions.", price: "1,200 VX" },
+                            { image: "/swag-hoodie.png", title: "Velonx Premium Hoodie", desc: "Comfortable heavy cotton pitch black hoodie featuring embroidered minimalist Velonx branding. Limit 1 per builder.", price: "2,000 VX" },
+                            { image: "/swag-stickers.png", title: "Developer Sticker Pack", desc: "10 high-quality matte finish die-cut stickers for your laptop, featuring premium code, crypto, and developer humor memes.", price: "250 VX" },
+                            { image: "/swag-flask.png", title: "Hydro Flask Bottle", desc: "Double-walled insulated stainless steel bottle to keep your drinks ice-cold during long coding sessions.", price: "1,200 VX" },
                         ].map((item, idx) => (
                             <motion.div
                                 key={item.title}
@@ -924,14 +1012,14 @@ export default function Home() {
                                 whileHover={{ y: -5 }}
                             >
                                 <div>
-                                    <div className="h-44 bg-muted border border-border/40 rounded-xl mb-6 flex items-center justify-center">
-                                        <motion.span
-                                            className="text-6xl"
-                                            whileHover={{ scale: 1.2, rotate: [0, -10, 10, 0] }}
-                                            transition={{ duration: 0.4 }}
-                                        >
-                                            {item.emoji}
-                                        </motion.span>
+                                    <div className="h-44 rounded-xl mb-6 overflow-hidden">
+                                        <Image
+                                            src={item.image}
+                                            alt={item.title}
+                                            width={480}
+                                            height={176}
+                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                        />
                                     </div>
                                     <h3 className="text-xl font-bold text-foreground mb-2">{item.title}</h3>
                                     <p className="text-muted-foreground text-xs leading-relaxed mb-6">{item.desc}</p>
@@ -1052,22 +1140,49 @@ export default function Home() {
                                 q: "Do I need prior coding experience to join?",
                                 a: "Not at all! We have step-by-step learning roadmaps and resources ranging from absolute beginner to advanced system design. Our active Discord community is always there to guide you."
                             },
-                        ].map((faq, idx) => (
-                            <motion.details
-                                key={faq.q}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.4, delay: idx * 0.08 }}
-                                className="group border border-border/50 rounded-2xl p-6 bg-card [&_summary::-webkit-details-marker]:hidden hover:border-[#226ce0]/30 hover:shadow-[0_8px_24px_rgba(34,108,224,0.06)] transition-all duration-200"
-                            >
-                                <summary className="flex items-center justify-between cursor-pointer focus:outline-none">
-                                    <h3 className="text-base font-black text-foreground">{faq.q}</h3>
-                                    <span className="transition duration-300 group-open:-rotate-180 text-primary shrink-0 ml-4">▼</span>
-                                </summary>
-                                <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
-                            </motion.details>
-                        ))}
+                        ].map((faq, idx) => {
+                            const isOpen = openFaq === idx;
+                            return (
+                                <motion.div
+                                    key={faq.q}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.4, delay: idx * 0.08 }}
+                                    className={`border rounded-2xl bg-card transition-all duration-200 ${isOpen ? "border-[#226ce0]/40 shadow-[0_8px_24px_rgba(34,108,224,0.08)]" : "border-border/50 hover:border-[#226ce0]/20"}`}
+                                >
+                                    <button
+                                        onClick={() => setOpenFaq(isOpen ? null : idx)}
+                                        aria-expanded={isOpen}
+                                        aria-controls={`faq-answer-${idx}`}
+                                        className="w-full flex items-center justify-between cursor-pointer p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl"
+                                    >
+                                        <h3 className="text-base font-black text-foreground pr-4">{faq.q}</h3>
+                                        <motion.span
+                                            animate={{ rotate: isOpen ? 180 : 0 }}
+                                            transition={{ duration: 0.25 }}
+                                            className="text-primary shrink-0"
+                                            aria-hidden="true"
+                                        >▼</motion.span>
+                                    </button>
+                                    <AnimatePresence initial={false}>
+                                        {isOpen && (
+                                            <motion.div
+                                                id={`faq-answer-${idx}`}
+                                                key="content"
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                                className="overflow-hidden"
+                                            >
+                                                <p className="px-6 pb-6 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </div>
             </SectionReveal>
