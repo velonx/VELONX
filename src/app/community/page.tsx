@@ -213,10 +213,10 @@ export default function CommunityPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-28">
+    <div className="community-page min-h-screen pt-24 pb-28 bg-background">
       {/* Scope Style */}
       <style dangerouslySetInnerHTML={{ __html: `
-        :root {
+        .community-page {
           --font-heading: var(--font-outfit), 'Inter', -apple-system, sans-serif;
           --font-body: var(--font-outfit), 'DM Sans', -apple-system, sans-serif;
           --font-mono: var(--font-geist-mono), 'JetBrains Mono', monospace;
@@ -253,19 +253,22 @@ export default function CommunityPage() {
           --radius-md: 12px;
           --radius-lg: 16px;
           --radius-xl: 24px;
-        }
 
-        body, html {
           font-family: var(--font-body);
         }
 
-        h1, h2, h3, h4, h5, h6 {
+        .community-page h1, 
+        .community-page h2, 
+        .community-page h3, 
+        .community-page h4, 
+        .community-page h5, 
+        .community-page h6 {
           font-family: var(--font-heading);
           color: var(--text-primary);
         }
 
         /* ============ TYPOGRAPHY & HEADER ============ */
-        .display-1 {
+        .community-page .display-1 {
           font-size: clamp(2.5rem, 6vw, 5.5rem);
           font-weight: 900;
           letter-spacing: -0.04em;
@@ -273,32 +276,33 @@ export default function CommunityPage() {
           color: #29292B;
         }
 
-        .dark .display-1 {
+        .community-page.dark .display-1,
+        .dark .community-page .display-1 {
           color: #FFFBDB;
         }
 
-        .display-2 {
+        .community-page .display-2 {
           font-size: clamp(2rem, 4vw, 3.5rem);
           font-weight: 800;
           letter-spacing: -0.03em;
         }
 
-        .heading-1 {
+        .community-page .heading-1 {
           font-size: clamp(1.75rem, 3vw, 2.5rem);
           font-weight: 700;
         }
 
-        .gradient-text {
+        .community-page .gradient-text {
           color: #f97316;
         }
 
-        .container {
+        .community-page .container {
           max-width: 1280px;
           margin: 0 auto;
           padding: 0 var(--space-xl);
         }
 
-        .section-label {
+        .community-page .section-label {
           display: inline-flex;
           align-items: center;
           gap: var(--space-sm);
@@ -315,14 +319,14 @@ export default function CommunityPage() {
         }
 
         /* ============ PAGE HEADER / HERO ============ */
-        .page-hero {
+        .community-page .page-hero {
           padding-top: calc(var(--nav-height) + var(--space-4xl));
           padding-bottom: var(--space-4xl);
           text-align: center;
           position: relative;
         }
 
-        .page-hero-bg {
+        .community-page .page-hero-bg {
           position: absolute;
           inset: 0;
           background: var(--gradient-hero);
@@ -330,7 +334,7 @@ export default function CommunityPage() {
         }
 
         /* ============ BUTTONS ============ */
-        .btn {
+        .community-page .btn {
           display: inline-flex;
           align-items: center;
           gap: var(--space-sm);
@@ -345,7 +349,7 @@ export default function CommunityPage() {
           white-space: nowrap;
         }
 
-        .btn::after {
+        .community-page .btn::after {
           content: '';
           position: absolute;
           inset: 0;
@@ -353,40 +357,40 @@ export default function CommunityPage() {
           transition: background var(--transition-fast);
         }
 
-        .btn:hover::after { background: rgba(255,255,255,0.06); }
-        .btn:active { transform: scale(0.98); }
+        .community-page .btn:hover::after { background: rgba(255,255,255,0.06); }
+        .community-page .btn:active { transform: scale(0.98); }
 
-        .btn-primary {
+        .community-page .btn-primary {
           background: #F0771A;
           color: white;
           box-shadow: 0 4px 14px rgba(240, 119, 26, 0.2);
         }
 
-        .btn-primary:hover {
+        .community-page .btn-primary:hover {
           background: #e0650d;
           transform: translateY(-2px);
           box-shadow: 0 6px 20px rgba(240, 119, 26, 0.35);
         }
 
-        .btn-secondary {
+        .community-page .btn-secondary {
           background: transparent;
           color: var(--text-primary);
           border: 1px solid var(--border-default);
         }
 
-        .btn-secondary:hover {
+        .community-page .btn-secondary:hover {
           border-color: var(--border-accent);
           background: var(--violet-dim);
           color: var(--violet-light);
         }
 
-        .btn-sm {
+        .community-page .btn-sm {
           padding: 8px 18px;
           font-size: 0.8125rem;
         }
 
         /* ============ BADGES / PILLS ============ */
-        .badge {
+        .community-page .badge {
           display: inline-flex;
           align-items: center;
           gap: 6px;
@@ -397,14 +401,14 @@ export default function CommunityPage() {
           font-family: var(--font-heading);
         }
 
-        .badge-violet { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(51, 77, 175, 0.2); }
-        .badge-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(34, 108, 224, 0.2); }
-        .badge-green { background: rgba(13, 148, 136, 0.08); color: #0F766E; border: 1px solid rgba(13, 148, 136, 0.2); }
-        .badge-amber { background: rgba(240, 119, 26, 0.08); color: #C2410C; border: 1px solid rgba(240, 119, 26, 0.2); }
-        .badge-pink { background: rgba(240, 119, 26, 0.08); color: #EA580C; border: 1px solid rgba(240, 119, 26, 0.2); }
+        .community-page .badge-violet { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(51, 77, 175, 0.2); }
+        .community-page .badge-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(34, 108, 224, 0.2); }
+        .community-page .badge-green { background: rgba(13, 148, 136, 0.08); color: #0F766E; border: 1px solid rgba(13, 148, 136, 0.2); }
+        .community-page .badge-amber { background: rgba(240, 119, 26, 0.08); color: #C2410C; border: 1px solid rgba(240, 119, 26, 0.2); }
+        .community-page .badge-pink { background: rgba(240, 119, 26, 0.08); color: #EA580C; border: 1px solid rgba(240, 119, 26, 0.2); }
 
         /* ============ TAGS ============ */
-        .tag {
+        .community-page .tag {
           display: inline-block;
           padding: 4px 10px;
           background: var(--bg-card);
@@ -417,7 +421,7 @@ export default function CommunityPage() {
           transition: all var(--transition-fast);
         }
 
-        .tag:hover {
+        .community-page .tag:hover {
           border-color: var(--border-accent);
           color: var(--violet-light);
         }
