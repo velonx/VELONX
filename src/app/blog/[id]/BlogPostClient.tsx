@@ -3,6 +3,7 @@
 import { use, useState, useEffect } from "react";
 import { blogApi } from "@/lib/api/client";
 import { motion, useScroll, useSpring } from "framer-motion";
+import DOMPurify from "isomorphic-dompurify";
 import { Calendar, Clock, ArrowLeft, Share2, Check, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -283,7 +284,7 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
                     {/* Content text */}
                     <div
                         className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:rounded-r-2xl prose-blockquote:py-1 px-4 md:px-0 rich-text-content p-article-content"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
                     />
                     <style jsx global>{`
                         .rich-text-content table {
