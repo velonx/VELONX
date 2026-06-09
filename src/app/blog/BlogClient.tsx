@@ -9,6 +9,7 @@ import { useBlogPosts } from "@/lib/api/hooks";
 import { calculateReadTime, deriveCategories } from "@/lib/utils/blog";
 import type { BlogPost } from "@/lib/api/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { analytics } from "@/components/analytics";
 
 export default function BlogClient() {
     const [searchInput, setSearchInput] = useState("");
@@ -81,6 +82,7 @@ export default function BlogClient() {
     const categories = availableCategories;
 
     const handleShare = async (post: BlogPost) => {
+        analytics.blogShare(post.id, post.title);
         const slug = post.slug || post.id;
         const url = `${window.location.origin}/blog/${slug}`;
         const shareData = {

@@ -14,6 +14,7 @@ import {
   Bookmark, ChevronRight, ShieldCheck, HelpCircle, Briefcase, GraduationCap
 } from 'lucide-react';
 import "./career-detail.css";
+import { analytics } from "@/components/analytics";
 
 // Static mock data repository matching career-detail.html
 const MOCK_JOBS: Record<string, any> = {
@@ -241,6 +242,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
       // 1. Check if mock key
       if (MOCK_JOBS[id]) {
         setJob(MOCK_JOBS[id]);
+        analytics.jobView(MOCK_JOBS[id].id, MOCK_JOBS[id].title);
         setLoading(false);
         return;
       }
@@ -248,6 +250,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
       // 2. Use initialOpportunity if supplied
       if (initialOpportunity) {
         setJob(initialOpportunity);
+        analytics.jobView(initialOpportunity.id, initialOpportunity.title);
         setLoading(false);
         return;
       }
@@ -258,6 +261,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
         const result = await res.json();
         if (result.success && result.data) {
           setJob(result.data);
+          analytics.jobView(result.data.id, result.data.title);
         } else {
           toast.error("Opportunity not found");
         }
@@ -420,6 +424,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
   // Link copy sharing helper
   const handleShare = async () => {
     const url = `${window.location.origin}/career/${job?.slug || id}`;
+    analytics.share('native', 'job', job?.id || id);
 
     // 1. Check navigator.share first to keep user gesture context intact
     if (navigator.share) {
@@ -449,6 +454,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
       return;
     }
     if (job?.applyUrl) {
+      analytics.jobApply(job.id, job.title);
       window.open(job.applyUrl, "_blank", "noopener,noreferrer");
       toast.success(`Opening application for ${job.title}...`);
     } else {
@@ -528,6 +534,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
       // Auto open external applyUrl link after visual success delay
       setTimeout(() => {
         if (job?.applyUrl) {
+          analytics.jobApply(job.id, job.title);
           window.open(job.applyUrl, "_blank");
         }
       }, 2000);

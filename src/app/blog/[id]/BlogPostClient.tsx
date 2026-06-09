@@ -10,6 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { calculateReadTime } from "@/lib/utils/blog";
+import { analytics } from "@/components/analytics";
 
 interface RelatedPost {
   id: string;
@@ -45,6 +46,7 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
     // Track blog post view on client side (once per session)
     useEffect(() => {
         if (!post || post.status !== "PUBLISHED") return;
+        analytics.blogView(post.id, post.title);
 
         const sessionKey = `viewed_post_${id}`;
         const hasViewed = sessionStorage.getItem(sessionKey);
@@ -94,6 +96,7 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
 
     const handleShare = async () => {
         if (!post) return;
+        analytics.blogShare(post.id, post.title);
         const url = window.location.href;
         const shareData = {
             title: post.title,
@@ -130,7 +133,7 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
                             <Skeleton className="h-5 w-20 rounded-md" />
                         </div>
                     </div>
-                    <Skeleton className="w-full h-[360px] rounded-3xl" />
+                    <Skeleton className="w-full h-90 rounded-3xl" />
                     <div className="space-y-3">
                         {Array.from({ length: 8 }).map((_, i) => (
                             <Skeleton key={i} className={`h-4 rounded-md ${i % 4 === 3 ? "w-3/4" : "w-full"}`} />
@@ -184,7 +187,7 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
         <div className="min-h-screen pt-24 bg-background pb-20 selection:bg-primary/30">
             {/* Reading Progress Bar */}
             <motion.div
-                className="fixed top-0 left-0 right-0 h-1.5 bg-primary z-[100] origin-left"
+                className="fixed top-0 left-0 right-0 h-1.5 bg-primary z-100 origin-left"
                 style={{ scaleX }}
                 aria-hidden="true"
             />
@@ -265,7 +268,7 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
 
                     {/* Cover image banner */}
                     {post.imageUrl && (
-                        <div className="w-full rounded-2xl overflow-hidden mb-12 border border-border/10 relative aspect-[16/9] bg-gradient-to-br from-primary/10 to-primary/5">
+                        <div className="w-full rounded-2xl overflow-hidden mb-12 border border-border/10 relative aspect-video bg-linear-to-br from-primary/10 to-primary/5">
                             <Image
                                 src={post.imageUrl}
                                 alt={post.title}

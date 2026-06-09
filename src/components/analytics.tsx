@@ -3,7 +3,7 @@
 import Script from 'next/script';
 
 export function GoogleAnalytics() {
-    const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+    const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-34KQX1VN8D';
 
     // If no GA ID is set, don't render analytics
     if (!GA_MEASUREMENT_ID) {
@@ -72,6 +72,26 @@ export const analytics = {
     // Resource events
     resourceView: (resourceId: string) =>
         trackEvent('view_item', 'resource', resourceId),
+
+    // Blog events
+    blogView: (blogId: string, title?: string) =>
+        trackEvent('view_item', 'blog', title || blogId),
+    blogShare: (blogId: string, title?: string) =>
+        trackEvent('share', 'blog', title || blogId),
+
+    // Career/Job events
+    jobView: (jobId: string, title?: string) =>
+        trackEvent('view_item', 'job', title || jobId),
+    jobApply: (jobId: string, title?: string) =>
+        trackEvent('apply_job', 'job', title || jobId),
+
+    // Community events
+    communityView: (communityId: string, name?: string) =>
+        trackEvent('view_item', 'community', name || communityId),
+    communityJoin: (communityId: string, name?: string) =>
+        trackEvent('join_group', 'community', name || communityId),
+    communityCreatePost: (communityId: string) =>
+        trackEvent('create_post', 'community', communityId),
 
     // Social events
     share: (method: string, contentType: string, contentId: string) =>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
@@ -34,6 +34,7 @@ import { secureFetch } from "@/lib/utils/csrf";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { analytics } from "@/components/analytics";
 
 export default function GroupDetailPage() {
   const { data: session } = useSession();
@@ -72,6 +73,12 @@ export default function GroupDetailPage() {
 
   const { posts, isLoading: postsLoading, createPost, isCreating, loadMore, hasMore, refetch: refetchPosts } = useCommunityPosts({ groupId });
 
+  useEffect(() => {
+    if (group) {
+      analytics.communityView(groupId, group.name);
+    }
+  }, [groupId, group]);
+
   const isMember = members?.some(m => m.userId === session?.user?.id) || memberGroupIds?.includes(groupId);
   const isOwner = group?.ownerId === session?.user?.id;
   const isModerator = isOwner;
@@ -101,6 +108,7 @@ export default function GroupDetailPage() {
         imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
         linkUrls: linkUrls.length > 0 ? linkUrls : undefined,
       });
+      analytics.communityCreatePost(groupId);
       setPostContent("");
       setImageUrls([]);
       setLinkUrls([]);
@@ -181,6 +189,7 @@ export default function GroupDetailPage() {
         toast.success("Join request sent!");
       } else {
         await joinGroup(groupId);
+        analytics.communityJoin(groupId, group?.name);
         toast.success("Joined group successfully!");
       }
       refetch();

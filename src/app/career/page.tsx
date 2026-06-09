@@ -10,6 +10,7 @@ import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, 
 import toast from "react-hot-toast";
 import Image from "next/image";
 import Link from "next/link";
+import { analytics } from "@/components/analytics";
 
 export default function CareerPage() {
     const { data: session, status } = useSession();
@@ -26,6 +27,7 @@ export default function CareerPage() {
 
     const handleShare = async (idOrSlug: string, originalId: string, title: string, type: 'internship' | 'job') => {
         const url = `${window.location.origin}/career/${idOrSlug}`;
+        analytics.share('native', type, originalId);
         const shareData = {
             title,
             text: `Check out this ${type}: ${title}`,
@@ -130,6 +132,7 @@ export default function CareerPage() {
             setShowLoginModal(true);
             return;
         }
+        analytics.jobApply(url, title);
         window.open(url, "_blank");
         toast.success(`Opening application for ${title}...`);
     };

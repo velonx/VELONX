@@ -317,7 +317,7 @@ export default function Home() {
                             width={720}
                             height={540}
                             priority
-                            className="w-full max-w-[580px] lg:max-w-[640px] h-auto object-contain rounded-2xl"
+                            className="w-full max-w-145 lg:max-w-160 h-auto object-contain rounded-2xl"
                         />
                     </motion.div>
                 </div>
