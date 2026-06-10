@@ -324,31 +324,6 @@ export default function Home() {
             </header>
 
 
-            {/* ==================== 2. STATS STRIP ==================== */}
-            <SectionReveal className="py-12 border-t border-border/30 relative z-10 bg-muted/20">
-                <div className="container mx-auto px-6 max-w-5xl">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x divide-border/40">
-                        {[
-                            { value: "15,000+", label: "Active Students", color: "text-[#226ce0]" },
-                            { value: "120+", label: "Industry Mentors", color: "text-[#f0771a]" },
-                            { value: "₹10L+", label: "In Prizes Awarded", color: "text-emerald-600" },
-                            { value: "500+", label: "Projects Shipped", color: "text-purple-600" },
-                        ].map((stat, i) => (
-                            <motion.div
-                                key={stat.label}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: i * 0.1 }}
-                                className="flex flex-col items-center text-center px-4 py-2"
-                            >
-                                <span className={`text-3xl md:text-4xl font-black tracking-tight ${stat.color}`}>{stat.value}</span>
-                                <span className="text-xs font-semibold text-muted-foreground mt-1 uppercase tracking-wider">{stat.label}</span>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </SectionReveal>
 
 
             {/* ==================== 4. HOW IT WORKS ==================== */}

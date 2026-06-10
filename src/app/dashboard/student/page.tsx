@@ -373,67 +373,144 @@ function StudentDashboardContent() {
 
             {/* ====== Main Content Panel Area ====== */}
             <main className="w-full min-w-0">
-                {/* Bento Stats Row */}
-                <section className="dashboard-bento">
-                    <div className="dashboard-widget-card">
-                        <span className="dashboard-widget-label">XP Balance</span>
-                        <span className="dashboard-widget-value">{user?.xp || 0} XP</span>
-                        <span className="dashboard-widget-footer" style={{ color: '#22C55E' }}>⚡ Level {user?.level || 1}</span>
-                    </div>
-                    <div className="dashboard-widget-card">
-                        <span className="dashboard-widget-label">Enrolled Events</span>
-                        <span className="dashboard-widget-value">{userStats?.stats?.eventsAttending || 0} Active</span>
-                        <span className="dashboard-widget-footer">Events registered</span>
-                    </div>
-                    <div className="dashboard-widget-card">
-                        <span className="dashboard-widget-label">My Projects</span>
-                        <span className="dashboard-widget-value">{projectCounts.all} Total</span>
-                        <span className="dashboard-widget-footer" style={{ color: '#7C3AED' }}>{projectCounts.inProgress} In Progress</span>
-                    </div>
-                    <div className="dashboard-widget-card">
-                        <span className="dashboard-widget-label">Builder Level</span>
-                        <span className="dashboard-widget-value">Lvl {user?.level || 1}</span>
-                        <span className="dashboard-widget-footer" style={{ color: '#226CE0' }}>{getLevelLabel(user?.level || 1)}</span>
-                    </div>
-                </section>
 
                 {/* ====== Panel: Overview ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'overview' ? 'active' : ''}`}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
-                        Welcome Back, {session.user?.name?.split(' ')[0] || 'Student'}!
-                    </h1>
-                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
-                        Your workspace is up to date. Keep participating in events and pushing code to earn more XP.
-                    </p>
+                    <WelcomeSection
+                        userName={session.user?.name || 'Student'}
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                    />
 
-
+                    {/* Bento Stats Row */}
+                    <section className="dashboard-bento">
+                        <div className="dashboard-widget-card">
+                            <span className="dashboard-widget-label">XP Balance</span>
+                            <span className="dashboard-widget-value">{user?.xp || 0} XP</span>
+                            <span className="dashboard-widget-footer text-[#22C55E]">⚡ Level {user?.level || 1}</span>
+                        </div>
+                        <div className="dashboard-widget-card">
+                            <span className="dashboard-widget-label">Enrolled Events</span>
+                            <span className="dashboard-widget-value">{userStats?.stats?.eventsAttending || 0} Active</span>
+                            <span className="dashboard-widget-footer text-muted-foreground">Events registered</span>
+                        </div>
+                        <div className="dashboard-widget-card">
+                            <span className="dashboard-widget-label">My Projects</span>
+                            <span className="dashboard-widget-value">{projectCounts.all} Total</span>
+                            <span className="dashboard-widget-footer text-[#7C3AED]">{projectCounts.inProgress} In Progress</span>
+                        </div>
+                        <div className="dashboard-widget-card">
+                            <span className="dashboard-widget-label">Builder Level</span>
+                            <span className="dashboard-widget-value">Lvl {user?.level || 1}</span>
+                            <span className="dashboard-widget-footer text-[#226CE0]">{getLevelLabel(user?.level || 1)}</span>
+                        </div>
+                    </section>
 
                     <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8">
-                        {/* Left: Activity Timeline */}
-                        <div className="bg-card border border-border rounded-2xl p-6">
-                            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.25rem' }}>Recent Workspace Activity</h3>
-                            {activityItems.length > 0 ? (
-                                <div className="activity-timeline">
-                                    {activityItems.slice(0, 5).map((item, i) => (
-                                        <div className="activity-item" key={i}>
-                                            <div className={`activity-dot ${item.dotClass}`}></div>
-                                            <div className="activity-time">{item.time}</div>
-                                            <div className="activity-title">{item.title}</div>
-                                        </div>
-                                    ))}
+                        {/* Left Column: Projects, Mentorship, Requests */}
+                        <div className="space-y-10 min-w-0">
+                            {/* Projects Section */}
+                            <div>
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-2xl font-bold text-foreground">My Projects</h2>
                                 </div>
-                            ) : (
-                                <p className="text-muted-foreground text-sm">No recent activity yet. Join events and book mentor sessions to see activity here.</p>
+
+                                {/* Status Tabs */}
+                                <div className="flex flex-wrap gap-3 mb-6">
+                                    <button
+                                        onClick={() => handleProjectStatusChange('ALL')}
+                                        className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'ALL'
+                                            ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
+                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <FolderOpen className="w-4 h-4" />
+                                            <span>All Projects</span>
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'ALL'
+                                                ? 'bg-white/20 text-white'
+                                                : 'bg-background text-foreground'
+                                                }`}>
+                                                {projectCounts.all}
+                                            </span>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleProjectStatusChange('IN_PROGRESS')}
+                                        className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'IN_PROGRESS'
+                                            ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
+                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <Loader2 className="w-4 h-4" />
+                                            <span>In Progress</span>
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'IN_PROGRESS'
+                                                ? 'bg-white/20 text-white'
+                                                : 'bg-background text-foreground'
+                                                }`}>
+                                                {projectCounts.inProgress}
+                                            </span>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleProjectStatusChange('COMPLETED')}
+                                        className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'COMPLETED'
+                                            ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
+                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircle2 className="w-4 h-4" />
+                                            <span>Completed</span>
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'COMPLETED'
+                                                ? 'bg-white/20 text-white'
+                                                : 'bg-background text-foreground'
+                                                }`}>
+                                                {projectCounts.completed}
+                                            </span>
+                                        </div>
+                                    </button>
+                                </div>
+
+                                {/* Project Cards */}
+                                <ProgressSummary
+                                    projects={projectsDisplay}
+                                    searchQuery={searchQuery}
+                                    onEdit={(projectId) => {
+                                        const raw = projects?.find(p => p.id === projectId);
+                                        if (raw) setEditingProject(raw as any);
+                                    }}
+                                    currentUserId={session?.user?.id}
+                                />
+                            </div>
+
+                            {/* Confirmed Mentor Sessions Section */}
+                            {session?.user?.id && (
+                                <StudentConfirmedSessions userId={session.user.id} />
+                            )}
+
+                            {/* Approved Mock Interviews Section */}
+                            {session?.user?.id && (
+                                <StudentApprovedInterviews userId={session.user.id} />
+                            )}
+
+                            {/* Project Join Requests Section */}
+                            {session?.user?.id && (
+                                <JoinRequests userId={session.user.id} />
                             )}
                         </div>
 
-                        {/* Right: Badges & Skill Bars */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        {/* Right Column: Widgets */}
+                        <div className="space-y-6">
                             {/* Daily Check-in */}
                             <DailyCheckIn />
 
+                            {/* Earned Badges */}
                             <div className="bg-card border border-border rounded-2xl p-6">
-                                <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>Earned Badges</h3>
+                                <h3 className="text-sm font-bold text-foreground mb-4">Earned Badges</h3>
                                 <div className="dashboard-badge-list">
                                     <div className="badge-icon-box">
                                         <span>💻</span>
@@ -450,11 +527,12 @@ function StudentDashboardContent() {
                                 </div>
                             </div>
 
+                            {/* Skill Index */}
                             <div className="bg-card border border-border rounded-2xl p-6">
-                                <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>Skill Index</h3>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <h3 className="text-sm font-bold text-foreground mb-4">Skill Index</h3>
+                                <div className="space-y-4">
                                     <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', fontWeight: 600 }}>
+                                        <div className="flex justify-between text-xs font-semibold text-foreground">
                                             <span>Projects Completed</span>
                                             <span>{Math.min(100, projectCounts.completed * 20)}%</span>
                                         </div>
@@ -463,7 +541,7 @@ function StudentDashboardContent() {
                                         </div>
                                     </div>
                                     <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', fontWeight: 600 }}>
+                                        <div className="flex justify-between text-xs font-semibold text-foreground">
                                             <span>Event Participation</span>
                                             <span>{Math.min(100, (userStats?.stats?.eventsAttending || 0) * 25)}%</span>
                                         </div>
@@ -472,7 +550,7 @@ function StudentDashboardContent() {
                                         </div>
                                     </div>
                                     <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', fontWeight: 600 }}>
+                                        <div className="flex justify-between text-xs font-semibold text-foreground">
                                             <span>Mentor Sessions</span>
                                             <span>{Math.min(100, mentorSessions.filter(s => s.status === 'COMPLETED').length * 25)}%</span>
                                         </div>
@@ -482,109 +560,34 @@ function StudentDashboardContent() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Recent Workspace Activity */}
+                            <div className="bg-card border border-border rounded-2xl p-6">
+                                <h3 className="text-sm font-bold text-foreground mb-4">Recent Workspace Activity</h3>
+                                {activityItems.length > 0 ? (
+                                    <div className="activity-timeline">
+                                        {activityItems.slice(0, 5).map((item, i) => (
+                                            <div className="activity-item" key={i}>
+                                                <div className={`activity-dot ${item.dotClass}`}></div>
+                                                <div className="activity-time">{item.time}</div>
+                                                <div className="activity-title text-sm">{item.title}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-muted-foreground text-sm">No recent activity yet. Join events and book mentor sessions to see activity here.</p>
+                                )}
+                            </div>
                         </div>
                     </div>
-
-                    {/* Projects Section */}
-                    <div className="mt-10">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold text-foreground">My Projects</h2>
-                        </div>
-
-                        {/* Status Tabs */}
-                        <div className="flex flex-wrap gap-3 mb-6">
-                            <button
-                                onClick={() => handleProjectStatusChange('ALL')}
-                                className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'ALL'
-                                    ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
-                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-2">
-                                    <FolderOpen className="w-4 h-4" />
-                                    <span>All Projects</span>
-                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'ALL'
-                                        ? 'bg-white/20 text-white'
-                                        : 'bg-background text-foreground'
-                                        }`}>
-                                        {projectCounts.all}
-                                    </span>
-                                </div>
-                            </button>
-
-                            <button
-                                onClick={() => handleProjectStatusChange('IN_PROGRESS')}
-                                className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'IN_PROGRESS'
-                                    ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
-                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-2">
-                                    <Loader2 className="w-4 h-4" />
-                                    <span>In Progress</span>
-                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'IN_PROGRESS'
-                                        ? 'bg-white/20 text-white'
-                                        : 'bg-background text-foreground'
-                                        }`}>
-                                        {projectCounts.inProgress}
-                                    </span>
-                                </div>
-                            </button>
-
-                            <button
-                                onClick={() => handleProjectStatusChange('COMPLETED')}
-                                className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'COMPLETED'
-                                    ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
-                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle2 className="w-4 h-4" />
-                                    <span>Completed</span>
-                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'COMPLETED'
-                                        ? 'bg-white/20 text-white'
-                                        : 'bg-background text-foreground'
-                                        }`}>
-                                        {projectCounts.completed}
-                                    </span>
-                                </div>
-                            </button>
-                        </div>
-
-                        {/* Project Cards */}
-                        <ProgressSummary
-                            projects={projectsDisplay}
-                            searchQuery={searchQuery}
-                            onEdit={(projectId) => {
-                                const raw = projects?.find(p => p.id === projectId);
-                                if (raw) setEditingProject(raw as any);
-                            }}
-                            currentUserId={session?.user?.id}
-                        />
-                    </div>
-
-                    {/* Confirmed Mentor Sessions Section */}
-                    {session?.user?.id && (
-                        <StudentConfirmedSessions userId={session.user.id} />
-                    )}
-
-                    {/* Approved Mock Interviews Section */}
-                    {session?.user?.id && (
-                        <StudentApprovedInterviews userId={session.user.id} />
-                    )}
-
-                    {/* Project Join Requests Section */}
-                    {session?.user?.id && (
-                        <JoinRequests userId={session.user.id} />
-                    )}
                 </div>
 
                 {/* ====== Panel: Community ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'community' ? 'active' : ''}`}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                    <h1 className="text-3xl font-black mb-2 text-foreground">
                         My Community Profile
                     </h1>
-                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                    <p className="text-muted-foreground mb-8 text-sm max-w-xl">
                         Your posts, followers, and groups at a glance.
                     </p>
 
@@ -622,7 +625,7 @@ function StudentDashboardContent() {
                     {/* Posts Section */}
                     <section className="mb-12">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-2xl font-bold text-foreground">My Posts</h3>
+                            <h3 className="text-xl font-bold text-foreground">My Posts</h3>
                             <Button
                                 onClick={() => router.push('/community')}
                                 variant="outline"
@@ -671,7 +674,7 @@ function StudentDashboardContent() {
                                 ))}
                             </div>
                         ) : (
-                            <Card className="bg-card border rounded-4xl p-12 text-center shadow-sm">
+                            <Card className="bg-card border rounded-3xl p-12 text-center shadow-sm">
                                 <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                                 <h3 className="text-xl font-bold text-foreground mb-2">No Posts Yet</h3>
                                 <p className="text-muted-foreground mb-6">
@@ -690,7 +693,7 @@ function StudentDashboardContent() {
                     {/* Groups Section */}
                     <section className="mb-12">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-2xl font-bold text-foreground">My Groups</h3>
+                            <h3 className="text-xl font-bold text-foreground">My Groups</h3>
                             <Button
                                 onClick={() => router.push('/community/groups')}
                                 variant="outline"
@@ -711,7 +714,7 @@ function StudentDashboardContent() {
                                 ))}
                             </div>
                         ) : (
-                            <Card className="bg-card border rounded-4xl p-12 text-center shadow-sm">
+                            <Card className="bg-card border rounded-3xl p-12 text-center shadow-sm">
                                 <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                                 <h3 className="text-xl font-bold text-foreground mb-2">No Groups Yet</h3>
                                 <p className="text-muted-foreground mb-6">
@@ -730,15 +733,15 @@ function StudentDashboardContent() {
 
                 {/* ====== Panel: Tracking ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'tracking' ? 'active' : ''}`}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                    <h1 className="text-3xl font-black mb-2 text-foreground">
                         Activity Tracking
                     </h1>
-                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                    <p className="text-muted-foreground mb-8 text-sm max-w-xl">
                         Monitor your progress, XP rewards, and achievement metrics.
                     </p>
 
                     {/* XP & Level Card */}
-                    <Card className="bg-linear-to-br from-[#226CE0] to-[#1A234A] text-white border-0 rounded-4xl p-8 shadow-xl max-w-2xl mb-10">
+                    <Card className="bg-linear-to-br from-[#226CE0] to-[#1A234A] text-white border-0 rounded-3xl p-8 shadow-xl max-w-2xl mb-10">
                         <div className="flex items-start justify-between mb-6">
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
@@ -835,37 +838,37 @@ function StudentDashboardContent() {
 
                     {/* XP Breakdown */}
                     <section className="mb-12">
-                        <h3 className="text-2xl font-bold text-foreground mb-6">XP Rewards</h3>
+                        <h3 className="text-xl font-bold text-foreground mb-6">XP Rewards</h3>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                            <Card className="bg-card border rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                 <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <Calendar className="w-6 h-6 text-purple-600" />
                                 </div>
                                 <p className="text-2xl font-bold text-foreground mb-1">{(userStats?.stats?.eventsAttending || 0) * 50}</p>
                                 <p className="text-xs text-muted-foreground font-bold">Event Attendance</p>
                             </Card>
-                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                            <Card className="bg-card border rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                 <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <Target className="w-6 h-6 text-green-600" />
                                 </div>
                                 <p className="text-2xl font-black text-foreground mb-1">{projectCounts.completed * 100}</p>
                                 <p className="text-xs text-muted-foreground font-bold">Project Completion</p>
                             </Card>
-                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                            <Card className="bg-card border rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                 <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <Users className="w-5 h-5 text-blue-600" />
                                 </div>
                                 <p className="text-2xl font-black text-foreground mb-1">{mentorSessions.filter(s => s.status === 'COMPLETED').length * 25}</p>
                                 <p className="text-xs text-muted-foreground font-bold">Mentor Sessions</p>
                             </Card>
-                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                            <Card className="bg-card border rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                 <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <Flame className="w-6 h-6 text-orange-600" />
                                 </div>
                                 <p className="text-2xl font-black text-foreground mb-1">{(user?.currentStreak || 0) * 20}</p>
                                 <p className="text-xs text-muted-foreground font-bold">Streak Bonus</p>
                             </Card>
-                            <Card className="bg-card border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                            <Card className="bg-card border rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
                                 <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <Award className="w-5 h-5 text-teal-600" />
                                 </div>
@@ -877,9 +880,9 @@ function StudentDashboardContent() {
 
                     {/* Activity Summary */}
                     <section>
-                        <h3 className="text-2xl font-bold text-foreground mb-6">Activity Summary</h3>
+                        <h3 className="text-xl font-bold text-foreground mb-6">Activity Summary</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                            <Card className="bg-card border rounded-3xl p-6 shadow-sm">
+                            <Card className="bg-card border rounded-2xl p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
                                         <Target className="w-5 h-5 text-purple-600" />
@@ -889,7 +892,7 @@ function StudentDashboardContent() {
                                 <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.projectsOwned || 0}</p>
                                 <p className="text-sm text-muted-foreground font-bold">Projects Created</p>
                             </Card>
-                            <Card className="bg-card border rounded-3xl p-6 shadow-sm">
+                            <Card className="bg-card border rounded-2xl p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
                                         <Users className="w-5 h-5 text-blue-600" />
@@ -899,7 +902,7 @@ function StudentDashboardContent() {
                                 <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.projectsJoined || 0}</p>
                                 <p className="text-sm text-muted-foreground font-bold">Projects Joined</p>
                             </Card>
-                            <Card className="bg-card border rounded-3xl p-6 shadow-sm">
+                            <Card className="bg-card border rounded-2xl p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
                                         <Calendar className="w-5 h-5 text-green-600" />
@@ -909,7 +912,7 @@ function StudentDashboardContent() {
                                 <p className="text-3xl font-bold text-foreground mb-1">{userStats?.stats?.eventsAttending || 0}</p>
                                 <p className="text-sm text-muted-foreground font-bold">Events Attended</p>
                             </Card>
-                            <Card className="bg-card border rounded-3xl p-6 shadow-sm">
+                            <Card className="bg-card border rounded-2xl p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
                                         <Users className="w-5 h-5 text-orange-600" />
@@ -925,10 +928,10 @@ function StudentDashboardContent() {
 
                 {/* ====== Panel: Swag ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'swag' ? 'active' : ''}`}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                    <h1 className="text-3xl font-black mb-2 text-foreground">
                         My Redemptions
                     </h1>
-                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                    <p className="text-muted-foreground mb-8 text-sm max-w-xl">
                         Your orders and swag history.
                     </p>
                     <SwagOrdersList />
@@ -936,10 +939,10 @@ function StudentDashboardContent() {
 
                 {/* ====== Panel: Report ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'report' ? 'active' : ''}`}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                    <h1 className="text-3xl font-black mb-2 text-foreground">
                         Reports
                     </h1>
-                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                    <p className="text-muted-foreground mb-8 text-sm max-w-xl">
                         Submit issues, bugs, or violations with photo &amp; video evidence.
                     </p>
 
@@ -958,7 +961,7 @@ function StudentDashboardContent() {
                     {/* My Reports */}
                     <section>
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold text-foreground">My Reports</h2>
+                            <h2 className="text-xl font-bold text-foreground">My Reports</h2>
                             <button
                                 onClick={fetchMyReports}
                                 className="text-sm text-[#226CE0] hover:underline font-medium"
@@ -972,7 +975,7 @@ function StudentDashboardContent() {
                                 <Loader2 className="w-10 h-10 animate-spin text-[#226CE0]" />
                             </div>
                         ) : myReports.length === 0 ? (
-                            <div className="bg-muted/40 border border-border rounded-3xl p-12 text-center">
+                            <div className="bg-muted/40 border border-border rounded-2xl p-12 text-center">
                                 <Flag className="w-14 h-14 text-muted-foreground mx-auto mb-4" />
                                 <h3 className="text-xl font-bold text-foreground mb-2">No reports yet</h3>
                                 <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
@@ -994,7 +997,7 @@ function StudentDashboardContent() {
                                     return (
                                         <div
                                             key={report.id}
-                                            className="bg-card border border-border rounded-3xl p-6 hover:shadow-md transition-shadow"
+                                            className="bg-card border border-border rounded-2xl p-6 hover:shadow-md transition-shadow"
                                         >
                                             <div className="flex items-start gap-4">
                                                 <div className={`mt-1 w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${s?.bg || 'bg-muted'}`}>
@@ -1042,58 +1045,90 @@ function StudentDashboardContent() {
 
                 {/* ====== Panel: Settings ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'settings' ? 'active' : ''}`}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+                    <h1 className="text-3xl font-black mb-2 text-foreground">
                         Workspace Settings
                     </h1>
-                    <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem', lineHeight: 1.6 }}>
+                    <p className="text-muted-foreground mb-8 text-sm max-w-xl">
                         Customize your profile. Updating these parameters will help other community members discover and connect with you.
                     </p>
 
-                    <div className="bg-card border border-border rounded-2xl p-8">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                            <div className="dashboard-form-group">
-                                <label className="dashboard-form-label">Full Name</label>
-                                <input type="text" className="dashboard-form-input" placeholder={session.user?.name || 'Your Name'} defaultValue={session.user?.name || ''} readOnly />
+                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
+                        {/* Left Column: Avatar & Account Info */}
+                        <div className="bg-card border border-border rounded-3xl p-6 flex flex-col items-center text-center gap-6 h-fit">
+                            <div className="relative group">
+                                {session.user?.image ? (
+                                    <div className="w-24 h-24 rounded-full border-4 border-primary/20 overflow-hidden relative shadow-lg">
+                                        <Image src={session.user.image} alt="User" width={96} height={96} className="w-full h-full object-cover" />
+                                    </div>
+                                ) : (
+                                    <div className="w-24 h-24 rounded-full bg-linear-to-tr from-[#7C3AED] to-[#226CE0] flex items-center justify-center text-3xl font-black text-white border-4 border-primary/20 shadow-lg">
+                                        {userInitials}
+                                    </div>
+                                )}
                             </div>
-                            <div className="dashboard-form-group">
-                                <label className="dashboard-form-label">Email</label>
-                                <input type="email" className="dashboard-form-input" placeholder={session.user?.email || 'your@email.com'} defaultValue={session.user?.email || ''} readOnly />
-                            </div>
-                            <div className="dashboard-form-group">
-                                <label className="dashboard-form-label">GitHub Profile URL</label>
-                                <input type="url" className="dashboard-form-input" placeholder="https://github.com/username" />
-                            </div>
-                            <div className="dashboard-form-group">
-                                <label className="dashboard-form-label">LinkedIn Profile URL</label>
-                                <input type="url" className="dashboard-form-input" placeholder="https://linkedin.com/in/username" />
+                            <div className="w-full space-y-4">
+                                <div>
+                                    <h3 className="font-bold text-lg text-foreground">{session.user?.name || 'Student'}</h3>
+                                    <p className="text-xs text-muted-foreground">{session.user?.email}</p>
+                                </div>
+                                <div className="p-3 bg-muted rounded-2xl">
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Developer Tier</p>
+                                    <p className="text-sm font-bold text-primary">{getLevelLabel(user?.level || 1)}</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="dashboard-form-group mb-4">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <label className="dashboard-form-label">Technical Stack & Skills</label>
-                                <span style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))' }}>(Comma separated)</span>
+                        {/* Right Column: Detailed Profiles & Settings */}
+                        <div className="bg-card border border-border rounded-3xl p-8 space-y-6">
+                            <div>
+                                <h3 className="text-lg font-bold text-foreground mb-1">Profile Details</h3>
+                                <p className="text-sm text-muted-foreground">Manage your developer profile and social linkages.</p>
                             </div>
-                            <input type="text" className="dashboard-form-input" placeholder="React, Node, Python, Figma, etc." />
-                        </div>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="dashboard-form-group">
+                                    <label className="dashboard-form-label">Full Name</label>
+                                    <input type="text" className="dashboard-form-input bg-muted/50 cursor-not-allowed" placeholder={session.user?.name || 'Your Name'} defaultValue={session.user?.name || ''} readOnly />
+                                </div>
+                                <div className="dashboard-form-group">
+                                    <label className="dashboard-form-label">Email</label>
+                                    <input type="email" className="dashboard-form-input bg-muted/50 cursor-not-allowed" placeholder={session.user?.email || 'your@email.com'} defaultValue={session.user?.email || ''} readOnly />
+                                </div>
+                                <div className="dashboard-form-group">
+                                    <label className="dashboard-form-label">GitHub Profile URL</label>
+                                    <input type="url" className="dashboard-form-input" placeholder="https://github.com/username" />
+                                </div>
+                                <div className="dashboard-form-group">
+                                    <label className="dashboard-form-label">LinkedIn Profile URL</label>
+                                    <input type="url" className="dashboard-form-input" placeholder="https://linkedin.com/in/username" />
+                                </div>
+                            </div>
 
-                        <div className="dashboard-form-group mb-6">
-                            <label className="dashboard-form-label">Developer Biography</label>
-                            <textarea className="dashboard-form-input" rows={4} placeholder="Briefly describe what you like to build..." style={{ resize: 'none' }}></textarea>
-                        </div>
+                            <div className="dashboard-form-group">
+                                <div className="flex justify-between items-center">
+                                    <label className="dashboard-form-label">Technical Stack & Skills</label>
+                                    <span className="text-[10px] text-muted-foreground uppercase font-bold">(Comma separated)</span>
+                                </div>
+                                <input type="text" className="dashboard-form-input" placeholder="React, Node, Python, Figma, etc." />
+                            </div>
 
-                        <button
-                            className="w-full flex items-center justify-center gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold py-3 px-6 rounded-xl transition-all hover:shadow-lg hover:shadow-purple-500/20"
-                            onClick={() => {
-                                alert('Profile settings saved! ✨');
-                            }}
-                        >
-                            Update Workspace Profile Info 🚀
-                        </button>
+                            <div className="dashboard-form-group">
+                                <label className="dashboard-form-label">Developer Biography</label>
+                                <textarea className="dashboard-form-input" rows={4} placeholder="Briefly describe what you like to build..." style={{ resize: 'none' }}></textarea>
+                            </div>
+
+                            <button
+                                className="w-full flex items-center justify-center gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold py-3.5 px-6 rounded-2xl transition-all hover:shadow-lg hover:shadow-purple-500/20 active:scale-[0.99]"
+                                onClick={() => {
+                                    alert('Profile settings saved! ✨');
+                                }}
+                            >
+                                Update Workspace Profile Info 🚀
+                            </button>
+                        </div>
                     </div>
                 </div>
             </main>
-
 
             {/* Review Dialog */}
             {selectedSessionForReview && (
