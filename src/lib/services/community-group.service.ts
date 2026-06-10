@@ -144,6 +144,14 @@ export class CommunityGroupService {
       console.error('Failed to check first activity milestone:', error);
     });
 
+    // Trigger Badge Check for COMMUNITY category (groups joined)
+    try {
+      const { BadgeService } = await import('./badge.service');
+      await BadgeService.evaluateAndAwardBadges(userId, 'COMMUNITY');
+    } catch (error) {
+      console.error('Failed to evaluate badges for group join:', error);
+    }
+
     // Broadcast user joined event to group
     await this.broadcastUserJoined(groupId, userId, user.name || "Unknown", user.image || undefined);
   }
@@ -279,6 +287,14 @@ export class CommunityGroupService {
       request.user.name || "Unknown",
       request.user.image || undefined
     );
+
+    // Trigger Badge Check for COMMUNITY category (group request approved)
+    try {
+      const { BadgeService } = await import('./badge.service');
+      await BadgeService.evaluateAndAwardBadges(request.userId, 'COMMUNITY');
+    } catch (error) {
+      console.error('Failed to evaluate badges for group join approval:', error);
+    }
   }
 
   /**

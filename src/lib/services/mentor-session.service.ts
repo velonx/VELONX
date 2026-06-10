@@ -369,6 +369,14 @@ export class MentorSessionService {
           checkAndAwardFirstActivity(session.studentId, 'mentor_session').catch((error) => {
             console.error('Failed to check first activity milestone:', error);
           });
+
+          // Trigger Badge Check for MENTOR category
+          try {
+            const { BadgeService } = await import('./badge.service');
+            await BadgeService.evaluateAndAwardBadges(session.studentId, 'MENTOR');
+          } catch (badgeErr) {
+            console.error('Failed to evaluate mentor badges:', badgeErr);
+          }
           
           // Notify student to leave a review
           await notificationService.createMentorSessionCompletedNotification({

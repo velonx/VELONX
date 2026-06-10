@@ -44,10 +44,21 @@ export class MockInterviewService {
       updateData.reviewedAt = new Date();
     }
 
-    return prisma.mockInterview.update({
+    const updated = await prisma.mockInterview.update({
       where: { id },
       data: updateData,
     });
+
+    if (data.status === 'COMPLETED') {
+      try {
+        const { BadgeService } = await import('./badge.service');
+        await BadgeService.evaluateAndAwardBadges(updated.userId, 'CAREER');
+      } catch (badgeErr) {
+        console.error('Failed to evaluate mock interview badges:', badgeErr);
+      }
+    }
+
+    return updated;
   }
 
   static async delete(id: string) {

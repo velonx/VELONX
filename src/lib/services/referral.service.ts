@@ -181,6 +181,14 @@ export async function createReferralRelationship(
         milestone: 'signup',
         timestamp: new Date().toISOString()
       });
+
+      // Trigger Badge Check for REFERRAL category
+      try {
+        const { BadgeService } = await import('./badge.service');
+        await BadgeService.evaluateAndAwardBadges(referrerId, 'REFERRAL');
+      } catch (badgeErr) {
+        console.error("Failed to evaluate referral badges:", badgeErr);
+      }
     } catch (error) {
       console.error('Failed to award signup XP', {
         referrerId,

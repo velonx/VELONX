@@ -62,6 +62,14 @@ export async function POST(
               `Read blog post: ${existingBlogPost.title}`
             );
             xpAwarded = true;
+
+            // Trigger Badge Check for BLOG category
+            try {
+              const { BadgeService } = await import('@/lib/services/badge.service');
+              await BadgeService.evaluateAndAwardBadges(userId, 'BLOG');
+            } catch (badgeErr) {
+              console.error("Failed to evaluate blog reading badges:", badgeErr);
+            }
           } catch (e: any) {
             // Handle unique constraint or race conditions gracefully
             if (e.code !== "P2002") {

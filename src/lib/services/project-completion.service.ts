@@ -208,6 +208,17 @@ export class ProjectCompletionService {
       console.error('[ProjectCompletion] Failed to invalidate cache:', error);
     }
 
+    // Trigger Badge Check for all team members (owner + members)
+    try {
+      const { BadgeService } = await import('./badge.service');
+      await BadgeService.evaluateAndAwardBadges(project.ownerId, 'PROJECT');
+      for (const member of project.members) {
+        await BadgeService.evaluateAndAwardBadges(member.userId, 'PROJECT');
+      }
+    } catch (error) {
+      console.error('[ProjectCompletion] Failed to evaluate badges:', error);
+    }
+
     return {
       project: completedProject,
       xpAwarded,

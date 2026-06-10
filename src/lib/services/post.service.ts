@@ -162,6 +162,14 @@ export class PostService {
       },
     });
 
+    // Trigger Badge Check for COMMUNITY category (questions / posts)
+    try {
+      const { BadgeService } = await import('./badge.service');
+      await BadgeService.evaluateAndAwardBadges(authorId, 'COMMUNITY');
+    } catch (error) {
+      console.error('[PostService] Failed to evaluate badges:', error);
+    }
+
     // Format post data
     return this.formatPostData(post);
   }
@@ -429,6 +437,14 @@ export class PostService {
         },
       },
     });
+
+    // Trigger Badge Check for COMMUNITY category (comments)
+    try {
+      const { BadgeService } = await import('./badge.service');
+      await BadgeService.evaluateAndAwardBadges(userId, 'COMMUNITY');
+    } catch (error) {
+      console.error('[PostService] Failed to evaluate badges for comment:', error);
+    }
 
     return comment;
   }

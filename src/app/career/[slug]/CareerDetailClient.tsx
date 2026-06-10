@@ -455,6 +455,8 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
     }
     if (job?.applyUrl) {
       analytics.jobApply(job.id, job.title);
+      // Track application click in backend
+      fetch(`/api/opportunities/${job.id}/apply`, { method: "POST" }).catch(e => console.error(e));
       window.open(job.applyUrl, "_blank", "noopener,noreferrer");
       toast.success(`Opening application for ${job.title}...`);
     } else {
@@ -525,6 +527,9 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
     }
 
     setSubmitting(true);
+
+    // Track application click in backend
+    fetch(`/api/opportunities/${job.id}/apply`, { method: "POST" }).catch(e => console.error(e));
 
     setTimeout(() => {
       setSubmitting(false);

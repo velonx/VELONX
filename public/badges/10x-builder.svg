@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200">
+  <defs>
+    <linearGradient id="grad-10x-Builder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="50%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#dc2626" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="black" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Glow Glow Layer -->
+  <polygon points="50,3 92,20 92,80 50,97 8,80 8,20" fill="#fbbf24" opacity="0.15" filter="url(#shadow)" />
+
+  <!-- Outer Shield border -->
+  <polygon points="50,3 92,20 92,80 50,97 8,80 8,20" fill="none" stroke="#fde047" stroke-width="3.5" />
+
+  <!-- Shield Body -->
+  <polygon points="50,3 92,20 92,80 50,97 8,80 8,20" fill="url(#grad-10x-Builder)" transform="scale(0.9) translate(5.5, 5.5)" />
+
+  <!-- Centered Icon (Standardized bounds) -->
+  <g transform="translate(38, 32) scale(1)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 18h.01M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2z" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <path d="M9 8l-3 3 3 3M15 8l3 3-3 3M13 7l-2 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Badge Name Label -->
+  <text x="50%" y="82%" text-anchor="middle" fill="white" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="6px" letter-spacing="0.5" opacity="0.95" text-transform="uppercase">
+    10x Builder
+  </text>
+</svg>

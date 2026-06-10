@@ -67,6 +67,9 @@ enum BadgeCategory {
   STREAK // Login/activity streaks
   MILESTONE // General milestones
   SPECIAL // Limited time/special events
+  CAREER
+  BLOG
+  REFERRAL
 }
 
 enum BadgeRarity {
@@ -174,6 +177,9 @@ model User {
   // Referral relations
   referralsMade  ReferralRelationship[] @relation("ReferralsMade")
   referredByUser ReferralRelationship[] @relation("ReferredBy")
+
+  // Opportunity relations
+  opportunityApplications OpportunityApplication[]
 
   // Report relations
   reports           Report[]
@@ -884,7 +890,23 @@ model Opportunity {
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 
+  applications OpportunityApplication[]
+
   @@map("opportunities")
+}
+
+// Opportunity Application Model
+model OpportunityApplication {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  opportunityId String   @db.ObjectId
+  appliedAt     DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunity Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, opportunityId])
+  @@map("opportunity_applications")
 }
 
 // Audit Log Model for security event tracking

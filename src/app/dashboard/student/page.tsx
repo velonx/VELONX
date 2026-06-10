@@ -38,6 +38,8 @@ import { PostCard } from "@/components/community/PostCard";
 import { GroupCard } from "@/components/community/GroupCard";
 import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
+import BadgeIcon from "@/components/badges/BadgeIcon";
+import BadgeModal from "@/components/badges/BadgeModal";
 
 // Overview Components
 import WelcomeSection from "@/components/dashboard/student/Overview/WelcomeSection";
@@ -144,6 +146,37 @@ function StudentDashboardContent() {
     const [showReportDialog, setShowReportDialog] = useState(false);
     const [myReports, setMyReports] = useState<any[]>([]);
     const [reportsLoading, setReportsLoading] = useState(false);
+
+    // Badges state
+    const [badges, setBadges] = useState<any[]>([]);
+    const [loadingBadges, setLoadingBadges] = useState(true);
+    const [selectedBadge, setSelectedBadge] = useState<any | null>(null);
+    const [showBadgeModal, setShowBadgeModal] = useState(false);
+    const [showAllBadges, setShowAllBadges] = useState(false);
+
+    const fetchBadges = useCallback(async () => {
+        if (!session?.user?.id) return;
+        setLoadingBadges(true);
+        try {
+            const res = await fetch("/api/user/badges");
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success) {
+                    setBadges(data.data);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch badges:", error);
+        } finally {
+            setLoadingBadges(false);
+        }
+    }, [session?.user?.id]);
+
+    useEffect(() => {
+        if (session?.user?.id) {
+            fetchBadges();
+        }
+    }, [session?.user?.id, fetchBadges]);
 
     const fetchMyReports = useCallback(async () => {
         if (!session?.user?.id) return;
@@ -508,23 +541,81 @@ function StudentDashboardContent() {
                             {/* Daily Check-in */}
                             <DailyCheckIn />
 
-                            {/* Earned Badges */}
-                            <div className="bg-card border border-border rounded-2xl p-6">
-                                <h3 className="text-sm font-bold text-foreground mb-4">Earned Badges</h3>
-                                <div className="dashboard-badge-list">
-                                    <div className="badge-icon-box">
-                                        <span>💻</span>
-                                        <div className="badge-icon-label">Coder</div>
-                                    </div>
-                                    <div className="badge-icon-box">
-                                        <span>{projectCounts.completed > 0 ? '🏆' : '🔒'}</span>
-                                        <div className="badge-icon-label">{projectCounts.completed > 0 ? 'Finisher' : 'Locked'}</div>
-                                    </div>
-                                    <div className="badge-icon-box">
-                                        <span>{(user?.currentStreak || 0) >= 3 ? '🔥' : '🔒'}</span>
-                                        <div className="badge-icon-label">{(user?.currentStreak || 0) >= 3 ? 'Active' : 'Locked'}</div>
-                                    </div>
+                            {/* Dynamic Badges System Widget */}
+                            <div className="bg-card border border-border rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                                <div className="absolute -top-12 -right-12 w-24 h-24 bg-primary/5 rounded-full blur-2xl" />
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-sm font-bold text-foreground">Badges</h3>
+                                    {!loadingBadges && (
+                                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                            {badges.filter(b => b.earned).length} / {badges.length} Earned
+                                        </span>
+                                    )}
                                 </div>
+
+                                {loadingBadges ? (
+                                    <div className="flex flex-col items-center justify-center py-6 text-muted-foreground gap-2">
+                                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                                        <span className="text-xs">Loading achievements...</span>
+                                    </div>
+                                ) : badges.length === 0 ? (
+                                    <div className="text-center py-6 text-zinc-500 text-xs">
+                                        No badges configured yet.
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            {badges
+                                                .sort((a, b) => {
+                                                    // Earned first
+                                                    if (a.earned && !b.earned) return -1;
+                                                    if (!a.earned && b.earned) return 1;
+                                                    
+                                                    // Rarity weight
+                                                    const rarityWeight = { LEGENDARY: 4, EPIC: 3, RARE: 2, COMMON: 1 };
+                                                    const aWeight = rarityWeight[a.rarity as keyof typeof rarityWeight] || 0;
+                                                    const bWeight = rarityWeight[b.rarity as keyof typeof rarityWeight] || 0;
+                                                    if (a.earned && b.earned && aWeight !== bWeight) {
+                                                        return bWeight - aWeight;
+                                                    }
+                                                    
+                                                    return 0;
+                                                })
+                                                .slice(0, showAllBadges ? undefined : 6)
+                                                .map(badge => (
+                                                    <div 
+                                                        key={badge.id} 
+                                                        onClick={() => {
+                                                            setSelectedBadge(badge);
+                                                            setShowBadgeModal(true);
+                                                        }}
+                                                        className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-zinc-900/10 border border-transparent hover:border-border hover:bg-zinc-900/40 transition-all duration-200 cursor-pointer group text-center"
+                                                        title={`${badge.name} (${badge.rarity})`}
+                                                    >
+                                                        <BadgeIcon 
+                                                            name={badge.name} 
+                                                            rarity={badge.rarity} 
+                                                            category={badge.category} 
+                                                            earned={badge.earned} 
+                                                            size="md" 
+                                                        />
+                                                        <span className="text-[10px] font-bold mt-2 text-muted-foreground group-hover:text-foreground truncate w-full px-1">
+                                                            {badge.name}
+                                                        </span>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                        {badges.length > 6 && (
+                                            <button
+                                                onClick={() => setShowAllBadges(!showAllBadges)}
+                                                className="w-full mt-4 py-2 bg-secondary border border-border text-foreground hover:bg-zinc-800 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                                            >
+                                                {showAllBadges ? "Show Less" : "View All Badges"}
+                                            </button>
+                                        )}
+                                    </>
+                                )}
                             </div>
 
                             {/* Skill Index */}
@@ -1177,6 +1268,16 @@ function StudentDashboardContent() {
                     }}
                 />
             )}
+
+            {/* Badge Detail Modal */}
+            <BadgeModal
+                isOpen={showBadgeModal}
+                onClose={() => {
+                    setShowBadgeModal(false);
+                    setSelectedBadge(null);
+                }}
+                badge={selectedBadge}
+            />
         </div>
     );
 }
