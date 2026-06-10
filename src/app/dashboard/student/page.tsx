@@ -175,7 +175,7 @@ function ProjectsListSkeleton() {
 
 function DailyCheckInSkeleton() {
     return (
-        <div className="w-full rounded-[20px] bg-gradient-to-br from-orange-500/80 to-amber-400/80 p-5 text-white shadow-lg space-y-4 animate-pulse">
+        <div className="w-full rounded-[20px] bg-linear-to-br from-orange-500/80 to-amber-400/80 p-5 text-white shadow-lg space-y-4 animate-pulse">
             <div className="flex justify-between items-center">
                 <div className="space-y-2">
                     <div className="h-3 w-20 bg-white/20 rounded" />
