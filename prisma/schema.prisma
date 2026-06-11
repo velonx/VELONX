@@ -169,6 +169,11 @@ model User {
   resourceVisits   ResourceVisit[]
   blogPostReads    BlogPostRead[]
 
+  // Learning Paths relations
+  pathProgress     UserPathProgress[]
+  moduleProgress   UserModuleProgress[]
+  testSchedules    TestSchedule[]
+
   // Gamification relations
   badges         UserBadge[]
   achievements   Achievement[]
@@ -1384,4 +1389,99 @@ model Verification {
   
   @@index([userId])
   @@map("verifications")
+}
+
+// ============================================
+// LEARNING PATHS MODELS
+// ============================================
+
+model LearningPath {
+  id            String             @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String
+  level         String             // "Beginner" | "Intermediate" | "Advanced"
+  duration      String             // e.g., "6 Weeks"
+  badgeName     String             // Name of the skill badge earned
+  badgeImageUrl String             // Image URL for the skill badge
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  modules       Module[]
+  userProgress  UserPathProgress[]
+  testSchedules TestSchedule[]
+
+  @@map("learning_paths")
+}
+
+model Module {
+  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
+  pathId             String               @db.ObjectId
+  title              String
+  description        String
+  link               String               // Destination URL set by admin
+  duration           String               // e.g. "4 hours"
+  order              Int                  @default(0)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  learningPath       LearningPath         @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  userModuleProgress UserModuleProgress[]
+
+  @@index([pathId])
+  @@map("modules")
+}
+
+model UserPathProgress {
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String       @db.ObjectId
+  pathId           String       @db.ObjectId
+  completed        Boolean      @default(false)
+  completedAt      DateTime?
+  certificateEarned Boolean     @default(false)
+  certificateUrl   String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learningPath     LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pathId])
+  @@index([userId])
+  @@index([pathId])
+  @@map("user_path_progress")
+}
+
+model UserModuleProgress {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  moduleId    String   @db.ObjectId
+  completed   Boolean  @default(true)
+  completedAt DateTime @default(now())
+
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@index([userId])
+  @@index([moduleId])
+  @@map("user_module_progress")
+}
+
+model TestSchedule {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String       @db.ObjectId
+  pathId       String       @db.ObjectId
+  testDate     DateTime
+  status       String       @default("SCHEDULED") // "SCHEDULED" | "PASSED" | "FAILED"
+  score        Int?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learningPath LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pathId])
+  @@index([userId])
+  @@index([pathId])
+  @@map("test_schedules")
 }

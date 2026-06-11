@@ -19,3 +19,6 @@ export { EmptyState } from './EmptyState';
 export { Pagination } from './Pagination';
 export { FilterDrawer } from './FilterDrawer';
 export { FilterPanel } from './FilterPanel';
+export { PathCard } from './PathCard';
+export { PathDetailHub } from './PathDetailHub';
+export { CertificateModal } from './CertificateModal';
