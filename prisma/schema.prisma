@@ -1396,15 +1396,16 @@ model Verification {
 // ============================================
 
 model LearningPath {
-  id            String             @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  description   String
-  level         String             // "Beginner" | "Intermediate" | "Advanced"
-  duration      String             // e.g., "6 Weeks"
-  badgeName     String             // Name of the skill badge earned
-  badgeImageUrl String             // Image URL for the skill badge
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
+  id             String             @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  description    String
+  level          String             // "Beginner" | "Intermediate" | "Advanced"
+  duration       String             // e.g., "6 Weeks"
+  badgeName      String?            // Name of the skill badge earned (optional)
+  badgeImageUrl  String?            // Image URL for the skill badge (optional)
+  hasCertificate Boolean            @default(false)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 
   modules       Module[]
   userProgress  UserPathProgress[]

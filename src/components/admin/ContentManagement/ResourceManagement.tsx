@@ -33,10 +33,32 @@ interface LearningPath {
   description: string;
   level: string;
   duration: string;
-  badgeName: string;
-  badgeImageUrl: string;
+  badgeName?: string;
+  badgeImageUrl?: string;
+  hasCertificate?: boolean;
   modules?: Module[];
   createdAt: string;
+}
+
+interface TestSchedule {
+  id: string;
+  userId: string;
+  pathId: string;
+  testDate: string;
+  status: string;
+  score: number | null;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    image: string | null;
+  };
+  learningPath: {
+    id: string;
+    title: string;
+    hasCertificate: boolean;
+  };
 }
 
 interface Module {
@@ -85,6 +107,7 @@ export default function ResourceManagement() {
   useEffect(() => {
     fetchResources();
     fetchLearningPaths();
+    fetchTestSchedules();
   }, []);
 
   const fetchResources = async () => {
@@ -205,6 +228,52 @@ export default function ResourceManagement() {
   const [editingPath, setEditingPath] = useState<LearningPath | null>(null);
   const [deletingPathId, setDeletingPathId] = useState<string | null>(null);
   const [pathSearchQuery, setPathSearchQuery] = useState("");
+
+  // Test Schedules Queue state
+  const [testSchedules, setTestSchedules] = useState<TestSchedule[]>([]);
+  const [loadingSchedules, setLoadingSchedules] = useState(false);
+
+  const fetchTestSchedules = async () => {
+    setLoadingSchedules(true);
+    try {
+      const response = await fetch('/api/learning-paths/test-schedules');
+      const data = await response.json();
+      if (data.success) {
+        setTestSchedules(data.data);
+      } else {
+        throw new Error(data.error?.message || 'Failed to load test schedules');
+      }
+    } catch (error) {
+      console.error('Error fetching test schedules:', error);
+    } finally {
+      setLoadingSchedules(false);
+    }
+  };
+
+  const handleUpdateScheduleStatus = async (scheduleId: string, status: "PASSED" | "FAILED", score?: number) => {
+    try {
+      const csrfToken = await getCSRFToken();
+      const response = await fetch(`/api/learning-paths/test-schedules/${scheduleId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken,
+        },
+        body: JSON.stringify({ status, score }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success(`Exam status marked as ${status}!`);
+        fetchTestSchedules();
+        fetchLearningPaths();
+      } else {
+        throw new Error(data.error?.message || "Failed to update test status");
+      }
+    } catch (error) {
+      console.error("Error updating test status:", error);
+      toast.error(error instanceof Error ? error.message : "Error updating status");
+    }
+  };
   
   // Modules management state
   const [activePathForModules, setActivePathForModules] = useState<LearningPath | null>(null);
@@ -347,7 +416,7 @@ export default function ResourceManagement() {
       return (
         path.title.toLowerCase().includes(q) ||
         path.description.toLowerCase().includes(q) ||
-        path.badgeName.toLowerCase().includes(q)
+        (path.badgeName && path.badgeName.toLowerCase().includes(q))
       );
     }
     return true;
@@ -999,9 +1068,16 @@ export default function ResourceManagement() {
                         >
                           <div className="p-6 space-y-4">
                             <div className="flex justify-between items-start">
-                              <Badge className="bg-[#226CE0]/10 text-[#226CE0] font-black border-0">
-                                {path.level}
-                              </Badge>
+                              <div className="flex flex-wrap gap-1.5">
+                                <Badge className="bg-[#226CE0]/10 text-[#226CE0] font-black border-0">
+                                  {path.level}
+                                </Badge>
+                                {path.hasCertificate && (
+                                  <Badge className="bg-emerald-50 text-emerald-600 border-0 font-bold text-xs">
+                                    Certified
+                                  </Badge>
+                                )}
+                              </div>
                               <span className="text-xs font-bold text-gray-400">⏱️ {path.duration}</span>
                             </div>
 
@@ -1015,18 +1091,18 @@ export default function ResourceManagement() {
                               {path.badgeImageUrl ? (
                                 <Image
                                   src={path.badgeImageUrl}
-                                  alt={path.badgeName}
+                                  alt={path.badgeName || "Badge"}
                                   width={40}
                                   height={40}
                                   className="w-10 h-10 object-contain rounded-lg"
                                   unoptimized
                                 />
                               ) : (
-                                <Award className="w-10 h-10 text-orange-500" />
+                                <Award className="w-10 h-10 text-gray-300" />
                               )}
                               <div>
                                 <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Completing Badge</span>
-                                <h5 className="text-xs font-bold text-[#1A234A] line-clamp-1">{path.badgeName}</h5>
+                                <h5 className="text-xs font-bold text-[#1A234A] line-clamp-1">{path.badgeName || "None"}</h5>
                               </div>
                             </div>
                           </div>
@@ -1070,6 +1146,130 @@ export default function ResourceManagement() {
                 </CardContent>
               </Card>
 
+              {/* Certificate Test Requests Queue */}
+              <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden mt-12">
+                <CardHeader className="p-12 border-b border-gray-50">
+                  <h3 className="text-3xl font-black text-[#1A234A] mb-2">Certificate Exam Requests</h3>
+                  <p className="text-gray-400">Review, schedule, and grade student final exams for certified roadmaps</p>
+                </CardHeader>
+                <CardContent className="p-12">
+                  {loadingSchedules ? (
+                    <div className="text-center py-12">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#226CE0] mx-auto mb-4"></div>
+                      <p className="text-gray-600">Loading exam requests...</p>
+                    </div>
+                  ) : testSchedules.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-gray-400 text-lg font-bold">No exam requests yet</p>
+                      <p className="text-gray-400 text-sm mt-2">When students finish a certified roadmap, their requested exam date will appear here.</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="border-b border-gray-100 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                            <th className="pb-4">Student</th>
+                            <th className="pb-4">Roadmap</th>
+                            <th className="pb-4">Requested Date</th>
+                            <th className="pb-4">Status</th>
+                            <th className="pb-4">Grade</th>
+                            <th className="pb-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {testSchedules.map((schedule) => (
+                            <tr key={schedule.id} className="text-sm">
+                              <td className="py-6 flex items-center gap-3">
+                                {schedule.user.image ? (
+                                  <Image
+                                    src={schedule.user.image}
+                                    alt={schedule.user.name || "Student"}
+                                    width={32}
+                                    height={32}
+                                    className="w-8 h-8 rounded-full"
+                                    unoptimized
+                                  />
+                                ) : (
+                                  <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-bold text-xs">
+                                    {(schedule.user.name || schedule.user.email)[0].toUpperCase()}
+                                  </div>
+                                )}
+                                <div>
+                                  <p className="font-bold text-[#1A234A]">{schedule.user.name || "No name"}</p>
+                                  <p className="text-xs text-gray-400">{schedule.user.email}</p>
+                                </div>
+                              </td>
+                              <td className="py-6">
+                                <p className="font-semibold text-[#1A234A]">{schedule.learningPath.title}</p>
+                              </td>
+                              <td className="py-6 text-gray-500">
+                                {new Date(schedule.testDate).toLocaleDateString(undefined, {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </td>
+                              <td className="py-6">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                                  schedule.status === "PASSED"
+                                    ? "bg-emerald-50 text-emerald-700"
+                                    : schedule.status === "FAILED"
+                                    ? "bg-red-50 text-red-700"
+                                    : "bg-amber-50 text-amber-700"
+                                }`}>
+                                  {schedule.status}
+                                </span>
+                              </td>
+                              <td className="py-6 text-gray-600 font-bold">
+                                {schedule.score !== null ? `${schedule.score}%` : "—"}
+                              </td>
+                              <td className="py-6 text-right">
+                                {schedule.status === "PENDING" || schedule.status === "SCHEDULED" ? (
+                                  <div className="flex gap-2 justify-end">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const scoreStr = prompt("Enter student score (0-100):", "90");
+                                        if (scoreStr === null) return;
+                                        const score = parseInt(scoreStr, 10);
+                                        if (isNaN(score) || score < 0 || score > 100) {
+                                          toast.error("Please enter a valid number between 0 and 100");
+                                          return;
+                                        }
+                                        handleUpdateScheduleStatus(schedule.id, "PASSED", score);
+                                      }}
+                                      className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl font-bold text-xs transition-all cursor-pointer"
+                                    >
+                                      Approve & Pass
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (confirm("Are you sure you want to mark this test as failed/rejected?")) {
+                                          handleUpdateScheduleStatus(schedule.id, "FAILED");
+                                        }
+                                      }}
+                                      className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl font-bold text-xs transition-all cursor-pointer"
+                                    >
+                                      Reject & Fail
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span className="text-xs text-gray-400">Reviewed</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* Form to create/edit paths */}
               <div ref={pathFormRef}>
                 <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
@@ -1095,8 +1295,9 @@ export default function ResourceManagement() {
                             description: formData.get("pathDesc") as string,
                             level: formData.get("pathLevel") as string,
                             duration: formData.get("pathDuration") as string,
-                            badgeName: formData.get("pathBadgeName") as string,
-                            badgeImageUrl: formData.get("pathBadgeUrl") as string,
+                            badgeName: (formData.get("pathBadgeName") as string) || undefined,
+                            badgeImageUrl: (formData.get("pathBadgeUrl") as string) || undefined,
+                            hasCertificate: formData.get("hasCertificate") === "on",
                           };
 
                           const csrfToken = await getCSRFToken();
@@ -1192,22 +1393,38 @@ export default function ResourceManagement() {
                         </div>
                       </div>
 
+                      <div className="flex items-center gap-3 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <input
+                          type="checkbox"
+                          id="hasCertificate"
+                          name="hasCertificate"
+                          defaultChecked={editingPath?.hasCertificate || false}
+                          className="w-5 h-5 rounded border-gray-300 text-[#226CE0] focus:ring-[#226CE0]"
+                        />
+                        <div>
+                          <label htmlFor="hasCertificate" className="text-sm font-bold text-[#1A234A] cursor-pointer">
+                            Requires Certification Exam
+                          </label>
+                          <p className="text-xs text-gray-400 mt-1">
+                            If enabled, students can schedule a final certificate test which the admin reviews and approves offline.
+                          </p>
+                        </div>
+                      </div>
+
                       <div className="grid grid-cols-2 gap-8">
                         <div className="space-y-3">
-                          <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Reward Badge Name *</label>
+                          <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Reward Badge Name (Optional)</label>
                           <Input
                             name="pathBadgeName"
-                            required
                             placeholder="e.g. React Master Builder"
                             defaultValue={editingPath?.badgeName || ""}
                             className="h-14 bg-gray-50 border-0 rounded-2xl"
                           />
                         </div>
                         <div className="space-y-3">
-                          <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Reward Badge Image URL *</label>
+                          <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Reward Badge Image URL (Optional)</label>
                           <Input
                             name="pathBadgeUrl"
-                            required
                             placeholder="e.g. https://example.com/badge.png"
                             defaultValue={editingPath?.badgeImageUrl || ""}
                             className="h-14 bg-gray-50 border-0 rounded-2xl"

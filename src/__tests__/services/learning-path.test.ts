@@ -135,6 +135,7 @@ describe('LearningPathService', () => {
 
   describe('scheduleTest', () => {
     it('should fail if not all modules are completed', async () => {
+      vi.mocked(prisma.learningPath.findUnique).mockResolvedValue({ id: 'path-1', title: 'DSA Path', hasCertificate: true } as any);
       vi.mocked(prisma.module.findMany).mockResolvedValue([
         { id: 'mod-1' },
         { id: 'mod-2' },
@@ -149,6 +150,7 @@ describe('LearningPathService', () => {
     });
 
     it('should succeed and schedule if all modules are completed', async () => {
+      vi.mocked(prisma.learningPath.findUnique).mockResolvedValue({ id: 'path-1', title: 'DSA Path', hasCertificate: true } as any);
       vi.mocked(prisma.module.findMany).mockResolvedValue([
         { id: 'mod-1' },
         { id: 'mod-2' },
@@ -160,7 +162,6 @@ describe('LearningPathService', () => {
 
       const mockSchedule = { id: 'sched-1', testDate: new Date(), status: 'SCHEDULED' };
       vi.mocked(prisma.testSchedule.upsert).mockResolvedValue(mockSchedule as any);
-      vi.mocked(prisma.learningPath.findUnique).mockResolvedValue({ title: 'DSA Path' } as any);
 
       const result = await learningPathService.scheduleTest('user-1', 'path-1', new Date());
 

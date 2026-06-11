@@ -170,11 +170,20 @@ export class LearningPathService {
     description: string;
     level: string;
     duration: string;
-    badgeName: string;
-    badgeImageUrl: string;
+    badgeName?: string;
+    badgeImageUrl?: string;
+    hasCertificate?: boolean;
   }) {
     return await prisma.learningPath.create({
-      data,
+      data: {
+        title: data.title,
+        description: data.description,
+        level: data.level,
+        duration: data.duration,
+        badgeName: data.badgeName || null,
+        badgeImageUrl: data.badgeImageUrl || null,
+        hasCertificate: data.hasCertificate ?? false,
+      },
     });
   }
 
@@ -188,16 +197,26 @@ export class LearningPathService {
       description?: string;
       level?: string;
       duration?: string;
-      badgeName?: string;
-      badgeImageUrl?: string;
+      badgeName?: string | null;
+      badgeImageUrl?: string | null;
+      hasCertificate?: boolean;
     }
   ) {
     const existing = await prisma.learningPath.findUnique({ where: { id } });
     if (!existing) throw new NotFoundError("Learning Path");
 
+    const updateData: any = {};
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.level !== undefined) updateData.level = data.level;
+    if (data.duration !== undefined) updateData.duration = data.duration;
+    if (data.badgeName !== undefined) updateData.badgeName = data.badgeName || null;
+    if (data.badgeImageUrl !== undefined) updateData.badgeImageUrl = data.badgeImageUrl || null;
+    if (data.hasCertificate !== undefined) updateData.hasCertificate = data.hasCertificate;
+
     return await prisma.learningPath.update({
       where: { id },
-      data,
+      data: updateData,
     });
   }
 
@@ -318,12 +337,7 @@ export class LearningPathService {
       });
       completed = true;
 
-      // Award XP for completing a module
-      await XPService.addXP(userId, 50, "CHALLENGE_COMPLETION", {
-        moduleId,
-        moduleTitle: module.title,
-        pathId,
-      });
+      // Note: Removed module clicked XP award as per user requirements
     }
 
     // Check path completion status
@@ -360,10 +374,14 @@ export class LearningPathService {
 
     // Notify if path completed
     if (allCompleted && !existingProgress) {
+      const descriptionText = module.learningPath.hasCertificate
+        ? `You've completed all modules! Schedule your Certificate Test under the Roadmap page.`
+        : `You've completed the roadmap "${module.learningPath.title}"!`;
+
       await notificationService.createNotification({
         userId,
         title: `🎉 Roadmap Completed: ${module.learningPath.title}`,
-        description: `You've completed all modules! Schedule your Certificate Test to earn the "${module.learningPath.badgeName}" Skill Badge.`,
+        description: descriptionText,
         type: "SUCCESS",
         actionUrl: `/resources`,
       });
@@ -385,6 +403,13 @@ export class LearningPathService {
    * Schedule Certificate Test
    */
   async scheduleTest(userId: string, pathId: string, testDate: Date) {
+    const path = await prisma.learningPath.findUnique({ where: { id: pathId } });
+    if (!path) throw new NotFoundError("Learning Path");
+    
+    if (!path.hasCertificate) {
+      throw new ValidationError("This roadmap does not require or offer a certification exam.");
+    }
+
     // Confirm all modules are completed first
     const pathModules = await prisma.module.findMany({
       where: { pathId },
@@ -407,28 +432,90 @@ export class LearningPathService {
       where: { userId_pathId: { userId, pathId } },
       update: {
         testDate,
-        status: "SCHEDULED",
+        status: "PENDING", // Scheduled test is pending review by admin
         score: null,
       },
       create: {
         userId,
         pathId,
         testDate,
-        status: "SCHEDULED",
+        status: "PENDING",
       },
     });
 
-    const path = await prisma.learningPath.findUnique({ where: { id: pathId } });
-
     await notificationService.createNotification({
       userId,
-      title: `📅 Certificate Test Scheduled`,
-      description: `Your test for the "${path?.title}" certificate is scheduled for ${testDate.toLocaleDateString()}.`,
+      title: `📅 Test Schedule Requested`,
+      description: `Your certificate test request for "${path.title}" is pending admin review.`,
       type: "INFO",
       actionUrl: `/resources`,
     });
 
     return schedule;
+  }
+
+  /**
+   * Admin-facing method to list all test schedules
+   */
+  async listAllTestSchedules() {
+    return await prisma.testSchedule.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        learningPath: {
+          select: {
+            id: true,
+            title: true,
+            hasCertificate: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  /**
+   * Admin updates a test schedule status (Approve/Reject)
+   */
+  async updateTestScheduleStatus(scheduleId: string, status: string, score?: number) {
+    const existing = await prisma.testSchedule.findUnique({
+      where: { id: scheduleId },
+    });
+
+    if (!existing) {
+      throw new NotFoundError("Test Schedule");
+    }
+
+    if (status === "PASSED") {
+      // Complete test, generate certificate and optional badge
+      return await this.claimCertificate(existing.userId, existing.pathId, score ?? 95);
+    }
+
+    // Update other statuses (FAILED, SCHEDULED)
+    const updated = await prisma.testSchedule.update({
+      where: { id: scheduleId },
+      data: {
+        status,
+        score: score !== undefined ? score : undefined,
+      },
+    });
+
+    // Notify user
+    await notificationService.createNotification({
+      userId: existing.userId,
+      title: `📅 Certificate Test Status Update`,
+      description: `Your exam schedule request status has been updated to "${status}".`,
+      type: "INFO",
+      actionUrl: `/resources`,
+    });
+
+    return updated;
   }
 
   /**
@@ -461,7 +548,7 @@ export class LearningPathService {
       },
     });
 
-    // Generate certificate URL (mock URL / unique ID)
+    // Generate certificate URL (unique ID)
     const certificateId = `VAL-${pathId.substring(0, 4)}-${userId.substring(0, 4)}-${Date.now().toString().slice(-6)}`.toUpperCase();
     const certificateUrl = `/certificates/${certificateId}`;
 
@@ -474,50 +561,57 @@ export class LearningPathService {
       },
     });
 
-    // Check if user already has a Badge with the same name, if not create one or link it
-    let badge = await prisma.badge.findUnique({
-      where: { name: path.badgeName },
-    });
-
-    if (!badge) {
-      badge = await prisma.badge.create({
-        data: {
-          name: path.badgeName,
-          description: `Awarded for completing the ${path.title} learning path and passing the certificate test.`,
-          imageUrl: path.badgeImageUrl || "/badges/default-path.png",
-          category: "MILESTONE",
-          xpReward: 500,
-          criteria: JSON.stringify({ pathId }),
-        },
+    // Award Badge only if configured by Admin
+    let badgeName = path.badgeName;
+    if (badgeName) {
+      let badge = await prisma.badge.findUnique({
+        where: { name: badgeName },
       });
-    }
 
-    // Award user badge
-    const existingUserBadge = await prisma.userBadge.findUnique({
-      where: { userId_badgeId: { userId, badgeId: badge.id } },
-    });
+      if (!badge) {
+        badge = await prisma.badge.create({
+          data: {
+            name: badgeName,
+            description: `Awarded for completing the ${path.title} learning path and passing the certificate test.`,
+            imageUrl: path.badgeImageUrl || "/badges/default-path.png",
+            category: "MILESTONE",
+            xpReward: 500,
+            criteria: JSON.stringify({ pathId }),
+          },
+        });
+      }
 
-    if (!existingUserBadge) {
-      await prisma.userBadge.create({
-        data: {
-          userId,
+      // Award user badge
+      const existingUserBadge = await prisma.userBadge.findUnique({
+        where: { userId_badgeId: { userId, badgeId: badge.id } },
+      });
+
+      if (!existingUserBadge) {
+        await prisma.userBadge.create({
+          data: {
+            userId,
+            badgeId: badge.id,
+            progress: 100,
+          },
+        });
+
+        // Award XP for Badge unlock
+        await XPService.addXP(userId, 500, "BADGE_UNLOCK", {
           badgeId: badge.id,
-          progress: 100,
-        },
-      });
-
-      // Award XP
-      await XPService.addXP(userId, 500, "BADGE_UNLOCK", {
-        badgeId: badge.id,
-        badgeName: badge.name,
-      });
+          badgeName: badge.name,
+        });
+      }
     }
 
     // Create notification
+    const notificationDesc = badgeName
+      ? `Congratulations! You've passed the test for "${path.title}", earned the "${badgeName}" Skill Badge, and unlocked your printable Certificate.`
+      : `Congratulations! You've passed the test for "${path.title}" and unlocked your printable Certificate.`;
+
     await notificationService.createNotification({
       userId,
       title: `🎓 Certificate Earned!`,
-      description: `Congratulations! You've passed the test for "${path.title}", earned the "${path.badgeName}" Skill Badge, and unlocked your printable Certificate.`,
+      description: notificationDesc,
       type: "SUCCESS",
       actionUrl: `/resources`,
     });
@@ -526,7 +620,7 @@ export class LearningPathService {
       success: true,
       certificateId,
       certificateUrl,
-      badgeName: path.badgeName,
+      badgeName: badgeName || null,
     };
   }
 }

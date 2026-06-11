@@ -10,8 +10,9 @@ const createPathSchema = z.object({
   description: z.string().min(10),
   level: z.enum(["Beginner", "Intermediate", "Advanced"]),
   duration: z.string(),
-  badgeName: z.string().min(3),
-  badgeImageUrl: z.string().url(),
+  badgeName: z.string().optional().nullable().or(z.literal("")),
+  badgeImageUrl: z.string().optional().nullable().or(z.literal("")),
+  hasCertificate: z.boolean().optional(),
 });
 
 /**
@@ -43,16 +44,17 @@ export async function POST(request: NextRequest) {
     if (session instanceof NextResponse) return session;
 
     const body = await request.json();
-    const validatedData = {
-      title: body.title,
-      description: body.description,
-      level: body.level,
-      duration: body.duration,
-      badgeName: body.badgeName,
-      badgeImageUrl: body.badgeImageUrl,
-    };
+    const validatedData = createPathSchema.parse(body);
 
-    const path = await learningPathService.createLearningPath(validatedData);
+    const path = await learningPathService.createLearningPath({
+      title: validatedData.title,
+      description: validatedData.description,
+      level: validatedData.level,
+      duration: validatedData.duration,
+      badgeName: validatedData.badgeName || undefined,
+      badgeImageUrl: validatedData.badgeImageUrl || undefined,
+      hasCertificate: validatedData.hasCertificate,
+    });
 
     return NextResponse.json(
       {
