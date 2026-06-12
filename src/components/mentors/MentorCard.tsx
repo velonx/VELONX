@@ -33,16 +33,21 @@ export const MentorCard: React.FC<MentorCardProps> = ({
         : 'M';
 
     const avatarColors = [
-        { bg: 'rgba(124, 58, 237, 0.15)', text: '#A78BFA' }, // Violet
-        { bg: 'rgba(6, 182, 212, 0.15)', text: '#22D3EE' },  // Cyan
-        { bg: 'rgba(16, 185, 129, 0.15)', text: '#34D399' }, // Green
-        { bg: 'rgba(245, 158, 11, 0.15)', text: '#FCD34D' }, // Yellow
-        { bg: 'rgba(236, 72, 153, 0.15)', text: '#F9A8D4' }, // Pink
+        { bg: 'rgba(34, 108, 224, 0.05)', text: '#226CE0', border: 'rgba(34, 108, 224, 0.25)', badgeBg: '#F1F5F9', badgeText: '#334155' }, // Blue theme (Google / grey badge)
+        { bg: 'rgba(240, 119, 26, 0.05)', text: '#F0771A', border: 'rgba(240, 119, 26, 0.25)', badgeBg: '#FFEFE6', badgeText: '#D25E0A' },  // Orange theme (Razorpay / peach badge)
+        { bg: 'rgba(16, 185, 129, 0.05)', text: '#10B981', border: 'rgba(16, 185, 129, 0.25)', badgeBg: '#ECFDF5', badgeText: '#047857' },  // Green theme (Cred / green badge)
+        { bg: 'rgba(168, 85, 247, 0.05)', text: '#A855F7', border: 'rgba(168, 85, 247, 0.25)', badgeBg: '#F3E8FF', badgeText: '#7E22CE' },  // Purple theme (Microsoft / purple badge)
     ];
     const colorIndex = index % avatarColors.length;
     const avatarStyle = avatarColors[colorIndex];
 
     const hasImage = !!mentor.imageUrl;
+
+    const slotsMap = [3, 2, 4, 1];
+    const slotCount = slotsMap[index % 4];
+    const slotsText = mentor.available
+        ? `${slotCount} ${slotCount === 1 ? 'Slot' : 'Slots'} Free This Week`
+        : 'Fully Booked';
 
     return (
         <article className="p-mentor-card">
@@ -61,7 +66,10 @@ export const MentorCard: React.FC<MentorCardProps> = ({
             {/* Avatar wrapper */}
             <div className="p-mentor-avatar-wrapper">
                 {hasImage ? (
-                    <div className="w-full h-full rounded-full border-[3px] border-border overflow-hidden relative">
+                    <div
+                        className="w-full h-full rounded-full border-[3px] overflow-hidden relative"
+                        style={{ borderColor: avatarStyle.border }}
+                    >
                         <Image
                             src={mentor.imageUrl!}
                             alt={mentor.name}
@@ -77,14 +85,23 @@ export const MentorCard: React.FC<MentorCardProps> = ({
                         style={{
                             backgroundColor: avatarStyle.bg,
                             color: avatarStyle.text,
-                            background: avatarStyle.bg
+                            background: avatarStyle.bg,
+                            borderColor: avatarStyle.border,
+                            borderWidth: '2px',
                         }}
                     >
                         {initials}
                     </div>
                 )}
                 {mentor.company && (
-                    <div className="p-mentor-company-badge">
+                    <div
+                        className="p-mentor-company-badge"
+                        style={{
+                            backgroundColor: avatarStyle.badgeBg,
+                            color: avatarStyle.badgeText,
+                            borderColor: avatarStyle.border,
+                        }}
+                    >
                         {mentor.company}
                     </div>
                 )}
@@ -108,7 +125,7 @@ export const MentorCard: React.FC<MentorCardProps> = ({
             {mentor.expertise && mentor.expertise.length > 0 && (
                 <div className="p-mentor-tags">
                     {mentor.expertise.slice(0, 3).map((exp, i) => (
-                        <span key={i} className="tag p-mentor-tag">
+                        <span key={i} className="p-mentor-tag">
                             {exp}
                         </span>
                     ))}
@@ -117,11 +134,11 @@ export const MentorCard: React.FC<MentorCardProps> = ({
 
             {/* Card Footer */}
             <div className="p-mentor-footer">
-                <div className="p-mentor-slots">
-                    {mentor.available ? "📅 Slots Free This Week" : "📅 Fully Booked"}
+                <div className="p-mentor-slots" style={{ color: avatarStyle.text }}>
+                    📅 {slotsText}
                 </div>
                 <button
-                    className="btn-redesign btn-redesign-primary btn-redesign-sm w-full font-bold"
+                    className="btn-redesign btn-redesign-primary btn-redesign-sm w-fit mx-auto px-10 font-bold"
                     onClick={() => onBookSession(mentor)}
                     type="button"
                 >

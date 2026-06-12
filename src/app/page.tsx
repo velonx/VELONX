@@ -3,9 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import toast from "react-hot-toast";
+import { useMentors } from "@/lib/api/hooks";
+import { MentorCard } from "@/components/mentors/MentorCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 
@@ -148,6 +152,19 @@ const SectionHeader = ({ label, title, subtitle }: { label?: string; title: Reac
 
 // ─── Main Export ───────────────────────────────────────────────────────────────
 export default function Home() {
+    const router = useRouter();
+    const { data: mentors, loading: mentorsLoading } = useMentors({ pageSize: 4 });
+
+    const fallbackMentors = [
+        { id: "mock-1", name: "Aarav Kapoor", email: "aarav@google.com", expertise: ["Systems", "Go / C++", "Cloud"], company: "Google", bio: "Senior Software Engineer", imageUrl: null, rating: 4.8, totalSessions: 45, available: true },
+        { id: "mock-2", name: "Isha Sharma", email: "isha@razorpay.com", expertise: ["Roadmap", "Fintech", "Growth"], company: "Razorpay", bio: "Lead Product Manager", imageUrl: null, rating: 4.9, totalSessions: 62, available: true },
+        { id: "mock-3", name: "Rohan Nanda", email: "rohan@cred.com", expertise: ["Figma", "UX Flow", "Design Ops"], company: "Cred", bio: "Senior Product Designer", imageUrl: null, rating: 4.7, totalSessions: 38, available: true },
+        { id: "mock-4", name: "Pooja Patel", email: "pooja@microsoft.com", expertise: ["Mock", "Java", "DSA"], company: "Microsoft", bio: "Senior SDE", imageUrl: null, rating: 4.8, totalSessions: 45, available: true }
+    ];
+
+    const mentorsToShow = mentors && mentors.length > 0 ? mentors.slice(0, 4) : fallbackMentors;
+    const showSkeletons = mentorsLoading && (!mentors || mentors.length === 0);
+
     const [showStickyCTA, setShowStickyCTA] = useState(false);
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -610,48 +627,43 @@ export default function Home() {
                     />
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-                        {[
-                            { initials: "AK", name: "Aarav Kapoor", role: "Senior Software Engineer", company: "Google", tags: ["Systems", "Go / C++", "Cloud"], slots: "3 Slots Free This Week", slotColor: "text-primary", avatarColor: "bg-primary/10 border-primary/20 text-primary" },
-                            { initials: "IS", name: "Isha Sharma", role: "Lead Product Manager", company: "Razorpay", tags: ["Roadmap", "Fintech", "Growth"], slots: "2 Slots Free This Week", slotColor: "text-accent", avatarColor: "bg-accent/10 border-accent/20 text-accent" },
-                            { initials: "RN", name: "Rohan Nanda", role: "Senior Product Designer", company: "Cred", tags: ["Figma", "UX Flow", "Design Ops"], slots: "4 Slots Free This Week", slotColor: "text-emerald-500", avatarColor: "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" },
-                            { initials: "PP", name: "Pooja Patel", role: "Senior SDE", company: "Microsoft", tags: ["Mock", "Java", "DSA"], slots: "1 Slot Free This Week", slotColor: "text-purple-500", avatarColor: "bg-purple-500/10 border-purple-500/20 text-purple-500" },
-                        ].map((mentor, idx) => (
-                            <motion.div
-                                key={mentor.name}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: idx * 0.12 }}
-                                className="card-redesign flex flex-col items-center justify-between text-center bg-card shadow-md"
-                                whileHover={{ y: -5, boxShadow: "0 16px 40px rgba(34,108,224,0.08)" }}
-                            >
-                                <div className="flex flex-col items-center">
-                                    <div className={`w-24 h-24 rounded-full border-2 flex items-center justify-center text-3xl font-black mb-4 relative ${mentor.avatarColor}`}>
-                                        {mentor.initials}
-                                        <span className="absolute bottom-0 right-0 bg-muted border border-border text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm text-foreground">{mentor.company}</span>
+                        {showSkeletons ? (
+                            Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="p-mentor-card pointer-events-none w-full min-h-87.5 bg-card flex flex-col items-center">
+                                    <div className="p-mentor-avatar-wrapper">
+                                        <Skeleton className="w-full h-full rounded-full" />
                                     </div>
-                                    <h3 className="text-lg font-bold">{mentor.name}</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">{mentor.role}</p>
-                                    <div className="flex flex-wrap gap-1.5 justify-center mt-3">
-                                        {mentor.tags.map(t => (
-                                            <span key={t} className="bg-muted px-2.5 py-1 rounded-md text-[9px] font-semibold text-muted-foreground">{t}</span>
-                                        ))}
+                                    <Skeleton className="h-6 w-32 rounded mx-auto mb-2 mt-4" />
+                                    <Skeleton className="h-4 w-24 rounded mx-auto mb-4" />
+                                    <div className="flex justify-center gap-2 mb-6">
+                                        <Skeleton className="h-5 w-12 rounded" />
+                                        <Skeleton className="h-5 w-12 rounded" />
+                                    </div>
+                                    <div className="p-mentor-footer mt-auto w-full">
+                                        <Skeleton className="h-4 w-28 rounded mx-auto mb-2" />
+                                        <Skeleton className="h-10 w-full rounded" />
                                     </div>
                                 </div>
-                                <div className="w-full pt-4 border-t border-border/40 mt-6 flex flex-col gap-3">
-                                    <span className={`text-[10px] font-bold flex items-center gap-1 justify-center ${mentor.slotColor}`}>📅 {mentor.slots}</span>
-                                    <Link href="/mentors" className="w-full">
-                                        <motion.button
-                                            className="btn-redesign btn-redesign-primary text-xs py-2.5 px-4 font-bold shadow-md w-full justify-center"
-                                            whileHover={{ scale: 1.04 }}
-                                            whileTap={{ scale: 0.97 }}
-                                        >
-                                            Book Session
-                                        </motion.button>
-                                    </Link>
-                                </div>
-                            </motion.div>
-                        ))}
+                            ))
+                        ) : (
+                            mentorsToShow.map((mentor, idx) => (
+                                <motion.div
+                                    key={mentor.id}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: idx * 0.12 }}
+                                    className="h-full"
+                                >
+                                    <MentorCard
+                                        mentor={mentor as any}
+                                        index={idx}
+                                        onBookSession={() => router.push('/mentors')}
+                                        onLinkedinClick={(name) => toast.success(`Opening ${name}'s LinkedIn profile...`)}
+                                    />
+                                </motion.div>
+                            ))
+                        )}
                     </div>
                 </div>
             </SectionReveal>
