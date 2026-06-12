@@ -19,7 +19,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const { id: pathId } = await params;
     const body = await request.json();
 
-    const module = await learningPathService.addModule(pathId, {
+    const addedModule = await learningPathService.addModule(pathId, {
       title: body.title,
       description: body.description,
       link: body.link,
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json(
       {
         success: true,
-        data: module,
+        data: addedModule,
       },
       { status: 201 }
     );

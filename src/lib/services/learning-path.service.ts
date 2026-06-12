@@ -306,16 +306,16 @@ export class LearningPathService {
    * Toggle Module Completion for Student
    */
   async toggleModuleCompletion(userId: string, moduleId: string) {
-    const module = await prisma.module.findUnique({
+    const moduleItem = await prisma.module.findUnique({
       where: { id: moduleId },
       include: { learningPath: true },
     });
 
-    if (!module) {
+    if (!moduleItem) {
       throw new NotFoundError("Module");
     }
 
-    const pathId = module.pathId;
+    const pathId = moduleItem.pathId;
 
     // Check if completion record exists
     const existingProgress = await prisma.userModuleProgress.findUnique({
