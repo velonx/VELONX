@@ -325,11 +325,11 @@ export function PostCard({
           <div className="px-5 py-3 border-t border-border/30 flex items-center gap-3">
             {/* Mobile voting (hidden on sm+) */}
             <div className="flex sm:hidden items-center gap-0.5 mr-2">
-              <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-primary" onClick={() => handleVote('upvote')}>
+              <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-primary" onClick={() => handleVote('upvote')} aria-label="Upvote">
                 <ChevronUpIcon className="size-4" />
               </Button>
               <span className="text-xs font-bold tabular-nums min-w-5 text-center">{localScore}</span>
-              <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-destructive" onClick={() => handleVote('downvote')}>
+              <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-destructive" onClick={() => handleVote('downvote')} aria-label="Downvote">
                 <ChevronDownIcon className="size-4" />
               </Button>
             </div>

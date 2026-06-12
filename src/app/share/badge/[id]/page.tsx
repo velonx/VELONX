@@ -2,6 +2,7 @@ import React from "react";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { BadgeService } from "@/lib/services/badge.service";
 import BadgeIcon, { BadgeCategory, BadgeRarity } from "@/components/badges/BadgeIcon";
 import { CheckCircle2, Trophy, ArrowRight, ShieldCheck } from "lucide-react";
@@ -142,9 +143,11 @@ export default async function BadgeSharePage({ params }: SharePageProps) {
           {/* Recipient Profile */}
           <div className="flex items-center gap-3 mb-6 bg-zinc-900/40 border border-zinc-800/50 rounded-2xl px-5 py-2.5">
             {badgeDetails.studentImage ? (
-              <img 
+              <Image
                 src={badgeDetails.studentImage} 
-                alt={badgeDetails.studentName} 
+                alt={badgeDetails.studentName}
+                width={28}
+                height={28}
                 className="w-7 h-7 rounded-full border border-zinc-700 object-cover"
               />
             ) : (
