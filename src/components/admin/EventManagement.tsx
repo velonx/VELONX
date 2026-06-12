@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, Edit, Trash2, Users, MapPin, Clock, Plus, X, Download, XCircle, Trophy, User } from "lucide-react";
+import { Calendar, Edit, Trash2, Users, MapPin, Clock, Plus, X, Download, XCircle, Trophy, User, CheckCircle2, Circle, UserCheck, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { eventsApi } from "@/lib/api/client";
 import type { Event } from "@/lib/api/types";
@@ -35,6 +35,8 @@ export default function EventManagement() {
   const [viewingAttendeesEvent, setViewingAttendeesEvent] = useState<Event | null>(null);
   const [attendees, setAttendees] = useState<any[]>([]);
   const [loadingAttendees, setLoadingAttendees] = useState(false);
+  const [markingAttendance, setMarkingAttendance] = useState<Record<string, boolean>>({});
+  const [bulkMarking, setBulkMarking] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -71,8 +73,6 @@ export default function EventManagement() {
     setLoading(true);
     try {
       const response = await eventsApi.list({ pageSize: 100 });
-      // The API returns { success, data: { events, pagination, filters } }
-      // But the type says data: T[], so we need to handle both cases
       const eventsData = (response.data as any).events || response.data;
       if (response.success && Array.isArray(eventsData)) {
         setEvents(eventsData);
@@ -117,7 +117,6 @@ export default function EventManagement() {
       resetForm();
       fetchEvents();
     } catch (error: any) {
-      // Show field-level validation errors if available
       if (error.details?.errors && Array.isArray(error.details.errors) && error.details.errors.length > 0) {
         const fieldErrors = error.details.errors
           .map((e: { field: string; message: string }) => `${e.field}: ${e.message}`)
@@ -179,13 +178,98 @@ export default function EventManagement() {
     }
   };
 
+  const handleMarkAttendance = async (attendeeId: string, action: "mark" | "unmark") => {
+    if (!viewingAttendeesEvent) return;
+    setMarkingAttendance((prev) => ({ ...prev, [attendeeId]: true }));
+    try {
+      const response = await eventsApi.markAttendance(
+        viewingAttendeesEvent.id,
+        [attendeeId],
+        action
+      );
+      if (response.success) {
+        setAttendees((prev) =>
+          prev.map((a) =>
+            a.id === attendeeId
+              ? {
+                  ...a,
+                  status: action === "mark" ? "ATTENDED" : "REGISTERED",
+                  xpAwarded: action === "mark" ? true : a.xpAwarded,
+                }
+              : a
+          )
+        );
+        toast.success(
+          action === "mark"
+            ? "Attendance marked — XP awarded!"
+            : "Attendance unmarked"
+        );
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update attendance");
+    } finally {
+      setMarkingAttendance((prev) => ({ ...prev, [attendeeId]: false }));
+    }
+  };
+
+  const handleBulkMarkAttendance = async (action: "mark" | "unmark") => {
+    if (!viewingAttendeesEvent || attendees.length === 0) return;
+
+    const targetAttendees = attendees.filter((a) =>
+      action === "mark" ? a.status !== "ATTENDED" : a.status === "ATTENDED"
+    );
+
+    if (targetAttendees.length === 0) {
+      toast.error(
+        action === "mark"
+          ? "All attendees are already marked"
+          : "No attendees to unmark"
+      );
+      return;
+    }
+
+    const confirmMsg =
+      action === "mark"
+        ? `Mark ${targetAttendees.length} attendee(s) as attended? They will each receive 25 XP.`
+        : `Unmark ${targetAttendees.length} attendee(s)? XP already awarded will NOT be revoked.`;
+
+    if (!confirm(confirmMsg)) return;
+
+    setBulkMarking(true);
+    try {
+      const ids = targetAttendees.map((a) => a.id);
+      const response = await eventsApi.markAttendance(
+        viewingAttendeesEvent.id,
+        ids,
+        action
+      );
+      if (response.success) {
+        // Refresh attendee list from server
+        const refreshed = await eventsApi.getAttendees(viewingAttendeesEvent.id);
+        if (refreshed.success) {
+          setAttendees(refreshed.data.attendees);
+        }
+        toast.success(
+          action === "mark"
+            ? `${response.data.updated} attendee(s) marked as attended`
+            : `${response.data.updated} attendee(s) unmarked`
+        );
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update attendance");
+    } finally {
+      setBulkMarking(false);
+    }
+  };
+
   const exportAttendeesCSV = (event: Event, attendeeList: any[]) => {
-    const headers = ["Name", "Email", "Registration Date", "Status"];
+    const headers = ["Name", "Email", "Registration Date", "Status", "XP Awarded"];
     const rows = attendeeList.map((a) => [
       a.user.name || "Anonymous",
       a.user.email,
       new Date(a.createdAt).toLocaleDateString(),
-      a.status
+      a.status,
+      a.xpAwarded ? "Yes" : "No",
     ]);
 
     const csvContent = [
@@ -233,6 +317,8 @@ export default function EventManagement() {
 
     return <Badge className={config.className}>{config.label}</Badge>;
   };
+
+  const attendedCount = attendees.filter((a) => a.status === "ATTENDED").length;
 
   return (
     <div className="space-y-8">
@@ -626,9 +712,9 @@ export default function EventManagement() {
                         variant="outline"
                         size="sm"
                         className="h-10 px-4 rounded-xl border-[#226CE0] text-[#226CE0] hover:bg-[#226CE0]/10"
-                        title="View Attendees"
+                        title="View Attendees & Mark Attendance"
                       >
-                        <Users className="w-4 h-4" />
+                        <UserCheck className="w-4 h-4" />
                       </Button>
                       <Button
                         onClick={() => handleEdit(event)}
@@ -672,28 +758,71 @@ export default function EventManagement() {
           )}
         </CardContent>
       </Card>
-      {/* Attendees Dialog */}
+
+      {/* Attendees Dialog with Attendance Marking */}
       <Dialog open={!!viewingAttendeesEvent} onOpenChange={(open) => !open && setViewingAttendeesEvent(null)}>
         <DialogContent className="max-w-2xl bg-background border-border rounded-3xl overflow-hidden p-0 gap-0">
           <DialogHeader className="p-8 border-b border-border bg-muted/30">
             <div className="flex items-center justify-between">
               <div>
-                <DialogTitle className="text-2xl font-black text-[#1A234A]">Registered Attendees</DialogTitle>
+                <DialogTitle className="text-2xl font-black text-[#1A234A]">Attendance Management</DialogTitle>
                 <DialogDescription className="mt-1">
-                  {viewingAttendeesEvent?.title} · {attendees.length} people
+                  {viewingAttendeesEvent?.title} · {attendees.length} registered
+                  {attendees.length > 0 && (
+                    <span className="ml-2 inline-flex items-center gap-1">
+                      · <UserCheck className="w-3.5 h-3.5 text-green-600" />
+                      <span className="font-semibold text-green-600">{attendedCount} attended</span>
+                    </span>
+                  )}
                 </DialogDescription>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => viewingAttendeesEvent && exportAttendeesCSV(viewingAttendeesEvent, attendees)}
-                disabled={attendees.length === 0}
-                className="h-10 px-4 border-[#226CE0] text-[#226CE0] font-bold rounded-xl"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => viewingAttendeesEvent && exportAttendeesCSV(viewingAttendeesEvent, attendees)}
+                  disabled={attendees.length === 0}
+                  className="h-10 px-4 border-[#226CE0] text-[#226CE0] font-bold rounded-xl"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
+              </div>
             </div>
+            {/* Bulk Actions */}
+            {attendees.length > 0 && (
+              <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Bulk Actions:</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleBulkMarkAttendance("mark")}
+                  disabled={bulkMarking || attendedCount === attendees.length}
+                  className="h-9 px-4 rounded-xl text-green-700 border-green-300 hover:bg-green-50 font-semibold text-xs"
+                >
+                  {bulkMarking ? (
+                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                  )}
+                  Mark All Attended
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleBulkMarkAttendance("unmark")}
+                  disabled={bulkMarking || attendedCount === 0}
+                  className="h-9 px-4 rounded-xl text-orange-700 border-orange-300 hover:bg-orange-50 font-semibold text-xs"
+                >
+                  {bulkMarking ? (
+                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  ) : (
+                    <Circle className="w-3.5 h-3.5 mr-1.5" />
+                  )}
+                  Unmark All
+                </Button>
+              </div>
+            )}
           </DialogHeader>
 
           <ScrollArea className="max-h-[60vh]">
@@ -709,45 +838,106 @@ export default function EventManagement() {
                   <p className="text-muted-foreground font-bold">No one has registered yet</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {attendees.map((attendee) => (
-                    <div
-                      key={attendee.id}
-                      className="flex items-center justify-between p-4 rounded-2xl border border-border bg-muted/10"
-                    >
-                      <div className="flex items-center gap-4">
-                        <Avatar className="w-12 h-12 border-2 border-[#226CE0]/20">
-                          <AvatarImage src={attendee.user.image} alt={attendee.user.name} />
-                          <AvatarFallback className="bg-[#226CE0] text-white font-bold">
-                            {attendee.user.name?.[0]?.toUpperCase() || <User className="w-5 h-5" />}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-bold text-foreground">{attendee.user.name || "Anonymous"}</p>
-                          <p className="text-sm text-muted-foreground">{attendee.user.email}</p>
+                <div className="space-y-3">
+                  {attendees.map((attendee) => {
+                    const isAttended = attendee.status === "ATTENDED";
+                    const isMarking = markingAttendance[attendee.id];
+                    return (
+                      <div
+                        key={attendee.id}
+                        className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                          isAttended
+                            ? "border-green-200 bg-green-50/50"
+                            : "border-border bg-muted/10"
+                        }`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <Avatar className={`w-12 h-12 border-2 ${isAttended ? 'border-green-400' : 'border-[#226CE0]/20'}`}>
+                            <AvatarImage src={attendee.user.image} alt={attendee.user.name} />
+                            <AvatarFallback className={`font-bold ${isAttended ? 'bg-green-500 text-white' : 'bg-[#226CE0] text-white'}`}>
+                              {attendee.user.name?.[0]?.toUpperCase() || <User className="w-5 h-5" />}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-bold text-foreground">{attendee.user.name || "Anonymous"}</p>
+                              {isAttended ? (
+                                <Badge className="bg-green-100 text-green-700 text-[10px] px-1.5 py-0">
+                                  <CheckCircle2 className="w-3 h-3 mr-0.5" /> Attended
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-gray-100 text-gray-500 text-[10px] px-1.5 py-0">
+                                  Registered
+                                </Badge>
+                              )}
+                              {attendee.xpAwarded && (
+                                <Badge className="bg-purple-100 text-purple-700 text-[10px] px-1.5 py-0">
+                                  +25 XP
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">{attendee.user.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="text-right mr-2">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Registered</p>
+                            <p className="text-xs font-medium">
+                              {new Date(attendee.createdAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </p>
+                          </div>
+                          <Button
+                            variant={isAttended ? "outline" : "default"}
+                            size="sm"
+                            disabled={isMarking}
+                            onClick={() =>
+                              handleMarkAttendance(
+                                attendee.id,
+                                isAttended ? "unmark" : "mark"
+                              )
+                            }
+                            className={`h-9 px-3 rounded-xl font-semibold text-xs transition-all ${
+                              isAttended
+                                ? "border-orange-300 text-orange-700 hover:bg-orange-50"
+                                : "bg-green-600 hover:bg-green-700 text-white"
+                            }`}
+                          >
+                            {isMarking ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : isAttended ? (
+                              <>
+                                <Circle className="w-3.5 h-3.5 mr-1" />
+                                Unmark
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                                Mark Attended
+                              </>
+                            )}
+                          </Button>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Registered On</p>
-                        <p className="text-sm font-medium">
-                          {new Date(attendee.createdAt).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
           </ScrollArea>
           
-          <div className="p-6 border-t border-border bg-muted/30 flex justify-end">
+          <div className="p-6 border-t border-border bg-muted/30 flex items-center justify-between">
+            {attendees.length > 0 && (
+              <p className="text-sm text-muted-foreground font-medium">
+                <span className="font-bold text-green-600">{attendedCount}</span> of{" "}
+                <span className="font-bold">{attendees.length}</span> marked as attended
+              </p>
+            )}
             <Button
               onClick={() => setViewingAttendeesEvent(null)}
-              className="h-11 px-8 bg-[#1A234A] text-white font-bold rounded-xl"
+              className="h-11 px-8 bg-[#1A234A] text-white font-bold rounded-xl ml-auto"
             >
               Close
             </Button>

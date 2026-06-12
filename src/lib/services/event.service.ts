@@ -784,6 +784,112 @@ export class EventService {
     
     return { success: true };
   }
+
+  /**
+   * Mark or unmark attendance for event attendees (Admin only)
+   * XP and notifications are awarded only when marking as ATTENDED.
+   * Unmarking reverts status to REGISTERED but does NOT claw back XP.
+   */
+  async markAttendance(
+    eventId: string,
+    attendeeIds: string[],
+    action: "mark" | "unmark"
+  ) {
+    // Validate event exists
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: { id: true, title: true },
+    });
+
+    if (!event) {
+      throw new NotFoundError("Event");
+    }
+
+    if (!attendeeIds || attendeeIds.length === 0) {
+      throw new ValidationError("No attendee IDs provided");
+    }
+
+    // Fetch the matching attendees for this event
+    const attendees = await prisma.eventAttendee.findMany({
+      where: {
+        id: { in: attendeeIds },
+        eventId,
+      },
+      include: {
+        user: {
+          select: { id: true, name: true },
+        },
+      },
+    });
+
+    if (attendees.length === 0) {
+      throw new NotFoundError("No matching attendees found for this event");
+    }
+
+    let updatedCount = 0;
+
+    if (action === "mark") {
+      // Mark as ATTENDED and award XP
+      const { awardXP, XP_REWARDS } = await import("@/lib/utils/xp");
+
+      for (const attendee of attendees) {
+        if (attendee.status === "ATTENDED") continue; // Already attended
+
+        // Update status to ATTENDED
+        await prisma.eventAttendee.update({
+          where: { id: attendee.id },
+          data: { status: "ATTENDED" },
+        });
+
+        // Award XP if not already awarded
+        if (!attendee.xpAwarded) {
+          await awardXP(
+            attendee.userId,
+            XP_REWARDS.EVENT_ATTENDANCE,
+            `Attended event: ${event.title}`
+          );
+
+          await prisma.eventAttendee.update({
+            where: { id: attendee.id },
+            data: { xpAwarded: true },
+          });
+        }
+
+        // Send attendance confirmation notification
+        try {
+          await notificationService.createNotification({
+            userId: attendee.userId,
+            type: "SUCCESS" as any,
+            title: "Attendance Confirmed!",
+            description: `Your attendance for "${event.title}" has been confirmed. You earned ${XP_REWARDS.EVENT_ATTENDANCE} XP!`,
+            actionUrl: `/events`,
+          });
+        } catch (error) {
+          console.error("Failed to send attendance notification:", error);
+        }
+
+        updatedCount++;
+      }
+    } else {
+      // Unmark — revert to REGISTERED (no XP clawback)
+      for (const attendee of attendees) {
+        if (attendee.status !== "ATTENDED") continue; // Not attended, skip
+
+        await prisma.eventAttendee.update({
+          where: { id: attendee.id },
+          data: { status: "REGISTERED" },
+        });
+
+        updatedCount++;
+      }
+    }
+
+    return {
+      updated: updatedCount,
+      action,
+      eventId,
+    };
+  }
 }
 
 // Export singleton instance

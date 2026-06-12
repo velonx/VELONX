@@ -190,6 +190,7 @@ export const eventsApi = {
         eventId: string;
         userId: string;
         status: string;
+        xpAwarded: boolean;
         createdAt: string;
         user: {
           id: string;
@@ -201,6 +202,15 @@ export const eventsApi = {
       }>;
       totalAttendees: number;
     }>>(`/api/events/${id}/attendees`),
+
+  markAttendance: (id: string, attendeeIds: string[], action: "mark" | "unmark") =>
+    fetchApi<ApiResponse<{ updated: number; action: string; eventId: string }>>(
+      `/api/events/${id}/attendees/mark-attendance`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ attendeeIds, action }),
+      }
+    ),
 };
 
 // Projects API

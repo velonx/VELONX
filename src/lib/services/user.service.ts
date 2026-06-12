@@ -229,13 +229,13 @@ export class UserService {
   async processPendingEventXP(userId: string) {
     try {
       // Find all event registrations for this user where the event has passed
-      // and XP hasn't been awarded yet, and status is not CANCELLED
+      // and XP hasn't been awarded yet, and status is ATTENDED (admin-confirmed)
       const now = new Date();
       const pendingRegistrations = await prisma.eventAttendee.findMany({
         where: {
           userId,
           xpAwarded: false,
-          status: { not: "CANCELLED" },
+          status: "ATTENDED",
           event: {
             OR: [
               { endDate: { lte: now } },
