@@ -147,7 +147,8 @@ export default async function CareerDetailPage({ params }: Props) {
           "addressCountry": "IN"
         }
       },
-      "url": `${siteUrl}/career/${opportunity.slug || opportunity.id}`
+      "url": `${siteUrl}/career/${opportunity.slug || opportunity.id}`,
+      ...(opportunity.deadline ? { "validThrough": new Date(opportunity.deadline).toISOString() } : {}),
     };
   }
 

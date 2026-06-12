@@ -11,7 +11,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { 
   ArrowLeft, Clock, MapPin, DollarSign, ExternalLink, 
   Share2, Check, LogIn, X, Lock, Loader2, Upload, 
-  Bookmark, ChevronRight, ShieldCheck, HelpCircle, Briefcase, GraduationCap
+  Bookmark, ChevronRight, ShieldCheck, HelpCircle, Briefcase, GraduationCap, CalendarClock
 } from 'lucide-react';
 import "./career-detail.css";
 import { analytics } from "@/components/analytics";
@@ -591,6 +591,9 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
   const formattedDuration = job.duration || (job.type === "INTERNSHIP" ? "3-6 Months" : "Full-Time");
   const formattedExperience = job.exp || (job.type === "INTERNSHIP" ? "Student / Intern" : "Fresher / Junior");
 
+  // Compute open/closed status based on deadline
+  const isOpen = job.status === 'ACTIVE' && (!job.deadline || new Date(job.deadline) >= new Date());
+
   return (
     <div className="min-h-screen bg-background pt-8 relative overflow-hidden pb-16">
       
@@ -861,7 +864,11 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
                   <span className={`badge ${job.badgeClass || (job.type === 'INTERNSHIP' ? 'badge-cyan' : 'badge-violet')}`}>
                     {job.badge || (job.type === 'INTERNSHIP' ? 'INTERNSHIP' : 'FULL-TIME')}
                   </span>
-                  <span className="badge badge-green badge-live">ACTIVE</span>
+                  {isOpen ? (
+                    <span className="badge badge-green badge-live">ACTIVE</span>
+                  ) : (
+                    <span className="badge font-bold py-1 px-3.5 rounded-full text-[10px] tracking-wide" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>CLOSED</span>
+                  )}
                 </div>
                 <h1 id="job-title-heading">{job.title}</h1>
                 <p className="text-muted-foreground text-sm font-semibold">{job.company} • Engineering Department</p>
@@ -905,6 +912,19 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
                   <strong className="text-foreground">{formattedExperience}</strong>
                 </div>
               </div>
+              {job.deadline && (
+                <div className="hero-stat-item">
+                  <span className="stat-icon-wrapper">
+                    <CalendarClock className="w-4.5 h-4.5" />
+                  </span>
+                  <div className="hero-stat-details">
+                    <span className="hero-stat-label">Deadline</span>
+                    <strong className={`${isOpen ? 'text-foreground' : 'text-red-500'}`}>
+                      {new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </strong>
+                  </div>
+                </div>
+              )}
             </div>
           </header>
 
@@ -988,13 +1008,27 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
             
             {/* Action panel widget */}
             <div className="card card-glass action-panel-card">
-              <button 
-                type="button"
-                onClick={openApplyFlow}
-                className="btn btn-primary w-full flex items-center justify-center py-3.5 font-bold"
-              >
-                Apply For This Role ⚡
-              </button>
+              {isOpen ? (
+                <button 
+                  type="button"
+                  onClick={openApplyFlow}
+                  className="btn btn-primary w-full flex items-center justify-center py-3.5 font-bold"
+                >
+                  Apply For This Role ⚡
+                </button>
+              ) : (
+                <div className="text-center space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
+                    <X className="w-6 h-6 text-red-500" />
+                  </div>
+                  <p className="text-red-500 font-bold text-base">Applications Closed</p>
+                  <p className="text-muted-foreground text-xs">
+                    {job.deadline 
+                      ? `The deadline was ${new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}` 
+                      : 'This position is no longer accepting applications'}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Standalone Share Widget */}

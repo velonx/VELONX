@@ -891,12 +891,14 @@ model Opportunity {
   applyUrl     String
   imageUrl     String?
   status       OpportunityStatus @default(ACTIVE)
+  deadline     DateTime? // Application deadline — after this date, the listing shows as "Closed"
   postedBy     String // Admin ID
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 
   applications OpportunityApplication[]
 
+  @@index([status, deadline])
   @@map("opportunities")
 }
 

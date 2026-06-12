@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Video, Briefcase, GraduationCap, Plus, Edit, Trash2, CheckCircle, Calendar, Mail, Loader2 } from 'lucide-react';
+import { Video, Briefcase, GraduationCap, Plus, Edit, Trash2, CheckCircle, Calendar, Mail, Loader2, CalendarClock, AlertTriangle } from 'lucide-react';
 import toast from "react-hot-toast";
 import { getCSRFToken } from "@/lib/utils/csrf";
 
@@ -35,6 +35,7 @@ export default function CareerManagement() {
         applyUrl: "",
         imageUrl: "",
         status: "ACTIVE",
+        deadline: "",
     });
 
     const [interviewUpdateForm, setInterviewUpdateForm] = useState({
@@ -104,6 +105,7 @@ export default function CareerManagement() {
                 body: JSON.stringify({
                     ...opportunityForm,
                     requirements,
+                    deadline: opportunityForm.deadline || undefined,
                 }),
             });
 
@@ -145,6 +147,7 @@ export default function CareerManagement() {
                 body: JSON.stringify({
                     ...opportunityForm,
                     requirements,
+                    deadline: opportunityForm.deadline || undefined,
                 }),
             });
 
@@ -242,6 +245,7 @@ export default function CareerManagement() {
             applyUrl: opportunity.applyUrl,
             imageUrl: opportunity.imageUrl || "",
             status: opportunity.status,
+            deadline: opportunity.deadline ? new Date(opportunity.deadline).toISOString().split('T')[0] : "",
         });
         setShowOpportunityDialog(true);
     };
@@ -270,6 +274,7 @@ export default function CareerManagement() {
             applyUrl: "",
             imageUrl: "",
             status: "ACTIVE",
+            deadline: "",
         });
     };
 
@@ -396,10 +401,22 @@ export default function CareerManagement() {
                                                     <Badge className={getStatusColor(opp.status)}>
                                                         {opp.status}
                                                     </Badge>
+                                                    {opp.status === 'ACTIVE' && opp.deadline && new Date(opp.deadline) < new Date() && (
+                                                        <Badge className="bg-orange-50 text-orange-600 ml-1">
+                                                            <AlertTriangle className="w-3 h-3 mr-1" /> EXPIRED
+                                                        </Badge>
+                                                    )}
                                                 </div>
                                                 <p className="text-gray-600">{opp.company} • {opp.location}</p>
                                                 {opp.duration && <p className="text-sm text-gray-500">Duration: {opp.duration}</p>}
                                                 {opp.salary && <p className="text-sm text-gray-500">Salary: {opp.salary}</p>}
+                                                {opp.deadline && (
+                                                    <p className={`text-sm flex items-center gap-1 ${new Date(opp.deadline) < new Date() ? 'text-red-500' : 'text-gray-500'}`}>
+                                                        <CalendarClock className="w-3.5 h-3.5" />
+                                                        Deadline: {new Date(opp.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                        {new Date(opp.deadline) < new Date() && ' (passed)'}
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button
@@ -462,9 +479,21 @@ export default function CareerManagement() {
                                                     <Badge className={getStatusColor(opp.status)}>
                                                         {opp.status}
                                                     </Badge>
+                                                    {opp.status === 'ACTIVE' && opp.deadline && new Date(opp.deadline) < new Date() && (
+                                                        <Badge className="bg-orange-50 text-orange-600 ml-1">
+                                                            <AlertTriangle className="w-3 h-3 mr-1" /> EXPIRED
+                                                        </Badge>
+                                                    )}
                                                 </div>
                                                 <p className="text-gray-600">{opp.company} • {opp.location}</p>
                                                 {opp.salary && <p className="text-sm text-gray-500">Salary: {opp.salary}</p>}
+                                                {opp.deadline && (
+                                                    <p className={`text-sm flex items-center gap-1 ${new Date(opp.deadline) < new Date() ? 'text-red-500' : 'text-gray-500'}`}>
+                                                        <CalendarClock className="w-3.5 h-3.5" />
+                                                        Deadline: {new Date(opp.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                        {new Date(opp.deadline) < new Date() && ' (passed)'}
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button
@@ -611,6 +640,16 @@ export default function CareerManagement() {
                                 <option value="CLOSED">Closed</option>
                                 <option value="DRAFT">Draft</option>
                             </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Application Deadline</Label>
+                            <Input
+                                type="date"
+                                value={opportunityForm.deadline}
+                                onChange={(e) => setOpportunityForm({ ...opportunityForm, deadline: e.target.value })}
+                            />
+                            <p className="text-xs text-gray-500">When this date passes, the listing will automatically show as &quot;Closed&quot; to users</p>
                         </div>
 
                         <div className="flex gap-2 justify-end">

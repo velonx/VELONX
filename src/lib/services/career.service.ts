@@ -79,12 +79,14 @@ export class MockInterviewService {
 export class OpportunityService {
   static async create(data: OpportunityInput, postedBy: string) {
     const slug = await generateUniqueOpportunitySlug(data.title);
+    const { deadline: deadlineStr, ...rest } = data;
     return prisma.opportunity.create({
       data: {
-        ...data,
+        ...rest,
         slug,
         postedBy,
         status: data.status || "ACTIVE",
+        deadline: deadlineStr ? new Date(deadlineStr) : null,
       },
     });
   }
@@ -99,6 +101,14 @@ export class OpportunityService {
     // Only add status filter if explicitly provided (not "all" or undefined)
     if (filters?.status && filters.status !== "all") {
       where.status = filters.status;
+    }
+
+    // For public users (status = ACTIVE), also exclude opportunities past their deadline
+    if (where.status === "ACTIVE") {
+      where.OR = [
+        { deadline: null },                        // No deadline set → always shown
+        { deadline: { gte: new Date() } },         // Deadline hasn't passed
+      ];
     }
 
     return prisma.opportunity.findMany({
@@ -130,7 +140,13 @@ export class OpportunityService {
   }
 
   static async update(id: string, data: UpdateOpportunityInput) {
-    const updateData: any = { ...data };
+    const { deadline: deadlineStr, ...rest } = data;
+    const updateData: any = { ...rest };
+
+    // Parse deadline string to Date if provided
+    if (deadlineStr !== undefined) {
+      updateData.deadline = deadlineStr ? new Date(deadlineStr) : null;
+    }
     
     // Check if title is being updated, if so update the slug
     if (data.title !== undefined) {

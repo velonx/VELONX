@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, DollarSign, Share2, Check, LogIn, X, Lock } from 'lucide-react';
+import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, DollarSign, Share2, Check, LogIn, X, Lock, CalendarClock } from 'lucide-react';
 import toast from "react-hot-toast";
 import Image from "next/image";
 import Link from "next/link";
@@ -205,6 +205,22 @@ export default function CareerPage() {
                         {item.duration && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {item.duration}</span>}
                         {item.salary && <span className="p-job-salary flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" /> {item.salary}</span>}
                     </div>
+                    {/* Deadline display */}
+                    {item.deadline && (
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                            <CalendarClock className="w-3.5 h-3.5 text-muted-foreground" />
+                            <span className={`text-xs font-semibold ${
+                                new Date(item.deadline) < new Date() 
+                                    ? 'text-red-500' 
+                                    : 'text-muted-foreground'
+                            }`}>
+                                {new Date(item.deadline) < new Date() 
+                                    ? `Deadline passed: ${new Date(item.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}` 
+                                    : `Apply by: ${new Date(item.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                                }
+                            </span>
+                        </div>
+                    )}
                     {item.requirements && item.requirements.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-2">
                             {item.requirements.slice(0, 3).map((req: string, idx: number) => (
@@ -218,7 +234,14 @@ export default function CareerPage() {
 
                 {/* Actions Block */}
                 <div className="p-job-action">
-                    <span className="badge badge-green badge-live font-bold py-1 px-3.5 rounded-full text-[10px] tracking-wide">ACTIVE</span>
+                    {(() => {
+                        const isOpen = item.status === 'ACTIVE' && (!item.deadline || new Date(item.deadline) >= new Date());
+                        return isOpen ? (
+                            <span className="badge badge-green badge-live font-bold py-1 px-3.5 rounded-full text-[10px] tracking-wide">ACTIVE</span>
+                        ) : (
+                            <span className="badge font-bold py-1 px-3.5 rounded-full text-[10px] tracking-wide" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>CLOSED</span>
+                        );
+                    })()}
                     
                     <Link
                         href={`/career/${item.slug || item.id}`}

@@ -35,6 +35,7 @@ export const opportunitySchema = z.object({
   applyUrl: z.string().url("Must be a valid URL"),
   imageUrl: z.string().url().optional().or(z.literal("")),
   status: z.enum(["ACTIVE", "CLOSED", "DRAFT"]).optional(),
+  deadline: z.string().optional(), // ISO date string for application deadline
 });
 
 export const updateOpportunitySchema = opportunitySchema.partial();
