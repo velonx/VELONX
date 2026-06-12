@@ -374,13 +374,13 @@ export class LearningPathService {
 
     // Notify if path completed
     if (allCompleted && !existingProgress) {
-      const descriptionText = module.learningPath.hasCertificate
+      const descriptionText = moduleItem.learningPath.hasCertificate
         ? `You've completed all modules! Schedule your Certificate Test under the Roadmap page.`
-        : `You've completed the roadmap "${module.learningPath.title}"!`;
+        : `You've completed the roadmap "${moduleItem.learningPath.title}"!`;
 
       await notificationService.createNotification({
         userId,
-        title: `🎉 Roadmap Completed: ${module.learningPath.title}`,
+        title: `🎉 Roadmap Completed: ${moduleItem.learningPath.title}`,
         description: descriptionText,
         type: "SUCCESS",
         actionUrl: `/resources`,
