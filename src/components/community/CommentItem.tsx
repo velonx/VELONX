@@ -133,6 +133,8 @@ export function CommentItem({ comment, onReply, depth = 0 }: CommentItemProps) {
                 size="sm"
                 className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground gap-1 ml-1"
                 onClick={() => setShowReplyInput(!showReplyInput)}
+                aria-expanded={showReplyInput}
+                aria-controls={`reply-input-${comment.id}`}
               >
                 <MessageCircleIcon className="size-3" />
                 Reply
@@ -142,7 +144,7 @@ export function CommentItem({ comment, onReply, depth = 0 }: CommentItemProps) {
 
           {/* Reply input */}
           {showReplyInput && (
-            <div className="mt-3 space-y-2">
+            <div id={`reply-input-${comment.id}`} className="mt-3 space-y-2">
               <textarea
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
