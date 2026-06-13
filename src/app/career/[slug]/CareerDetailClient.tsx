@@ -179,15 +179,18 @@ const COMMON_TECH = [
   'Git', 'GitHub', 'Web Performance', 'LCP', 'Vite'
 ];
 
+const PRECOMPILED_TECH_REGEXES = COMMON_TECH.map(tech => {
+  const escaped = tech.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  return { tech, regex: new RegExp(`\\b${escaped}\\b`, 'i') };
+});
+
 function getTechStack(job: any): string[] {
   if (job.stack && job.stack.length > 0) return job.stack;
   
   const tags = new Set<string>();
   const searchStr = `${job.title} ${job.about || job.description || ""} ${(job.requirements || []).join(' ')}`.toLowerCase();
   
-  for (const tech of COMMON_TECH) {
-    const escaped = tech.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    const regex = new RegExp(`\\b${escaped}\\b`, 'i');
+  for (const { tech, regex } of PRECOMPILED_TECH_REGEXES) {
     if (regex.test(searchStr)) {
       tags.add(tech);
     }
