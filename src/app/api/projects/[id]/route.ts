@@ -16,9 +16,6 @@ export async function GET(
 ) {
   try {
     // No authentication required for GET project details
-    // const session = await requireAuth();
-    // if (session instanceof NextResponse) return session;
-
     const { id } = await params;
     const project = await projectService.getProjectById(id);
 
