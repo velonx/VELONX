@@ -45,6 +45,20 @@ export async function GET(request: NextRequest) {
     const result = await eventService.listEvents(queryParams);
     const { prisma } = await import("@/lib/prisma");
     
+    // Fetch all user registrations for these events in a single batched query
+    const registeredEventIds = new Set<string>();
+    if (userId && result.events.length > 0) {
+      const eventIds = result.events.map(e => e.id);
+      const registrations = await prisma.eventAttendee.findMany({
+        where: {
+          userId: userId,
+          eventId: { in: eventIds },
+        },
+        select: { eventId: true },
+      });
+      registrations.forEach(r => registeredEventIds.add(r.eventId));
+    }
+
     // Compute registration status for each event and check user registration
     const eventsWithStatus = await Promise.all(
       result.events.map(async (event) => {
@@ -53,18 +67,7 @@ export async function GET(request: NextRequest) {
         const statusInfo = computeRegistrationStatus(event as any, attendeeCount);
         
         // Check if user is registered (if authenticated)
-        let isUserRegistered = false;
-        if (userId) {
-          const registration = await prisma.eventAttendee.findUnique({
-            where: {
-              eventId_userId: {
-                eventId: event.id,
-                userId: userId,
-              },
-            },
-          });
-          isUserRegistered = !!registration;
-        }
+        const isUserRegistered = userId ? registeredEventIds.has(event.id) : false;
         
         return {
           ...event,
