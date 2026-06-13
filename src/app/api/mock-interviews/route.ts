@@ -81,24 +81,27 @@ export async function GET(req: NextRequest) {
         // Use new service for pending interviews with user details
         const interviews = await mockInterviewService.getAll({ status: 'PENDING' });
         
-        // Fetch user details for each interview
-        const interviewsWithUsers = await Promise.all(
-          interviews.map(async (interview) => {
-            const user = await prisma.user.findUnique({
-              where: { id: interview.userId },
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            });
-            
-            return {
-              ...interview,
-              user,
-            };
-          })
-        );
+        // Extract unique user IDs from interviews
+        const userIds = Array.from(new Set(interviews.map(interview => interview.userId)));
+
+        // Fetch user details for all unique users in a single query
+        const users = await prisma.user.findMany({
+          where: { id: { in: userIds } },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        });
+
+        // Create a map for fast user lookups by ID
+        const userMap = new Map(users.map(user => [user.id, user]));
+
+        // Attach user details to each interview
+        const interviewsWithUsers = interviews.map(interview => ({
+          ...interview,
+          user: userMap.get(interview.userId) || null,
+        }));
         
         return NextResponse.json({
           success: true,
