@@ -420,6 +420,17 @@ describe('OpportunityService', () => {
         orderBy: { createdAt: 'desc' },
       })
     })
+
+    it('should filter opportunities with status object (e.g. in active/closed)', async () => {
+      vi.mocked(prisma.opportunity.findMany).mockResolvedValue([])
+
+      await OpportunityService.getAll({ status: { in: ['ACTIVE', 'CLOSED'] } })
+
+      expect(prisma.opportunity.findMany).toHaveBeenCalledWith({
+        where: { status: { in: ['ACTIVE', 'CLOSED'] } },
+        orderBy: { createdAt: 'desc' },
+      })
+    })
   })
 
   describe('getById', () => {

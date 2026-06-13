@@ -91,7 +91,7 @@ export class OpportunityService {
     });
   }
 
-  static async getAll(filters?: { type?: string; status?: string }) {
+  static async getAll(filters?: { type?: string; status?: string | any }) {
     const where: any = {};
     
     if (filters?.type) {
@@ -101,14 +101,6 @@ export class OpportunityService {
     // Only add status filter if explicitly provided (not "all" or undefined)
     if (filters?.status && filters.status !== "all") {
       where.status = filters.status;
-    }
-
-    // For public users (status = ACTIVE), also exclude opportunities past their deadline
-    if (where.status === "ACTIVE") {
-      where.OR = [
-        { deadline: null },                        // No deadline set → always shown
-        { deadline: { gte: new Date() } },         // Deadline hasn't passed
-      ];
     }
 
     return prisma.opportunity.findMany({

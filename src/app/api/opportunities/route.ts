@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get("type") || undefined;
     const statusParam = searchParams.get("status");
 
-    // Admin can see all statuses, students only see ACTIVE
+    // Admin can see all statuses, students/public see ACTIVE and CLOSED (exclude DRAFT)
     const filters: any = { type };
     
     if (session?.user?.role === "ADMIN") {
@@ -73,8 +73,8 @@ export async function GET(req: NextRequest) {
         filters.status = statusParam;
       }
     } else {
-      // Non-admin users only see ACTIVE opportunities
-      filters.status = "ACTIVE";
+      // Non-admin users see ACTIVE and CLOSED opportunities (drafts are hidden)
+      filters.status = { in: ["ACTIVE", "CLOSED"] };
     }
 
     const opportunities = await OpportunityService.getAll(filters);
