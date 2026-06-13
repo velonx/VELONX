@@ -228,6 +228,8 @@ export function PostCard({
                   className="size-8 rounded-full text-muted-foreground hover:text-foreground"
                   onClick={() => setShowActions(!showActions)}
                   aria-label="Post actions"
+                  aria-expanded={showActions}
+                  aria-haspopup="menu"
                 >
                   <MoreVerticalIcon className="size-4" />
                 </Button>
