@@ -141,8 +141,8 @@ export default function GroupDetailPage() {
         });
       });
       const base64Images = await Promise.all(uploadPromises);
-      const uploadedUrls: string[] = [];
-      for (const base64 of base64Images) {
+
+      const uploadRequests = base64Images.map(async (base64) => {
         const response = await secureFetch('/api/user/profile/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -150,8 +150,11 @@ export default function GroupDetailPage() {
         });
         if (!response.ok) throw new Error('Failed to upload image');
         const data = await response.json();
-        uploadedUrls.push(data.url);
-      }
+        return data.url;
+      });
+
+      const uploadedUrls = await Promise.all(uploadRequests);
+
       setImageUrls(prev => [...prev, ...uploadedUrls]);
       toast.success(`${uploadedUrls.length} image(s) uploaded`);
     } catch (error) {
