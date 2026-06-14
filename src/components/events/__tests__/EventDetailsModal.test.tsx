@@ -3,6 +3,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import EventDetailsModal from '../EventDetailsModal';
 import { Event } from '@/lib/api/types';
 import { eventsApi } from '@/lib/api/client';
+import toast from 'react-hot-toast';
+
+// Mock react-hot-toast
+vi.mock('react-hot-toast', () => ({
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 // Mock the eventsApi
 vi.mock('@/lib/api/client', () => ({
@@ -834,11 +843,8 @@ describe('EventDetailsModal', () => {
       const copyButton = screen.getByText('Copy Link');
       fireEvent.click(copyButton);
 
-      // Wait for toast to appear
-      await waitFor(() => {
-        const toasts = screen.getAllByText('Meeting link copied to clipboard!');
-        expect(toasts.length).toBeGreaterThan(0);
-      });
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(eventWithMeetingLink.meetingLink);
+      expect(toast.success).toHaveBeenCalledWith('Meeting link copied to clipboard!');
     });
 
     it('should open meeting link in new tab when Join Meeting button clicked', () => {
