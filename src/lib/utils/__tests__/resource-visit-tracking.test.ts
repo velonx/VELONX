@@ -159,6 +159,39 @@ describe('trackAndNavigate', () => {
     expect(window.location.href).toBe('https://example.com/resource');
   });
 
+  it('should sanitize javascript: URLs to prevent XSS', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await trackAndNavigate('resource-123', 'javascript:alert(1)', false);
+
+    expect(window.location.href).toBe('/');
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('[Security] Blocked unsafe URL protocol:')
+    );
+  });
+
+  it('should sanitize vbscript: URLs to prevent XSS', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await trackAndNavigate('resource-123', 'vbscript:msgbox(1)', false);
+
+    expect(window.location.href).toBe('/');
+  });
+
+  it('should sanitize data: URLs to prevent XSS', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await trackAndNavigate('resource-123', 'data:text/html,<script>alert(1)</script>', false);
+
+    expect(window.location.href).toBe('/');
+  });
+
+  it('should allow relative URLs', async () => {
+    await trackAndNavigate('resource-123', '/dashboard/student', false);
+
+    expect(window.location.href).toBe('/dashboard/student');
+  });
+
   it('should navigate even when tracking fails', async () => {
     const mockError = new Error('Network error');
     vi.mocked(resourcesApi.trackVisit).mockRejectedValue(mockError);
