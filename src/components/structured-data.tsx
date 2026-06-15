@@ -8,7 +8,7 @@ export function OrganizationSchema() {
         description:
             'A platform empowering students to build real projects, connect with mentors, and launch their tech careers.',
         url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in',
-        logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/logo.webp`,
+        logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/logo.png`,
         sameAs: [
             // Add your social media links here
             // 'https://twitter.com/velonx',
@@ -216,7 +216,7 @@ export function ArticleSchema({ article }: ArticleSchemaProps) {
             name: 'VELONX',
             logo: {
                 '@type': 'ImageObject',
-                url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/logo.webp`,
+                url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/logo.png`,
             },
         },
         mainEntityOfPage: {
