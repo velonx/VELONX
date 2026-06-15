@@ -20,6 +20,7 @@ import { eventsApi } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 import { CalendarExportMenu } from "./CalendarExportMenu";
 import { computeRegistrationStatus, getRegistrationButtonText } from "@/lib/utils/event-helpers";
+import toast from "react-hot-toast";
 
 interface EventDetailsModalProps {
   event: Event | null;
@@ -553,14 +554,7 @@ export default function EventDetailsModal({
                       <Button
                         onClick={() => {
                           navigator.clipboard.writeText(event.meetingLink!);
-                          // Show toast notification
-                          const toast = document.createElement('div');
-                          toast.className = 'fixed bottom-4 right-4 bg-green-600 text-foreground dark:text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-in slide-in-from-bottom-5';
-                          toast.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Meeting link copied to clipboard!</span>';
-                          document.body.appendChild(toast);
-                          setTimeout(() => {
-                            toast.remove();
-                          }, 3000);
+                          toast.success('Meeting link copied to clipboard!');
                         }}
                         variant="outline"
                         className="w-full h-11 sm:h-auto border-2 border-border dark:border-white/10 hover:border-[#226CE0] text-foreground dark:text-white hover:text-[#226CE0] font-semibold rounded-xl transition-all bg-transparent"

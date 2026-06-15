@@ -661,7 +661,7 @@ export default function EventManagement() {
                           alt={event.title}
                           width={96}
                           height={96}
-                          className="w-full h-full object-cover shrink-0"
+                          className="w-24 h-24 rounded-xl object-cover shrink-0"
                         />
                       </>
                     )}

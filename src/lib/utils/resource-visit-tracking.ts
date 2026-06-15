@@ -49,6 +49,34 @@ export async function trackResourceVisit(resourceId: string): Promise<{
 }
 
 /**
+ * Sanitizes a URL to prevent XSS and open redirects via dangerous protocols
+ *
+ * @param url - The URL to sanitize
+ * @returns The sanitized URL or '/' if invalid/dangerous
+ */
+function sanitizeUrl(url: string): string {
+  if (!url) return '/';
+
+  try {
+    // We use a dummy base for parsing relative URLs
+    const parsed = new URL(url, 'http://dummy.com');
+
+    // Check for allowed protocols
+    const isAllowed = ['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol.toLowerCase());
+
+    if (!isAllowed) {
+      console.warn(`[Security] Blocked unsafe URL protocol: ${parsed.protocol}`);
+      return '/';
+    }
+
+    return url;
+  } catch (e) {
+    console.error('[Security] Failed to parse URL:', e);
+    return '/';
+  }
+}
+
+/**
  * Track visit and navigate to resource URL
  * 
  * This function tracks the visit asynchronously and then navigates to the resource URL.
@@ -66,11 +94,14 @@ export async function trackAndNavigate(
   // Start tracking asynchronously (don't await)
   const trackingPromise = trackResourceVisit(resourceId);
   
+  // Sanitize URL before navigation
+  const safeUrl = sanitizeUrl(resourceUrl);
+
   // Navigate immediately without waiting for tracking to complete
   if (openInNewTab) {
-    window.open(resourceUrl, '_blank', 'noopener,noreferrer');
+    window.open(safeUrl, '_blank', 'noopener,noreferrer');
   } else {
-    window.location.href = resourceUrl;
+    window.location.href = safeUrl;
   }
   
   // Optionally await tracking result for logging (doesn't block navigation)
