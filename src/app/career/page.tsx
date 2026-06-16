@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, DollarSign, Share2, Check, LogIn, X, Lock, CalendarClock } from 'lucide-react';
+import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, IndianRupee, Share2, Check, LogIn, X, Lock, CalendarClock } from 'lucide-react';
 import toast from "react-hot-toast";
 import Image from "next/image";
 import Link from "next/link";
@@ -203,7 +203,7 @@ export default function CareerPage() {
                         <span className="font-semibold text-foreground">🏢 {item.company}</span>
                         <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
                         {item.duration && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {item.duration}</span>}
-                        {item.salary && <span className="p-job-salary flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" /> {item.salary}</span>}
+                        {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary}</span>}
                     </div>
                     {/* Deadline display */}
                     {item.deadline && (

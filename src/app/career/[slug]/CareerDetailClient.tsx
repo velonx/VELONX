@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { 
-  ArrowLeft, Clock, MapPin, DollarSign, ExternalLink, 
+  ArrowLeft, Clock, MapPin, IndianRupee, ExternalLink, 
   Share2, Check, LogIn, X, Lock, Loader2, Upload, 
   Bookmark, ChevronRight, ShieldCheck, HelpCircle, Briefcase, GraduationCap, CalendarClock
 } from 'lucide-react';
@@ -881,7 +881,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
             <div className="job-hero-stats">
               <div className="hero-stat-item">
                 <span className="stat-icon-wrapper">
-                  <DollarSign className="w-4.5 h-4.5" />
+                  <IndianRupee className="w-4.5 h-4.5" />
                 </span>
                 <div className="hero-stat-details">
                   <span className="hero-stat-label">Stipend / Salary</span>
@@ -1101,7 +1101,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
                     <div>
                       <div className="similar-job-stats my-3.5">
                         <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
-                        <span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" /> {item.salary || "Competitive"}</span>
+                        <span className="flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary || "Competitive"}</span>
                       </div>
 
                       <Link href={`/career/${item.slug || item.id}`} className="btn btn-secondary btn-sm w-full flex items-center justify-center font-bold text-center">

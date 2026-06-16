@@ -592,7 +592,7 @@ export default function CareerManagement() {
                                 <Input
                                     value={opportunityForm.salary}
                                     onChange={(e) => setOpportunityForm({ ...opportunityForm, salary: e.target.value })}
-                                    placeholder="$50k - $70k"
+                                    placeholder="₹45,000 / mo or ₹12 LPA"
                                 />
                             </div>
                         </div>
