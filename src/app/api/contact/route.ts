@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     const { Resend } = await import('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const emailFrom = process.env.EMAIL_FROM || 'VELONX <onboarding@resend.dev>';
+    const emailFrom = process.env.EMAIL_FROM || 'VELONX <noreply@velonx.in>';
     const teamEmail = process.env.EMAIL_REPLY_TO || 'support@velonx.in';
 
     const [teamResult, replyResult] = await Promise.allSettled([
