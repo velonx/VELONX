@@ -7,3 +7,6 @@
 ## 2026-06-15 - [Screen reader support for password toggles]
 **Learning:** Found that "show/hide password" buttons consisting of only `Eye` and `EyeOff` icons lacked accessible names, causing screen readers to misidentify the interactive element.
 **Action:** Added dynamic `aria-label` attributes (`aria-label={showPassword ? "Hide password" : "Show password"}`) to properly announce the toggling functionality to screen reader users. Always ensure icon-only buttons have descriptive labels.
+## 2026-06-16 - Add ARIA Labels to Rich Text Editor Toolbar Buttons
+**Learning:** Found that numerous icon-only buttons in the RichTextEditor.tsx toolbar lacked aria-label attributes, making it difficult for screen readers to identify their actions.
+**Action:** Added aria-label attributes to all icon-only toolbar buttons to ensure full accessibility for screen reader users.
