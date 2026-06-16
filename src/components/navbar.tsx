@@ -68,8 +68,9 @@ export function Navbar() {
                     className="flex items-center mr-2 pr-3 border-r border-border"
                     aria-label="Velonx home page"
                 >
-                    <span className="text-transparent bg-clip-text bg-linear-to-r from-[#226CE0] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-lg tracking-tight">
-                        Velonx
+                    <span className="font-outfit font-extrabold text-xl tracking-[-0.04em] transition-colors duration-200">
+                        <span className="text-black dark:text-[#FFFBDB]">velon</span>
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-[#FF7A00] to-[#FFA800] dark:from-[#FF8A00] dark:to-[#FF3C00]">x</span>
                     </span>
                 </Link>
  
@@ -233,8 +234,9 @@ export function Navbar() {
                             </VisuallyHidden>
                             <div className="flex flex-col h-full overflow-y-auto custom-scrollbar p-6">
                                 <Link href="/" onClick={() => setOpen(false)} className="mb-8">
-                                    <span className="text-transparent bg-clip-text bg-linear-to-r from-[#226CE0] via-[#4FC3F7] to-[#E9C46A] font-outfit font-bold text-3xl tracking-tight">
-                                        Velonx
+                                    <span className="font-outfit font-extrabold text-3xl tracking-[-0.04em] transition-colors duration-200">
+                                        <span className="text-black dark:text-[#FFFBDB]">velon</span>
+                                        <span className="text-transparent bg-clip-text bg-linear-to-r from-[#FF7A00] to-[#FFA800] dark:from-[#FF8A00] dark:to-[#FF3C00]">x</span>
                                     </span>
                                 </Link>
                                 <nav className="flex flex-col gap-2">

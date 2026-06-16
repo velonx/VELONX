@@ -583,9 +583,9 @@ export default function Home() {
                                         <Image
                                             src={ev.image}
                                             alt={ev.title}
-                                            width={480}
-                                            height={176}
-                                            className="w-full h-full object-cover"
+                                            fill
+                                            sizes="(max-width: 768px) 100vw, 33vw"
+                                            className="object-cover"
                                         />
                                         <span className={`absolute top-3 left-3 ${ev.badgeColor} text-white font-bold text-[9px] py-1 px-3 rounded-full ${ev.badgeAnimate ? "animate-pulse" : ""}`}>{ev.badge}</span>
                                     </div>
@@ -999,13 +999,13 @@ export default function Home() {
                                 whileHover={{ y: -5 }}
                             >
                                 <div>
-                                    <div className="h-44 rounded-xl mb-6 overflow-hidden">
+                                    <div className="h-44 rounded-xl mb-6 relative overflow-hidden">
                                         <Image
                                             src={item.image}
                                             alt={item.title}
-                                            width={480}
-                                            height={176}
-                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                            fill
+                                            sizes="(max-width: 768px) 100vw, 33vw"
+                                            className="object-cover hover:scale-105 transition-transform duration-300"
                                         />
                                     </div>
                                     <h3 className="text-xl font-bold text-foreground mb-2">{item.title}</h3>

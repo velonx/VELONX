@@ -20,7 +20,7 @@ export function Footer() {
                     {/* Brand */}
                     <div className="col-span-2 md:col-span-4">
                         <div className="flex items-center gap-2 mb-6">
-                            <Image src="/logo.png" alt="Velonx" width={32} height={32} className="h-8 w-auto" />
+                            <Image src="/logo.png" alt="Velonx" width={32} height={32} />
                             <span className="text-foreground font-outfit font-bold text-xl tracking-tight">Velonx</span>
                         </div>
                         <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mb-8">
@@ -79,10 +79,17 @@ export function Footer() {
                     </div>
                 </div>
 
-                <div className="border-t border-border pt-8 text-center">
+                <div className="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
                     <p className="text-xs text-muted-foreground font-medium">
                         &copy; {new Date().getFullYear()} Velonx Inc. All rights reserved.
                     </p>
+                    <Image 
+                        src="/msme.png" 
+                        alt="MSME Registered" 
+                        width={64} 
+                        height={64} 
+                        className="object-contain"
+                    />
                 </div>
             </div>
         </footer>
