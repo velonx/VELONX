@@ -18,13 +18,18 @@ interface EmailLayoutProps {
 
 export const EmailLayout = ({ preview, children }: EmailLayoutProps) => (
     <Html>
-        <Head />
+        <Head>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&display=swap" rel="stylesheet" />
+        </Head>
         <Preview>{preview}</Preview>
         <Body style={main}>
             <Container style={container}>
                 {/* Header */}
                 <Section style={header}>
-                    <Heading style={logo}>VELONX</Heading>
+                    <Heading style={logoContainer}>
+                        <span style={logoVelon}>velon</span>
+                        <span style={logoX}>x</span>
+                    </Heading>
                     <Text style={tagline}>Empowering the Next Gen</Text>
                 </Section>
 
@@ -79,12 +84,22 @@ const header = {
     background: 'linear-gradient(135deg, #226CE0 0%, #1A234A 100%)',
 };
 
-const logo = {
-    color: '#ffffff',
-    fontSize: '32px',
-    fontWeight: 'bold',
+const logoContainer = {
+    fontFamily: '"Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontSize: '36px',
+    fontWeight: '800',
     margin: '0',
-    letterSpacing: '2px',
+    letterSpacing: '-1.5px',
+    textAlign: 'center' as const,
+    lineHeight: '1.2',
+};
+
+const logoVelon = {
+    color: '#ffffff',
+};
+
+const logoX = {
+    color: '#FF7A00',
 };
 
 const tagline = {

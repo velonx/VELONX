@@ -30,73 +30,122 @@ export const SessionConfirmationEmail = ({
             <Text style={paragraph}>Hi {userName},</Text>
 
             <Text style={paragraph}>
-                Your mentorship session with <strong>{mentorName}</strong> has been confirmed!
+                Your mentorship session with <strong>{mentorName}</strong> has been confirmed! Here are the session details:
             </Text>
 
             <div style={sessionCard}>
                 <Text style={sessionCardTitle}>Session Details</Text>
-                <Text style={sessionCardDetail}>👤 Mentor: {mentorName}</Text>
-                <Text style={sessionCardDetail}>📅 {formattedDate}</Text>
-                <Text style={sessionCardDetail}>🔗 Virtual Meeting</Text>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <tbody>
+                        <tr>
+                            <td style={detailIconCol}>👤</td>
+                            <td style={detailTextCol}>Mentor: <strong>{mentorName}</strong></td>
+                        </tr>
+                        <tr>
+                            <td style={detailIconCol}>📅</td>
+                            <td style={detailTextCol}>{formattedDate}</td>
+                        </tr>
+                        <tr>
+                            <td style={detailIconCol}>🔗</td>
+                            <td style={detailTextCol}>Virtual meeting session link provided below</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <Text style={paragraph}>
-                Prepare any questions you'd like to discuss with your mentor. Make the most of this opportunity to learn and grow!
+                Make sure to prepare any questions you'd like to discuss. Let's make this session as productive as possible!
             </Text>
 
-            <Link href={meetingLink} style={button}>
-                Join Session
-            </Link>
-
-            <Text style={smallText}>
-                Meeting Link: <Link href={meetingLink} style={linkStyle}>{meetingLink}</Link>
-            </Text>
+            <div style={meetingContainer}>
+                <Text style={{ ...paragraph, margin: '0 0 12px', fontWeight: '600' }}>
+                    To join the live session, click below:
+                </Text>
+                <Link href={meetingLink} style={button}>
+                    Join Meeting
+                </Link>
+                <Text style={smallText}>
+                    Or copy the direct link: <Link href={meetingLink} style={linkStyle}>{meetingLink}</Link>
+                </Text>
+            </div>
 
             <div style={tipBox}>
-                <Text style={tipTitle}>💡 Pro Tips:</Text>
-                <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
-                    <li style={tipItem}>Prepare questions in advance</li>
-                    <li style={tipItem}>Have your projects ready to share</li>
-                    <li style={tipItem}>Take notes during the session</li>
-                    <li style={tipItem}>Join 5 minutes early</li>
-                </ul>
+                <Text style={tipTitle}>💡 Pro Tips for a Great Session:</Text>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <tbody>
+                        <tr>
+                            <td style={tipCheck}>✓</td>
+                            <td style={tipText}>Prepare your questions and goals in advance</td>
+                        </tr>
+                        <tr>
+                            <td style={tipCheck}>✓</td>
+                            <td style={tipText}>Have your projects or code ready to screenshare</td>
+                        </tr>
+                        <tr>
+                            <td style={tipCheck}>✓</td>
+                            <td style={tipText}>Bring a notepad to take notes during the session</td>
+                        </tr>
+                        <tr>
+                            <td style={tipCheck}>✓</td>
+                            <td style={tipText}>Join the meeting 5 minutes early to test your setup</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <Text style={paragraph}>
+            <Text style={{ ...paragraph, marginTop: '24px' }}>
                 See you soon!
                 <br />
-                The VELONX Team
+                <strong>The VELONX Team</strong>
             </Text>
         </EmailLayout>
     );
 };
 
 const sessionCard = {
-    backgroundColor: '#f3f4f6',
-    padding: '20px',
-    borderRadius: '8px',
-    margin: '20px 0',
-    borderLeft: '4px solid #226CE0',
+    backgroundColor: '#F0F7FF',
+    border: '1px solid #D0E5FF',
+    borderLeft: '5px solid #226CE0',
+    padding: '24px',
+    borderRadius: '12px',
+    margin: '24px 0',
 };
 
 const sessionCardTitle = {
     fontSize: '18px',
     fontWeight: 'bold',
     color: '#1A234A',
-    margin: '0 0 12px',
+    margin: '0 0 16px',
 };
 
-const sessionCardDetail = {
+const detailIconCol = {
+    width: '24px',
+    fontSize: '16px',
+    padding: '6px 0',
+    verticalAlign: 'top',
+};
+
+const detailTextCol = {
     fontSize: '14px',
     color: '#374151',
-    margin: '4px 0',
+    padding: '6px 0 6px 8px',
+    verticalAlign: 'top',
+    lineHeight: '20px',
+};
+
+const meetingContainer = {
+    backgroundColor: '#F9FAFB',
+    border: '1px solid #E5E7EB',
+    borderRadius: '12px',
+    padding: '20px',
+    margin: '24px 0',
 };
 
 const smallText = {
     color: '#6b7280',
-    fontSize: '14px',
-    lineHeight: '20px',
-    margin: '12px 0',
+    fontSize: '13px',
+    lineHeight: '18px',
+    margin: '12px 0 0',
 };
 
 const linkStyle = {
@@ -107,23 +156,34 @@ const linkStyle = {
 
 const tipBox = {
     backgroundColor: '#eff6ff',
-    padding: '16px',
-    borderRadius: '8px',
-    margin: '16px 0',
-    borderLeft: '4px solid #3b82f6',
+    padding: '20px 24px',
+    borderRadius: '12px',
+    margin: '24px 0',
+    borderLeft: '4px solid #226CE0',
 };
 
 const tipTitle = {
-    fontSize: '14px',
+    fontSize: '15px',
     fontWeight: 'bold',
-    color: '#1e40af',
-    margin: '0 0 4px',
+    color: '#1A234A',
+    margin: '0 0 12px',
 };
 
-const tipItem = {
+const tipCheck = {
+    width: '20px',
     fontSize: '14px',
-    color: '#374151',
-    margin: '4px 0',
+    color: '#226CE0',
+    fontWeight: 'bold',
+    padding: '6px 0',
+    verticalAlign: 'top',
+};
+
+const tipText = {
+    fontSize: '13px',
+    color: '#4B5563',
+    padding: '6px 0 6px 8px',
+    verticalAlign: 'top',
+    lineHeight: '18px',
 };
 
 export default SessionConfirmationEmail;
