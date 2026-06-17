@@ -45,6 +45,7 @@
     "@splinetool/react-spline": "^4.1.0",
     "@tabler/icons-react": "^3.36.1",
     "@tailwindcss/typography": "^0.5.19",
+    "@tiptap/core": "3.22.5",
     "@tiptap/extension-color": "3.22.5",
     "@tiptap/extension-highlight": "3.22.5",
     "@tiptap/extension-image": "3.22.5",
