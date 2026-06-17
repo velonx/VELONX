@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { EventService } from '@/lib/services/event.service';
 import { prisma } from '@/lib/prisma';
 import { notificationService } from '@/lib/services/notification.service';
