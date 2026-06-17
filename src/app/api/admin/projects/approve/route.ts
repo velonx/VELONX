@@ -89,7 +89,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse project data from reason field
-    const projectData = JSON.parse(userRequest.reason || "{}");
+    let projectData;
+    try {
+      projectData = JSON.parse(userRequest.reason || "{}");
+    } catch (parseError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "Invalid project data format",
+          },
+        },
+        { status: 400 }
+      );
+    }
 
     // Create the project
     const project = await prisma.project.create({
