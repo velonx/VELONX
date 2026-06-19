@@ -97,7 +97,7 @@ interface ExtendedUser {
 // ====== SKELETON LOADING COMPONENTS ======
 function SidebarSkeleton() {
     return (
-        <aside className="card-glass-redesign dashboard-sidebar-card hidden md:flex rounded-2xl w-full flex-col p-6 space-y-6 animate-pulse">
+        <aside className="card-glass-redesign dashboard-sidebar-card hidden md:block rounded-2xl w-full flex-col p-6 space-y-6 animate-pulse">
             <div className="flex flex-col items-center gap-3">
                 <Skeleton className="w-18 h-18 rounded-full" />
                 <Skeleton className="h-5 w-32" />
@@ -262,7 +262,7 @@ function FullDashboardSkeleton() {
             <SidebarSkeleton />
 
             {/* ====== Main Content Panel Area ====== */}
-            <main className="w-full min-w-0">
+            <main className="w-full min-w-0 md:ml-20 md:mr-96">
                 <div className="dashboard-content-panel active">
                     <WelcomeSectionSkeleton />
                     <BentoStatsSkeleton />
@@ -559,7 +559,7 @@ function StudentDashboardContent() {
     return (
         <div className="container dashboard-layout px-4 md:px-8 pb-24 md:pb-16">
             {/* ====== Sidebar ====== */}
-            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:flex rounded-2xl w-full">
+            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:block rounded-2xl w-full">
                 <div className="sr-only">Dashboard Setting</div>
                 <div className="dashboard-user-profile">
                     {session.user?.image ? (
@@ -607,7 +607,7 @@ function StudentDashboardContent() {
             </div>
 
             {/* ====== Main Content Panel Area ====== */}
-            <main className="w-full min-w-0">
+            <main className="w-full min-w-0 md:ml-20 md:mr-96">
 
                 {/* ====== Panel: Overview ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'overview' ? 'active' : ''}`}>

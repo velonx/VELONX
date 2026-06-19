@@ -189,11 +189,11 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
           console.log(`Main content classes: ${mainContentClasses}`)
           
           // Verify main content does not have left margin (no longer needed in grid layout)
-          const hasLeftMargin = mainContentClasses.includes('ml-20')
+          const hasLeftMargin = mainContentClasses.split(' ').includes('ml-20')
           expect(hasLeftMargin).toBe(false)
           
           // Verify main content has no right margin (mr-96)
-          const hasRightMargin = mainContentClasses.includes('mr-96')
+          const hasRightMargin = mainContentClasses.split(' ').includes('mr-96')
           expect(hasRightMargin).toBe(false)
 
           console.log(`✓ Desktop layout preserved at ${viewportWidth}px`)
@@ -241,8 +241,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       expect(leftSidebarClasses).not.toContain('left-0')
 
       // Verify main content margins
-      expect(mainContentClasses).not.toContain('ml-20')
-      expect(mainContentClasses).not.toContain('mr-96')
+      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
+      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
 
       console.log(`✓ Three-column layout preserved at 768px`)
     })
@@ -277,8 +277,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       expect(leftSidebarClasses).not.toContain('fixed')
 
       // Verify main content margins
-      expect(mainContentClasses).not.toContain('ml-20')
-      expect(mainContentClasses).not.toContain('mr-96')
+      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
+      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
 
       console.log(`✓ Three-column layout preserved at 1024px`)
     })
@@ -311,8 +311,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       // Verify full layout structure
       expect(leftSidebarClasses).not.toContain('w-20')
       expect(leftSidebarClasses).not.toContain('fixed')
-      expect(mainContentClasses).not.toContain('ml-20')
-      expect(mainContentClasses).not.toContain('mr-96')
+      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
+      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
 
       console.log(`✓ Three-column layout preserved at 1440px`)
     })
@@ -345,8 +345,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
       // Verify ultra-wide layout behavior
       expect(leftSidebarClasses).not.toContain('w-20')
       expect(leftSidebarClasses).not.toContain('fixed')
-      expect(mainContentClasses).not.toContain('ml-20')
-      expect(mainContentClasses).not.toContain('mr-96')
+      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
+      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
 
       console.log(`✓ Three-column layout preserved at 1920px`)
     })
@@ -439,8 +439,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       // Verify layout is present
       expect(leftSidebarClasses).not.toContain('w-20')
-      expect(mainContentClasses).not.toContain('ml-20')
-      expect(mainContentClasses).not.toContain('mr-96')
+      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
+      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
 
       console.log(`✓ Desktop layout active at 768px breakpoint`)
     })
