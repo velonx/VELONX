@@ -757,8 +757,6 @@ export class PerformanceMonitorService {
         // Remove old entries from sorted sets
         await this.client!.zremrangebyscore(key, 0, timestamp)
       }
-      
-      console.log(`[Performance] Cleared metrics older than ${olderThan.toISOString()}`)
     } catch (error) {
       console.error('[Performance] Error clearing old metrics:', error)
     }
