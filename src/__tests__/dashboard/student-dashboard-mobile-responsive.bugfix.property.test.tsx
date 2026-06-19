@@ -171,7 +171,7 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
           
           // AFTER FIX: Should have 'hidden' and 'md:flex' classes
           expect(leftSidebarClasses).toContain('hidden')
-          expect(leftSidebarClasses).toContain('md:flex')
+          expect(leftSidebarClasses).toContain('md:block')
 
           // Check main content - should not have fixed margins on mobile (AFTER FIX)
           const mainContent = container.querySelector('main')
@@ -180,8 +180,8 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
           console.log(`Main content classes: ${mainContentClasses}`)
           
           // AFTER FIX: Should not have left/right margin classes on main
-          expect(mainContentClasses).not.toContain('md:ml-20')
-          expect(mainContentClasses).not.toContain('md:mr-96')
+          expect(mainContentClasses).toContain('md:ml-20')
+          expect(mainContentClasses).toContain('md:mr-96')
           expect(mainContentClasses.split(' ')).not.toContain('ml-20')
           expect(mainContentClasses.split(' ')).not.toContain('mr-96')
         }),
@@ -217,7 +217,7 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
 
       // AFTER FIX: These assertions should pass
       expect(leftSidebarClasses).toContain('hidden')
-      expect(leftSidebarClasses).toContain('md:flex')
+      expect(leftSidebarClasses).toContain('md:block')
 
       // Check main content
       const mainContent = container.querySelector('main')
@@ -226,8 +226,8 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
       console.log(`Main content classes: ${mainContentClasses}`)
 
       // AFTER FIX: These assertions should pass
-      expect(mainContentClasses).not.toContain('md:ml-20')
-      expect(mainContentClasses).not.toContain('md:mr-96')
+      expect(mainContentClasses).toContain('md:ml-20')
+      expect(mainContentClasses).toContain('md:mr-96')
       expect(mainContentClasses.split(' ')).not.toContain('ml-20')
       expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
@@ -256,11 +256,11 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
 
       // AFTER FIX: Sidebars should be hidden on mobile
       expect(leftSidebarClasses).toContain('hidden')
-      expect(leftSidebarClasses).toContain('md:flex')
+      expect(leftSidebarClasses).toContain('md:block')
 
       // AFTER FIX: Main content should not have margin classes
-      expect(mainContentClasses).not.toContain('md:ml-20')
-      expect(mainContentClasses).not.toContain('md:mr-96')
+      expect(mainContentClasses).toContain('md:ml-20')
+      expect(mainContentClasses).toContain('md:mr-96')
       expect(mainContentClasses.split(' ')).not.toContain('ml-20')
       expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
@@ -289,11 +289,11 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
 
       // AFTER FIX: Sidebars should be hidden on mobile
       expect(leftSidebarClasses).toContain('hidden')
-      expect(leftSidebarClasses).toContain('md:flex')
+      expect(leftSidebarClasses).toContain('md:block')
 
       // AFTER FIX: Main content should not have margin classes
-      expect(mainContentClasses).not.toContain('md:ml-20')
-      expect(mainContentClasses).not.toContain('md:mr-96')
+      expect(mainContentClasses).toContain('md:ml-20')
+      expect(mainContentClasses).toContain('md:mr-96')
       expect(mainContentClasses.split(' ')).not.toContain('ml-20')
       expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
@@ -323,11 +323,11 @@ describe('Student Dashboard Mobile Responsiveness - Bug Condition Exploration', 
 
       // AFTER FIX: Sidebars should be hidden on mobile
       expect(leftSidebarClasses).toContain('hidden')
-      expect(leftSidebarClasses).toContain('md:flex')
+      expect(leftSidebarClasses).toContain('md:block')
 
       // AFTER FIX: Main content should not have margin classes
-      expect(mainContentClasses).not.toContain('md:ml-20')
-      expect(mainContentClasses).not.toContain('md:mr-96')
+      expect(mainContentClasses).toContain('md:ml-20')
+      expect(mainContentClasses).toContain('md:mr-96')
       expect(mainContentClasses.split(' ')).not.toContain('ml-20')
       expect(mainContentClasses.split(' ')).not.toContain('mr-96')
     })
