@@ -104,10 +104,4 @@ export async function trackAndNavigate(
     window.location.href = safeUrl;
   }
   
-  // Optionally await tracking result for logging (doesn't block navigation)
-  trackingPromise.then((result) => {
-    if (result && result.xpAwarded) {
-      console.log(`[Resource Visit Tracking] Earned ${result.xpAmount} XP`);
-    }
-  });
 }
