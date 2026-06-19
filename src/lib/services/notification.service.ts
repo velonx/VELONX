@@ -934,6 +934,7 @@ export class NotificationService {
   /**
    * Create notification when someone comments on a user's post
    * Respects user's communityComments notification preference
+   * Also triggers an instant email via InstantEmailService if user opted in.
    * Validates: Requirements 8.2
    */
   async createPostCommentNotification(commentData: {
@@ -957,7 +958,12 @@ export class NotificationService {
       ? commentData.postContent.substring(0, 50) + '...'
       : commentData.postContent;
 
-    return this.createNotification({
+    const truncatedComment = commentData.commentContent.length > 80
+      ? commentData.commentContent.substring(0, 80) + '...'
+      : commentData.commentContent;
+
+    // Create the in-app notification
+    const notification = await this.createNotification({
       userId: commentData.postAuthorId,
       title: 'New Comment on Your Post',
       description: `${commentData.commenterName} commented on your post: "${truncatedPost}"`,
@@ -969,7 +975,26 @@ export class NotificationService {
         eventType: 'post_comment',
       },
     });
+
+    // Fire instant email if the user has opted in for POST_COMMENT emails (non-blocking)
+    import('@/lib/services/instant-email.service')
+      .then(({ InstantEmailService }) =>
+        InstantEmailService.dispatch({
+          category: 'POST_COMMENT',
+          payload: {
+            postId: commentData.postId,
+            postAuthorId: commentData.postAuthorId,
+            postExcerpt: truncatedPost,
+            commenterName: commentData.commenterName,
+            commentExcerpt: truncatedComment,
+          },
+        })
+      )
+      .catch((err) => console.error('[NotificationService] POST_COMMENT email dispatch failed:', err));
+
+    return notification;
   }
+
 
   /**
    * Create notification when someone reacts to a user's post

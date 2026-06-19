@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { OpportunityService } from "@/lib/services/career.service";
 import { opportunitySchema } from "@/lib/validations/career";
 import { ZodError } from "zod";
+import { InstantEmailService } from "@/lib/services/instant-email.service";
 
 // POST - Create opportunity (admin only)
 export async function POST(req: NextRequest) {
@@ -20,6 +21,20 @@ export async function POST(req: NextRequest) {
     const validatedData = opportunitySchema.parse(body);
 
     const opportunity = await OpportunityService.create(validatedData, session.user.id);
+
+    // Fire instant email alert to opted-in users (non-blocking)
+    InstantEmailService.dispatch({
+      category: 'JOB_POSTED',
+      payload: {
+        opportunityId: opportunity.id,
+        title: opportunity.title,
+        company: opportunity.company,
+        location: opportunity.location,
+        type: opportunity.type as 'JOB' | 'INTERNSHIP',
+        applyUrl: opportunity.applyUrl,
+        salary: opportunity.salary ?? undefined,
+      },
+    }).catch((err) => console.error('[Opportunity] Instant email dispatch failed:', err));
 
     return NextResponse.json({
       success: true,
@@ -54,6 +69,7 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 
 // GET - Get all opportunities
 export async function GET(req: NextRequest) {

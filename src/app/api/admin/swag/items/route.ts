@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
 import { z } from "zod";
+import { InstantEmailService } from "@/lib/services/instant-email.service";
 
 const createItemSchema = z.object({
   name: z.string().min(2).max(100),
@@ -47,6 +48,19 @@ export async function POST(request: NextRequest) {
     const data = createItemSchema.parse(body);
 
     const item = await prisma.swagItem.create({ data });
+
+    // Dispatch swag drop announcement email notifications (fire-and-forget)
+    InstantEmailService.dispatch({
+      category: "SWAG_ANNOUNCED",
+      payload: {
+        swagId: item.id,
+        name: item.name,
+        description: item.description,
+        imageUrl: item.imageUrl || undefined,
+      },
+    }).catch((err) => {
+      console.error("[SwagAnnouncedDispatch] Failed to dispatch instant email:", err);
+    });
 
     return NextResponse.json(
       { success: true, data: item, message: "Swag item created successfully" },

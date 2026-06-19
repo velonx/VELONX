@@ -342,4 +342,182 @@ export class EmailService {
 
         return this.sendWithRetry(user.email, 'Your VELONX week in review', html);
     }
+
+    /**
+     * Send instant job / internship alert
+     */
+    static async sendJobAlert(
+        user: { id: string; email: string; name: string | null },
+        opportunity: {
+            opportunityId: string;
+            title: string;
+            company: string;
+            location: string;
+            type: 'JOB' | 'INTERNSHIP';
+            applyUrl: string;
+            salary?: string;
+        }
+    ) {
+        const canSend = await this.canSendEmail(user.id, 'digest'); // reuses global pref; fine-grained check done by EmailPreferenceService
+        if (!canSend) return { success: true, skipped: true };
+
+        const { render } = await import('@react-email/components');
+        const { JobAlertEmail } = await import('@/emails/job-alert');
+
+        const html = await render(
+            JobAlertEmail({
+                userName: user.name || 'there',
+                ...opportunity,
+            })
+        );
+
+        const label = opportunity.type === 'INTERNSHIP' ? 'Internship' : 'Job';
+        return this.sendWithRetry(
+            user.email,
+            `New ${label}: ${opportunity.title} at ${opportunity.company}`,
+            html
+        );
+    }
+
+    /**
+     * Send new event announcement email
+     */
+    static async sendEventAnnouncement(
+        user: { id: string; email: string; name: string | null },
+        event: {
+            eventId: string;
+            title: string;
+            description: string;
+            date: Date;
+            location?: string;
+            meetingLink?: string;
+            type: string;
+        }
+    ) {
+        const canSend = await this.canSendEmail(user.id, 'event');
+        if (!canSend) return { success: true, skipped: true };
+
+        const { render } = await import('@react-email/components');
+        const { EventAnnouncedEmail } = await import('@/emails/event-announced');
+
+        const html = await render(
+            EventAnnouncedEmail({
+                userName: user.name || 'there',
+                eventTitle: event.title,
+                eventDescription: event.description,
+                eventDate: event.date,
+                eventType: event.type,
+                location: event.location,
+                meetingLink: event.meetingLink,
+                eventId: event.eventId,
+            })
+        );
+
+        return this.sendWithRetry(user.email, `New Event: ${event.title}`, html);
+    }
+
+    /**
+     * Send post comment alert (instant)
+     */
+    static async sendPostCommentAlert(
+        user: { id: string; email: string; name: string | null },
+        commentData: {
+            postId: string;
+            commenterName: string;
+            postExcerpt: string;
+            commentExcerpt: string;
+        }
+    ) {
+        const canSend = await this.canSendEmail(user.id, 'digest');
+        if (!canSend) return { success: true, skipped: true };
+
+        const { render } = await import('@react-email/components');
+        const { PostCommentAlertEmail } = await import('@/emails/post-comment-alert');
+        const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in';
+
+        const html = await render(
+            PostCommentAlertEmail({
+                userName: user.name || 'there',
+                commenterName: commentData.commenterName,
+                postExcerpt: commentData.postExcerpt,
+                commentExcerpt: commentData.commentExcerpt,
+                postUrl: `${SITE_URL}/community/posts/${commentData.postId}`,
+            })
+        );
+
+        return this.sendWithRetry(
+            user.email,
+            `${commentData.commenterName} commented on your post`,
+            html
+        );
+    }
+
+    /**
+     * Send swag announcement email
+     */
+    static async sendSwagAnnouncement(
+        user: { id: string; email: string; name: string | null },
+        swag: {
+            swagId: string;
+            name: string;
+            description: string;
+            imageUrl?: string;
+        }
+    ) {
+        const canSend = await this.canSendEmail(user.id, 'digest');
+        if (!canSend) return { success: true, skipped: true };
+
+        // Reuses the event announcement template with swag-specific copy (dedicated template can be added later)
+        const { render } = await import('@react-email/components');
+        const { EventAnnouncedEmail } = await import('@/emails/event-announced');
+
+        const html = await render(
+            EventAnnouncedEmail({
+                userName: user.name || 'there',
+                eventTitle: `🎽 Swag Drop: ${swag.name}`,
+                eventDescription: swag.description,
+                eventDate: new Date(),
+                eventType: 'WEBINAR',
+                eventId: swag.swagId,
+            })
+        );
+
+        return this.sendWithRetry(user.email, `Swag Drop: ${swag.name} is now available!`, html);
+    }
+
+    /**
+     * Send combined daily or weekly digest
+     */
+    static async sendDigestEmail(
+        user: { id: string; email: string; name: string | null },
+        digestData: {
+            frequency: 'DAILY' | 'WEEKLY';
+            periodLabel: string;
+            events?: Array<{ id: string; title: string; date: Date; location?: string }>;
+            projects?: Array<{ id: string; title: string; status: string }>;
+            resources?: Array<{ id: string; title: string; category: string; type: string }>;
+            blogPosts?: Array<{ id: string; title: string; excerpt?: string; slug?: string }>;
+            swagItems?: Array<{ id: string; name: string }>;
+        }
+    ) {
+        const canSend = await this.canSendEmail(user.id, 'digest');
+        if (!canSend) return { success: true, skipped: true };
+
+        const { render } = await import('@react-email/components');
+        const { DigestEmail } = await import('@/emails/digest');
+
+        const html = await render(
+            DigestEmail({
+                userName: user.name || 'there',
+                ...digestData,
+            })
+        );
+
+        const label = digestData.frequency === 'DAILY' ? 'Daily' : 'Weekly';
+        return this.sendWithRetry(
+            user.email,
+            `Your VELONX ${label} Digest — ${digestData.periodLabel}`,
+            html
+        );
+    }
 }
