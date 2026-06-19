@@ -56,8 +56,6 @@ export async function uploadPDFToCloudinary(
   folder: string = 'velonx/resources/pdfs'
 ): Promise<{ url: string; publicId: string }> {
   try {
-    console.log('[Cloudinary] Starting PDF upload...');
-    
     // Remove .pdf extension for public_id as image delivery appends it automatically
     const basePublicId = fileName.replace(/\.pdf$/i, '');
     
