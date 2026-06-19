@@ -22,100 +22,120 @@ export const WeeklyDigestEmail = ({
         <Text style={paragraph}>Hi {userName},</Text>
 
         <Text style={paragraph}>
-            Here's what's been happening on VELONX this week:
+            Here is your weekly summary of events, projects, and activities happening on VELONX:
         </Text>
 
-        <div style={statsContainer}>
-            <div style={statCard}>
-                <Text style={statNumber}>{upcomingEvents}</Text>
-                <Text style={statLabel}>Upcoming Events</Text>
-            </div>
-            <div style={statCard}>
-                <Text style={statNumber}>{newProjects}</Text>
-                <Text style={statLabel}>New Projects</Text>
-            </div>
-            <div style={statCard}>
-                <Text style={statNumber}>{xpGained}</Text>
-                <Text style={statLabel}>XP Gained</Text>
-            </div>
-            <div style={statCard}>
-                <Text style={statNumber}>#{leaderboardPosition}</Text>
-                <Text style={statLabel}>Leaderboard</Text>
-            </div>
-        </div>
+        {/* Stats Grid using a robust HTML table structure for wide client support */}
+        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '12px', margin: '16px 0 24px' }}>
+            <tbody>
+                <tr>
+                    <td style={statCard}>
+                        <Text style={statNumber}>{upcomingEvents}</Text>
+                        <Text style={statLabel}>Upcoming Events</Text>
+                    </td>
+                    <td style={statCard}>
+                        <Text style={statNumber}>{newProjects}</Text>
+                        <Text style={statLabel}>New Projects</Text>
+                    </td>
+                </tr>
+                <tr>
+                    <td style={statCard}>
+                        <Text style={statNumber}>{xpGained}</Text>
+                        <Text style={statLabel}>XP Gained</Text>
+                    </td>
+                    <td style={statCard}>
+                        <Text style={statNumber}>#{leaderboardPosition}</Text>
+                        <Text style={statLabel}>Leaderboard Rank</Text>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
         {upcomingEvents > 0 && (
-            <>
+            <div style={sectionContainer}>
                 <Text style={sectionTitle}>📅 Upcoming Events</Text>
                 <Text style={paragraph}>
-                    You have {upcomingEvents} event{upcomingEvents > 1 ? 's' : ''} coming up this week. Don't miss out!
+                    You have {upcomingEvents} event{upcomingEvents > 1 ? 's' : ''} scheduled or available this week. Keep building your network and skills!
                 </Text>
-                <Link
-                    href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/events`}
-                    style={secondaryButton}
-                >
-                    View Events
-                </Link>
-            </>
+                <div style={{ margin: '12px 0 24px' }}>
+                    <Link
+                        href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/events`}
+                        style={secondaryButton}
+                    >
+                        View Events Calendar
+                    </Link>
+                </div>
+            </div>
         )}
 
         {newProjects > 0 && (
-            <>
-                <Text style={sectionTitle}>🚀 New Projects</Text>
+            <div style={sectionContainer}>
+                <Text style={sectionTitle}>🚀 New Projects Matching Your Interests</Text>
                 <Text style={paragraph}>
-                    {newProjects} new project{newProjects > 1 ? 's have' : ' has'} been added that match your interests. Check them out!
+                    {newProjects} new collaboration project{newProjects > 1 ? 's have' : ' has'} been published this week. Browse through and join a team to build your portfolio.
                 </Text>
-                <Link
-                    href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/projects`}
-                    style={secondaryButton}
-                >
-                    Browse Projects
-                </Link>
-            </>
+                <div style={{ margin: '12px 0 24px' }}>
+                    <Link
+                        href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/projects`}
+                        style={secondaryButton}
+                    >
+                        Explore Project Board
+                    </Link>
+                </div>
+            </div>
         )}
 
-        <Text style={sectionTitle}>🎯 Keep Growing</Text>
-        <Text style={paragraph}>
-            You've earned {xpGained} XP this week! Keep building, learning, and collaborating to climb the leaderboard.
-        </Text>
+        <div style={xpCard}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <tbody>
+                    <tr>
+                        <td style={{ fontSize: '24px', width: '36px', verticalAlign: 'middle' }}>🏆</td>
+                        <td style={{ verticalAlign: 'middle' }}>
+                            <Text style={{ ...paragraph, margin: 0, fontWeight: 'bold', color: '#03543F' }}>
+                                XP Progress: You earned +{xpGained} XP this week!
+                            </Text>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-        <Link
-            href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/dashboard`}
-            style={button}
-        >
-            Go to Dashboard
-        </Link>
-
-        <Text style={paragraph}>
-            Have a productive week!
-            <br />
-            The VELONX Team
-        </Text>
-
-        <Text style={unsubscribeText}>
-            Not interested in weekly updates?{' '}
+        <div style={{ textAlign: 'center' as const, margin: '32px 0' }}>
             <Link
-                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/settings/notifications`}
-                style={linkStyle}
+                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/dashboard`}
+                style={button}
             >
-                Update your preferences
+                Go to Dashboard
             </Link>
+        </div>
+
+        <Text style={paragraph}>
+            Have a productive week ahead!
+            <br />
+            <strong>The VELONX Team</strong>
         </Text>
+
+        <div style={{ borderTop: '1px solid #E5E7EB', marginTop: '36px', paddingTop: '24px' }}>
+            <Text style={unsubscribeText}>
+                Want to manage weekly updates?{' '}
+                <Link
+                    href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/settings/notifications`}
+                    style={linkStyle}
+                >
+                    Update email preferences
+                </Link>
+            </Text>
+        </div>
     </EmailLayout>
 );
 
-const statsContainer = {
-    display: 'grid' as const,
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '16px',
-    margin: '24px 0',
-};
-
 const statCard = {
-    backgroundColor: '#f3f4f6',
-    padding: '20px',
-    borderRadius: '8px',
+    backgroundColor: '#F0F7FF',
+    border: '1px solid #D0E5FF',
+    padding: '24px 16px',
+    borderRadius: '12px',
     textAlign: 'center' as const,
+    width: '50%',
 };
 
 const statNumber = {
@@ -127,18 +147,33 @@ const statNumber = {
 };
 
 const statLabel = {
-    fontSize: '13px',
-    color: '#6b7280',
+    fontSize: '11px',
+    color: '#4B5563',
     margin: '8px 0 0',
+    fontWeight: '700',
     textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
+    letterSpacing: '1px',
+};
+
+const sectionContainer = {
+    borderLeft: '4px solid #226CE0',
+    paddingLeft: '16px',
+    margin: '24px 0',
 };
 
 const sectionTitle = {
     fontSize: '18px',
     fontWeight: 'bold',
     color: '#1A234A',
-    margin: '24px 0 12px',
+    margin: '0 0 12px',
+};
+
+const xpCard = {
+    backgroundColor: '#DEF7EC',
+    border: '1px solid #BCF0DA',
+    borderRadius: '12px',
+    padding: '16px 20px',
+    margin: '28px 0',
 };
 
 const secondaryButton = {
@@ -152,14 +187,14 @@ const secondaryButton = {
     textAlign: 'center' as const,
     display: 'inline-block',
     padding: '10px 24px',
-    margin: '12px 0',
+    margin: '0',
 };
 
 const unsubscribeText = {
     color: '#9ca3af',
     fontSize: '12px',
     lineHeight: '16px',
-    margin: '24px 0 0',
+    margin: '20px 0 0',
     textAlign: 'center' as const,
 };
 

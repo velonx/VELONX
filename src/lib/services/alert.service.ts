@@ -138,8 +138,6 @@ export class AlertService {
     try {
       // In a real implementation, you would integrate with an email service
       // like SendGrid, AWS SES, or Nodemailer
-      console.log('[Alert Service] Email alert would be sent to:', this.config.emailRecipients)
-      console.log('[Alert Service] Email payload:', JSON.stringify(payload, null, 2))
 
       // Example implementation with fetch (webhook-based email service):
       // await fetch('https://api.emailservice.com/send', {

@@ -1,0 +1,2 @@
+#!/bin/bash
+sed -i 's/    const projectData = JSON.parse(userRequest.reason || "{}");/    let projectData;\n    try {\n      projectData = JSON.parse(userRequest.reason || "{}");\n    } catch (parseError) {\n      return NextResponse.json(\n        {\n          success: false,\n          error: {\n            code: "VALIDATION_ERROR",\n            message: "Invalid project data format",\n          },\n        },\n        { status: 400 }\n      );\n    }/g' src/app/api/admin/projects/approve/route.ts

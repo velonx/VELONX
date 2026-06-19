@@ -14,23 +14,67 @@ export const WelcomeEmail = ({ userName }: WelcomeEmailProps) => (
         </Text>
 
         <Text style={paragraph}>
-            VELONX is your platform to:
+            Here is what you can accomplish on VELONX:
         </Text>
 
-        <ul>
-            <li style={listItem}>
-                <strong>Build Real Projects:</strong> Work on impactful projects that matter
-            </li>
-            <li style={listItem}>
-                <strong>Connect with Mentors:</strong> Learn from experienced professionals
-            </li>
-            <li style={listItem}>
-                <strong>Join Events:</strong> Participate in hackathons, workshops, and competitions
-            </li>
-            <li style={listItem}>
-                <strong>Grow Your Skills:</strong> Track your progress and level up
-            </li>
-        </ul>
+        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '24px 0' }}>
+            <tbody>
+                <tr>
+                    <td style={featureIconCol}>🚀</td>
+                    <td style={featureTextCol}>
+                        <strong style={featureTitle}>Build Real Projects</strong>
+                        <span style={featureDesc}>Collaborate on real-world projects, build your portfolio, and gain hands-on experience.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style={featureIconCol}>🤝</td>
+                    <td style={featureTextCol}>
+                        <strong style={featureTitle}>Connect with Mentors</strong>
+                        <span style={featureDesc}>Get guidance from experienced professionals in the industry to accelerate your career growth.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style={featureIconCol}>📅</td>
+                    <td style={featureTextCol}>
+                        <strong style={featureTitle}>Join Tech Events</strong>
+                        <span style={featureDesc}>Access exclusive hackathons, masterclasses, and workshops to stay ahead of the curve.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style={featureIconCol}>🏆</td>
+                    <td style={featureTextCol}>
+                        <strong style={featureTitle}>Earn XP & Badges</strong>
+                        <span style={featureDesc}>Track your progress, earn experience points (XP), collect badges, and climb the leaderboard.</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style={roadmapCard}>
+            <Text style={roadmapHeader}>Your Onboarding Journey 🗺️</Text>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <tbody>
+                    <tr>
+                        <td style={{ width: '30px', padding: '8px 0' }}>
+                            <span style={stepCircle}>1</span>
+                        </td>
+                        <td style={roadmapStepText}>Complete your Profile</td>
+                    </tr>
+                    <tr>
+                        <td style={{ width: '30px', padding: '8px 0' }}>
+                            <span style={stepCircle}>2</span>
+                        </td>
+                        <td style={roadmapStepText}>Browse and Join a Project</td>
+                    </tr>
+                    <tr>
+                        <td style={{ width: '30px', padding: '8px 0' }}>
+                            <span style={stepCircle}>3</span>
+                        </td>
+                        <td style={roadmapStepText}>Book your first Mentor Session</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <Text style={paragraph}>
             Ready to dive in?
@@ -54,16 +98,72 @@ export const WelcomeEmail = ({ userName }: WelcomeEmailProps) => (
         <Text style={paragraph}>
             Happy building!
             <br />
-            The VELONX Team
+            <strong>The VELONX Team</strong>
         </Text>
     </EmailLayout>
 );
 
-const listItem = {
-    color: '#374151',
+const featureIconCol = {
+    padding: '12px 16px 12px 0',
+    verticalAlign: 'top',
+    fontSize: '24px',
+    width: '40px',
+};
+
+const featureTextCol = {
+    padding: '12px 0',
+    verticalAlign: 'top',
+};
+
+const featureTitle = {
+    display: 'block',
     fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#1A234A',
+    margin: '0 0 4px',
+};
+
+const featureDesc = {
+    display: 'block',
+    fontSize: '14px',
+    color: '#6b7280',
+    lineHeight: '20px',
+};
+
+const roadmapCard = {
+    backgroundColor: '#F0F7FF',
+    border: '1px solid #D0E5FF',
+    borderRadius: '12px',
+    padding: '20px 24px',
+    margin: '32px 0',
+};
+
+const roadmapHeader = {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#1A234A',
+    margin: '0 0 16px',
+};
+
+const stepCircle = {
+    display: 'block',
+    width: '24px',
+    height: '24px',
+    borderRadius: '12px',
+    backgroundColor: '#226CE0',
+    color: '#ffffff',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    textAlign: 'center' as const,
     lineHeight: '24px',
-    marginBottom: '8px',
+};
+
+const roadmapStepText = {
+    padding: '8px 0 8px 12px',
+    fontSize: '14px',
+    color: '#374151',
+    fontWeight: '600',
+    verticalAlign: 'middle',
 };
 
 const link = {

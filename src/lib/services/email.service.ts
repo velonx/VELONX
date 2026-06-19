@@ -117,6 +117,33 @@ export class EmailService {
     }
 
     /**
+     * Send badge earned notification email
+     */
+    static async sendBadgeEarnedEmail(
+        user: { email: string; name: string | null },
+        badge: { name: string; description: string; icon?: string; xpAwarded: number }
+    ) {
+        const { render } = await import('@react-email/components');
+        const { BadgeEarnedEmail } = await import('@/emails/badge-earned');
+
+        const html = await render(
+            BadgeEarnedEmail({
+                userName: user.name || 'there',
+                badgeName: badge.name,
+                badgeDescription: badge.description,
+                badgeIcon: badge.icon,
+                xpAwarded: badge.xpAwarded,
+            })
+        );
+
+        return this.sendWithRetry(
+            user.email,
+            `Congratulations! You earned the ${badge.name} badge! 🏆`,
+            html
+        );
+    }
+
+    /**
      * Send email verification
      */
     static async sendVerificationEmail(

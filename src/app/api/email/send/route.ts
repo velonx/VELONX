@@ -17,6 +17,7 @@ const sendEmailSchema = z.object({
         'sessionConfirmation',
         'projectInvite',
         'weeklyDigest',
+        'badgeEarned',
     ]),
     recipient: z.string().email(),
     data: z.record(z.string(), z.any()).optional(),
@@ -157,6 +158,21 @@ export async function POST(request: NextRequest) {
                         newProjects: (data.newProjects as number) || 5,
                         xpGained: (data.xpGained as number) || 150,
                         leaderboardPosition: (data.leaderboardPosition as number) || 42,
+                    }
+                );
+                break;
+
+            case 'badgeEarned':
+                result = await EmailService.sendBadgeEarnedEmail(
+                    {
+                        email: recipient,
+                        name: (data.name as string) || 'Test User',
+                    },
+                    {
+                        name: (data.badgeName as string) || 'Fast Learner',
+                        description: (data.badgeDescription as string) || 'Completed 3 courses in one week.',
+                        icon: (data.badgeIcon as string) || '⚡',
+                        xpAwarded: (data.xpAwarded as number) || 250,
                     }
                 );
                 break;

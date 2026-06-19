@@ -208,9 +208,6 @@ export function SortToolbar() {
 export function EventListWithSort() {
   const { sortBy } = useEventSort();
 
-  // In a real component, you would fetch events with the sortBy parameter
-  // const { data: events } = useEvents({ sortBy });
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -222,9 +219,7 @@ export function EventListWithSort() {
         Sorted by: {sortBy}
       </div>
       
-      {/* Event list would go here */}
       <div className="space-y-2">
-        {/* <EventCard /> components */}
       </div>
     </div>
   );

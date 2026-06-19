@@ -5,7 +5,7 @@ import { z } from "zod";
 
 const resetPasswordSchema = z.object({
   email: z.string().email(),
-  token: z.string().min(1),
+  token: z.string().length(64, "Invalid token format").regex(/^[0-9a-f]+$/i, "Invalid token format"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 

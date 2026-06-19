@@ -1,0 +1,2 @@
+#!/bin/bash
+sed -i 's/    const requestData = JSON.parse(joinRequest.reason || "{}");/    let requestData;\n    try {\n      requestData = JSON.parse(joinRequest.reason || "{}");\n    } catch (parseError) {\n      return NextResponse.json(\n        {\n          success: false,\n          error: {\n            code: "VALIDATION_ERROR",\n            message: "Invalid request data format",\n          },\n        },\n        { status: 400 }\n      );\n    }/g' src/app/api/projects/join-requests/\[requestId\]/route.ts

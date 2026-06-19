@@ -206,7 +206,7 @@ describe('trackAndNavigate', () => {
     );
   });
 
-  it('should log XP earned when tracking succeeds', async () => {
+  it('should not log XP earned when tracking succeeds (debug log removed)', async () => {
     const mockResponse = {
       success: true,
       data: {
@@ -224,9 +224,7 @@ describe('trackAndNavigate', () => {
     // Wait for async tracking to complete
     await new Promise(resolve => setTimeout(resolve, 10));
 
-    expect(console.log).toHaveBeenCalledWith(
-      '[Resource Visit Tracking] Earned 10 XP'
-    );
+    expect(console.log).not.toHaveBeenCalled();
   });
 
   it('should not log when no XP is awarded', async () => {

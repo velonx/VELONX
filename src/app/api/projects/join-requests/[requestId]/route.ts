@@ -87,7 +87,21 @@ export async function PATCH(
     }
 
     // Parse project data from reason field
-    const requestData = JSON.parse(joinRequest.reason || "{}");
+    let requestData;
+    try {
+      requestData = JSON.parse(joinRequest.reason || "{}");
+    } catch (parseError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "Invalid request data format",
+          },
+        },
+        { status: 400 }
+      );
+    }
     const projectId = requestData.projectId;
 
     // Verify user is the project owner
