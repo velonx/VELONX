@@ -287,6 +287,12 @@ export interface PlatformStats {
   totalProjects: number;
   totalMentors: number;
   pendingRequests: number;
+  unverifiedStats?: {
+    email: number;
+    google: number;
+    github: number;
+    total: number;
+  };
 }
 
 export interface NotificationData {

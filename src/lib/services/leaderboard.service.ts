@@ -55,6 +55,9 @@ export class LeaderboardService {
     }>
   > {
     const users = await prisma.user.findMany({
+      where: {
+        role: 'STUDENT',
+      },
       select: {
         id: true,
         name: true,
@@ -111,22 +114,16 @@ export class LeaderboardService {
     });
 
     // Aggregate XP by user
-    const userXP = new Map<string, number>();
+    const userPeriodXP = new Map<string, number>();
     for (const tx of xpTransactions) {
-      const current = userXP.get(tx.userId) || 0;
-      userXP.set(tx.userId, current + tx.amount);
+      const current = userPeriodXP.get(tx.userId) || 0;
+      userPeriodXP.set(tx.userId, current + tx.amount);
     }
 
-    // Get user IDs sorted by XP
-    const sortedUserIds = Array.from(userXP.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, limit)
-      .map(([userId]) => userId);
-
-    // Fetch user details
+    // Fetch all students
     const users = await prisma.user.findMany({
       where: {
-        id: { in: sortedUserIds },
+        role: 'STUDENT',
       },
       select: {
         id: true,
@@ -145,20 +142,37 @@ export class LeaderboardService {
       },
     });
 
-    // Map to leaderboard format
-    return sortedUserIds.map((userId, index) => {
-      const user = users.find((u) => u.id === userId)!;
+    // Map all users to include their period XP, defaulting to 0
+    const leaderboardEntries = users.map((user) => {
+      const periodXP = userPeriodXP.get(user.id) || 0;
       return {
-        rank: index + 1,
         id: user.id,
         name: user.name,
         email: user.email,
         image: user.image,
-        xp: userXP.get(userId) || 0, // Period XP
+        xp: periodXP, // Period XP
+        allTimeXP: user.xp, // for secondary sorting
         level: user.level,
         currentStreak: user.currentStreak,
         badges: user._count.badges,
         projects: user._count.projectsOwned,
+      };
+    });
+
+    // Sort: period XP desc, then all-time XP desc
+    leaderboardEntries.sort((a, b) => {
+      if (b.xp !== a.xp) {
+        return b.xp - a.xp;
+      }
+      return b.allTimeXP - a.allTimeXP;
+    });
+
+    // Take limit and map rank
+    return leaderboardEntries.slice(0, limit).map((entry, index) => {
+      const { allTimeXP, ...rest } = entry;
+      return {
+        rank: index + 1,
+        ...rest,
       };
     });
   }
@@ -180,20 +194,23 @@ export class LeaderboardService {
       // Count users with more XP
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: { xp: true },
+        select: { xp: true, role: true },
       });
 
-      if (!user) {
+      if (!user || user.role !== 'STUDENT') {
         return { rank: null, totalUsers: 0, xp: 0 };
       }
 
       const rank = await prisma.user.count({
         where: {
+          role: 'STUDENT',
           xp: { gt: user.xp },
         },
       });
 
-      const totalUsers = await prisma.user.count();
+      const totalUsers = await prisma.user.count({
+        where: { role: 'STUDENT' },
+      });
 
       return { rank: rank + 1, totalUsers, xp: user.xp };
     }
@@ -395,7 +412,16 @@ export class LeaderboardService {
 
 // Keep legacy export for backward compatibility
 export const leaderboardService = {
-  getLeaderboard: (params: any) => LeaderboardService.getLeaderboard('ALL_TIME', params.pageSize || 10),
+  getLeaderboard: (params: any) => {
+    let period: LeaderboardPeriod = 'ALL_TIME';
+    if (params.timeframe === 'month') period = 'MONTHLY';
+    else if (params.timeframe === 'week') period = 'WEEKLY';
+    
+    return LeaderboardService.getLeaderboard(
+      period,
+      params.pageSize || 10
+    );
+  },
   getUserRank: (userId: string) => LeaderboardService.getUserRank(userId, 'ALL_TIME'),
   awardXP: (userId: string, amount: number, reason: string) => LeaderboardService.awardXP(userId, amount, reason),
 };

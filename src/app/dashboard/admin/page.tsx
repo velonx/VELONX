@@ -338,6 +338,31 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Unverified Users Breakdown */}
+                                    <div className="border-t border-border pt-8 mt-8">
+                                        <h4 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+                                            <ShieldCheck className="w-5 h-5 text-orange-500" /> Unverified Users Breakdown
+                                        </h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                            <div className="bg-muted/50 p-6 rounded-2xl border border-border/50">
+                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Unverified (Email)</p>
+                                                <p className="text-3xl font-bold text-foreground">{platformStats?.unverifiedStats?.email ?? 0}</p>
+                                            </div>
+                                            <div className="bg-muted/50 p-6 rounded-2xl border border-border/50">
+                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Unverified (Google)</p>
+                                                <p className="text-3xl font-bold text-foreground">{platformStats?.unverifiedStats?.google ?? 0}</p>
+                                            </div>
+                                            <div className="bg-muted/50 p-6 rounded-2xl border border-border/50">
+                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Unverified (GitHub)</p>
+                                                <p className="text-3xl font-bold text-foreground">{platformStats?.unverifiedStats?.github ?? 0}</p>
+                                            </div>
+                                            <div className="bg-orange-50/10 dark:bg-orange-950/10 p-6 rounded-2xl border border-orange-500/20">
+                                                <p className="text-xs font-bold text-orange-500 uppercase tracking-widest mb-2">Total Unverified</p>
+                                                <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">{platformStats?.unverifiedStats?.total ?? 0}</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
