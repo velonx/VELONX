@@ -121,84 +121,84 @@ const MenuBar = ({ editor }: { editor: any }) => {
       {/* Primary Toolbar Row */}
       <div className="flex flex-wrap items-center gap-1">
         {/* History & Utility */}
-        <button type="button" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} className={btnClass(false)} title="Undo"><Undo2 className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} className={btnClass(false)} title="Redo"><Redo2 className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()} className={btnClass(false)} title="Clear Formatting"><RemoveFormatting className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} className={btnClass(false)} title="Undo" aria-label="Undo"><Undo2 className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} className={btnClass(false)} title="Redo" aria-label="Redo"><Redo2 className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()} className={btnClass(false)} title="Clear Formatting" aria-label="Clear Formatting"><RemoveFormatting className="w-4 h-4" /></button>
         <div className="w-px h-6 bg-gray-200 mx-1" />
 
         {/* Text Styles */}
-        <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={btnClass(editor.isActive("heading", { level: 1 }))} title="H1"><Heading1 className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btnClass(editor.isActive("heading", { level: 2 }))} title="H2"><Heading2 className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().setParagraph().run()} className={btnClass(editor.isActive("paragraph"))} title="Normal Text"><Type className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={btnClass(editor.isActive("heading", { level: 1 }))} title="H1" aria-label="H1"><Heading1 className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btnClass(editor.isActive("heading", { level: 2 }))} title="H2" aria-label="H2"><Heading2 className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().setParagraph().run()} className={btnClass(editor.isActive("paragraph"))} title="Normal Text" aria-label="Normal Text"><Type className="w-4 h-4" /></button>
         
         <div className="w-px h-6 bg-gray-200 mx-1" />
 
-        <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().chain().focus().toggleBold().run()} className={btnClass(editor.isActive("bold"))} title="Bold"><Bold className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().chain().focus().toggleItalic().run()} className={btnClass(editor.isActive("italic"))} title="Italic"><Italic className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={btnClass(editor.isActive("underline"))} title="Underline"><UnderlineIcon className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().chain().focus().toggleBold().run()} className={btnClass(editor.isActive("bold"))} title="Bold" aria-label="Bold"><Bold className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().chain().focus().toggleItalic().run()} className={btnClass(editor.isActive("italic"))} title="Italic" aria-label="Italic"><Italic className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={btnClass(editor.isActive("underline"))} title="Underline" aria-label="Underline"><UnderlineIcon className="w-4 h-4" /></button>
         
         {/* Font Size Controls */}
         <div className="flex items-center gap-1 bg-white rounded-xl border border-gray-100 p-1 mx-1">
-          <button type="button" onClick={() => changeFontSize('down')} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors" title="Decrease Size"><Minus className="w-3.5 h-3.5" /></button>
+          <button type="button" onClick={() => changeFontSize('down')} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors" title="Decrease Size" aria-label="Decrease Size"><Minus className="w-3.5 h-3.5" /></button>
           <span className="text-[10px] font-bold w-10 text-center text-[#1A234A]">{getCurrentFontSize()}</span>
-          <button type="button" onClick={() => changeFontSize('up')} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors" title="Increase Size"><Plus className="w-3.5 h-3.5" /></button>
+          <button type="button" onClick={() => changeFontSize('up')} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors" title="Increase Size" aria-label="Increase Size"><Plus className="w-3.5 h-3.5" /></button>
         </div>
 
         {/* Colors & Highlights */}
-        <input type="color" onInput={event => editor.chain().focus().setColor((event.target as HTMLInputElement).value).run()} value={editor.getAttributes('textStyle').color || '#000000'} className="w-8 h-8 rounded cursor-pointer border-0 p-0 ml-1" title="Text Color" />
-        <button type="button" onClick={() => editor.chain().focus().toggleHighlight({ color: '#ffcc00' }).run()} className={btnClass(editor.isActive("highlight"))} title="Highlight Text"><Highlighter className="w-4 h-4" /></button>
+        <input type="color" onInput={event => editor.chain().focus().setColor((event.target as HTMLInputElement).value).run()} value={editor.getAttributes('textStyle').color || '#000000'} className="w-8 h-8 rounded cursor-pointer border-0 p-0 ml-1" title="Text Color" aria-label="Text Color" />
+        <button type="button" onClick={() => editor.chain().focus().toggleHighlight({ color: '#ffcc00' }).run()} className={btnClass(editor.isActive("highlight"))} title="Highlight Text" aria-label="Highlight Text"><Highlighter className="w-4 h-4" /></button>
 
       </div>
 
       {/* Secondary Toolbar Row */}
       <div className="flex flex-wrap items-center gap-1">
         {/* Alignment */}
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} className={btnClass(editor.isActive({ textAlign: 'left' }))} title="Align Left"><AlignLeft className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign('center').run()} className={btnClass(editor.isActive({ textAlign: 'center' }))} title="Align Center"><AlignCenter className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign('right').run()} className={btnClass(editor.isActive({ textAlign: 'right' }))} title="Align Right"><AlignRight className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={btnClass(editor.isActive({ textAlign: 'justify' }))} title="Justify"><AlignJustify className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} className={btnClass(editor.isActive({ textAlign: 'left' }))} title="Align Left" aria-label="Align Left"><AlignLeft className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().setTextAlign('center').run()} className={btnClass(editor.isActive({ textAlign: 'center' }))} title="Align Center" aria-label="Align Center"><AlignCenter className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().setTextAlign('right').run()} className={btnClass(editor.isActive({ textAlign: 'right' }))} title="Align Right" aria-label="Align Right"><AlignRight className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={btnClass(editor.isActive({ textAlign: 'justify' }))} title="Justify" aria-label="Justify"><AlignJustify className="w-4 h-4" /></button>
         <div className="w-px h-6 bg-gray-200 mx-1" />
 
         {/* Lists & Blocks */}
-        <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btnClass(editor.isActive("bulletList"))} title="Bullet List"><List className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={btnClass(editor.isActive("orderedList"))} title="Ordered List"><ListOrdered className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleTaskList().run()} className={btnClass(editor.isActive("taskList"))} title="Task List"><CheckSquare className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={btnClass(editor.isActive("blockquote"))} title="Blockquote"><Quote className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={btnClass(editor.isActive("codeBlock"))} title="Code Block"><Code className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().setHorizontalRule().run()} className={btnClass(false)} title="Horizontal Rule"><MinusSquare className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btnClass(editor.isActive("bulletList"))} title="Bullet List" aria-label="Bullet List"><List className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={btnClass(editor.isActive("orderedList"))} title="Ordered List" aria-label="Ordered List"><ListOrdered className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleTaskList().run()} className={btnClass(editor.isActive("taskList"))} title="Task List" aria-label="Task List"><CheckSquare className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={btnClass(editor.isActive("blockquote"))} title="Blockquote" aria-label="Blockquote"><Quote className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={btnClass(editor.isActive("codeBlock"))} title="Code Block" aria-label="Code Block"><Code className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().setHorizontalRule().run()} className={btnClass(false)} title="Horizontal Rule" aria-label="Horizontal Rule"><MinusSquare className="w-4 h-4" /></button>
 
         <div className="w-px h-6 bg-gray-200 mx-1" />
 
         {/* Links & Media */}
-        <button type="button" onClick={setLink} className={btnClass(editor.isActive("link"))} title="Add Link"><LinkIcon className="w-4 h-4" /></button>
+        <button type="button" onClick={setLink} className={btnClass(editor.isActive("link"))} title="Add Link" aria-label="Add Link"><LinkIcon className="w-4 h-4" /></button>
         {editor.isActive("link") && (
-          <button type="button" onClick={() => editor.chain().focus().unsetLink().run()} className={btnClass(false)} title="Remove Link"><Unlink className="w-4 h-4" /></button>
+          <button type="button" onClick={() => editor.chain().focus().unsetLink().run()} className={btnClass(false)} title="Remove Link" aria-label="Remove Link"><Unlink className="w-4 h-4" /></button>
         )}
-        <button type="button" onClick={addImage} className={btnClass(false)} title="Add Image URL"><ImageIcon className="w-4 h-4" /></button>
+        <button type="button" onClick={addImage} className={btnClass(false)} title="Add Image URL" aria-label="Add Image URL"><ImageIcon className="w-4 h-4" /></button>
         
         <div className="w-px h-6 bg-gray-200 mx-1" />
 
         {/* Sub/Superscript */}
-        <button type="button" onClick={() => editor.chain().focus().toggleSubscript().run()} className={btnClass(editor.isActive("subscript"))} title="Subscript"><SubscriptIcon className="w-4 h-4" /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleSuperscript().run()} className={btnClass(editor.isActive("superscript"))} title="Superscript"><SuperscriptIcon className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleSubscript().run()} className={btnClass(editor.isActive("subscript"))} title="Subscript" aria-label="Subscript"><SubscriptIcon className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleSuperscript().run()} className={btnClass(editor.isActive("superscript"))} title="Superscript" aria-label="Superscript"><SuperscriptIcon className="w-4 h-4" /></button>
       </div>
 
       {/* Table Actions Row (Only visible when a table is active or inserting one) */}
       <div className="flex flex-wrap items-center gap-1 bg-white p-2 rounded-xl border border-gray-100 mt-1">
-        <button type="button" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} className={btnClass(false)} title="Insert Table"><TableIcon className="w-4 h-4 mr-2" /> Insert Table</button>
+        <button type="button" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} className={btnClass(false)} title="Insert Table" aria-label="Insert Table"><TableIcon className="w-4 h-4 mr-2" /> Insert Table</button>
         {editor.isActive('table') && (
           <>
             <div className="w-px h-6 bg-gray-200 mx-1" />
-            <button type="button" onClick={() => editor.chain().focus().addColumnBefore().run()} className={btnClass(false)} title="Add Column Before"><BetweenHorizontalStart className="w-4 h-4" /></button>
-            <button type="button" onClick={() => editor.chain().focus().addColumnAfter().run()} className={btnClass(false)} title="Add Column After"><BetweenHorizontalEnd className="w-4 h-4" /></button>
-            <button type="button" onClick={() => editor.chain().focus().deleteColumn().run()} className={btnClass(false)} title="Delete Column"><Trash2 className="w-4 h-4 text-red-500" /></button>
+            <button type="button" onClick={() => editor.chain().focus().addColumnBefore().run()} className={btnClass(false)} title="Add Column Before" aria-label="Add Column Before"><BetweenHorizontalStart className="w-4 h-4" /></button>
+            <button type="button" onClick={() => editor.chain().focus().addColumnAfter().run()} className={btnClass(false)} title="Add Column After" aria-label="Add Column After"><BetweenHorizontalEnd className="w-4 h-4" /></button>
+            <button type="button" onClick={() => editor.chain().focus().deleteColumn().run()} className={btnClass(false)} title="Delete Column" aria-label="Delete Column"><Trash2 className="w-4 h-4 text-red-500" /></button>
             <div className="w-px h-6 bg-gray-200 mx-1" />
-            <button type="button" onClick={() => editor.chain().focus().addRowBefore().run()} className={btnClass(false)} title="Add Row Before"><BetweenVerticalStart className="w-4 h-4" /></button>
-            <button type="button" onClick={() => editor.chain().focus().addRowAfter().run()} className={btnClass(false)} title="Add Row After"><BetweenVerticalEnd className="w-4 h-4" /></button>
-            <button type="button" onClick={() => editor.chain().focus().deleteRow().run()} className={btnClass(false)} title="Delete Row"><Trash2 className="w-4 h-4 text-red-500" /></button>
+            <button type="button" onClick={() => editor.chain().focus().addRowBefore().run()} className={btnClass(false)} title="Add Row Before" aria-label="Add Row Before"><BetweenVerticalStart className="w-4 h-4" /></button>
+            <button type="button" onClick={() => editor.chain().focus().addRowAfter().run()} className={btnClass(false)} title="Add Row After" aria-label="Add Row After"><BetweenVerticalEnd className="w-4 h-4" /></button>
+            <button type="button" onClick={() => editor.chain().focus().deleteRow().run()} className={btnClass(false)} title="Delete Row" aria-label="Delete Row"><Trash2 className="w-4 h-4 text-red-500" /></button>
             <div className="w-px h-6 bg-gray-200 mx-1" />
-            <button type="button" onClick={() => editor.chain().focus().mergeCells().run()} className={btnClass(false)} title="Merge Cells"><SplitSquareHorizontal className="w-4 h-4" /></button>
-            <button type="button" onClick={() => editor.chain().focus().deleteTable().run()} className={`${btnClass(false)} text-red-500 hover:bg-red-50 hover:text-red-600`} title="Delete Table"><Trash className="w-4 h-4 mr-2" /> Delete Table</button>
+            <button type="button" onClick={() => editor.chain().focus().mergeCells().run()} className={btnClass(false)} title="Merge Cells" aria-label="Merge Cells"><SplitSquareHorizontal className="w-4 h-4" /></button>
+            <button type="button" onClick={() => editor.chain().focus().deleteTable().run()} className={`${btnClass(false)} text-red-500 hover:bg-red-50 hover:text-red-600`} title="Delete Table" aria-label="Delete Table"><Trash className="w-4 h-4 mr-2" /> Delete Table</button>
           </>
         )}
       </div>
