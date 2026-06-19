@@ -150,8 +150,6 @@ export class BruteForceProtection {
       if (attempts === 1) {
         await redis.expire(attemptsKey, Math.floor(BRUTE_FORCE_CONFIG.windowMs / 1000))
       }
-
-      console.log(`[Brute Force Protection] Failed attempt recorded for ${identifier}. Total attempts: ${attempts}`)
     } catch (error) {
       console.error('[Brute Force Protection] Error recording failed attempt:', error)
     }
@@ -169,8 +167,6 @@ export class BruteForceProtection {
       // Clear attempts and lockout
       await redis.del(attemptsKey)
       await redis.del(lockoutKey)
-
-      console.log(`[Brute Force Protection] Successful attempt recorded for ${identifier}. Counters cleared.`)
     } catch (error) {
       console.error('[Brute Force Protection] Error recording successful attempt:', error)
     }
@@ -187,8 +183,6 @@ export class BruteForceProtection {
 
       await redis.del(attemptsKey)
       await redis.del(lockoutKey)
-
-      console.log(`[Brute Force Protection] Account unlocked: ${identifier}`)
     } catch (error) {
       console.error('[Brute Force Protection] Error unlocking account:', error)
       throw error
