@@ -28,13 +28,9 @@ export async function initializeServices(): Promise<void> {
   // Start initialization
   initializationPromise = (async () => {
     try {
-      console.log('[Init] Initializing services...')
-
       // Initialize Redis
       try {
-        console.log('[Init] Initializing Redis...')
         await redisManager.initialize()
-        console.log('[Init] Redis initialized successfully')
       } catch (error) {
         console.error('[Init] Redis initialization failed:', error)
         console.warn('[Init] Application will continue without Redis')
@@ -42,7 +38,6 @@ export async function initializeServices(): Promise<void> {
       }
 
       isInitialized = true
-      console.log('[Init] All services initialized')
     } catch (error) {
       console.error('[Init] Service initialization failed:', error)
       initializationPromise = null
