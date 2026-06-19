@@ -10,3 +10,6 @@
 ## 2026-06-16 - Add ARIA Labels to Rich Text Editor Toolbar Buttons
 **Learning:** Found that numerous icon-only buttons in the RichTextEditor.tsx toolbar lacked aria-label attributes, making it difficult for screen readers to identify their actions.
 **Action:** Added aria-label attributes to all icon-only toolbar buttons to ensure full accessibility for screen reader users.
+## 2026-06-16 - Add explicit label associations in auth forms
+**Learning:** Forms designed with separated labels and inputs (e.g. for styling purposes using div wrappers) frequently lack proper accessibility bindings because developers assume visual proximity implies semantic association.
+**Action:** Always ensure that every `<label>` has an `htmlFor` attribute matching its target `<input>` `id`, regardless of visual layout or proximity.
