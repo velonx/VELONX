@@ -40,12 +40,6 @@ export async function generateReferralCode(): Promise<string> {
     });
     
     if (!existing) {
-      // Log successful generation with metrics
-      console.log('Referral code generated successfully', {
-        attempt: attempt + 1,
-        collisions: collisionCount,
-        timestamp: new Date().toISOString()
-      });
       return code;
     }
     
@@ -113,7 +107,6 @@ export async function createReferralRelationship(
   try {
     // Prevent self-referral
     if (referrerId === refereeId) {
-      console.log('Self-referral attempt blocked');
       return null;
     }
     
@@ -123,7 +116,6 @@ export async function createReferralRelationship(
     });
     
     if (existingRelationship) {
-      console.log('Referee already has a referrer');
       return null;
     }
     
@@ -142,15 +134,6 @@ export async function createReferralRelationship(
         refereeId,
         totalXPAwarded: XP_REWARDS.REFERRAL_SIGNUP
       }
-    });
-    
-    // Log referral relationship creation
-    console.log('Referral relationship created', {
-      relationshipId: relationship.id,
-      referrerId,
-      refereeId,
-      refereeName,
-      timestamp: new Date().toISOString()
     });
     
     // Update referee's referredBy field
@@ -173,15 +156,6 @@ export async function createReferralRelationship(
         `Referral signup: ${refereeName} joined using your referral code`
       );
       
-      // Log XP award
-      console.log('Referral signup XP awarded', {
-        referrerId,
-        refereeId,
-        xpAmount: XP_REWARDS.REFERRAL_SIGNUP,
-        milestone: 'signup',
-        timestamp: new Date().toISOString()
-      });
-
       // Trigger Badge Check for REFERRAL category
       try {
         const { BadgeService } = await import('./badge.service');
@@ -209,7 +183,6 @@ export async function createReferralRelationship(
   } catch (error: any) {
     if (error.code === 'P2002') {
       // Unique constraint violation
-      console.log('Referral relationship already exists');
       return null;
     }
     console.error('Error creating referral relationship:', error);
@@ -238,7 +211,6 @@ export async function checkAndAwardProfileCompletion(userId: string): Promise<vo
     
     // Check if milestone already completed (idempotence)
     if (relationship.profileCompletedAt) {
-      console.log('Profile completion milestone already awarded for user:', userId);
       await logDuplicateAttempt(relationship.id, 'profile_completion');
       return;
     }
@@ -263,15 +235,6 @@ export async function checkAndAwardProfileCompletion(userId: string): Promise<vo
         XP_REWARDS.REFERRAL_PROFILE_COMPLETE,
         `Referral profile completion: ${refereeName} completed their profile`
       );
-      
-      // Log XP award
-      console.log('Referral profile completion XP awarded', {
-        referrerId: relationship.referrerId,
-        refereeId: userId,
-        xpAmount: XP_REWARDS.REFERRAL_PROFILE_COMPLETE,
-        milestone: 'profile_completion',
-        timestamp: new Date().toISOString()
-      });
     } catch (error) {
       console.error('Failed to award profile completion XP', {
         referrerId: relationship.referrerId,
@@ -289,14 +252,6 @@ export async function checkAndAwardProfileCompletion(userId: string): Promise<vo
         profileCompletedAt: new Date(),
         totalXPAwarded: { increment: XP_REWARDS.REFERRAL_PROFILE_COMPLETE }
       }
-    });
-    
-    // Log milestone completion
-    console.log('Profile completion milestone completed', {
-      relationshipId: relationship.id,
-      referrerId: relationship.referrerId,
-      refereeId: userId,
-      timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error('Error checking profile completion milestone:', error);
@@ -342,7 +297,6 @@ export async function checkAndAwardFirstActivity(
     
     // Check if milestone already completed (idempotence)
     if (relationship.firstActivityCompletedAt) {
-      console.log('First activity milestone already awarded for user:', userId);
       await logDuplicateAttempt(relationship.id, 'first_activity');
       return;
     }
@@ -365,16 +319,6 @@ export async function checkAndAwardFirstActivity(
         XP_REWARDS.REFERRAL_FIRST_ACTIVITY,
         `Referral first activity: ${refereeName} completed ${activityDisplayName}`
       );
-      
-      // Log XP award
-      console.log('Referral first activity XP awarded', {
-        referrerId: relationship.referrerId,
-        refereeId: userId,
-        xpAmount: XP_REWARDS.REFERRAL_FIRST_ACTIVITY,
-        milestone: 'first_activity',
-        activityType,
-        timestamp: new Date().toISOString()
-      });
     } catch (error) {
       console.error('Failed to award first activity XP', {
         referrerId: relationship.referrerId,
@@ -394,15 +338,6 @@ export async function checkAndAwardFirstActivity(
         firstActivityType: activityType,
         totalXPAwarded: { increment: XP_REWARDS.REFERRAL_FIRST_ACTIVITY }
       }
-    });
-    
-    // Log milestone completion
-    console.log('First activity milestone completed', {
-      relationshipId: relationship.id,
-      referrerId: relationship.referrerId,
-      refereeId: userId,
-      activityType,
-      timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error('Error checking first activity milestone:', error);
