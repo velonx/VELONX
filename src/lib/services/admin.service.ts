@@ -18,29 +18,29 @@ export class AdminService {
     status?: string;
   }) {
     const { page = 1, pageSize = 10, type, status } = params;
-    
+
     // Build where clause for filtering
     const where: Prisma.UserRequestWhereInput = {};
-    
+
     if (type) {
       where.type = type as any;
     }
-    
+
     if (status) {
       where.status = status as any;
     }
-    
+
     // First, get all user IDs to check which ones exist
     const allUserIds = await prisma.user.findMany({
       select: { id: true },
     });
     const validUserIds = new Set(allUserIds.map(u => u.id));
-    
+
     // Add filter to only get requests with valid users
     where.userId = {
       in: Array.from(validUserIds),
     };
-    
+
     // Execute query with pagination
     const [requests, totalCount] = await Promise.all([
       prisma.userRequest.findMany({
@@ -64,7 +64,7 @@ export class AdminService {
       }),
       prisma.userRequest.count({ where }),
     ]);
-    
+
     return {
       requests,
       pagination: {
@@ -75,7 +75,7 @@ export class AdminService {
       },
     };
   }
-  
+
   /**
    * Approve a user request
    */
@@ -87,17 +87,17 @@ export class AdminService {
         user: true,
       },
     });
-    
+
     if (!request) {
       throw new NotFoundError("User request");
     }
-    
+
     // Handle mentor application approval
     if (request.type === 'MENTOR_APPLICATION' && request.reason) {
       try {
         // Parse mentor application data from reason field
         const mentorData = JSON.parse(request.reason);
-        
+
         // Create mentor record
         await prisma.mentor.create({
           data: {
@@ -115,7 +115,7 @@ export class AdminService {
             available: true,
           },
         });
-        
+
         // Create success notification
         await notificationService.createNotification({
           userId: request.userId,
@@ -128,7 +128,7 @@ export class AdminService {
         throw new Error('Failed to process mentor application approval');
       }
     }
-    
+
     // Update request status to APPROVED
     const updatedRequest = await prisma.userRequest.update({
       where: { id: requestId },
@@ -149,10 +149,10 @@ export class AdminService {
         },
       },
     });
-    
+
     return updatedRequest;
   }
-  
+
   /**
    * Reject a user request
    */
@@ -161,11 +161,11 @@ export class AdminService {
     const request = await prisma.userRequest.findUnique({
       where: { id: requestId },
     });
-    
+
     if (!request) {
       throw new NotFoundError("User request");
     }
-    
+
     // Update request status to REJECTED
     const updatedRequest = await prisma.userRequest.update({
       where: { id: requestId },
@@ -187,7 +187,7 @@ export class AdminService {
         },
       },
     });
-    
+
     // Create notification for project rejection
     if (request.type === 'PROJECT_SUBMISSION') {
       try {
@@ -203,10 +203,10 @@ export class AdminService {
         // Don't fail the rejection if notification fails
       }
     }
-    
+
     return updatedRequest;
   }
-  
+
   /**
    * Get platform statistics
    */
@@ -284,11 +284,11 @@ export class AdminService {
         }
       }
     }
-    
+
     // Get recent activity counts (last 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
+
     const [
       recentUsers,
       recentEvents,
@@ -324,7 +324,7 @@ export class AdminService {
         },
       }),
     ]);
-    
+
     return {
       overview: {
         totalUsers,
@@ -353,7 +353,7 @@ export class AdminService {
       },
     };
   }
-  
+
   /**
    * Log a moderation action
    */
@@ -376,7 +376,7 @@ export class AdminService {
           }
         }
       });
-      
+
       return {
         id: logEntry.id,
         adminId: params.adminId,

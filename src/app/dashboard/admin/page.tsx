@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Layout, PenTool, Calendar, Eye, Settings, ShieldCheck, Users, Activity, Flag, ShoppingBag, Mail } from 'lucide-react';
+import { Layout, PenTool, Calendar, Eye, Settings, ShieldCheck, Users, Activity, Flag, ShoppingBag, Mail, Download } from 'lucide-react';
 import toast from "react-hot-toast";
 import { useUserRequests, usePlatformStats } from "@/lib/api/hooks";
 import { adminApi } from "@/lib/api/client";
@@ -117,6 +117,32 @@ export default function AdminDashboard() {
     };
 
     const [sendingEmails, setSendingEmails] = useState<Record<string, boolean>>({});
+    const [exportingUsers, setExportingUsers] = useState(false);
+
+    const handleExportUsers = async () => {
+        setExportingUsers(true);
+        try {
+            const response = await fetch('/api/admin/users/export');
+            if (!response.ok) {
+                throw new Error("Failed to export users");
+            }
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'users-export.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            toast.success("User list exported successfully");
+        } catch (error) {
+            console.error("Export error:", error);
+            toast.error("Failed to export user list");
+        } finally {
+            setExportingUsers(false);
+        }
+    };
 
     const handleResendVerification = async (email: string) => {
         setSendingEmails((prev) => ({ ...prev, [email]: true }));
@@ -335,25 +361,35 @@ export default function AdminDashboard() {
                             <CardContent className="p-12">
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-2 gap-6">
-                                        <div className="bg-muted p-6 rounded-2xl">
-                                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Total Users</p>
-                                            <p className="text-3xl font-bold text-foreground">{platformStats?.totalUsers ?? 0}</p>
+                                        <div className="bg-muted p-6 rounded-2xl flex justify-between items-center">
+                                            <div>
+                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Total Users</p>
+                                                <p className="text-3xl font-bold text-foreground">{platformStats?.overview?.totalUsers ?? 0}</p>
+                                            </div>
+                                            <Button
+                                                onClick={handleExportUsers}
+                                                disabled={exportingUsers}
+                                                className="h-10 px-4 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                                            >
+                                                <Download className="w-4 h-4" />
+                                                {exportingUsers ? "Exporting..." : "Export CSV"}
+                                            </Button>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Total Events</p>
-                                            <p className="text-3xl font-bold text-foreground">{platformStats?.totalEvents ?? 0}</p>
+                                            <p className="text-3xl font-bold text-foreground">{platformStats?.overview?.totalEvents ?? 0}</p>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Total Projects</p>
-                                            <p className="text-3xl font-bold text-foreground">{platformStats?.totalProjects ?? 0}</p>
+                                            <p className="text-3xl font-bold text-foreground">{platformStats?.overview?.totalProjects ?? 0}</p>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Total Mentors</p>
-                                            <p className="text-3xl font-bold text-foreground">{platformStats?.totalMentors ?? 0}</p>
+                                            <p className="text-3xl font-bold text-foreground">{platformStats?.overview?.totalMentors ?? 0}</p>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Pending Requests</p>
-                                            <p className="text-3xl font-bold text-foreground">{platformStats?.pendingRequests ?? 0}</p>
+                                            <p className="text-3xl font-bold text-foreground">{platformStats?.overview?.pendingRequests ?? 0}</p>
                                         </div>
                                         <div className="bg-muted p-6 rounded-2xl">
                                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">System Status</p>
@@ -389,7 +425,7 @@ export default function AdminDashboard() {
                                         </div>
 
                                         {/* Unverified Credentials Users List */}
-                                        {platformStats?.unverifiedStats?.users && platformStats.unverifiedStats.users.length > 0 && (
+                                        {platformStats?.unverifiedStats?.users && (
                                             <div className="mt-8 border border-border rounded-3xl overflow-hidden bg-background">
                                                 <div className="px-6 py-4 bg-muted/20 border-b border-border">
                                                     <h5 className="font-bold text-[#1A234A] dark:text-white flex items-center gap-2">
@@ -397,25 +433,31 @@ export default function AdminDashboard() {
                                                     </h5>
                                                     <p className="text-xs text-muted-foreground mt-0.5">Contact or resend verification link to users registered via email</p>
                                                 </div>
-                                                <div className="divide-y divide-border max-h-96 overflow-y-auto">
-                                                    {platformStats.unverifiedStats.users.map((user) => (
-                                                        <div key={user.id} className="p-5 flex items-center justify-between hover:bg-muted/10 transition-colors">
-                                                            <div className="flex flex-col gap-1">
-                                                                <p className="font-bold text-[#1A234A] dark:text-white">{user.name || "Anonymous"}</p>
-                                                                <p className="text-sm text-muted-foreground font-medium">{user.email}</p>
-                                                                <p className="text-[10px] text-gray-400">Registered on: {new Date(user.createdAt).toLocaleDateString()}</p>
+                                                {platformStats.unverifiedStats.users.length > 0 ? (
+                                                    <div className="divide-y divide-border max-h-96 overflow-y-auto">
+                                                        {platformStats.unverifiedStats.users.map((user) => (
+                                                            <div key={user.id} className="p-5 flex items-center justify-between hover:bg-muted/10 transition-colors">
+                                                                <div className="flex flex-col gap-1">
+                                                                    <p className="font-bold text-[#1A234A] dark:text-white">{user.name || "Anonymous"}</p>
+                                                                    <p className="text-sm text-muted-foreground font-medium">{user.email}</p>
+                                                                    <p className="text-[10px] text-gray-400">Registered on: {new Date(user.createdAt).toLocaleDateString()}</p>
+                                                                </div>
+                                                                <Button
+                                                                    onClick={() => handleResendVerification(user.email)}
+                                                                    disabled={sendingEmails[user.email]}
+                                                                    className="h-10 px-4 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                                                                >
+                                                                    <Mail className="w-4 h-4" />
+                                                                    {sendingEmails[user.email] ? "Sending..." : "Resend Email"}
+                                                                </Button>
                                                             </div>
-                                                            <Button
-                                                                onClick={() => handleResendVerification(user.email)}
-                                                                disabled={sendingEmails[user.email]}
-                                                                className="h-10 px-4 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5"
-                                                            >
-                                                                <Mail className="w-4 h-4" />
-                                                                {sendingEmails[user.email] ? "Sending..." : "Resend Email"}
-                                                            </Button>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="p-8 text-center text-muted-foreground text-sm font-medium">
+                                                        No unverified credentials users found.
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>

@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // 4. Generate new verification token and delete old ones
     const token = crypto.randomBytes(32).toString("hex");
-    
+
     await prisma.$transaction([
       prisma.verificationToken.deleteMany({
         where: { identifier: email },
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     // 5. Send verification email
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const verificationUrl = `${appUrl}/auth/verify?token=${token}&email=${encodeURIComponent(email)}`;
-    
+
     await EmailService.sendVerificationEmail(
       { email, name: user.name },
       verificationUrl

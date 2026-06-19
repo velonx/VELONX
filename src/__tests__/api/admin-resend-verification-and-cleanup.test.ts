@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { POST as resendHandler } from '../../app/api/admin/verifications/resend/route';
 import { GET as cleanupHandler } from '../../app/api/cron/cleanup-unverified/route';
+import { GET as exportHandler } from '../../app/api/admin/users/export/route';
 import { createMockNextRequest } from '../utils/api-test-helpers';
 import { createMockSession } from '../mocks/session.mock';
 import { NextResponse } from 'next/server';
@@ -221,6 +222,70 @@ describe('Admin Resend Verification and Cleanup Tests', () => {
           }),
         })
       );
+    });
+  });
+
+  describe('GET /api/admin/users/export', () => {
+    it('should require admin authorization', async () => {
+      const { requireAdmin } = await import('../../lib/middleware/auth.middleware');
+      vi.mocked(requireAdmin).mockResolvedValueOnce(
+        NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      );
+
+      const request = createMockNextRequest({
+        method: 'GET',
+        url: 'http://localhost:3000/api/admin/users/export',
+      });
+
+      const response = await exportHandler(request);
+      expect(response.status).toBe(401);
+    });
+
+    it('should export all users in CSV format', async () => {
+      const mockUsers = [
+        {
+          id: 'user-1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          role: 'STUDENT',
+          emailVerified: new Date('2024-01-01T00:00:00.000Z'),
+          xp: 100,
+          level: 2,
+          referralCode: 'REF123',
+          createdAt: new Date('2024-01-01T00:00:00.000Z'),
+          accounts: [{ provider: 'google' }],
+        },
+        {
+          id: 'user-2',
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+          role: 'STUDENT',
+          emailVerified: null,
+          xp: 0,
+          level: 1,
+          referralCode: 'REF456',
+          createdAt: new Date('2024-01-02T00:00:00.000Z'),
+          accounts: [],
+        },
+      ];
+
+      mockPrisma.user.findMany.mockResolvedValueOnce(mockUsers);
+
+      const request = createMockNextRequest({
+        method: 'GET',
+        url: 'http://localhost:3000/api/admin/users/export',
+      });
+
+      const response = await exportHandler(request);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Content-Type')).toContain('text/csv');
+      expect(response.headers.get('Content-Disposition')).toContain('attachment; filename=users-export.csv');
+
+      const csvContent = await response.text();
+      const lines = csvContent.split('\n');
+      expect(lines[0]).toBe('ID,Name,Email,Role,Email Verified,Provider,XP,Level,Referral Code,Created At');
+      expect(lines[1]).toContain('user-1,John Doe,john@example.com,STUDENT,Yes,google,100,2,REF123,2024-01-01T00:00:00.000Z');
+      expect(lines[2]).toContain('user-2,Jane Smith,jane@example.com,STUDENT,No,credentials,0,1,REF456,2024-01-02T00:00:00.000Z');
     });
   });
 });
