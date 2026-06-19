@@ -39,7 +39,6 @@ class UpstashRedisManager {
    */
   public async initialize(): Promise<void> {
     if (this.client) {
-      console.log('[Redis] Already connected to Upstash')
       return
     }
 
@@ -51,7 +50,6 @@ class UpstashRedisManager {
         throw new Error('Upstash Redis credentials not found in environment variables')
       }
 
-      console.log('[Redis] Connecting to Upstash Redis...')
       this.client = new Redis({
         url: upstashUrl,
         token: upstashToken,
@@ -59,7 +57,6 @@ class UpstashRedisManager {
 
       // Test connection
       await this.client.ping()
-      console.log('[Redis] Connected to Upstash successfully!')
 
       // Start health check monitoring
       this.startHealthCheck()
@@ -144,8 +141,6 @@ class UpstashRedisManager {
    * Manually trigger reconnection
    */
   public async reconnect(): Promise<void> {
-    console.log('[Redis] Manual reconnection triggered')
-
     if (this.client) {
       await this.disconnect()
     }
@@ -163,7 +158,6 @@ class UpstashRedisManager {
     }
 
     this.client = null
-    console.log('[Redis] Disconnected')
   }
 }
 
@@ -181,7 +175,6 @@ export const getRedisClient = (): Redis => {
 
     if (upstashUrl && upstashToken) {
       // Synchronously create the client since Upstash REST is stateless
-      console.log('[Redis] Lazy-initializing Upstash Redis client...')
       
       // Create a new client instance immediately
       const client = new Redis({ url: upstashUrl, token: upstashToken })
