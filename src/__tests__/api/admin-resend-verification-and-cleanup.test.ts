@@ -248,7 +248,7 @@ describe('Admin Resend Verification and Cleanup Tests', () => {
           name: 'John Doe',
           email: 'john@example.com',
           role: 'STUDENT',
-          emailVerified: new Date('2024-01-01T00:00:00.000Z'),
+          emailVerified: null,
           xp: 100,
           level: 2,
           referralCode: 'REF123',

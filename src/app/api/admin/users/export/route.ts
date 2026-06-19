@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       user.name || "",
       user.email,
       user.role,
-      user.emailVerified ? "Yes" : "No",
+      (user.emailVerified || user.accounts.length > 0) ? "Yes" : "No",
       user.accounts.map((a) => a.provider).join(", ") || "credentials",
       user.xp,
       user.level,

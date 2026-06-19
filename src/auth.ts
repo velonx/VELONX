@@ -57,6 +57,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const newUser = await prisma.user.create({
                     data: {
                         ...userData,
+                        emailVerified: userData.emailVerified || new Date(),
                         referralCode,
                     },
                 });
@@ -249,6 +250,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         const dbUser = await prisma.user.findUnique({
                             where: { email: user.email },
                             select: {
+                                id: true,
+                                emailVerified: true,
                                 xp: true,
                                 level: true,
                                 currentStreak: true,
@@ -260,6 +263,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             user.level = dbUser.level;
                             user.currentStreak = dbUser.currentStreak;
                             user.longestStreak = dbUser.longestStreak;
+
+                            if (!dbUser.emailVerified) {
+                                await prisma.user.update({
+                                    where: { id: dbUser.id },
+                                    data: { emailVerified: new Date() },
+                                }).catch((err) => console.error("Failed to auto-verify OAuth user:", err));
+                            }
                         }
                     }
                 }
