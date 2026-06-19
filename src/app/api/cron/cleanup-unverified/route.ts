@@ -21,6 +21,9 @@ export async function GET(request: Request) {
                     lt: twentyFourHoursAgo,
                 },
                 role: 'STUDENT', // Only delete students, do not delete unverified admin accounts
+                accounts: {
+                    none: {}, // Only delete credentials users, skip Google/GitHub users
+                },
             },
             select: {
                 id: true,

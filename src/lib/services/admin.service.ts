@@ -224,6 +224,7 @@ export class AdminService {
       totalMeetings,
       pendingRequests,
       unverifiedUsersList,
+      unverifiedCredentialsUsers,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { role: "STUDENT" } }),
@@ -244,6 +245,23 @@ export class AdminService {
               provider: true,
             },
           },
+        },
+      }),
+      prisma.user.findMany({
+        where: {
+          emailVerified: null,
+          accounts: {
+            none: {},
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
         },
       }),
     ]);
@@ -331,6 +349,7 @@ export class AdminService {
         google: googleUnverified,
         github: githubUnverified,
         total: unverifiedUsersList.length,
+        users: unverifiedCredentialsUsers,
       },
     };
   }

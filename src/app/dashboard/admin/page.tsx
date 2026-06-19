@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Layout, PenTool, Calendar, Eye, Settings, ShieldCheck, Users, Activity, Flag, ShoppingBag } from 'lucide-react';
+import { Layout, PenTool, Calendar, Eye, Settings, ShieldCheck, Users, Activity, Flag, ShoppingBag, Mail } from 'lucide-react';
 import toast from "react-hot-toast";
 import { useUserRequests, usePlatformStats } from "@/lib/api/hooks";
 import { adminApi } from "@/lib/api/client";
@@ -113,6 +113,31 @@ export default function AdminDashboard() {
             fetchMentorApplications();
         } catch (error) {
             toast.error("Failed to reject application");
+        }
+    };
+
+    const [sendingEmails, setSendingEmails] = useState<Record<string, boolean>>({});
+
+    const handleResendVerification = async (email: string) => {
+        setSendingEmails((prev) => ({ ...prev, [email]: true }));
+        try {
+            const response = await fetch('/api/admin/verifications/resend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                toast.success(`Verification email sent to ${email}`);
+            } else {
+                toast.error(data.error || "Failed to send email");
+            }
+        } catch (error) {
+            toast.error("An error occurred. Please try again.");
+        } finally {
+            setSendingEmails((prev) => ({ ...prev, [email]: false }));
         }
     };
 
@@ -362,6 +387,37 @@ export default function AdminDashboard() {
                                                 <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">{platformStats?.unverifiedStats?.total ?? 0}</p>
                                             </div>
                                         </div>
+
+                                        {/* Unverified Credentials Users List */}
+                                        {platformStats?.unverifiedStats?.users && platformStats.unverifiedStats.users.length > 0 && (
+                                            <div className="mt-8 border border-border rounded-3xl overflow-hidden bg-background">
+                                                <div className="px-6 py-4 bg-muted/20 border-b border-border">
+                                                    <h5 className="font-bold text-[#1A234A] dark:text-white flex items-center gap-2">
+                                                        <Mail className="w-4 h-4 text-[#226CE0]" /> Unverified Credentials Users List
+                                                    </h5>
+                                                    <p className="text-xs text-muted-foreground mt-0.5">Contact or resend verification link to users registered via email</p>
+                                                </div>
+                                                <div className="divide-y divide-border max-h-96 overflow-y-auto">
+                                                    {platformStats.unverifiedStats.users.map((user) => (
+                                                        <div key={user.id} className="p-5 flex items-center justify-between hover:bg-muted/10 transition-colors">
+                                                            <div className="flex flex-col gap-1">
+                                                                <p className="font-bold text-[#1A234A] dark:text-white">{user.name || "Anonymous"}</p>
+                                                                <p className="text-sm text-muted-foreground font-medium">{user.email}</p>
+                                                                <p className="text-[10px] text-gray-400">Registered on: {new Date(user.createdAt).toLocaleDateString()}</p>
+                                                            </div>
+                                                            <Button
+                                                                onClick={() => handleResendVerification(user.email)}
+                                                                disabled={sendingEmails[user.email]}
+                                                                className="h-10 px-4 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                                                            >
+                                                                <Mail className="w-4 h-4" />
+                                                                {sendingEmails[user.email] ? "Sending..." : "Resend Email"}
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>

@@ -292,6 +292,7 @@ export interface PlatformStats {
     google: number;
     github: number;
     total: number;
+    users?: Array<{ id: string; name: string | null; email: string; createdAt: string }>;
   };
 }
 
