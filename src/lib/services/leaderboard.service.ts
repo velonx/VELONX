@@ -11,7 +11,8 @@ export class LeaderboardService {
    */
   static async getLeaderboard(
     period: LeaderboardPeriod,
-    limit: number = 100
+    limit: number = 100,
+    page: number = 1
   ): Promise<
     Array<{
       rank: number;
@@ -30,17 +31,17 @@ export class LeaderboardService {
 
     if (period === 'ALL_TIME') {
       // For all-time, just use total XP
-      return this.getAllTimeLeaderboard(limit);
+      return this.getAllTimeLeaderboard(limit, page);
     }
 
     // For time-limited periods, calculate XP earned in period
-    return this.getPeriodLeaderboard(startDate, endDate, limit);
+    return this.getPeriodLeaderboard(startDate, endDate, limit, page);
   }
 
   /**
    * Get all-time leaderboard
    */
-  private static async getAllTimeLeaderboard(limit: number): Promise<
+  private static async getAllTimeLeaderboard(limit: number, page: number = 1): Promise<
     Array<{
       rank: number;
       id: string;
@@ -54,6 +55,7 @@ export class LeaderboardService {
       projects: number;
     }>
   > {
+    const skip = (page - 1) * limit;
     const users = await prisma.user.findMany({
       where: {
         role: 'STUDENT',
@@ -74,11 +76,12 @@ export class LeaderboardService {
         },
       },
       orderBy: { xp: 'desc' },
+      skip,
       take: limit,
     });
 
     return users.map((user, index) => ({
-      rank: index + 1,
+      rank: skip + index + 1,
       id: user.id,
       name: user.name,
       email: user.email,
@@ -97,7 +100,8 @@ export class LeaderboardService {
   private static async getPeriodLeaderboard(
     startDate: Date,
     endDate: Date,
-    limit: number
+    limit: number,
+    page: number = 1
   ) {
     // Get XP transactions in period
     const xpTransactions = await prisma.xPTransaction.findMany({
@@ -167,11 +171,12 @@ export class LeaderboardService {
       return b.allTimeXP - a.allTimeXP;
     });
 
+    const skip = (page - 1) * limit;
     // Take limit and map rank
-    return leaderboardEntries.slice(0, limit).map((entry, index) => {
+    return leaderboardEntries.slice(skip, skip + limit).map((entry, index) => {
       const { allTimeXP, ...rest } = entry;
       return {
-        rank: index + 1,
+        rank: skip + index + 1,
         ...rest,
       };
     });
@@ -412,15 +417,30 @@ export class LeaderboardService {
 
 // Keep legacy export for backward compatibility
 export const leaderboardService = {
-  getLeaderboard: (params: any) => {
+  getLeaderboard: async (params: any) => {
     let period: LeaderboardPeriod = 'ALL_TIME';
     if (params.timeframe === 'month') period = 'MONTHLY';
     else if (params.timeframe === 'week') period = 'WEEKLY';
     
-    return LeaderboardService.getLeaderboard(
+    const page = params.page || 1;
+    const pageSize = params.pageSize || 10;
+
+    const entries = await LeaderboardService.getLeaderboard(
       period,
-      params.pageSize || 10
+      pageSize,
+      page
     );
+
+    const totalCount = await prisma.user.count({
+      where: {
+        role: 'STUDENT',
+      },
+    });
+
+    return {
+      entries,
+      totalCount,
+    };
   },
   getUserRank: (userId: string) => LeaderboardService.getUserRank(userId, 'ALL_TIME'),
   awardXP: (userId: string, amount: number, reason: string) => LeaderboardService.awardXP(userId, amount, reason),
