@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
       category: 'JOB_POSTED',
       payload: {
         opportunityId: opportunity.id,
+        slug: opportunity.slug ?? undefined,
         title: opportunity.title,
         company: opportunity.company,
         location: opportunity.location,

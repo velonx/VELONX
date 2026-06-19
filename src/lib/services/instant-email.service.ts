@@ -21,6 +21,7 @@ import { prisma } from '@/lib/prisma';
 
 export interface JobPostedPayload {
   opportunityId: string;
+  slug?: string;
   title: string;
   company: string;
   location: string;

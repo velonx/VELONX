@@ -8,6 +8,8 @@ interface JobAlertEmailProps {
     location: string;
     type: 'JOB' | 'INTERNSHIP';
     applyUrl: string;
+    slug?: string;
+    opportunityId?: string;
     salary?: string;
     unsubscribeUrl?: string;
 }
@@ -21,6 +23,8 @@ export const JobAlertEmail = ({
     location,
     type,
     applyUrl,
+    slug,
+    opportunityId,
     salary,
     unsubscribeUrl,
 }: JobAlertEmailProps) => (
@@ -48,7 +52,7 @@ export const JobAlertEmail = ({
         </div>
 
         <div style={{ textAlign: 'center' as const, margin: '24px 0' }}>
-            <Link href={applyUrl} style={button}>
+            <Link href={`${SITE_URL}/career/${slug || opportunityId}`} style={button}>
                 View &amp; Apply →
             </Link>
         </div>

@@ -350,6 +350,7 @@ export class EmailService {
         user: { id: string; email: string; name: string | null },
         opportunity: {
             opportunityId: string;
+            slug?: string;
             title: string;
             company: string;
             location: string;

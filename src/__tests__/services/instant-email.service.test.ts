@@ -41,6 +41,7 @@ describe('InstantEmailService', () => {
     it('should fetch instant recipients and trigger sendJobAlert for each', async () => {
       const payload = {
         opportunityId: 'job-123',
+        slug: 'software-engineer',
         title: 'Software Engineer',
         company: 'Velonx',
         location: 'Remote',
@@ -81,6 +82,7 @@ describe('InstantEmailService', () => {
         category: 'JOB_POSTED',
         payload: {
           opportunityId: 'job-123',
+          slug: 'software-engineer',
           title: 'Software Engineer',
           company: 'Velonx',
           location: 'Remote',
