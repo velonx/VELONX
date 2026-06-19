@@ -223,7 +223,6 @@ export class AdminService {
       totalBlogPosts,
       totalMeetings,
       pendingRequests,
-      unverifiedUsersList,
       unverifiedCredentialsUsers,
     ] = await Promise.all([
       prisma.user.count(),
@@ -236,17 +235,6 @@ export class AdminService {
       prisma.blogPost.count(),
       prisma.meeting.count(),
       prisma.userRequest.count({ where: { status: "PENDING" } }),
-      prisma.user.findMany({
-        where: { emailVerified: null },
-        select: {
-          id: true,
-          accounts: {
-            select: {
-              provider: true,
-            },
-          },
-        },
-      }),
       prisma.user.findMany({
         where: {
           emailVerified: null,
@@ -266,24 +254,9 @@ export class AdminService {
       }),
     ]);
 
-    let emailUnverified = 0;
-    let googleUnverified = 0;
-    let githubUnverified = 0;
-
-    for (const u of unverifiedUsersList) {
-      if (u.accounts.length === 0) {
-        emailUnverified++;
-      } else {
-        const providers = u.accounts.map(a => a.provider);
-        if (providers.includes("google")) {
-          googleUnverified++;
-        } else if (providers.includes("github")) {
-          githubUnverified++;
-        } else {
-          emailUnverified++;
-        }
-      }
-    }
+    const emailUnverified = unverifiedCredentialsUsers.length;
+    const googleUnverified = 0;
+    const githubUnverified = 0;
 
     // Get recent activity counts (last 30 days)
     const thirtyDaysAgo = new Date();
@@ -348,7 +321,7 @@ export class AdminService {
         email: emailUnverified,
         google: googleUnverified,
         github: githubUnverified,
-        total: unverifiedUsersList.length,
+        total: emailUnverified,
         users: unverifiedCredentialsUsers,
       },
     };
