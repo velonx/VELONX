@@ -423,6 +423,7 @@ export default function CareerManagement() {
                                                     onClick={() => openEditOpportunity(opp)}
                                                     variant="outline"
                                                     size="sm"
+                                                    aria-label={`Edit ${opp.title} internship`}
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Button>
@@ -431,6 +432,7 @@ export default function CareerManagement() {
                                                     variant="outline"
                                                     size="sm"
                                                     className="text-red-600 hover:text-red-700"
+                                                    aria-label={`Delete ${opp.title} internship`}
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </Button>
@@ -500,6 +502,7 @@ export default function CareerManagement() {
                                                     onClick={() => openEditOpportunity(opp)}
                                                     variant="outline"
                                                     size="sm"
+                                                    aria-label={`Edit ${opp.title} job`}
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Button>
@@ -508,6 +511,7 @@ export default function CareerManagement() {
                                                     variant="outline"
                                                     size="sm"
                                                     className="text-red-600 hover:text-red-700"
+                                                    aria-label={`Delete ${opp.title} job`}
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </Button>
