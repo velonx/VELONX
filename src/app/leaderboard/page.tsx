@@ -12,9 +12,16 @@ export default function LeaderboardPage() {
     const { data: session } = useSession();
     const [searchQuery, setSearchQuery] = useState("");
     const [activeFilter, setActiveFilter] = useState<"all" | "elite" | "builder" | "rising">("all");
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 25;
 
-    // Fetch leaderboard from API
-    const { data: leaderboardData, loading } = useLeaderboard({ pageSize: 50 });
+    // Fetch leaderboard from API (load up to 1000 users for client-side search/filtering)
+    const { data: leaderboardData, loading } = useLeaderboard({ pageSize: 1000 });
+
+    // Reset to page 1 when search query or filter changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, activeFilter]);
 
     const getTier = (xp: number) => {
         if (xp >= 3500) return "elite";
@@ -121,6 +128,10 @@ export default function LeaderboardPage() {
             getTierLabel(tier).toLowerCase().includes(q);
         return matchesFilter && matchesSearch;
     });
+
+    const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginatedUsers = filteredUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     const currentUserEntry = EXTENDED_LEADERBOARD.find(
         (user) => user.name === session?.user?.name
@@ -495,7 +506,7 @@ export default function LeaderboardPage() {
                                     <div className="text-sm text-muted-foreground">Try adjusting your search or filter.</div>
                                 </div>
                             ) : (
-                                filteredUsers.map((user, index) => {
+                                paginatedUsers.map((user, index) => {
                                     const tier = getTier(user.xp);
                                     const isTop = user.rank <= 3;
                                     return (
@@ -535,6 +546,54 @@ export default function LeaderboardPage() {
                             )}
                         </div>
                     </div>
+
+                    {/* Pagination Controls */}
+                    {!loading && totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-2 mt-6">
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                disabled={currentPage === 1}
+                                className="px-3 py-1.5 rounded-lg border border-border bg-background text-sm font-bold text-muted-foreground hover:text-foreground hover:border-primary disabled:opacity-50 disabled:pointer-events-none transition-all cursor-pointer"
+                            >
+                                Previous
+                            </button>
+                            
+                            <div className="flex items-center gap-1">
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
+                                    const isVisible = p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1;
+                                    const showEllipsis = (p === 2 && currentPage > 3) || (p === totalPages - 1 && currentPage < totalPages - 2);
+                                    
+                                    if (showEllipsis) {
+                                        return <span key={`ellipsis-${p}`} className="text-muted-foreground px-1">...</span>;
+                                    }
+                                    
+                                    if (!isVisible) return null;
+                                    
+                                    return (
+                                        <button
+                                            key={p}
+                                            onClick={() => setCurrentPage(p)}
+                                            className={`w-8 h-8 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+                                                currentPage === p
+                                                    ? "bg-primary text-primary-foreground shadow-md"
+                                                    : "border border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary"
+                                            }`}
+                                        >
+                                            {p}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                disabled={currentPage === totalPages}
+                                className="px-3 py-1.5 rounded-lg border border-border bg-background text-sm font-bold text-muted-foreground hover:text-foreground hover:border-primary disabled:opacity-50 disabled:pointer-events-none transition-all cursor-pointer"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
 
                     {/* Your Rank Widget */}
                     {showYourRank && (

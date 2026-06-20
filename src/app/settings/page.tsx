@@ -3,7 +3,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import ProfileSettingsForm from "@/components/settings/ProfileSettingsForm";
 import { SettingsErrorBoundary } from "@/components/error-boundary";
-import { Settings } from "lucide-react";
+import { Settings, Bell } from "lucide-react";
+import Link from "next/link";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -76,7 +77,24 @@ export default async function SettingsPage() {
         </div>
 
         {/* Info Cards */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-card rounded-2xl p-6 border border-border flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Bell className="w-5 h-5 text-primary" />
+                <h3 className="text-foreground font-bold">Email Notifications</h3>
+              </div>
+              <p className="text-muted-foreground text-sm mb-4">
+                Choose which updates you receive and how often (instantly, daily, weekly, or off).
+              </p>
+            </div>
+            <Link
+              href="/settings/notifications"
+              className="inline-block text-center px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors font-semibold text-sm w-fit"
+            >
+              Manage Preferences
+            </Link>
+          </div>
           <div className="bg-card rounded-2xl p-6 border border-border">
             <h3 className="text-foreground font-bold mb-2">Privacy &amp; Security</h3>
             <p className="text-muted-foreground text-sm">

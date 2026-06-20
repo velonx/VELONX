@@ -5,6 +5,8 @@ import { handleError } from "@/lib/utils/errors";
 import { createEventSchema, eventQuerySchema } from "@/lib/validations/event";
 import { computeRegistrationStatus } from "@/lib/utils/event-helpers";
 import type {} from "@/lib/api/types";
+import { InstantEmailService } from "@/lib/services/instant-email.service";
+
 
 /**
  * GET /api/events
@@ -155,7 +157,21 @@ export async function POST(request: NextRequest) {
       ...validatedData,
       creatorId: session.user.id,
     });
-    
+
+    // Fire instant email alert to opted-in users (non-blocking)
+    InstantEmailService.dispatch({
+      category: 'EVENT_POSTED',
+      payload: {
+        eventId: event.id,
+        title: event.title,
+        description: event.description,
+        date: event.date,
+        location: event.location ?? undefined,
+        meetingLink: event.meetingLink ?? undefined,
+        type: event.type,
+      },
+    }).catch((err) => console.error('[Event] Instant email dispatch failed:', err));
+
     return NextResponse.json(
       {
         success: true,

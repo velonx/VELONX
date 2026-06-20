@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { leaderboardService } from "@/lib/services/leaderboard.service";
+import { leaderboardService, LeaderboardService } from "@/lib/services/leaderboard.service";
+import { LeaderboardPeriod } from "@prisma/client";
+import { auth } from "@/auth";
 import { handleError } from "@/lib/utils/errors";
 import { z } from "zod";
 
@@ -34,16 +36,31 @@ export async function GET(request: NextRequest) {
 
     const queryParams = leaderboardQuerySchema.parse(queryParamsRaw);
 
-    const result = await leaderboardService.getLeaderboard(queryParams);
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    let period: LeaderboardPeriod = 'ALL_TIME';
+    if (queryParams.timeframe === 'month') period = 'MONTHLY';
+    else if (queryParams.timeframe === 'week') period = 'WEEKLY';
+
+    let userRank: number | null = null;
+    if (userId) {
+      const rankInfo = await LeaderboardService.getUserRank(userId, period);
+      userRank = rankInfo.rank;
+    }
+
+    const { entries, totalCount } = await leaderboardService.getLeaderboard(queryParams);
 
     return NextResponse.json(
       {
         success: true,
-        data: result,
+        data: entries,
         pagination: {
           page: queryParams.page,
           pageSize: queryParams.pageSize,
-          total: (result as any).length || 0,
+          totalCount: totalCount,
+          totalPages: Math.ceil(totalCount / queryParams.pageSize),
+          userRank: userRank,
         },
       },
       { status: 200 }

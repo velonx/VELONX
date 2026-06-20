@@ -215,6 +215,9 @@ model User {
   // Verification relations
   verifications     Verification[]
 
+  // Email notification preferences (per-category)
+  emailPreferences  EmailNotificationPreference[]
+
   @@map("users")
 }
 
@@ -1487,4 +1490,44 @@ model TestSchedule {
   @@index([userId])
   @@index([pathId])
   @@map("test_schedules")
+}
+
+// ============================================
+// EMAIL NOTIFICATION PREFERENCES
+// ============================================
+
+// Categories of email notifications users can control
+enum EmailNotificationCategory {
+  JOB_POSTED          // A new job/opportunity was posted
+  EVENT_POSTED        // A new event was published
+  SWAG_ANNOUNCED      // A new swag drop was announced
+  POST_COMMENT        // Someone commented on your post
+  PROJECT_UPDATED     // A project you belong to was updated
+  RESOURCE_ADDED      // A new resource was added to the library
+  BLOG_POST_PUBLISHED // A new blog post was published
+}
+
+// Frequency options per category
+enum EmailNotificationFrequency {
+  INSTANT // Send immediately when the event fires
+  DAILY   // Bundle into a daily digest email
+  WEEKLY  // Bundle into a weekly digest email
+  OFF     // Do not send any email for this category
+}
+
+// Per-user, per-category email notification preference
+// One row per (userId, category) pair.
+// When no row exists the system uses the per-category default frequency.
+model EmailNotificationPreference {
+  id        String                       @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String                       @db.ObjectId
+  category  EmailNotificationCategory
+  frequency EmailNotificationFrequency
+  updatedAt DateTime                     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@index([userId])
+  @@map("email_notification_preferences")
 }

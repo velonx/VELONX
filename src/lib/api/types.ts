@@ -282,11 +282,31 @@ export interface UserRequest {
 }
 
 export interface PlatformStats {
-  totalUsers: number;
-  totalEvents: number;
-  totalProjects: number;
-  totalMentors: number;
-  pendingRequests: number;
+  overview?: {
+    totalUsers: number;
+    totalStudents: number;
+    totalAdmins: number;
+    totalEvents: number;
+    totalProjects: number;
+    totalMentors: number;
+    totalResources: number;
+    totalBlogPosts: number;
+    totalMeetings: number;
+    pendingRequests: number;
+  };
+  recentActivity?: {
+    newUsers: any[];
+    newEvents: any[];
+    newProjects: any[];
+    newBlogPosts: any[];
+  };
+  unverifiedStats?: {
+    email: number;
+    google: number;
+    github: number;
+    total: number;
+    users?: Array<{ id: string; name: string | null; email: string; createdAt: string }>;
+  };
 }
 
 export interface NotificationData {
