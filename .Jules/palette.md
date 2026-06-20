@@ -10,3 +10,7 @@
 ## 2026-06-16 - Add ARIA Labels to Rich Text Editor Toolbar Buttons
 **Learning:** Found that numerous icon-only buttons in the RichTextEditor.tsx toolbar lacked aria-label attributes, making it difficult for screen readers to identify their actions.
 **Action:** Added aria-label attributes to all icon-only toolbar buttons to ensure full accessibility for screen reader users.
+
+## 2024-06-20 - Adding ARIA labels to career management buttons
+**Learning:** Icon-only buttons for CRUD operations (like Edit or Delete) need descriptive `aria-label`s to be accessible. Dynamically generating these labels with contextual information (e.g. `aria-label="Edit Software Engineer job"`) significantly improves the screen reader experience compared to generic labels like "Edit".
+**Action:** When creating lists of items with actions, always ensure action buttons either have visible text or include specific `aria-label`s incorporating the item's title or identifying information.
