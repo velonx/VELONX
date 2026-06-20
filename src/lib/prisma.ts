@@ -23,7 +23,7 @@ function createPrismaClient() {
       log: ['error'],
       datasources: {
         db: {
-          url: 'mongodb://localhost:27017/stub', // Stub URL for build time
+          url: 'mongodb://127.0.0.1:27017/stub', // Stub URL for build time
         },
       },
     });

@@ -75,7 +75,11 @@ export async function POST(request: NextRequest) {
     ]);
 
     // 5. Send verification email
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      process.env.NEXTAUTH_URL ||
+      "https://velonx.in";
     const verificationUrl = `${appUrl}/auth/verify?token=${token}&email=${encodeURIComponent(email)}`;
 
     await EmailService.sendVerificationEmail(
