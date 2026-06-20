@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import toast from 'react-hot-toast';
 import { Check, Loader2, Zap, Clock, CalendarDays, BellOff } from 'lucide-react';
 import type { PreferenceRow } from '@/lib/services/email-preference.service';
+import { secureFetch } from '@/lib/utils/csrf';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -75,7 +76,7 @@ export default function NotificationPreferencesForm({ initialPreferences }: Prop
 
         startTransition(async () => {
             try {
-                const res = await fetch('/api/user/notification-preferences', {
+                const res = await secureFetch('/api/user/notification-preferences', {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify([{ category, frequency }]),
