@@ -647,32 +647,12 @@ export default function LeaderboardPage() {
                     </div>
 
                     <div className="earn-grid">
-                        {/* Card 1: Win Hackathons */}
+                        {/* Card 1: Ship Projects */}
                         <motion.div 
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-50px" }}
                             transition={{ duration: 0.6, delay: 0.05, ease: "easeOut" }}
-                            className="earn-card"
-                        >
-                            <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="48" height="48" rx="12" fill="#f0c81a" fillOpacity="0.12"/>
-                                <path d="M14 10h20v14a10 10 0 0 1-20 0V10Z" stroke="#f0c81a" strokeWidth="2" strokeLinejoin="round"/>
-                                <path d="M14 16H10a4 4 0 0 0 0 8h4" stroke="#f0c81a" strokeWidth="2" strokeLinecap="round"/>
-                                <path d="M34 16h4a4 4 0 0 1 0 8h-4" stroke="#f0c81a" strokeWidth="2" strokeLinecap="round"/>
-                                <path d="M20 36v3M28 36v3M18 39h12" stroke="#f0c81a" strokeWidth="2" strokeLinecap="round"/>
-                            </svg>
-                            <div className="earn-card-title">Win Hackathons</div>
-                            <div className="earn-card-desc">Compete in national online or in-person hackathons hosted or partnered by Velonx. Prize positions reward massive XP boosts.</div>
-                            <div className="earn-card-points">+500 to +2,000 XP per win</div>
-                        </motion.div>
-
-                        {/* Card 2: Ship Projects */}
-                        <motion.div 
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
                             className="earn-card"
                         >
                             <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -682,11 +662,31 @@ export default function LeaderboardPage() {
                                 <path d="M24 8v6M36 26h-6M12 26h6" stroke="#226CE0" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
                             </svg>
                             <div className="earn-card-title">Ship Projects</div>
-                            <div className="earn-card-desc">Submit completed projects to the Velonx Project Hub. Community upvotes, GitHub stars, and mentor endorsements determine XP rewards.</div>
-                            <div className="earn-card-points">+50 to +400 XP per project</div>
+                            <div className="earn-card-desc">Build and complete collaborative or solo projects. Mark your projects as complete in the Project Hub to earn base XP.</div>
+                            <div className="earn-card-points" style={{ color: "#226CE0" }}>+100 XP (Owner) / +75 XP (Member)</div>
                         </motion.div>
 
-                        {/* Card 3: Land Placements */}
+                        {/* Card 2: Attend Events */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+                            className="earn-card"
+                        >
+                            <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="48" height="48" rx="12" fill="#f0c81a" fillOpacity="0.12"/>
+                                <path d="M14 10h20v14a10 10 0 0 1-20 0V10Z" stroke="#f0c81a" strokeWidth="2" strokeLinejoin="round"/>
+                                <path d="M14 16H10a4 4 0 0 0 0 8h4" stroke="#f0c81a" strokeWidth="2" strokeLinecap="round"/>
+                                <path d="M34 16h4a4 4 0 0 1 0 8h-4" stroke="#f0c81a" strokeWidth="2" strokeLinecap="round"/>
+                                <path d="M20 36v3M28 36v3M18 39h12" stroke="#f0c81a" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                            <div className="earn-card-title">Attend Events</div>
+                            <div className="earn-card-desc">Participate in online or in-person hackathons, interactive workshops, and tech webinars organized or partnered by Velonx.</div>
+                            <div className="earn-card-points" style={{ color: "#eab308" }}>+25 XP per event</div>
+                        </motion.div>
+
+                        {/* Card 3: 1-on-1 Mentorship */}
                         <motion.div 
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -695,18 +695,17 @@ export default function LeaderboardPage() {
                             className="earn-card"
                         >
                             <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="48" height="48" rx="12" fill="#22c55e" fillOpacity="0.1"/>
-                                <rect x="12" y="20" width="24" height="18" rx="2" stroke="#22c55e" strokeWidth="2"/>
-                                <path d="M18 20v-4a6 6 0 0 1 12 0v4" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"/>
-                                <circle cx="24" cy="29" r="3" fill="#22c55e" opacity="0.5"/>
-                                <path d="M24 32v3" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"/>
+                                <rect width="48" height="48" rx="12" fill="#0891b2" fillOpacity="0.1"/>
+                                <circle cx="24" cy="18" r="6" stroke="#0891b2" strokeWidth="2"/>
+                                <path d="M12 34c0-5.523 5.477-10 12-10s12 4.477 12 10" stroke="#0891b2" strokeWidth="2" strokeLinecap="round"/>
+                                <path d="M24 24v4" stroke="#0891b2" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
                             </svg>
-                            <div className="earn-card-title">Land Placements</div>
-                            <div className="earn-card-desc">When you get selected through our career pipeline, you earn a one-time XP bonus proportional to your CTC.</div>
-                            <div className="earn-card-points">+300 to +1,500 XP on placement</div>
+                            <div className="earn-card-title">1-on-1 Mentorship</div>
+                            <div className="earn-card-desc">Book guidance sessions with expert mentors for project feedback, code reviews, career path mapping, or mock interviews.</div>
+                            <div className="earn-card-points" style={{ color: "#0891b2" }}>+25 XP per session</div>
                         </motion.div>
 
-                        {/* Card 4: Complete Resources */}
+                        {/* Card 4: Daily Login & Streaks */}
                         <motion.div 
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -715,18 +714,16 @@ export default function LeaderboardPage() {
                             className="earn-card"
                         >
                             <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="48" height="48" rx="12" fill="#a855f7" fillOpacity="0.1"/>
-                                <path d="M16 10h16a2 2 0 0 1 2 2v24a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2V12a2 2 0 0 1 2-2Z" stroke="#a855f7" strokeWidth="2"/>
-                                <path d="M19 18h10M19 23h10M19 28h6" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"/>
-                                <circle cx="34" cy="34" r="7" fill="#a855f7" fillOpacity="0.15" stroke="#a855f7" strokeWidth="1.5"/>
-                                <path d="M31 34l2 2 4-4" stroke="#a855f7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                <rect width="48" height="48" rx="12" fill="#ef4444" fillOpacity="0.1"/>
+                                <path d="M24 37c6.075 0 11-4.925 11-11 0-5.523-3.5-11-11-17-7.5 6-11 11.477-11 17 0 6.075 4.925 11 11 11Z" stroke="#ef4444" strokeWidth="2" strokeLinejoin="round"/>
+                                <path d="M24 31a5 5 0 0 0 5-5c0-2.5-1.5-5-5-7.5-3.5 2.5-5 5-5 7.5a5 5 0 0 0 5 5Z" fill="#ef4444" opacity="0.4"/>
                             </svg>
-                            <div className="earn-card-title">Complete Resources</div>
-                            <div className="earn-card-desc">Finish roadmap tracks, obtain certifications, and submit proof of completion on the Velonx Resources platform for XP rewards.</div>
-                            <div className="earn-card-points">+20 to +150 XP per certification</div>
+                            <div className="earn-card-title">Daily Login &amp; Streaks</div>
+                            <div className="earn-card-desc">Keep your daily login streak active! Build consistency to earn daily XP and boost your multiplier by up to +0.5x.</div>
+                            <div className="earn-card-points" style={{ color: "#ef4444" }}>+10 XP daily &amp; multipliers</div>
                         </motion.div>
 
-                        {/* Card 5: Refer & Mentor */}
+                        {/* Card 5: Refer & Invite */}
                         <motion.div 
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -741,12 +738,12 @@ export default function LeaderboardPage() {
                                 <path d="M8 36c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="#F0771A" strokeWidth="2" strokeLinecap="round"/>
                                 <path d="M34 26c3.866 0 7 2.91 7 6.5" stroke="#F0771A" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
                             </svg>
-                            <div className="earn-card-title">Refer &amp; Mentor</div>
-                            <div className="earn-card-desc">Refer a friend who joins Velonx and becomes active, or volunteer as a peer mentor in Q&amp;A sessions to earn recurring XP monthly.</div>
-                            <div className="earn-card-points">+100 XP per active referral</div>
+                            <div className="earn-card-title">Refer &amp; Invite</div>
+                            <div className="earn-card-desc">Share your referral link. Earn up to 150 XP per friend (signup, profile complete, first activity) and boost your multiplier.</div>
+                            <div className="earn-card-points" style={{ color: "#F0771A" }}>Up to +150 XP per referral</div>
                         </motion.div>
 
-                        {/* Card 6: Write Blog Posts */}
+                        {/* Card 6: Learn & Earn */}
                         <motion.div 
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -755,14 +752,15 @@ export default function LeaderboardPage() {
                             className="earn-card"
                         >
                             <svg className="earn-card-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="48" height="48" rx="12" fill="#0891b2" fillOpacity="0.1"/>
-                                <path d="M32 10l6 6-18 18-8 2 2-8L32 10Z" stroke="#0891b2" strokeWidth="2" strokeLinejoin="round"/>
-                                <path d="M29 13l6 6" stroke="#0891b2" strokeWidth="1.5" strokeLinecap="round"/>
-                                <path d="M14 36h20" stroke="#0891b2" strokeWidth="1.5" strokeLinecap="round" opacity="0.4"/>
+                                <rect width="48" height="48" rx="12" fill="#a855f7" fillOpacity="0.1"/>
+                                <path d="M16 10h16a2 2 0 0 1 2 2v24a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2V12a2 2 0 0 1 2-2Z" stroke="#a855f7" strokeWidth="2"/>
+                                <path d="M19 18h10M19 23h10M19 28h6" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"/>
+                                <circle cx="34" cy="34" r="7" fill="#a855f7" fillOpacity="0.15" stroke="#a855f7" strokeWidth="1.5"/>
+                                <path d="M31 34l2 2 4-4" stroke="#a855f7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
-                            <div className="earn-card-title">Write Dev Blog Posts</div>
-                            <div className="earn-card-desc">Publish technical articles, tutorials, and case studies on the Velonx Blog. Top-performing posts are rewarded with XP.</div>
-                            <div className="earn-card-points">+30 to +200 XP per post</div>
+                            <div className="earn-card-title">Learn &amp; Earn</div>
+                            <div className="earn-card-desc">Complete roadmap tracks, read tech blogs (+5 XP), visit learning resources (+10 XP), and pass certificate tests to unlock badges.</div>
+                            <div className="earn-card-points" style={{ color: "#a855f7" }}>+500 XP per certification</div>
                         </motion.div>
                     </div>
                 </div>
