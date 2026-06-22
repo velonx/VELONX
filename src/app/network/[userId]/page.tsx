@@ -13,6 +13,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
+import { secureFetch } from "@/lib/utils/csrf";
 
 interface ProfileData {
   id: string;
@@ -87,7 +88,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
 
     async function fetchProfile() {
       try {
-        const res = await fetch(`/api/users/${userId}`);
+        const res = await secureFetch(`/api/users/${userId}`);
         const data = await res.json();
         if (data.success) {
           setProfile(data.data);
@@ -118,7 +119,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
     }
     setActionLoading(true);
     try {
-      const res = await fetch("/api/connections", {
+      const res = await secureFetch("/api/connections", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ receiverId: profile.id }),
@@ -148,7 +149,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
     }
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/connections/${profile.connectionStatus.connectionId}`, {
+      const res = await secureFetch(`/api/connections/${profile.connectionStatus.connectionId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "ACCEPTED" }),

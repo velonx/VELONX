@@ -10,6 +10,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import { secureFetch } from "@/lib/utils/csrf";
 
 interface ConversationItem {
   conversationId: string;
@@ -225,8 +226,8 @@ function ChatThread({
       setLoading(true);
       try {
         const [msgRes, userRes] = await Promise.all([
-          fetch(`/api/messages/${userId}?limit=50`),
-          fetch(`/api/users/${userId}`),
+          secureFetch(`/api/messages/${userId}?limit=50`),
+          secureFetch(`/api/users/${userId}`),
         ]);
         const [msgData, userData] = await Promise.all([msgRes.json(), userRes.json()]);
         if (msgData.success) setMessages(msgData.data.messages);
@@ -246,7 +247,7 @@ function ChatThread({
 
     fetchMessages();
     // Mark as read
-    fetch(`/api/messages/${userId}/read`, { method: "POST" }).catch(() => {});
+    secureFetch(`/api/messages/${userId}/read`, { method: "POST" }).catch(() => {});
   }, [userId]);
 
   useEffect(() => {
@@ -257,11 +258,11 @@ function ChatThread({
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/messages/${userId}?limit=50`);
+        const res = await secureFetch(`/api/messages/${userId}?limit=50`);
         const data = await res.json();
         if (data.success && data.data.messages.length > messages.length) {
           setMessages(data.data.messages);
-          fetch(`/api/messages/${userId}/read`, { method: "POST" }).catch(() => {});
+          secureFetch(`/api/messages/${userId}/read`, { method: "POST" }).catch(() => {});
         }
       } catch {
         // Silently fail
@@ -277,7 +278,7 @@ function ChatThread({
 
     setSending(true);
     try {
-      const res = await fetch(`/api/messages/${userId}`, {
+      const res = await secureFetch(`/api/messages/${userId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: text }),
@@ -425,7 +426,7 @@ export default function MessagesPage() {
 
   const fetchConversations = useCallback(async () => {
     try {
-      const res = await fetch("/api/messages/conversations");
+      const res = await secureFetch("/api/messages/conversations");
       const data = await res.json();
       if (data.success) setConversations(data.data.conversations);
     } catch {

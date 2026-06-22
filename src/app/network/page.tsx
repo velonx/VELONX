@@ -12,6 +12,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
+import { secureFetch } from "@/lib/utils/csrf";
 
 // ============================================================
 // Types
@@ -281,7 +282,7 @@ export default function NetworkPage() {
     try {
       const params = new URLSearchParams({ page: dirPage.toString(), limit: "20" });
       if (debouncedSearch) params.set("q", debouncedSearch);
-      const res = await fetch(`/api/users/directory?${params}`);
+      const res = await secureFetch(`/api/users/directory?${params}`);
       const data = await res.json();
       if (data.success) {
         setUsers(data.data.users);
@@ -301,7 +302,7 @@ export default function NetworkPage() {
     try {
       const params = new URLSearchParams({ limit: "50" });
       if (connSearch) params.set("q", connSearch);
-      const res = await fetch(`/api/connections?${params}`);
+      const res = await secureFetch(`/api/connections?${params}`);
       const data = await res.json();
       if (data.success) setConnections(data.data.connections);
     } catch {
@@ -316,8 +317,8 @@ export default function NetworkPage() {
     setReqLoading(true);
     try {
       const [receivedRes, sentRes] = await Promise.all([
-        fetch("/api/connections/requests?type=received"),
-        fetch("/api/connections/requests?type=sent"),
+        secureFetch("/api/connections/requests?type=received"),
+        secureFetch("/api/connections/requests?type=sent"),
       ]);
       const [received, sent] = await Promise.all([receivedRes.json(), sentRes.json()]);
       if (received.success) setReceivedRequests(received.data.requests);
@@ -347,7 +348,7 @@ export default function NetworkPage() {
     }
     setActionLoading(true);
     try {
-      const res = await fetch("/api/connections", {
+      const res = await secureFetch("/api/connections", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ receiverId: targetUserId }),
@@ -369,7 +370,7 @@ export default function NetworkPage() {
   const handleAccept = async (connectionId: string) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/connections/${connectionId}`, {
+      const res = await secureFetch(`/api/connections/${connectionId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "ACCEPTED" }),
@@ -392,7 +393,7 @@ export default function NetworkPage() {
   const handleReject = async (connectionId: string) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/connections/${connectionId}`, {
+      const res = await secureFetch(`/api/connections/${connectionId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "REJECTED" }),
