@@ -85,6 +85,16 @@ export async function GET() {
           bio: true,
           xp: true,
           level: true,
+          headline: true,
+          college: true,
+          graduationYear: true,
+          skills: true,
+          location: true,
+          linkedinUrl: true,
+          githubUrl: true,
+          twitterUrl: true,
+          portfolioUrl: true,
+          profileComplete: true,
         },
       });
     } catch (dbError) {
@@ -189,6 +199,15 @@ export async function PATCH(request: NextRequest) {
       name?: string;
       bio?: string | null;
       image?: string | null;
+      headline?: string | null;
+      college?: string | null;
+      graduationYear?: number | null;
+      skills?: string[];
+      location?: string | null;
+      linkedinUrl?: string | null;
+      githubUrl?: string | null;
+      twitterUrl?: string | null;
+      portfolioUrl?: string | null;
     } = {};
 
     if (validatedData.name !== undefined) {
@@ -217,6 +236,37 @@ export async function PATCH(request: NextRequest) {
       updateData.image = validatedData.avatar;
     }
 
+    // Handle new professional/academic profile fields
+    if (validatedData.headline !== undefined) {
+      updateData.headline = validatedData.headline ? sanitizeText(validatedData.headline) : null;
+    }
+    if (validatedData.college !== undefined) {
+      updateData.college = validatedData.college ? sanitizeText(validatedData.college) : null;
+    }
+    if (validatedData.graduationYear !== undefined) {
+      updateData.graduationYear = validatedData.graduationYear;
+    }
+    if (validatedData.skills !== undefined) {
+      updateData.skills = validatedData.skills
+        ? validatedData.skills.map((s: string) => sanitizeText(s)).filter((s: string) => s.length > 0)
+        : [];
+    }
+    if (validatedData.location !== undefined) {
+      updateData.location = validatedData.location ? sanitizeText(validatedData.location) : null;
+    }
+    if (validatedData.linkedinUrl !== undefined) {
+      updateData.linkedinUrl = validatedData.linkedinUrl;
+    }
+    if (validatedData.githubUrl !== undefined) {
+      updateData.githubUrl = validatedData.githubUrl;
+    }
+    if (validatedData.twitterUrl !== undefined) {
+      updateData.twitterUrl = validatedData.twitterUrl;
+    }
+    if (validatedData.portfolioUrl !== undefined) {
+      updateData.portfolioUrl = validatedData.portfolioUrl;
+    }
+
     // Update user profile in database with error handling
     let updatedUser;
     try {
@@ -229,6 +279,16 @@ export async function PATCH(request: NextRequest) {
           email: true,
           image: true,
           bio: true,
+          headline: true,
+          college: true,
+          graduationYear: true,
+          skills: true,
+          location: true,
+          linkedinUrl: true,
+          githubUrl: true,
+          twitterUrl: true,
+          portfolioUrl: true,
+          profileComplete: true,
         },
       });
     } catch (dbError) {

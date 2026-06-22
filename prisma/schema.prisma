@@ -44,6 +44,13 @@ enum ModerationType {
   POST_UNPIN
 }
 
+// Connection Status Enum
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 // Notification Type Enum
 enum NotificationType {
   INFO
@@ -56,6 +63,9 @@ enum NotificationType {
   MENTION // Community: User was mentioned in a post or message
   JOIN_REQUEST_APPROVED // Community: Join request to private group was approved
   MODERATOR_ASSIGNED // Community: User was assigned as moderator
+  CONNECTION_REQUEST // Networking: Someone sent you a connection request
+  CONNECTION_ACCEPTED // Networking: Your connection request was accepted
+  DIRECT_MESSAGE // Networking: New direct message received
 }
 
 // Gamification Enums
@@ -116,6 +126,7 @@ enum LeaderboardPeriod {
 model User {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
+  slug          String?   @unique
   email         String    @unique
   emailVerified DateTime?
   image         String?
@@ -129,6 +140,18 @@ model User {
   lastLoginDate DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  // Professional/Academic Profile
+  headline        String?   // e.g. "Full-Stack Developer | CS @ IIT Delhi"
+  college         String?
+  graduationYear  Int?
+  skills          String[]  // ["React", "Node.js", "Python"]
+  location        String?   // City, State
+  linkedinUrl     String?
+  githubUrl       String?
+  twitterUrl      String?
+  portfolioUrl    String?
+  profileComplete Boolean   @default(false)
 
   // Email notification preferences
   emailNotifications   Boolean @default(true)
@@ -217,6 +240,18 @@ model User {
 
   // Email notification preferences (per-category)
   emailPreferences  EmailNotificationPreference[]
+
+  // Connection relations (LinkedIn-style networking)
+  connectionsSent     Connection[]     @relation("ConnectionsSent")
+  connectionsReceived Connection[]     @relation("ConnectionsReceived")
+
+  // Direct Message relations
+  messagesSent        DirectMessage[]  @relation("MessagesSent")
+  messagesReceived    DirectMessage[]  @relation("MessagesReceived")
+
+  // Conversation relations
+  conversations1      Conversation[]   @relation("Conversations1")
+  conversations2      Conversation[]   @relation("Conversations2")
 
   @@map("users")
 }
@@ -1530,4 +1565,66 @@ model EmailNotificationPreference {
   @@unique([userId, category])
   @@index([userId])
   @@map("email_notification_preferences")
+}
+
+// ============================================
+// NETWORKING & DIRECT MESSAGING MODELS
+// ============================================
+
+// Connection Model (LinkedIn-style bidirectional connections)
+model Connection {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  senderId    String           @db.ObjectId
+  receiverId  String           @db.ObjectId
+  status      ConnectionStatus @default(PENDING)
+  message     String?          // Optional connection request note
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  sender   User @relation("ConnectionsSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ConnectionsReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([senderId, status])
+  @@index([receiverId, status])
+  @@map("connections")
+}
+
+// Direct Message Model (1:1 private messages)
+model DirectMessage {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId    String   @db.ObjectId
+  receiverId  String   @db.ObjectId
+  content     String
+  isRead      Boolean  @default(false)
+  isEdited    Boolean  @default(false)
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sender   User @relation("MessagesSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("MessagesReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, receiverId, createdAt])
+  @@index([receiverId, isRead])
+  @@map("direct_messages")
+}
+
+// Conversation Model (tracks 1:1 chat threads)
+model Conversation {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  participant1Id     String   @db.ObjectId
+  participant2Id     String   @db.ObjectId
+  lastMessageAt      DateTime @default(now())
+  lastMessagePreview String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  participant1 User @relation("Conversations1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2 User @relation("Conversations2", fields: [participant2Id], references: [id], onDelete: Cascade)
+
+  @@unique([participant1Id, participant2Id])
+  @@index([participant1Id, lastMessageAt])
+  @@index([participant2Id, lastMessageAt])
+  @@map("conversations")
 }

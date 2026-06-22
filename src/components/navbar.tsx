@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Menu, LogOut, LayoutDashboard, Settings, Users, Rss, ChevronDown, Share2 } from 'lucide-react';
+import { Menu, LogOut, LayoutDashboard, Settings, Users, Rss, ChevronDown, Share2, MessageSquare } from 'lucide-react';
 import toast from "react-hot-toast";
 import { UnreadCountBadge } from "@/components/unread-count-badge";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -26,6 +26,7 @@ const primaryNavLinks = [
     { href: "/mentors", label: "Mentors" },
     { href: "/career", label: "Career" },
     { href: "/community", label: "Community" },
+    { href: "/network", label: "Network" },
     { href: "/leaderboard", label: "Leaderboard" },
 ];
 
@@ -111,6 +112,13 @@ export function Navbar() {
                         <div className="w-8 h-8 rounded-full bg-gray-100 animate-pulse" />
                     ) : session?.user ? (
                         <div className="flex items-center gap-2">
+                            <Link
+                                href="/messages"
+                                className="p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted"
+                                aria-label="View messages"
+                            >
+                                <MessageSquare className="w-5 h-5" />
+                            </Link>
                             <Link
                                 href="/notifications"
                                 className="p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted"

@@ -20,6 +20,11 @@ export type WSMessageType =
   | 'MESSAGE_DELETE'
   | 'PING'
   | 'PONG'
+  | 'DIRECT_MESSAGE'      // 1:1 message received
+  | 'DM_TYPING'           // 1:1 typing indicator
+  | 'DM_READ'             // Messages marked as read
+  | 'CONNECTION_REQUEST'   // New connection request
+  | 'CONNECTION_ACCEPTED'  // Connection accepted
 
 export interface WSMessage {
   type: WSMessageType
@@ -58,6 +63,13 @@ export interface UserLeftPayload {
   userId: string
   roomId?: string
   groupId?: string
+}
+
+export interface DMTypingPayload {
+  userId: string
+  userName: string
+  targetUserId: string
+  isTyping: boolean
 }
 
 // Extended WebSocket with custom properties
@@ -286,6 +298,10 @@ async function handleMessage(ws: ExtendedWebSocket, message: WSMessage): Promise
       // This is just for receiving acknowledgment
       break
 
+    case 'DM_TYPING':
+      await handleDMTypingIndicator(ws, payload as DMTypingPayload)
+      break
+
     default:
       console.warn(`[WebSocket] Unknown message type: ${type}`)
   }
@@ -332,6 +348,25 @@ async function handleTypingIndicator(ws: ExtendedWebSocket, payload: TypingPaylo
   } catch (error) {
     console.error('[WebSocket] Typing indicator error:', error)
   }
+}
+
+/**
+ * Handle DM typing indicator (1:1 messages)
+ */
+async function handleDMTypingIndicator(ws: ExtendedWebSocket, payload: DMTypingPayload): Promise<void> {
+  if (!ws.userId) return
+
+  const { targetUserId, isTyping, userName } = payload
+
+  // Directly broadcast to the target user
+  broadcastToUser(targetUserId, {
+    type: 'DM_TYPING',
+    payload: {
+      userId: ws.userId,
+      userName,
+      isTyping
+    }
+  })
 }
 
 /**

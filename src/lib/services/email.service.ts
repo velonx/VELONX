@@ -521,4 +521,54 @@ export class EmailService {
             html
         );
     }
+
+    /**
+     * Send connection request notification email
+     */
+    static async sendConnectionRequestEmail(
+        receiver: { email: string; name: string | null },
+        sender: { name: string | null }
+    ) {
+        const subject = `${sender.name || 'Someone'} sent you a connection request on VELONX`;
+        const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/network?tab=requests`;
+        const html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 12px;">
+                <h2 style="color: #333333; margin-top: 0;">New Connection Request</h2>
+                <p>Hello ${receiver.name || 'there'},</p>
+                <p><strong>${sender.name || 'Someone'}</strong> wants to connect with you on VELONX.</p>
+                <div style="margin: 30px 0;">
+                    <a href="${profileUrl}" style="background-color: #0077b5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">View Connection Request</a>
+                </div>
+                <p style="color: #777777; font-size: 12px;">If you do not want to receive these emails, you can update your notification settings in your profile.</p>
+            </div>
+        `;
+        return this.sendWithRetry(receiver.email, subject, html);
+    }
+
+    /**
+     * Send direct message notification email
+     */
+    static async sendDirectMessageEmail(
+        receiver: { email: string; name: string | null },
+        sender: { name: string | null },
+        messageExcerpt: string
+    ) {
+        const subject = `New message from ${sender.name || 'Someone'} on VELONX`;
+        const chatUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/messages`;
+        const html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 12px;">
+                <h2 style="color: #333333; margin-top: 0;">New Direct Message</h2>
+                <p>Hello ${receiver.name || 'there'},</p>
+                <p>You received a new message from <strong>${sender.name || 'Someone'}</strong>:</p>
+                <blockquote style="background-color: #f9f9f9; border-left: 4px solid #0077b5; padding: 15px; margin: 20px 0; color: #555555; font-style: italic; border-radius: 4px;">
+                    "${messageExcerpt}"
+                </blockquote>
+                <div style="margin: 30px 0;">
+                    <a href="${chatUrl}" style="background-color: #0077b5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Reply to Message</a>
+                </div>
+                <p style="color: #777777; font-size: 12px;">If you do not want to receive these emails, you can update your notification settings in your profile.</p>
+            </div>
+        `;
+        return this.sendWithRetry(receiver.email, subject, html);
+    }
 }

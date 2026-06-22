@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import AvatarSection from "@/components/settings/AvatarSection";
-import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, GraduationCap, Link2, User } from "lucide-react";
 
 interface ProfileSettingsFormProps {
   initialData: {
@@ -16,6 +16,15 @@ interface ProfileSettingsFormProps {
     email: string;
     image: string | null;
     bio: string | null;
+    headline: string | null;
+    college: string | null;
+    graduationYear: number | null;
+    skills: string[];
+    location: string | null;
+    linkedinUrl: string | null;
+    githubUrl: string | null;
+    twitterUrl: string | null;
+    portfolioUrl: string | null;
   };
 }
 
@@ -23,37 +32,60 @@ interface FormState {
   name: string;
   bio: string;
   avatar: string | null;
+  headline: string;
+  college: string;
+  graduationYear: string;
+  skills: string; // Comma-separated input
+  location: string;
+  linkedinUrl: string;
+  githubUrl: string;
+  twitterUrl: string;
+  portfolioUrl: string;
   isLoading: boolean;
   error: string | null;
   success: boolean;
 }
 
 export default function ProfileSettingsForm({ initialData }: ProfileSettingsFormProps) {
-  // Get session update function
   const { update: updateSession } = useSession();
 
-  // Form state
+  // Initialize state
   const [formState, setFormState] = useState<FormState>({
     name: initialData.name || "",
     bio: initialData.bio || "",
     avatar: initialData.image,
+    headline: initialData.headline || "",
+    college: initialData.college || "",
+    graduationYear: initialData.graduationYear ? String(initialData.graduationYear) : "",
+    skills: initialData.skills?.join(", ") || "",
+    location: initialData.location || "",
+    linkedinUrl: initialData.linkedinUrl || "",
+    githubUrl: initialData.githubUrl || "",
+    twitterUrl: initialData.twitterUrl || "",
+    portfolioUrl: initialData.portfolioUrl || "",
     isLoading: false,
     error: null,
-    success: false});
+    success: false,
+  });
 
-  // Track original values for cancel/revert
+  // Track original values
   const [originalValues, setOriginalValues] = useState({
     name: initialData.name || "",
     bio: initialData.bio || "",
-    avatar: initialData.image});
+    avatar: initialData.image,
+    headline: initialData.headline || "",
+    college: initialData.college || "",
+    graduationYear: initialData.graduationYear ? String(initialData.graduationYear) : "",
+    skills: initialData.skills?.join(", ") || "",
+    location: initialData.location || "",
+    linkedinUrl: initialData.linkedinUrl || "",
+    githubUrl: initialData.githubUrl || "",
+    twitterUrl: initialData.twitterUrl || "",
+    portfolioUrl: initialData.portfolioUrl || "",
+  });
 
-  // Validation errors
-  const [validationErrors, setValidationErrors] = useState<{
-    name?: string;
-    bio?: string;
-  }>({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  // Auto-dismiss success message after 3 seconds
   useEffect(() => {
     if (formState.success) {
       const timer = setTimeout(() => {
@@ -63,251 +95,157 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
     }
   }, [formState.success]);
 
-  // Real-time input validation
-  const validateName = (value: string): string | undefined => {
-    const trimmed = value.trim();
-    if (trimmed.length === 0) {
-      return "Name is required";
-    }
-    if (value.length > 100) {
-      return "Name must be less than 100 characters";
-    }
-    return undefined;
+  const handleInputChange = (field: keyof FormState, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
   };
 
-  const validateBio = (value: string): string | undefined => {
-    if (value.length > 500) {
-      return "Bio must be less than 500 characters";
-    }
-    return undefined;
-  };
-
-  // Handle name input change
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    // Prevent input beyond character limit
-    if (value.length > 100) {
-      return;
-    }
-
-    setFormState((prev) => ({ ...prev, name: value }));
-
-    // Real-time validation
-    const error = validateName(value);
-    setValidationErrors((prev) => ({ ...prev, name: error }));
-  };
-
-  // Handle bio input change
-  const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-
-    // Prevent input beyond character limit
-    if (value.length > 500) {
-      return;
-    }
-
-    setFormState((prev) => ({ ...prev, bio: value }));
-
-    // Real-time validation
-    const error = validateBio(value);
-    setValidationErrors((prev) => ({ ...prev, bio: error }));
-  };
-
-  // Handle avatar selection
   const handleAvatarChange = (avatar: string) => {
     setFormState((prev) => ({ ...prev, avatar }));
   };
 
-  // Handle custom image upload
   const handleImageUpload = async (file: File) => {
-    try {
-      // Convert file to base64
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error("Failed to read file. Please try again."));
-        reader.readAsDataURL(file);
-      });
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
 
-      // Get CSRF token for the POST request
-      const { getCSRFToken } = await import('@/lib/utils/csrf');
-      const csrfToken = await getCSRFToken();
+    const { getCSRFToken } = await import("@/lib/utils/csrf");
+    const csrfToken = await getCSRFToken();
 
-      // Upload to Cloudinary via API
-      const response = await fetch("/api/user/profile/upload", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": csrfToken},
-        body: JSON.stringify({ image: base64 })});
+    const response = await fetch("/api/user/profile/upload", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-csrf-token": csrfToken,
+      },
+      body: JSON.stringify({ image: base64 }),
+    });
 
-      const result = await response.json();
-
-      if (!result.success) {
-        // Extract error message from API response
-        const errorMessage = result.error?.message || "Failed to upload image";
-        throw new Error(errorMessage);
-      }
-
-      // Update avatar with Cloudinary URL
-      setFormState((prev) => ({ ...prev, avatar: result.data.url }));
-    } catch (error) {
-      // Re-throw to be handled by AvatarSection
-      throw error;
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error?.message || "Failed to upload image");
     }
+
+    setFormState((prev) => ({ ...prev, avatar: result.data.url }));
   };
 
-  // Validate entire form
   const validateForm = (): boolean => {
-    const nameError = validateName(formState.name);
-    const bioError = validateBio(formState.bio);
-
-    setValidationErrors({
-      name: nameError,
-      bio: bioError});
-
-    return !nameError && !bioError;
+    const errors: Record<string, string> = {};
+    if (!formState.name.trim()) errors.name = "Name is required";
+    if (formState.graduationYear && isNaN(Number(formState.graduationYear))) {
+      errors.graduationYear = "Graduation year must be a valid number";
+    }
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
-    // Validate form
-    if (!validateForm()) {
-      return;
-    }
-
-    // Set loading state
     setFormState((prev) => ({
       ...prev,
       isLoading: true,
       error: null,
-      success: false}));
+      success: false,
+    }));
 
     try {
-      // Sanitize inputs (basic XSS prevention)
-      const sanitizedName = formState.name.trim();
-      const sanitizedBio = formState.bio.trim();
-
-      // Get CSRF token for the PATCH request
-      const { getCSRFToken } = await import('@/lib/utils/csrf');
+      const { getCSRFToken } = await import("@/lib/utils/csrf");
       const csrfToken = await getCSRFToken();
 
-      // Submit to API
+      // Format skills as array
+      const skillsArray = formState.skills
+        ? formState.skills
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [];
+
       const response = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "x-csrf-token": csrfToken},
+          "x-csrf-token": csrfToken,
+        },
         body: JSON.stringify({
-          name: sanitizedName,
-          bio: sanitizedBio || null,
-          avatar: formState.avatar})});
+          name: formState.name.trim(),
+          bio: formState.bio.trim() || null,
+          avatar: formState.avatar,
+          headline: formState.headline.trim() || null,
+          college: formState.college.trim() || null,
+          graduationYear: formState.graduationYear ? Number(formState.graduationYear) : null,
+          skills: skillsArray,
+          location: formState.location.trim() || null,
+          linkedinUrl: formState.linkedinUrl.trim() || null,
+          githubUrl: formState.githubUrl.trim() || null,
+          twitterUrl: formState.twitterUrl.trim() || null,
+          portfolioUrl: formState.portfolioUrl.trim() || null,
+        }),
+      });
 
       const result = await response.json();
-
       if (!result.success) {
-        // Extract error details from API response
-        const errorCode = result.error?.code;
-        const errorMessage = result.error?.message || "Failed to update profile";
-
-        // Provide user-friendly error messages based on error code
-        let userMessage = errorMessage;
-
-        if (errorCode === "DATABASE_ERROR" || errorCode === "DATABASE_CONNECTION_ERROR") {
-          userMessage = "Unable to save changes due to a database error. Please try again in a moment.";
-        } else if (errorCode === "DATABASE_TIMEOUT") {
-          userMessage = "The request timed out. Please check your connection and try again.";
-        } else if (errorCode === "NETWORK_ERROR") {
-          userMessage = "Network error. Please check your internet connection and try again.";
-        } else if (errorCode === "VALIDATION_ERROR") {
-          userMessage = "Invalid data provided. Please check your entries and try again.";
-        }
-
-        throw new Error(userMessage);
+        throw new Error(result.error?.message || "Failed to update profile");
       }
 
-      // Update NextAuth session with new user data
-      // This ensures the session reflects the updated name and avatar immediately
       if (updateSession) {
-        try {
-          await updateSession({
-            name: result.data.name,
-            image: result.data.image});
-        } catch (sessionError) {
-          console.error("Failed to update session:", sessionError);
-          // Don't fail the entire operation if session update fails
-          // The profile was saved successfully
-        }
+        await updateSession({
+          name: result.data.name,
+          image: result.data.image,
+        });
       }
 
-      // Update original values to reflect saved state
-      setOriginalValues({
-        name: sanitizedName,
-        bio: sanitizedBio,
-        avatar: formState.avatar});
+      const updatedVals = {
+        name: formState.name,
+        bio: formState.bio,
+        avatar: formState.avatar,
+        headline: formState.headline,
+        college: formState.college,
+        graduationYear: formState.graduationYear,
+        skills: formState.skills,
+        location: formState.location,
+        linkedinUrl: formState.linkedinUrl,
+        githubUrl: formState.githubUrl,
+        twitterUrl: formState.twitterUrl,
+        portfolioUrl: formState.portfolioUrl,
+      };
 
-      // Show success message
+      setOriginalValues(updatedVals);
       setFormState((prev) => ({
         ...prev,
         isLoading: false,
         success: true,
-        error: null}));
-    } catch (error) {
-      console.error("Profile update error:", error);
-
-      // Handle different error types
-      let errorMessage = "An error occurred while updating your profile.";
-
-      if (error instanceof Error) {
-        const errMsg = error.message.toLowerCase();
-
-        // Network errors
-        if (errMsg.includes("network") || errMsg.includes("fetch") || errMsg.includes("failed to fetch")) {
-          errorMessage = "Network error. Please check your internet connection and try again.";
-        }
-        // Timeout errors
-        else if (errMsg.includes("timeout")) {
-          errorMessage = "Request timed out. Please try again.";
-        }
-        // Use the error message if it's user-friendly
-        else if (error.message && error.message.length < 200) {
-          errorMessage = error.message;
-        }
-      }
-
-      // Show error message
+        error: null,
+      }));
+    } catch (error: any) {
       setFormState((prev) => ({
         ...prev,
         isLoading: false,
-        error: errorMessage,
-        success: false}));
+        error: error.message || "An error occurred",
+      }));
     }
   };
 
-  // Handle cancel/revert
   const handleCancel = () => {
     setFormState((prev) => ({
       ...prev,
-      name: originalValues.name,
-      bio: originalValues.bio,
-      avatar: originalValues.avatar,
+      ...originalValues,
       error: null,
-      success: false}));
+      success: false,
+    }));
     setValidationErrors({});
   };
 
-  // Check if form has changes
-  const hasChanges =
-    formState.name !== originalValues.name ||
-    formState.bio !== originalValues.bio ||
-    formState.avatar !== originalValues.avatar;
+  const hasChanges = Object.keys(originalValues).some(
+    (key) => formState[key as keyof FormState] !== originalValues[key as keyof typeof originalValues]
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Avatar Section */}
+      {/* Avatar */}
       <AvatarSection
         currentAvatar={formState.avatar}
         onAvatarChange={handleAvatarChange}
@@ -315,108 +253,119 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         isLoading={formState.isLoading}
       />
 
-      {/* Email Field (Read-only) */}
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-gray-300">
-          Email Address
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          value={initialData.email}
-          disabled
-          className="bg-white/5 border-white/10 text-gray-400 cursor-not-allowed"
-        />
-        <p className="text-xs text-gray-500">Email cannot be changed</p>
-      </div>
+      {/* Group 1: Personal Info */}
+      <div className="space-y-4 bg-muted/20 p-6 rounded-2xl border border-border/50">
+        <h3 className="text-md font-bold text-foreground flex items-center gap-2 mb-2">
+          <User className="w-5 h-5 text-primary" />
+          Personal Info
+        </h3>
 
-      {/* Name Field */}
-      <div className="space-y-2">
-        <Label htmlFor="name" className="text-gray-300">
-          Display Name
-          <span className="text-red-400 ml-1">*</span>
-        </Label>
-        <div className="relative">
-          <Input
-            id="name"
-            type="text"
-            value={formState.name}
-            onChange={handleNameChange}
-            disabled={formState.isLoading}
-            maxLength={100}
-            className={`bg-white/5 border-white/10 text-gray-100 ${validationErrors.name ? "border-red-500" : ""
-              }`}
-            placeholder="Enter your display name"
-            aria-invalid={!!validationErrors.name}
-          />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">
-            {formState.name.length}/100
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-gray-300">Email (Read-only)</Label>
+            <Input id="email" value={initialData.email} disabled className="bg-white/5 border-white/10 text-gray-400 cursor-not-allowed" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-gray-300">Display Name *</Label>
+            <Input id="name" value={formState.name} onChange={(e) => handleInputChange("name", e.target.value)} className="bg-white/5 border-white/10 text-gray-100" />
+            {validationErrors.name && <p className="text-xs text-red-400">{validationErrors.name}</p>}
           </div>
         </div>
-        {validationErrors.name && (
-          <p className="text-xs text-red-400">{validationErrors.name}</p>
-        )}
+
+        <div className="space-y-2">
+          <Label htmlFor="headline" className="text-gray-300">Professional Headline</Label>
+          <Input id="headline" value={formState.headline} onChange={(e) => handleInputChange("headline", e.target.value)} placeholder="e.g. Full-Stack Developer | CS Student" className="bg-white/5 border-white/10 text-gray-100" />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="location" className="text-gray-300">Location</Label>
+          <Input id="location" value={formState.location} onChange={(e) => handleInputChange("location", e.target.value)} placeholder="e.g. Bengaluru, India" className="bg-white/5 border-white/10 text-gray-100" />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="bio" className="text-gray-300">Bio</Label>
+          <Textarea id="bio" value={formState.bio} onChange={(e) => handleInputChange("bio", e.target.value)} placeholder="Tell others about yourself..." className="bg-white/5 border-white/10 text-gray-100 min-h-24" />
+        </div>
       </div>
 
-      {/* Bio Field */}
-      <div className="space-y-2">
-        <Label htmlFor="bio" className="text-gray-300">
-          Bio
-        </Label>
-        <div className="relative">
-          <Textarea
-            id="bio"
-            value={formState.bio}
-            onChange={handleBioChange}
-            disabled={formState.isLoading}
-            maxLength={500}
-            className={`bg-white/5 border-white/10 text-gray-100 min-h-24 ${validationErrors.bio ? "border-red-500" : ""
-              }`}
-            placeholder="Tell us about yourself..."
-            aria-invalid={!!validationErrors.bio}
-          />
-          <div className="absolute right-3 bottom-3 text-xs text-gray-500">
-            {formState.bio.length}/500
+      {/* Group 2: Academic & Career */}
+      <div className="space-y-4 bg-muted/20 p-6 rounded-2xl border border-border/50">
+        <h3 className="text-md font-bold text-foreground flex items-center gap-2 mb-2">
+          <GraduationCap className="w-5 h-5 text-primary" />
+          Academic &amp; Skills
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="college" className="text-gray-300">College / University</Label>
+            <Input id="college" value={formState.college} onChange={(e) => handleInputChange("college", e.target.value)} placeholder="e.g. IIT Delhi" className="bg-white/5 border-white/10 text-gray-100" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gradYear" className="text-gray-300">Graduation Year</Label>
+            <Input id="gradYear" value={formState.graduationYear} onChange={(e) => handleInputChange("graduationYear", e.target.value)} placeholder="e.g. 2026" className="bg-white/5 border-white/10 text-gray-100" />
+            {validationErrors.graduationYear && <p className="text-xs text-red-400">{validationErrors.graduationYear}</p>}
           </div>
         </div>
-        {validationErrors.bio && (
-          <p className="text-xs text-red-400">{validationErrors.bio}</p>
-        )}
+
+        <div className="space-y-2">
+          <Label htmlFor="skills" className="text-gray-300">Skills (Comma-separated)</Label>
+          <Input id="skills" value={formState.skills} onChange={(e) => handleInputChange("skills", e.target.value)} placeholder="e.g. React, Node.js, Python, TypeScript" className="bg-white/5 border-white/10 text-gray-100" />
+        </div>
       </div>
 
-      {/* Success Message */}
+      {/* Group 3: Links */}
+      <div className="space-y-4 bg-muted/20 p-6 rounded-2xl border border-border/50">
+        <h3 className="text-md font-bold text-foreground flex items-center gap-2 mb-2">
+          <Link2 className="w-5 h-5 text-primary" />
+          Social &amp; Portfolio Links
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="linkedin" className="text-gray-300">LinkedIn URL</Label>
+            <Input id="linkedin" value={formState.linkedinUrl} onChange={(e) => handleInputChange("linkedinUrl", e.target.value)} placeholder="https://linkedin.com/in/username" className="bg-white/5 border-white/10 text-gray-100" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="github" className="text-gray-300">GitHub URL</Label>
+            <Input id="github" value={formState.githubUrl} onChange={(e) => handleInputChange("githubUrl", e.target.value)} placeholder="https://github.com/username" className="bg-white/5 border-white/10 text-gray-100" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="twitter" className="text-gray-300">Twitter URL</Label>
+            <Input id="twitter" value={formState.twitterUrl} onChange={(e) => handleInputChange("twitterUrl", e.target.value)} placeholder="https://twitter.com/username" className="bg-white/5 border-white/10 text-gray-100" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="portfolio" className="text-gray-300">Portfolio URL</Label>
+            <Input id="portfolio" value={formState.portfolioUrl} onChange={(e) => handleInputChange("portfolioUrl", e.target.value)} placeholder="https://portfolio.com" className="bg-white/5 border-white/10 text-gray-100" />
+          </div>
+        </div>
+      </div>
+
+      {/* Messages */}
       {formState.success && (
-        <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center gap-3">
+        <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-3">
           <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0" />
           <p className="text-sm text-green-400">Profile updated successfully!</p>
         </div>
       )}
 
-      {/* Error Message */}
       {formState.error && (
-        <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
-          <div className="flex items-start gap-3">
-            <XCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-sm text-red-400">{formState.error}</p>
-              {(formState.error.toLowerCase().includes("network") ||
-                formState.error.toLowerCase().includes("timeout") ||
-                formState.error.toLowerCase().includes("connection")) && (
-                  <p className="text-xs text-red-300 mt-2">
-                    Tip: Check your internet connection and try saving again.
-                  </p>
-                )}
-            </div>
-          </div>
+        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
+          <XCircle className="w-5 h-5 text-red-400 shrink-0" />
+          <p className="text-sm text-red-400">{formState.error}</p>
         </div>
       )}
 
-      {/* Form Actions */}
+      {/* Buttons */}
       <div className="flex gap-3 pt-4">
         <Button
           type="submit"
-          disabled={formState.isLoading || !hasChanges || !!validationErrors.name || !!validationErrors.bio}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white"
+          disabled={formState.isLoading || !hasChanges}
+          className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold rounded-xl"
         >
           {formState.isLoading ? (
             <>
@@ -432,7 +381,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
           variant="outline"
           onClick={handleCancel}
           disabled={formState.isLoading || !hasChanges}
-          className="border-white/20 text-gray-300 hover:bg-white/5"
+          className="border-white/20 text-gray-300 hover:bg-white/5 font-bold rounded-xl"
         >
           Cancel
         </Button>

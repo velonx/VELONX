@@ -23,6 +23,15 @@ export default async function SettingsPage() {
         email: true,
         image: true,
         bio: true,
+        headline: true,
+        college: true,
+        graduationYear: true,
+        skills: true,
+        location: true,
+        linkedinUrl: true,
+        githubUrl: true,
+        twitterUrl: true,
+        portfolioUrl: true,
       },
     });
   } catch (error) {
