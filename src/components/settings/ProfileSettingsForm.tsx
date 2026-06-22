@@ -262,30 +262,30 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-300">Email (Read-only)</Label>
-            <Input id="email" value={initialData.email} disabled className="bg-white/5 border-white/10 text-gray-400 cursor-not-allowed" />
+            <Label htmlFor="email" className="text-foreground/90 font-medium">Email (Read-only)</Label>
+            <Input id="email" value={initialData.email} disabled className="bg-muted/40 border-border text-muted-foreground cursor-not-allowed" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-gray-300">Display Name *</Label>
-            <Input id="name" value={formState.name} onChange={(e) => handleInputChange("name", e.target.value)} className="bg-white/5 border-white/10 text-gray-100" />
+            <Label htmlFor="name" className="text-foreground/90 font-medium">Display Name *</Label>
+            <Input id="name" value={formState.name} onChange={(e) => handleInputChange("name", e.target.value)} className="bg-background border-border text-foreground" />
             {validationErrors.name && <p className="text-xs text-red-400">{validationErrors.name}</p>}
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="headline" className="text-gray-300">Professional Headline</Label>
-          <Input id="headline" value={formState.headline} onChange={(e) => handleInputChange("headline", e.target.value)} placeholder="e.g. Full-Stack Developer | CS Student" className="bg-white/5 border-white/10 text-gray-100" />
+          <Label htmlFor="headline" className="text-foreground/90 font-medium">Professional Headline</Label>
+          <Input id="headline" value={formState.headline} onChange={(e) => handleInputChange("headline", e.target.value)} placeholder="e.g. Full-Stack Developer | CS Student" className="bg-background border-border text-foreground" />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="location" className="text-gray-300">Location</Label>
-          <Input id="location" value={formState.location} onChange={(e) => handleInputChange("location", e.target.value)} placeholder="e.g. Bengaluru, India" className="bg-white/5 border-white/10 text-gray-100" />
+          <Label htmlFor="location" className="text-foreground/90 font-medium">Location</Label>
+          <Input id="location" value={formState.location} onChange={(e) => handleInputChange("location", e.target.value)} placeholder="e.g. Bengaluru, India" className="bg-background border-border text-foreground" />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="bio" className="text-gray-300">Bio</Label>
-          <Textarea id="bio" value={formState.bio} onChange={(e) => handleInputChange("bio", e.target.value)} placeholder="Tell others about yourself..." className="bg-white/5 border-white/10 text-gray-100 min-h-24" />
+          <Label htmlFor="bio" className="text-foreground/90 font-medium">Bio</Label>
+          <Textarea id="bio" value={formState.bio} onChange={(e) => handleInputChange("bio", e.target.value)} placeholder="Tell others about yourself..." className="bg-background border-border text-foreground min-h-24" />
         </div>
       </div>
 
@@ -298,20 +298,20 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="college" className="text-gray-300">College / University</Label>
-            <Input id="college" value={formState.college} onChange={(e) => handleInputChange("college", e.target.value)} placeholder="e.g. IIT Delhi" className="bg-white/5 border-white/10 text-gray-100" />
+            <Label htmlFor="college" className="text-foreground/90 font-medium">College / University</Label>
+            <Input id="college" value={formState.college} onChange={(e) => handleInputChange("college", e.target.value)} placeholder="e.g. IIT Delhi" className="bg-background border-border text-foreground" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="gradYear" className="text-gray-300">Graduation Year</Label>
-            <Input id="gradYear" value={formState.graduationYear} onChange={(e) => handleInputChange("graduationYear", e.target.value)} placeholder="e.g. 2026" className="bg-white/5 border-white/10 text-gray-100" />
+            <Label htmlFor="gradYear" className="text-foreground/90 font-medium">Graduation Year</Label>
+            <Input id="gradYear" value={formState.graduationYear} onChange={(e) => handleInputChange("graduationYear", e.target.value)} placeholder="e.g. 2026" className="bg-background border-border text-foreground" />
             {validationErrors.graduationYear && <p className="text-xs text-red-400">{validationErrors.graduationYear}</p>}
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="skills" className="text-gray-300">Skills (Comma-separated)</Label>
-          <Input id="skills" value={formState.skills} onChange={(e) => handleInputChange("skills", e.target.value)} placeholder="e.g. React, Node.js, Python, TypeScript" className="bg-white/5 border-white/10 text-gray-100" />
+          <Label htmlFor="skills" className="text-foreground/90 font-medium">Skills (Comma-separated)</Label>
+          <Input id="skills" value={formState.skills} onChange={(e) => handleInputChange("skills", e.target.value)} placeholder="e.g. React, Node.js, Python, TypeScript" className="bg-background border-border text-foreground" />
         </div>
       </div>
 
@@ -324,23 +324,23 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="linkedin" className="text-gray-300">LinkedIn URL</Label>
-            <Input id="linkedin" value={formState.linkedinUrl} onChange={(e) => handleInputChange("linkedinUrl", e.target.value)} placeholder="https://linkedin.com/in/username" className="bg-white/5 border-white/10 text-gray-100" />
+            <Label htmlFor="linkedin" className="text-foreground/90 font-medium">LinkedIn URL</Label>
+            <Input id="linkedin" value={formState.linkedinUrl} onChange={(e) => handleInputChange("linkedinUrl", e.target.value)} placeholder="https://linkedin.com/in/username" className="bg-background border-border text-foreground" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="github" className="text-gray-300">GitHub URL</Label>
-            <Input id="github" value={formState.githubUrl} onChange={(e) => handleInputChange("githubUrl", e.target.value)} placeholder="https://github.com/username" className="bg-white/5 border-white/10 text-gray-100" />
+            <Label htmlFor="github" className="text-foreground/90 font-medium">GitHub URL</Label>
+            <Input id="github" value={formState.githubUrl} onChange={(e) => handleInputChange("githubUrl", e.target.value)} placeholder="https://github.com/username" className="bg-background border-border text-foreground" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="twitter" className="text-gray-300">Twitter URL</Label>
-            <Input id="twitter" value={formState.twitterUrl} onChange={(e) => handleInputChange("twitterUrl", e.target.value)} placeholder="https://twitter.com/username" className="bg-white/5 border-white/10 text-gray-100" />
+            <Label htmlFor="twitter" className="text-foreground/90 font-medium">Twitter URL</Label>
+            <Input id="twitter" value={formState.twitterUrl} onChange={(e) => handleInputChange("twitterUrl", e.target.value)} placeholder="https://twitter.com/username" className="bg-background border-border text-foreground" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="portfolio" className="text-gray-300">Portfolio URL</Label>
-            <Input id="portfolio" value={formState.portfolioUrl} onChange={(e) => handleInputChange("portfolioUrl", e.target.value)} placeholder="https://portfolio.com" className="bg-white/5 border-white/10 text-gray-100" />
+            <Label htmlFor="portfolio" className="text-foreground/90 font-medium">Portfolio URL</Label>
+            <Input id="portfolio" value={formState.portfolioUrl} onChange={(e) => handleInputChange("portfolioUrl", e.target.value)} placeholder="https://portfolio.com" className="bg-background border-border text-foreground" />
           </div>
         </div>
       </div>
@@ -381,7 +381,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
           variant="outline"
           onClick={handleCancel}
           disabled={formState.isLoading || !hasChanges}
-          className="border-white/20 text-gray-300 hover:bg-white/5 font-bold rounded-xl"
+          className="border-border text-foreground hover:bg-muted font-bold rounded-xl"
         >
           Cancel
         </Button>

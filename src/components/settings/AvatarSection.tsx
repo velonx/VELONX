@@ -108,10 +108,10 @@ export default function AvatarSection({
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-2 block">
+        <label className="text-sm font-medium text-foreground/90 mb-2 block">
           Profile Picture
         </label>
-        <p className="text-sm text-gray-400 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Choose a predefined avatar or upload your own image
         </p>
       </div>
@@ -124,9 +124,9 @@ export default function AvatarSection({
         {...dragHandlers}
       >
         <div className="relative">
-          <Avatar className="w-24 h-24 border-2 border-white/10">
+          <Avatar className="w-24 h-24 border-2 border-border">
             <AvatarImage src={currentAvatar || undefined} alt="Profile avatar" />
-            <AvatarFallback className="bg-white/5 text-gray-400">
+            <AvatarFallback className="bg-muted text-muted-foreground">
               <User className="w-12 h-12" />
             </AvatarFallback>
           </Avatar>
@@ -145,7 +145,7 @@ export default function AvatarSection({
             trigger={
               <Button
                 variant="outline"
-                className="rounded-full border-white/20 text-gray-300 hover:bg-white/5"
+                className="rounded-full border-border text-foreground hover:bg-muted"
                 disabled={isLoading || isUploading}
               >
                 Choose Avatar
@@ -158,7 +158,7 @@ export default function AvatarSection({
             variant="outline"
             onClick={handleUploadClick}
             disabled={isLoading || isUploading}
-            className="rounded-full border-white/20 text-gray-300 hover:bg-white/5"
+            className="rounded-full border-border text-foreground hover:bg-muted"
           >
             {isUploading ? (
               <>
