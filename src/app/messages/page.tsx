@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   MessageSquare, Send, ArrowLeft, Search, X, ChevronDown,
@@ -82,11 +82,13 @@ function formatDateSeparator(dateStr: string): string {
 
 function ConversationList({
   conversations,
+  connections = [],
   activeUserId,
   onSelect,
   loading,
 }: {
   conversations: ConversationItem[];
+  connections?: any[];
   activeUserId: string | null;
   onSelect: (userId: string) => void;
   loading: boolean;
@@ -99,6 +101,20 @@ function ConversationList({
       )
     : conversations;
 
+  // Filter connections: matches search, and doesn't already have an active conversation
+  const matchedConnections = search
+    ? connections.filter((conn) => {
+        const alreadyHasConv = conversations.some(
+          (conv) => conv.otherUser.id === conn.user.id
+        );
+        const nameMatches = conn.user.name?.toLowerCase().includes(search.toLowerCase());
+        const headlineMatches = conn.user.headline?.toLowerCase().includes(search.toLowerCase());
+        return !alreadyHasConv && (nameMatches || headlineMatches);
+      })
+    : [];
+
+  const hasResults = filtered.length > 0 || matchedConnections.length > 0;
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-border">
@@ -108,7 +124,7 @@ function ConversationList({
           <input
             id="msg-search"
             type="text"
-            placeholder="Search conversations..."
+            placeholder="Search conversations or connections..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-8 py-2 bg-muted/50 border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -134,24 +150,81 @@ function ConversationList({
               </div>
             ))}
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center p-6">
-            <MessageSquare className="w-12 h-12 text-muted-foreground/30 mb-3" />
-            <p className="text-sm text-muted-foreground font-medium">
-              {search ? "No conversations found" : "No messages yet"}
-            </p>
-            {!search && (
+        ) : !hasResults ? (
+          search ? (
+            <div className="flex flex-col items-center justify-center h-full text-center p-6">
+              <MessageSquare className="w-12 h-12 text-muted-foreground/30 mb-3" />
+              <p className="text-sm text-muted-foreground font-medium">No results found</p>
               <p className="text-xs text-muted-foreground/70 mt-1">
-                Connect with people to start chatting
+                We couldn't find any conversations or connections matching "{search}"
               </p>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="flex flex-col h-full">
+              <div className="flex flex-col items-center justify-center text-center p-6 border-b border-border">
+                <MessageSquare className="w-12 h-12 text-muted-foreground/30 mb-3" />
+                <p className="text-sm text-muted-foreground font-medium">No messages yet</p>
+                {connections.length > 0 ? (
+                  <p className="text-xs text-muted-foreground/70 mt-1">
+                    Choose a connection below to start a conversation:
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground/70 mt-1">
+                    Connect with people in the network directory to start chatting
+                  </p>
+                )}
+              </div>
+              {connections.length > 0 && (
+                <div className="p-2 space-y-0.5">
+                  <div className="px-3 py-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Your Connections
+                  </div>
+                  {connections.map((conn) => (
+                    <button
+                      key={conn.connectionId}
+                      onClick={() => {
+                        setSearch("");
+                        onSelect(conn.user.id);
+                      }}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${
+                        activeUserId === conn.user.id
+                          ? "bg-primary/10 border border-primary/20"
+                          : "hover:bg-muted/50"
+                      }`}
+                    >
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage src={conn.user.image || ""} />
+                        <AvatarFallback className="bg-linear-to-br from-primary to-primary/60 text-white font-bold">
+                          {conn.user.name?.charAt(0) || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-foreground truncate">{conn.user.name}</p>
+                        {conn.user.headline && (
+                          <p className="text-xs text-muted-foreground truncate">{conn.user.headline}</p>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
         ) : (
           <div className="p-2 space-y-0.5">
+            {/* Conversations Section */}
+            {search && filtered.length > 0 && (
+              <div className="px-3 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                Conversations
+              </div>
+            )}
             {filtered.map((conv) => (
               <button
                 key={conv.conversationId}
-                onClick={() => onSelect(conv.otherUser.id)}
+                onClick={() => {
+                  setSearch("");
+                  onSelect(conv.otherUser.id);
+                }}
                 className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${
                   activeUserId === conv.otherUser.id
                     ? "bg-primary/10 border border-primary/20"
@@ -188,6 +261,44 @@ function ConversationList({
                 </div>
               </button>
             ))}
+
+            {/* Connections Section */}
+            {search && matchedConnections.length > 0 && (
+              <>
+                <div className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-4">
+                  Connections (Start Chat)
+                </div>
+                {matchedConnections.map((conn) => (
+                  <button
+                    key={conn.connectionId}
+                    onClick={() => {
+                      setSearch("");
+                      onSelect(conn.user.id);
+                    }}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${
+                      activeUserId === conn.user.id
+                        ? "bg-primary/10 border border-primary/20"
+                        : "hover:bg-muted/50"
+                    }`}
+                  >
+                    <Avatar className="w-12 h-12">
+                      <AvatarImage src={conn.user.image || ""} />
+                      <AvatarFallback className="bg-linear-to-br from-primary to-primary/60 text-white font-bold">
+                        {conn.user.name?.charAt(0) || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{conn.user.name}</p>
+                      {conn.user.headline ? (
+                        <p className="text-xs text-muted-foreground truncate">{conn.user.headline}</p>
+                      ) : (
+                        <p className="text-xs text-muted-foreground/70 truncate">Start a conversation</p>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </>
+            )}
           </div>
         )}
       </div>
@@ -203,10 +314,12 @@ function ChatThread({
   userId,
   currentUserId,
   onBack,
+  onMessageSent,
 }: {
   userId: string;
   currentUserId: string;
   onBack: () => void;
+  onMessageSent?: () => void;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -288,6 +401,7 @@ function ChatThread({
         setMessages((prev) => [...prev, data.data]);
         setInput("");
         inputRef.current?.focus();
+        if (onMessageSent) onMessageSent();
       } else {
         toast.error(data.error?.message || "Failed to send");
       }
@@ -417,12 +531,16 @@ function ChatThread({
 // Main Messages Page
 // ============================================================
 
-export default function MessagesPage() {
+function MessagesContent() {
   const { data: session, status: authStatus } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const userParam = searchParams.get("user");
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
+  const [connections, setConnections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
+  const fetchedTempUsers = useRef<Set<string>>(new Set());
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -436,9 +554,78 @@ export default function MessagesPage() {
     }
   }, []);
 
+  const fetchConnections = useCallback(async () => {
+    try {
+      const res = await secureFetch("/api/connections?limit=50");
+      const data = await res.json();
+      if (data.success) setConnections(data.data.connections);
+    } catch (err) {
+      console.error("Failed to load connections in messages page", err);
+    }
+  }, []);
+
   useEffect(() => {
-    if (authStatus === "authenticated") fetchConversations();
-  }, [authStatus, fetchConversations]);
+    if (authStatus === "authenticated") {
+      fetchConversations();
+      fetchConnections();
+    }
+  }, [authStatus, fetchConversations, fetchConnections]);
+
+  // Handle initializing active user from query parameter
+  useEffect(() => {
+    if (userParam) {
+      setActiveUserId(userParam);
+    }
+  }, [userParam]);
+
+  // Handle adding temporary conversation item for first-time chats
+  useEffect(() => {
+    if (loading || !activeUserId) return;
+
+    const exists = conversations.some((c) => c.otherUser.id === activeUserId);
+    if (!exists && !fetchedTempUsers.current.has(activeUserId)) {
+      fetchedTempUsers.current.add(activeUserId);
+      let isMounted = true;
+      secureFetch(`/api/users/${activeUserId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (isMounted && data.success && data.data) {
+            const resolvedId = data.data.id;
+            
+            // If the activeUserId was a slug, update it
+            if (activeUserId !== resolvedId) {
+              setActiveUserId(resolvedId);
+              fetchedTempUsers.current.add(resolvedId);
+            }
+
+            const tempConv: ConversationItem = {
+              conversationId: `temp-${resolvedId}`,
+              otherUser: {
+                id: resolvedId,
+                name: data.data.name,
+                image: data.data.image,
+                headline: data.data.headline,
+              },
+              lastMessageAt: new Date().toISOString(),
+              lastMessagePreview: "Start a conversation",
+              unreadCount: 0,
+            };
+            setConversations((prev) => {
+              if (prev.some((c) => c.otherUser.id === resolvedId)) return prev;
+              return [tempConv, ...prev];
+            });
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch temp user details", err);
+          fetchedTempUsers.current.delete(activeUserId);
+        });
+
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [activeUserId, conversations, loading]);
 
   // Refresh conversations when returning from a chat
   useEffect(() => {
@@ -471,8 +658,32 @@ export default function MessagesPage() {
         >
           <ConversationList
             conversations={conversations}
+            connections={connections}
             activeUserId={activeUserId}
-            onSelect={setActiveUserId}
+            onSelect={(userId) => {
+              // If selecting a connection that doesn't have a conversation yet,
+              // add a temporary conversation item immediately using connection info
+              const exists = conversations.some((c) => c.otherUser.id === userId);
+              if (!exists) {
+                const conn = connections.find((c) => c.user.id === userId);
+                if (conn) {
+                  const tempConv: ConversationItem = {
+                    conversationId: `temp-${userId}`,
+                    otherUser: {
+                      id: conn.user.id,
+                      name: conn.user.name,
+                      image: conn.user.image,
+                      headline: conn.user.headline,
+                    },
+                    lastMessageAt: new Date().toISOString(),
+                    lastMessagePreview: "Start a conversation",
+                    unreadCount: 0,
+                  };
+                  setConversations((prev) => [tempConv, ...prev]);
+                }
+              }
+              setActiveUserId(userId);
+            }}
             loading={loading}
           />
         </div>
@@ -488,6 +699,7 @@ export default function MessagesPage() {
               userId={activeUserId}
               currentUserId={currentUserId}
               onBack={() => setActiveUserId(null)}
+              onMessageSent={fetchConversations}
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center p-8">
@@ -507,5 +719,19 @@ export default function MessagesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background pt-28 flex items-center justify-center">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <MessagesContent />
+    </Suspense>
   );
 }
