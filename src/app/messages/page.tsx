@@ -378,9 +378,17 @@ function ChatThread({
       try {
         const res = await secureFetch(`/api/messages/${userId}?limit=50`);
         const data = await res.json();
-        if (data.success && data.data.messages.length > messages.length) {
-          setMessages(data.data.messages);
-          secureFetch(`/api/messages/${userId}/read`, { method: "POST" }).catch(() => {});
+        if (data.success) {
+          const hasUpdates = data.data.messages.length !== messages.length ||
+            data.data.messages.some((newMsg: Message, idx: number) => {
+              const oldMsg = messages[idx];
+              return !oldMsg || oldMsg.id !== newMsg.id || oldMsg.isRead !== newMsg.isRead;
+            });
+
+          if (hasUpdates) {
+            setMessages(data.data.messages);
+            secureFetch(`/api/messages/${userId}/read`, { method: "POST" }).catch(() => {});
+          }
         }
       } catch {
         // Silently fail
@@ -388,7 +396,7 @@ function ChatThread({
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [userId, messages.length]);
+  }, [userId, messages]);
 
   const handleSend = async () => {
     const text = input.trim();
@@ -492,8 +500,10 @@ function ChatThread({
                         <span className={`text-[10px] ${isOwn ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
                           {formatMessageTime(msg.createdAt)}
                         </span>
-                        {isOwn && msg.isRead && (
-                          <span className="text-[10px] text-primary-foreground/60">✓✓</span>
+                        {isOwn && (
+                          <span className="text-[10px] text-primary-foreground/60 font-medium">
+                            {msg.isRead ? "✓✓" : "✓"}
+                          </span>
                         )}
                       </div>
                     </div>
