@@ -20,21 +20,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Update current user's lastActiveAt in background
+    prisma.user.update({
+      where: { id: userId },
+      data: { lastActiveAt: new Date() } as any,
+    }).catch((err) => console.error("Failed to update lastActiveAt:", err));
+
     // Get all conversations where user is a participant
-    const conversations = await prisma.conversation.findMany({
+    const conversationsResult = await prisma.conversation.findMany({
       where: {
         OR: [{ participant1Id: userId }, { participant2Id: userId }],
       },
       orderBy: { lastMessageAt: "desc" },
       include: {
         participant1: {
-          select: { id: true, name: true, image: true, headline: true },
+          select: { id: true, name: true, image: true, headline: true, lastActiveAt: true } as any,
         },
         participant2: {
-          select: { id: true, name: true, image: true, headline: true },
+          select: { id: true, name: true, image: true, headline: true, lastActiveAt: true } as any,
         },
-      },
+      } as any,
     });
+
+    const conversations = conversationsResult as any[];
 
     // For each conversation, get unread count
     const conversationsWithUnread = await Promise.all(
@@ -53,9 +61,19 @@ export async function GET(request: NextRequest) {
           },
         });
 
+        const isOnline = otherUser && (otherUser as any).lastActiveAt
+          ? (Date.now() - new Date((otherUser as any).lastActiveAt).getTime() < 3 * 60 * 1000)
+          : false;
+
         return {
           conversationId: conv.id,
-          otherUser,
+          otherUser: {
+            id: otherUser.id,
+            name: otherUser.name,
+            image: otherUser.image,
+            headline: otherUser.headline,
+            isOnline,
+          },
           lastMessageAt: conv.lastMessageAt,
           lastMessagePreview: conv.lastMessagePreview,
           unreadCount,

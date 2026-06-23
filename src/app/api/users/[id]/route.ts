@@ -90,6 +90,7 @@ export async function GET(
       profileComplete: true,
       createdAt: true,
       updatedAt: true,
+      lastActiveAt: true,
       _count: {
         select: {
           communityPosts: true,
@@ -207,6 +208,10 @@ export async function GET(
     const projects = Array.from(allProjectsMap.values());
 
     // Formatted data response matching ProfileData interface
+    const isOnline = user.lastActiveAt
+      ? (Date.now() - new Date(user.lastActiveAt).getTime() < 3 * 60 * 1000)
+      : false;
+
     const responseData = {
       ...user,
       isOwnProfile,
@@ -215,6 +220,7 @@ export async function GET(
       connectionCount,
       recentBadges,
       projects,
+      isOnline,
     };
 
     return NextResponse.json(

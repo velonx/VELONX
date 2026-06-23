@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       OR: [{ senderId: userId }, { receiverId: userId }],
     };
 
-    const [connections, total] = await Promise.all([
+    const [connectionsResult, total] = await Promise.all([
       prisma.connection.findMany({
         where: whereClause,
         skip,
@@ -49,27 +49,42 @@ export async function GET(request: NextRequest) {
           sender: {
             select: {
               id: true, name: true, slug: true, image: true, headline: true,
-              college: true, skills: true, location: true,
-            },
+              college: true, skills: true, location: true, lastActiveAt: true,
+            } as any,
           },
           receiver: {
             select: {
               id: true, name: true, slug: true, image: true, headline: true,
-              college: true, skills: true, location: true,
-            },
+              college: true, skills: true, location: true, lastActiveAt: true,
+            } as any,
           },
-        },
+        } as any,
       }),
       prisma.connection.count({ where: whereClause }),
     ]);
 
+    const connections = connectionsResult as any[];
+
     // Map to return the "other" user in each connection
     let items = connections.map((conn) => {
       const otherUser = conn.senderId === userId ? conn.receiver : conn.sender;
+      const isOnline = otherUser?.lastActiveAt
+        ? (Date.now() - new Date(otherUser.lastActiveAt).getTime() < 3 * 60 * 1000)
+        : false;
       return {
         connectionId: conn.id,
         connectedAt: conn.updatedAt,
-        user: otherUser,
+        user: {
+          id: otherUser?.id,
+          name: otherUser?.name,
+          slug: otherUser?.slug,
+          image: otherUser?.image,
+          headline: otherUser?.headline,
+          college: otherUser?.college,
+          skills: otherUser?.skills,
+          location: otherUser?.location,
+          isOnline,
+        },
       };
     });
 

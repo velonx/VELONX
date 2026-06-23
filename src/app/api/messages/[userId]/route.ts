@@ -42,6 +42,12 @@ export async function GET(
       );
     }
 
+    // Update current user's lastActiveAt in background
+    prisma.user.update({
+      where: { id: currentUserId },
+      data: { lastActiveAt: new Date() } as any,
+    }).catch((err) => console.error("Failed to update lastActiveAt:", err));
+
     const { userId: otherUserId } = await params;
     const { searchParams } = new URL(request.url);
     const cursor = searchParams.get("cursor") || undefined;
@@ -77,12 +83,23 @@ export async function GET(
     const items = hasMore ? messages.slice(0, limit) : messages;
     const nextCursor = hasMore ? items[items.length - 1]?.id : undefined;
 
+    // Get recipient's online status
+    const otherUserRecord = await prisma.user.findUnique({
+      where: { id: otherUserId },
+      select: { lastActiveAt: true } as any,
+    }) as any;
+
+    const isOnline = otherUserRecord?.lastActiveAt
+      ? (Date.now() - new Date(otherUserRecord.lastActiveAt).getTime() < 3 * 60 * 1000)
+      : false;
+
     return NextResponse.json({
       success: true,
       data: {
         messages: items.reverse(), // Return in chronological order
         nextCursor,
         hasMore,
+        isOnline,
       },
     });
   } catch (error) {

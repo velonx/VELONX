@@ -138,6 +138,7 @@ model User {
   currentStreak Int       @default(0)
   longestStreak Int       @default(0)
   lastLoginDate DateTime?
+  lastActiveAt  DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

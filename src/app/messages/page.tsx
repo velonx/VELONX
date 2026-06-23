@@ -19,6 +19,7 @@ interface ConversationItem {
     name: string | null;
     image: string | null;
     headline: string | null;
+    isOnline?: boolean;
   };
   lastMessageAt: string;
   lastMessagePreview: string | null;
@@ -192,12 +193,17 @@ function ConversationList({
                           : "hover:bg-muted/50"
                       }`}
                     >
-                      <Avatar className="w-12 h-12">
-                        <AvatarImage src={conn.user.image || ""} />
-                        <AvatarFallback className="bg-linear-to-br from-primary to-primary/60 text-white font-bold">
-                          {conn.user.name?.charAt(0) || "U"}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="relative">
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src={conn.user.image || ""} />
+                          <AvatarFallback className="bg-linear-to-br from-primary to-primary/60 text-white font-bold">
+                            {conn.user.name?.charAt(0) || "U"}
+                          </AvatarFallback>
+                        </Avatar>
+                        {conn.user.isOnline && (
+                          <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-card rounded-full" />
+                        )}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-foreground truncate">{conn.user.name}</p>
                         {conn.user.headline && (
@@ -238,6 +244,9 @@ function ConversationList({
                       {conv.otherUser.name?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
+                  {conv.otherUser.isOnline && (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-card rounded-full" />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
@@ -281,12 +290,17 @@ function ConversationList({
                         : "hover:bg-muted/50"
                     }`}
                   >
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={conn.user.image || ""} />
-                      <AvatarFallback className="bg-linear-to-br from-primary to-primary/60 text-white font-bold">
-                        {conn.user.name?.charAt(0) || "U"}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="relative">
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage src={conn.user.image || ""} />
+                        <AvatarFallback className="bg-linear-to-br from-primary to-primary/60 text-white font-bold">
+                          {conn.user.name?.charAt(0) || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      {conn.user.isOnline && (
+                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-card rounded-full" />
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate">{conn.user.name}</p>
                       {conn.user.headline ? (
@@ -325,7 +339,7 @@ function ChatThread({
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [input, setInput] = useState("");
-  const [otherUser, setOtherUser] = useState<{ name: string | null; image: string | null; headline: string | null } | null>(null);
+  const [otherUser, setOtherUser] = useState<{ name: string | null; image: string | null; headline: string | null; isOnline?: boolean } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -351,6 +365,7 @@ function ChatThread({
             name: userData.data.name,
             image: userData.data.image,
             headline: userData.data.headline,
+            isOnline: userData.data.isOnline,
           });
         }
       } catch {
@@ -379,6 +394,11 @@ function ChatThread({
         const res = await secureFetch(`/api/messages/${userId}?limit=50`);
         const data = await res.json();
         if (data.success) {
+          // Update online status in the chat header
+          if (data.data.isOnline !== undefined) {
+            setOtherUser((prev) => prev ? { ...prev, isOnline: data.data.isOnline } : null);
+          }
+
           const hasUpdates = data.data.messages.length !== messages.length ||
             data.data.messages.some((newMsg: Message, idx: number) => {
               const oldMsg = messages[idx];
@@ -442,14 +462,28 @@ function ChatThread({
         </button>
         {otherUser && (
           <Link href={`/network/${userId}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={otherUser.image || ""} />
-              <AvatarFallback className="bg-linear-to-br from-primary to-primary/60 text-white font-bold">
-                {otherUser.name?.charAt(0) || "U"}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar className="w-10 h-10">
+                <AvatarImage src={otherUser.image || ""} />
+                <AvatarFallback className="bg-linear-to-br from-primary to-primary/60 text-white font-bold">
+                  {otherUser.name?.charAt(0) || "U"}
+                </AvatarFallback>
+              </Avatar>
+              {otherUser.isOnline && (
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-card rounded-full" />
+              )}
+            </div>
             <div>
-              <p className="font-bold text-foreground text-sm">{otherUser.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-foreground text-sm">{otherUser.name}</p>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                  otherUser.isOnline 
+                    ? "bg-green-500/10 text-green-500" 
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {otherUser.isOnline ? "Active" : "Offline"}
+                </span>
+              </div>
               {otherUser.headline && (
                 <p className="text-xs text-muted-foreground line-clamp-1">{otherUser.headline}</p>
               )}
