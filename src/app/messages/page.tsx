@@ -326,11 +326,13 @@ function ChatThread({
   const [sending, setSending] = useState(false);
   const [input, setInput] = useState("");
   const [otherUser, setOtherUser] = useState<{ name: string | null; image: string | null; headline: string | null } | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
   }, []);
 
   // Fetch messages
@@ -364,7 +366,10 @@ function ChatThread({
   }, [userId]);
 
   useEffect(() => {
-    if (!loading) scrollToBottom();
+    if (!loading) {
+      const timer = setTimeout(scrollToBottom, 50);
+      return () => clearTimeout(timer);
+    }
   }, [messages, loading, scrollToBottom]);
 
   // Poll for new messages (simple polling, WebSocket is also available)
@@ -402,6 +407,7 @@ function ChatThread({
         setInput("");
         inputRef.current?.focus();
         if (onMessageSent) onMessageSent();
+        setTimeout(scrollToBottom, 50);
       } else {
         toast.error(data.error?.message || "Failed to send");
       }
@@ -445,7 +451,7 @@ function ChatThread({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-1">
+      <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-1">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
@@ -495,7 +501,6 @@ function ChatThread({
                 </div>
               );
             })}
-            <div ref={messagesEndRef} />
           </>
         )}
       </div>
