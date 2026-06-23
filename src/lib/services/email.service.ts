@@ -546,12 +546,43 @@ export class EmailService {
     }
 
     /**
+     * Check if a direct message email should be sent (limit to 1 per day per sender-receiver connection)
+     */
+    static async shouldSendDirectMessageEmail(
+        senderId: string,
+        receiverId: string,
+        currentMessageId: string
+    ): Promise<boolean> {
+        try {
+            const { prisma } = await import('@/lib/prisma');
+            const startOfToday = new Date();
+            startOfToday.setUTCHours(0, 0, 0, 0);
+
+            const previousMessage = await prisma.directMessage.findFirst({
+                where: {
+                    senderId,
+                    receiverId,
+                    id: { not: currentMessageId },
+                    createdAt: {
+                        gte: startOfToday,
+                    },
+                },
+            });
+
+            return !previousMessage;
+        } catch (error) {
+            console.error('[Email] Error checking DM email limit:', error);
+            return true; // Default to sending if check fails
+        }
+    }
+
+    /**
      * Send direct message notification email
      */
     static async sendDirectMessageEmail(
         receiver: { email: string; name: string | null },
         sender: { name: string | null },
-        messageExcerpt: string
+        messageExcerpt?: string
     ) {
         const subject = `New message from ${sender.name || 'Someone'} on VELONX`;
         const chatUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/messages`;
@@ -559,12 +590,9 @@ export class EmailService {
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 12px;">
                 <h2 style="color: #333333; margin-top: 0;">New Direct Message</h2>
                 <p>Hello ${receiver.name || 'there'},</p>
-                <p>You received a new message from <strong>${sender.name || 'Someone'}</strong>:</p>
-                <blockquote style="background-color: #f9f9f9; border-left: 4px solid #0077b5; padding: 15px; margin: 20px 0; color: #555555; font-style: italic; border-radius: 4px;">
-                    "${messageExcerpt}"
-                </blockquote>
+                <p>You received a new message from <strong>${sender.name || 'Someone'}</strong> on VELONX.</p>
                 <div style="margin: 30px 0;">
-                    <a href="${chatUrl}" style="background-color: #0077b5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Reply to Message</a>
+                    <a href="${chatUrl}" style="background-color: #0077b5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">View Message</a>
                 </div>
                 <p style="color: #777777; font-size: 12px;">If you do not want to receive these emails, you can update your notification settings in your profile.</p>
             </div>

@@ -222,20 +222,27 @@ export async function POST(
         where: { id: receiverId },
         select: { email: true, name: true },
       })
-      .then((receiver) => {
+      .then(async (receiver) => {
         if (receiver && receiver.email) {
-          import("@/lib/services/email.service")
-            .then(({ EmailService }) => {
-              EmailService.sendDirectMessageEmail(
-                { email: receiver.email, name: receiver.name },
-                { name: message.sender.name },
-                sanitizedContent.length > 200 ? sanitizedContent.substring(0, 200) + "..." : sanitizedContent
-              ).catch((err) => console.error("Failed to send DM email:", err));
-            })
-            .catch((err) => console.error("Failed to import EmailService:", err));
+          const { EmailService } = await import("@/lib/services/email.service");
+          const shouldSend = await EmailService.shouldSendDirectMessageEmail(
+            currentUserId,
+            receiverId,
+            message.id
+          );
+
+          if (!shouldSend) {
+            // Already sent a message today, skip sending email notification
+            return;
+          }
+
+          await EmailService.sendDirectMessageEmail(
+            { email: receiver.email, name: receiver.name },
+            { name: message.sender.name }
+          );
         }
       })
-      .catch((err) => console.error("Failed to fetch receiver for DM email:", err));
+      .catch((err) => console.error("Failed to send DM email notification:", err));
 
     return NextResponse.json(
       { success: true, data: message, message: "Message sent" },
