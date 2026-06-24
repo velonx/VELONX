@@ -33,6 +33,15 @@ export async function POST(request: NextRequest) {
     let base64Data = '';
     let folder = 'velonx/general';
 
+    // Helper to validate folder path
+    const validateFolderPath = (path: string): boolean => {
+      // Allow only alphanumeric characters, dashes, underscores, and forward slashes
+      // Reject any path traversal (..) or absolute paths starting with /
+      if (!path) return true;
+      if (path.includes('..') || path.startsWith('/')) return false;
+      return /^[a-zA-Z0-9\-_/]+$/.test(path);
+    };
+
     if (contentType.includes('application/json')) {
       const body = await request.json();
       const raw: string = body.image || body.video || '';
@@ -51,7 +60,17 @@ export async function POST(request: NextRequest) {
       }
       mimeType = mimeMatch[1];
       base64Data = raw;
-      folder = body.folder || folder;
+
+      const requestedFolder = body.folder;
+      if (requestedFolder) {
+        if (!validateFolderPath(requestedFolder)) {
+          return NextResponse.json(
+            { success: false, error: { code: 'INVALID_FOLDER', message: 'Invalid folder path' } },
+            { status: 400 }
+          );
+        }
+        folder = requestedFolder;
+      }
 
       const approxBytes = ((raw.split(',')[1] || '').length * 3) / 4;
       const limit = VIDEO_TYPES.includes(mimeType) ? VIDEO_SIZE_LIMIT : IMAGE_SIZE_LIMIT;
@@ -66,7 +85,17 @@ export async function POST(request: NextRequest) {
       // FormData body
       const formData = await request.formData();
       const file = formData.get('file') as File | null;
-      folder = (formData.get('folder') as string) || folder;
+
+      const requestedFolder = formData.get('folder') as string;
+      if (requestedFolder) {
+        if (!validateFolderPath(requestedFolder)) {
+          return NextResponse.json(
+            { success: false, error: { code: 'INVALID_FOLDER', message: 'Invalid folder path' } },
+            { status: 400 }
+          );
+        }
+        folder = requestedFolder;
+      }
 
       if (!file) {
         return NextResponse.json(
