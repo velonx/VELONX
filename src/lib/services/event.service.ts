@@ -832,55 +832,73 @@ export class EventService {
       // Mark as ATTENDED and award XP
       const { awardXP, XP_REWARDS } = await import("@/lib/utils/xp");
 
-      for (const attendee of attendees) {
-        if (attendee.status === "ATTENDED") continue; // Already attended
+      const attendeesToUpdate = attendees.filter((a) => a.status !== "ATTENDED");
+      const attendeeIdsToUpdate = attendeesToUpdate.map((a) => a.id);
 
-        // Update status to ATTENDED
-        await prisma.eventAttendee.update({
-          where: { id: attendee.id },
+      if (attendeeIdsToUpdate.length > 0) {
+        // Bulk update status to ATTENDED
+        await prisma.eventAttendee.updateMany({
+          where: { id: { in: attendeeIdsToUpdate } },
           data: { status: "ATTENDED" },
         });
 
-        // Award XP if not already awarded
-        if (!attendee.xpAwarded) {
-          await awardXP(
-            attendee.userId,
-            XP_REWARDS.EVENT_ATTENDANCE,
-            `Attended event: ${event.title}`
-          );
+        const attendeesToAwardXP = attendeesToUpdate.filter((a) => !a.xpAwarded);
 
-          await prisma.eventAttendee.update({
-            where: { id: attendee.id },
-            data: { xpAwarded: true },
-          });
+        if (attendeesToAwardXP.length > 0) {
+          const awardedAttendeeIds: string[] = [];
+
+          // Award XP individually (since it modifies user records and creates notifications)
+          for (const attendee of attendeesToAwardXP) {
+            try {
+              await awardXP(
+                attendee.userId,
+                XP_REWARDS.EVENT_ATTENDANCE,
+                `Attended event: ${event.title}`
+              );
+              awardedAttendeeIds.push(attendee.id);
+            } catch (error) {
+              console.error(`Failed to award XP to user ${attendee.userId}:`, error);
+            }
+          }
+
+          if (awardedAttendeeIds.length > 0) {
+            // Bulk update xpAwarded flag only for successfully awarded attendees
+            await prisma.eventAttendee.updateMany({
+              where: { id: { in: awardedAttendeeIds } },
+              data: { xpAwarded: true },
+            });
+          }
         }
 
         // Send attendance confirmation notification
-        try {
-          await notificationService.createNotification({
-            userId: attendee.userId,
-            type: "SUCCESS" as any,
-            title: "Attendance Confirmed!",
-            description: `Your attendance for "${event.title}" has been confirmed. You earned ${XP_REWARDS.EVENT_ATTENDANCE} XP!`,
-            actionUrl: `/events`,
-          });
-        } catch (error) {
-          console.error("Failed to send attendance notification:", error);
+        for (const attendee of attendeesToUpdate) {
+          try {
+            await notificationService.createNotification({
+              userId: attendee.userId,
+              type: "SUCCESS" as any,
+              title: "Attendance Confirmed!",
+              description: `Your attendance for "${event.title}" has been confirmed. You earned ${XP_REWARDS.EVENT_ATTENDANCE} XP!`,
+              actionUrl: `/events`,
+            });
+          } catch (error) {
+            console.error("Failed to send attendance notification:", error);
+          }
         }
 
-        updatedCount++;
+        updatedCount += attendeesToUpdate.length;
       }
     } else {
       // Unmark — revert to REGISTERED (no XP clawback)
-      for (const attendee of attendees) {
-        if (attendee.status !== "ATTENDED") continue; // Not attended, skip
+      const attendeesToRevert = attendees.filter((a) => a.status === "ATTENDED");
+      const attendeeIdsToRevert = attendeesToRevert.map((a) => a.id);
 
-        await prisma.eventAttendee.update({
-          where: { id: attendee.id },
+      if (attendeeIdsToRevert.length > 0) {
+        await prisma.eventAttendee.updateMany({
+          where: { id: { in: attendeeIdsToRevert } },
           data: { status: "REGISTERED" },
         });
 
-        updatedCount++;
+        updatedCount += attendeesToRevert.length;
       }
     }
 
