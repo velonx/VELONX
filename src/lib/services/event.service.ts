@@ -902,51 +902,60 @@ export class EventService {
       // Mark as ATTENDED and award XP
       const { awardXP, XP_REWARDS } = await import("@/lib/utils/xp");
 
-      const attendeesToMark = attendees.filter((a) => a.status !== "ATTENDED");
-      if (attendeesToMark.length === 0) return { updated: 0, action, eventId };
+      const attendeesToUpdate = attendees.filter((a) => a.status !== "ATTENDED");
+      const attendeeIdsToUpdate = attendeesToUpdate.map((a) => a.id);
 
-      const attendeesToAwardXP = attendeesToMark.filter((a) => !a.xpAwarded);
+      if (attendeeIdsToUpdate.length > 0) {
+        // Bulk update status to ATTENDED
+        await prisma.eventAttendee.updateMany({
+          where: { id: { in: attendeeIdsToUpdate } },
+          data: { status: "ATTENDED" },
+        });
 
-      // 1. Bulk update status to ATTENDED
-      await prisma.eventAttendee.updateMany({
-        where: { id: { in: attendeesToMark.map((a) => a.id) } },
-        data: { status: "ATTENDED" },
-      });
+        const attendeesToAwardXP = attendeesToUpdate.filter((a) => !a.xpAwarded);
 
-      // 2. Award XP in parallel using allSettled for fault tolerance
-      if (attendeesToAwardXP.length > 0) {
-        const xpResults = await Promise.allSettled(
-          attendeesToAwardXP.map(async (a) => {
-            await awardXP(
-              a.userId,
-              XP_REWARDS.EVENT_ATTENDANCE,
-              `Attended event: ${event.title}`,
-            );
-            return a.id; // return attendee id on success
-          }),
-        );
+        if (attendeesToAwardXP.length > 0) {
+          const awardedAttendeeIds: string[] = [];
 
-        const successfulAttendeeIds = xpResults
-          .filter((r) => r.status === "fulfilled")
-          .map((r) => (r as PromiseFulfilledResult<string>).value);
+          // Award XP individually (since it modifies user records and creates notifications)
+          for (const attendee of attendeesToAwardXP) {
+            try {
+              await awardXP(
+                attendee.userId,
+                XP_REWARDS.EVENT_ATTENDANCE,
+                `Attended event: ${event.title}`
+              );
+              awardedAttendeeIds.push(attendee.id);
+            } catch (error) {
+              console.error(`Failed to award XP to user ${attendee.userId}:`, error);
+            }
+          }
 
-        // Bulk update xpAwarded flag only for successful XP awards
-        if (successfulAttendeeIds.length > 0) {
-          await prisma.eventAttendee.updateMany({
-            where: { id: { in: successfulAttendeeIds } },
-            data: { xpAwarded: true },
-          });
+          if (awardedAttendeeIds.length > 0) {
+            // Bulk update xpAwarded flag only for successfully awarded attendees
+            await prisma.eventAttendee.updateMany({
+              where: { id: { in: awardedAttendeeIds } },
+              data: { xpAwarded: true },
+            });
+          }
         }
 
-        // Log errors if any
-        xpResults.forEach((r, idx) => {
-          if (r.status === "rejected") {
-            console.error(
-              `Failed to award XP for attendee ${attendeesToAwardXP[idx].id}:`,
-              r.reason,
-            );
+        // Send attendance confirmation notification
+        for (const attendee of attendeesToUpdate) {
+          try {
+            await notificationService.createNotification({
+              userId: attendee.userId,
+              type: "SUCCESS" as any,
+              title: "Attendance Confirmed!",
+              description: `Your attendance for "${event.title}" has been confirmed. You earned ${XP_REWARDS.EVENT_ATTENDANCE} XP!`,
+              actionUrl: `/events`,
+            });
+          } catch (error) {
+            console.error("Failed to send attendance notification:", error);
           }
-        });
+        }
+
+        updatedCount += attendeesToUpdate.length;
       }
 
       // 3. Send attendance confirmation notifications in parallel (fail-safe)
@@ -969,18 +978,17 @@ export class EventService {
       updatedCount = attendeesToMark.length;
     } else {
       // Unmark — revert to REGISTERED (no XP clawback)
-      const attendeesToUnmark = attendees.filter(
-        (a) => a.status === "ATTENDED",
-      );
-      if (attendeesToUnmark.length === 0)
-        return { updated: 0, action, eventId };
+      const attendeesToRevert = attendees.filter((a) => a.status === "ATTENDED");
+      const attendeeIdsToRevert = attendeesToRevert.map((a) => a.id);
 
-      await prisma.eventAttendee.updateMany({
-        where: { id: { in: attendeesToUnmark.map((a) => a.id) } },
-        data: { status: "REGISTERED" },
-      });
+      if (attendeeIdsToRevert.length > 0) {
+        await prisma.eventAttendee.updateMany({
+          where: { id: { in: attendeeIdsToRevert } },
+          data: { status: "REGISTERED" },
+        });
 
-      updatedCount = attendeesToUnmark.length;
+        updatedCount += attendeesToRevert.length;
+      }
     }
 
     return {
