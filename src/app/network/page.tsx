@@ -31,6 +31,8 @@ interface UserCard {
   bio: string | null;
   xp: number;
   level: number;
+  connectionStatus?: "none" | "pending_sent" | "pending_received" | "connected";
+  connectionId?: string | null;
 }
 
 interface ConnectionItem {
@@ -143,10 +145,16 @@ function UserCardComponent({
             <Button
               size="sm"
               variant="outline"
-              className="w-full rounded-xl text-xs font-bold border-green-200 text-green-600 hover:bg-green-50"
+              className="w-full rounded-xl text-xs font-bold border-green-200 text-green-600 hover:bg-green-50 transition-all duration-300 group/btn"
             >
-              <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
-              Message
+              <span className="flex items-center justify-center gap-1.5 group-hover/btn:hidden">
+                <UserCheck className="w-3.5 h-3.5" />
+                Connected
+              </span>
+              <span className="hidden items-center justify-center gap-1.5 group-hover/btn:flex">
+                <MessageSquare className="w-3.5 h-3.5" />
+                Message
+              </span>
             </Button>
           </Link>
         )}
@@ -410,6 +418,47 @@ export default function NetworkPage() {
     }
   };
 
+  const handleWithdraw = async (targetUserId: string) => {
+    let connectionId: string | undefined;
+
+    const dirUser = users.find((u) => u.id === targetUserId);
+    if (dirUser?.connectionId) {
+      connectionId = dirUser.connectionId;
+    }
+
+    if (!connectionId) {
+      const sentReq = sentRequests.find((r) => r.user.id === targetUserId);
+      if (sentReq) {
+        connectionId = sentReq.connectionId;
+      }
+    }
+
+    if (!connectionId) {
+      toast.error("Connection request not found");
+      return;
+    }
+
+    setActionLoading(true);
+    try {
+      const res = await secureFetch(`/api/connections/${connectionId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Connection request withdrawn");
+        fetchDirectory();
+        fetchRequests();
+        fetchConnections();
+      } else {
+        toast.error(data.error?.message || "Failed to withdraw request");
+      }
+    } catch {
+      toast.error("Failed to withdraw connection request");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (authStatus === "loading") {
     return (
       <div className="min-h-screen bg-background pt-28 flex items-center justify-center">
@@ -518,8 +567,9 @@ export default function NetworkPage() {
                     <UserCardComponent
                       key={user.id}
                       user={user}
-                      connectionStatus="none"
+                      connectionStatus={user.connectionStatus || "none"}
                       onConnect={handleConnect}
+                      onWithdraw={handleWithdraw}
                       loading={actionLoading}
                     />
                   ))}
@@ -688,6 +738,7 @@ export default function NetworkPage() {
                         key={req.connectionId}
                         user={req.user}
                         connectionStatus="pending_sent"
+                        onWithdraw={handleWithdraw}
                         loading={actionLoading}
                       />
                     ))}

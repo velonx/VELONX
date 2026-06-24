@@ -97,10 +97,65 @@ export async function GET(request: NextRequest) {
       prisma.user.count({ where: whereClause }),
     ]);
 
+    // Fetch connection status for these users if the current user is logged in
+    let usersWithStatus = users;
+    if (userId && users.length > 0) {
+      const userIds = users.map((u: any) => u.id);
+      const userConnections = await prisma.connection.findMany({
+        where: {
+          OR: [
+            { senderId: userId, receiverId: { in: userIds } },
+            { receiverId: userId, senderId: { in: userIds } },
+          ],
+        },
+        select: {
+          id: true,
+          senderId: true,
+          receiverId: true,
+          status: true,
+        },
+      });
+
+      usersWithStatus = users.map((u: any) => {
+        const conn = userConnections.find(
+          (c) =>
+            (c.senderId === userId && c.receiverId === u.id) ||
+            (c.receiverId === userId && c.senderId === u.id)
+        );
+
+        let connectionStatus: "none" | "pending_sent" | "pending_received" | "connected" = "none";
+        let connectionId: string | null = null;
+        if (conn) {
+          connectionId = conn.id;
+          if (conn.status === "ACCEPTED") {
+            connectionStatus = "connected";
+          } else if (conn.status === "PENDING") {
+            if (conn.senderId === userId) {
+              connectionStatus = "pending_sent";
+            } else {
+              connectionStatus = "pending_received";
+            }
+          }
+        }
+
+        return {
+          ...u,
+          connectionStatus,
+          connectionId,
+        };
+      });
+    } else {
+      usersWithStatus = users.map((u: any) => ({
+        ...u,
+        connectionStatus: "none",
+        connectionId: null,
+      }));
+    }
+
     return NextResponse.json({
       success: true,
       data: {
-        users,
+        users: usersWithStatus,
         pagination: {
           page,
           limit,
