@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+    const hashedPassword = await bcrypt.hash(validatedData.password, 12);
 
     // Generate unique referral code for new user
     const referralCode = await generateReferralCode();
