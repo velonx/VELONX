@@ -5839,17 +5839,94 @@ body {
     }
 
     @media (max-width: 600px) {
-      .podium-stage { gap: 0.5rem; }
-      .podium-card.rank-2, .podium-card.rank-3 { max-width: 140px; }
+      /* Podium stage scaling */
+      .podium-stage {
+        gap: 0.5rem;
+      }
+      .podium-card.rank-2, .podium-card.rank-3 {
+        max-width: 140px;
+      }
+      .podium-card-inner {
+        padding: 1.25rem 0.5rem 1rem;
+        border-radius: 16px 16px 0 0;
+      }
+      .podium-card.rank-1 .podium-avatar,
+      .podium-card.rank-1 svg.block {
+        width: 56px !important;
+        height: 56px !important;
+      }
+      .podium-card.rank-2 .podium-avatar,
+      .podium-card.rank-2 svg.block,
+      .podium-card.rank-3 .podium-avatar,
+      .podium-card.rank-3 svg.block {
+        width: 48px !important;
+        height: 48px !important;
+      }
+      .podium-crown svg {
+        width: 24px !important;
+        height: 20px !important;
+      }
+      .podium-crown {
+        top: -14px;
+      }
+      svg.podium-rank-badge {
+        width: 20px !important;
+        height: 20px !important;
+        margin-bottom: 4px !important;
+      }
+      .podium-name {
+        font-size: 0.8125rem;
+      }
+      .podium-coins {
+        font-size: 0.9375rem;
+      }
+      .podium-block {
+        font-size: 1.25rem;
+      }
+      .podium-card.rank-1 .podium-block {
+        height: 50px;
+      }
+      .podium-card.rank-2 .podium-block {
+        height: 35px;
+      }
+      .podium-card.rank-3 .podium-block {
+        height: 25px;
+      }
+
+      /* Main rankings table alignment */
       .lb-table-header,
       .lb-row {
         grid-template-columns: 44px 1fr 90px;
       }
       .lb-table-header .col-tier,
-      .lb-row .lb-tier-badge {
+      .lb-row .col-tier {
         display: none;
       }
       .leaderboard-stats-strip { gap: 1.25rem; }
+
+      /* Your rank section styling */
+      .your-rank-section {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        padding: 1.25rem;
+        gap: 1.25rem;
+        border-radius: 20px;
+      }
+      .your-rank-left {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.75rem;
+      }
+      .your-rank-stats {
+        justify-content: center;
+      }
+      .your-rank-stats-inner {
+        width: 100%;
+        justify-content: space-around;
+        gap: 1rem;
+      }
     }
 
     /* === SWAG STORE === */

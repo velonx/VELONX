@@ -31,6 +31,7 @@ import {
 import SwagOrdersList from "@/components/dashboard/student/SwagOrdersList";
 import { useProjects, useMeetings, useUserStats } from "@/lib/api/hooks";
 import { DailyCheckIn } from "@/components/daily-check-in";
+import { getTier, getTierLabel } from "@/lib/utils/tiers";
 import ReviewDialog from "@/components/dashboard/ReviewDialog";
 import { FollowersList } from "@/components/community/FollowersList";
 import { FollowingList } from "@/components/community/FollowingList";
@@ -1392,7 +1393,7 @@ function StudentDashboardContent() {
                                 </div>
                                 <div className="p-3 bg-muted rounded-2xl">
                                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Developer Tier</p>
-                                    <p className="text-sm font-bold text-primary">{getLevelLabel(user?.level || 1)}</p>
+                                    <p className="text-sm font-bold text-primary">{getTierLabel(getTier(user?.xp || 0))}</p>
                                 </div>
                             </div>
                         </div>

@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import { getTier, getTierLabel } from "@/lib/utils/tiers";
 
 export default function LeaderboardPage() {
     const { data: session } = useSession();
@@ -23,16 +24,7 @@ export default function LeaderboardPage() {
         setCurrentPage(1);
     }, [searchQuery, activeFilter]);
 
-    const getTier = (xp: number) => {
-        if (xp >= 3500) return "elite";
-        if (xp >= 1500) return "builder";
-        return "rising";
-    };
 
-    const getTierLabel = (tier: string) => {
-        const labels: Record<string, string> = { elite: "Elite Builder", builder: "Core Builder", rising: "Rising Star" };
-        return labels[tier] || "Builder";
-    };
 
     const getChangeIcon = (change: string) => {
         if (change === "up") return (
