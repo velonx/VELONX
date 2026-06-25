@@ -109,6 +109,7 @@ export class UserService {
       name?: string;
       bio?: string;
       image?: string;
+      coverImage?: string | null;
     }
   ) {
     // Check if user exists
@@ -128,6 +129,7 @@ export class UserService {
         name: true,
         email: true,
         image: true,
+        coverImage: true,
         role: true,
         xp: true,
         level: true,

@@ -22,6 +22,7 @@ export default async function SettingsPage() {
         name: true,
         email: true,
         image: true,
+        coverImage: true,
         bio: true,
         headline: true,
         college: true,

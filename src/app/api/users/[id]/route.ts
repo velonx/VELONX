@@ -75,6 +75,7 @@ export async function GET(
       slug: true,
       email: true,
       image: true,
+      coverImage: true,
       bio: true,
       xp: true,
       level: true,

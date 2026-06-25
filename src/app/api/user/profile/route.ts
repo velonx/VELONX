@@ -82,6 +82,7 @@ export async function GET() {
           name: true,
           email: true,
           image: true,
+          coverImage: true,
           bio: true,
           xp: true,
           level: true,
@@ -199,6 +200,7 @@ export async function PATCH(request: NextRequest) {
       name?: string;
       bio?: string | null;
       image?: string | null;
+      coverImage?: string | null;
       headline?: string | null;
       college?: string | null;
       graduationYear?: number | null;
@@ -234,6 +236,10 @@ export async function PATCH(request: NextRequest) {
 
     if (validatedData.avatar !== undefined) {
       updateData.image = validatedData.avatar;
+    }
+
+    if (validatedData.coverImage !== undefined) {
+      updateData.coverImage = validatedData.coverImage;
     }
 
     // Handle new professional/academic profile fields
@@ -278,6 +284,7 @@ export async function PATCH(request: NextRequest) {
           name: true,
           email: true,
           image: true,
+          coverImage: true,
           bio: true,
           headline: true,
           college: true,

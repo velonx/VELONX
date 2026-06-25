@@ -19,6 +19,7 @@ interface ProfileData {
   id: string;
   name: string | null;
   image: string | null;
+  coverImage: string | null;
   bio: string | null;
   headline: string | null;
   college: string | null;
@@ -213,8 +214,18 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
         {/* Profile Card */}
         <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
           {/* Banner */}
-          <div className="h-32 sm:h-40 bg-linear-to-r from-primary/80 via-primary/50 to-primary/30 relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent)]" />
+          <div className="h-32 sm:h-40 relative w-full overflow-hidden">
+            {profile.coverImage ? (
+              <img
+                src={profile.coverImage}
+                alt="Profile banner"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-linear-to-r from-primary/80 via-primary/50 to-primary/30 relative">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent)]" />
+              </div>
+            )}
           </div>
 
           {/* Profile Info */}

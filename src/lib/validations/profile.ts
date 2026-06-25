@@ -94,6 +94,23 @@ export const partialProfileUpdateSchema = z.object({
     .nullable()
     .transform((val) => (val === "" ? null : val)),
   avatar: avatarSchema,
+  coverImage: z
+    .string()
+    .refine(
+      (val) => {
+        try {
+          const url = new URL(val);
+          return url.protocol === "http:" || url.protocol === "https:";
+        } catch {
+          return false;
+        }
+      },
+      {
+        message: "Cover image must be a valid URL",
+      }
+    )
+    .optional()
+    .nullable(),
 
   // Professional/Academic Profile fields
   headline: z

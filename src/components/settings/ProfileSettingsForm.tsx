@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import AvatarSection from "@/components/settings/AvatarSection";
+import CoverImageSection from "@/components/settings/CoverImageSection";
 import { Loader2, CheckCircle2, XCircle, GraduationCap, Link2, User } from "lucide-react";
 
 interface ProfileSettingsFormProps {
@@ -15,6 +16,7 @@ interface ProfileSettingsFormProps {
     name: string | null;
     email: string;
     image: string | null;
+    coverImage?: string | null;
     bio: string | null;
     headline: string | null;
     college: string | null;
@@ -32,6 +34,7 @@ interface FormState {
   name: string;
   bio: string;
   avatar: string | null;
+  coverImage: string | null;
   headline: string;
   college: string;
   graduationYear: string;
@@ -54,6 +57,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
     name: initialData.name || "",
     bio: initialData.bio || "",
     avatar: initialData.image,
+    coverImage: initialData.coverImage || null,
     headline: initialData.headline || "",
     college: initialData.college || "",
     graduationYear: initialData.graduationYear ? String(initialData.graduationYear) : "",
@@ -73,6 +77,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
     name: initialData.name || "",
     bio: initialData.bio || "",
     avatar: initialData.image,
+    coverImage: initialData.coverImage || null,
     headline: initialData.headline || "",
     college: initialData.college || "",
     graduationYear: initialData.graduationYear ? String(initialData.graduationYear) : "",
@@ -103,6 +108,10 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
     setFormState((prev) => ({ ...prev, avatar }));
   };
 
+  const handleCoverChange = (coverImage: string | null) => {
+    setFormState((prev) => ({ ...prev, coverImage }));
+  };
+
   const handleImageUpload = async (file: File) => {
     const base64 = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -129,6 +138,34 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
     }
 
     setFormState((prev) => ({ ...prev, avatar: result.data.url }));
+  };
+
+  const handleCoverUpload = async (file: File) => {
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
+
+    const { getCSRFToken } = await import("@/lib/utils/csrf");
+    const csrfToken = await getCSRFToken();
+
+    const response = await fetch("/api/user/profile/upload", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-csrf-token": csrfToken,
+      },
+      body: JSON.stringify({ image: base64 }),
+    });
+
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error?.message || "Failed to upload image");
+    }
+
+    setFormState((prev) => ({ ...prev, coverImage: result.data.url }));
   };
 
   const validateForm = (): boolean => {
@@ -174,6 +211,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
           name: formState.name.trim(),
           bio: formState.bio.trim() || null,
           avatar: formState.avatar,
+          coverImage: formState.coverImage,
           headline: formState.headline.trim() || null,
           college: formState.college.trim() || null,
           graduationYear: formState.graduationYear ? Number(formState.graduationYear) : null,
@@ -202,6 +240,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         name: formState.name,
         bio: formState.bio,
         avatar: formState.avatar,
+        coverImage: formState.coverImage,
         headline: formState.headline,
         college: formState.college,
         graduationYear: formState.graduationYear,
@@ -245,6 +284,14 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {/* Cover Image */}
+      <CoverImageSection
+        currentCover={formState.coverImage}
+        onCoverChange={handleCoverChange}
+        onImageUpload={handleCoverUpload}
+        isLoading={formState.isLoading}
+      />
+
       {/* Avatar */}
       <AvatarSection
         currentAvatar={formState.avatar}
