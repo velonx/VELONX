@@ -161,6 +161,7 @@ export default function EventsSidebar({
                     <SheetTrigger asChild>
                         <Button
                             size="icon"
+                            aria-label="Toggle events navigation menu"
                             className="w-14 h-14 rounded-full bg-[#F0771A] hover:bg-[#e0650d] text-white shadow-2xl hover:scale-110 active:scale-95 transition-all cursor-pointer"
                         >
                             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
