@@ -295,10 +295,10 @@ export interface PlatformStats {
     pendingRequests: number;
   };
   recentActivity?: {
-    newUsers: any[];
-    newEvents: any[];
-    newProjects: any[];
-    newBlogPosts: any[];
+    newUsers: User[];
+    newEvents: Event[];
+    newProjects: Project[];
+    newBlogPosts: BlogPost[];
   };
   unverifiedStats?: {
     email: number;

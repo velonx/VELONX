@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { NotFoundError, ConflictError, ValidationError, AppError } from "@/lib/utils/errors";
+import {
+  NotFoundError,
+  ConflictError,
+  ValidationError,
+  AppError,
+} from "@/lib/utils/errors";
 import { notificationService } from "./notification.service";
 import { computeRegistrationStatus } from "@/lib/utils/event-helpers";
 import { generateUniqueEventSlug } from "@/lib/utils/slug";
@@ -23,80 +28,78 @@ export class EventService {
     startDate?: string;
     endDate?: string;
   }) {
-    const { page = 1, pageSize = 10, type, status, startDate, endDate } = params;
-    
+    const {
+      page = 1,
+      pageSize = 10,
+      type,
+      status,
+      startDate,
+      endDate,
+    } = params;
+
     // Build where clause for filtering
     const where: Prisma.EventWhereInput = {};
-    
+
     if (type) {
       where.type = type as any;
     }
-    
+
     // Handle status filtering with date-based logic
     // Events are considered "past" if their date (or endDate) has passed
     if (status) {
       const now = new Date();
-      
-      if (status === 'ACTIVE') {
+
+      if (status === "ACTIVE") {
         // Active events: ONGOING or UPCOMING (not completed or cancelled)
         where.AND = [
           {
             OR: [
-              { status: 'ONGOING' },
-              { status: 'UPCOMING' },
+              { status: "ONGOING" },
+              { status: "UPCOMING" },
               { date: { gt: now } },
-              { 
-                AND: [
-                  { endDate: { not: null } },
-                  { endDate: { gt: now } }
-                ]
-              }
-            ]
+              {
+                AND: [{ endDate: { not: null } }, { endDate: { gt: now } }],
+              },
+            ],
           },
-          { status: { not: 'CANCELLED' } },
-          { status: { not: 'COMPLETED' } }
+          { status: { not: "CANCELLED" } },
+          { status: { not: "COMPLETED" } },
         ];
-      } else if (status === 'UPCOMING') {
+      } else if (status === "UPCOMING") {
         // Upcoming events: date is in the future AND not cancelled
         // For multi-day events, check if endDate (if exists) is in the future
         where.AND = [
           {
             OR: [
               { date: { gt: now } },
-              { 
-                AND: [
-                  { endDate: { not: null } },
-                  { endDate: { gt: now } }
-                ]
-              }
-            ]
+              {
+                AND: [{ endDate: { not: null } }, { endDate: { gt: now } }],
+              },
+            ],
           },
-          { status: { not: 'CANCELLED' } }
+          { status: { not: "CANCELLED" } },
         ];
-      } else if (status === 'COMPLETED') {
+      } else if (status === "COMPLETED") {
         // Past/Completed events: date has passed OR status is explicitly COMPLETED
         // For multi-day events, check if endDate has also passed
         where.OR = [
-          { status: 'COMPLETED' },
-          { 
+          { status: "COMPLETED" },
+          {
             AND: [
               { date: { lte: now } },
-              { 
-                OR: [
-                  { endDate: null },
-                  { endDate: { lte: now } }
-                ]
+              {
+                OR: [{ endDate: null }, { endDate: { lte: now } }],
               },
-              { status: { not: 'CANCELLED' } }
-            ]
-          }
+              { status: { not: "CANCELLED" } },
+            ],
+          },
         ];
       } else {
         // For other statuses (ONGOING, CANCELLED), use the status field directly
         where.status = status as any;
       }
     }
-    
+
     // Date range filtering
     if (startDate || endDate) {
       if (!where.AND) {
@@ -111,7 +114,7 @@ export class EventService {
       }
       (where.AND as any[]).push({ date: dateFilter });
     }
-    
+
     // Execute query with pagination
     // Optimized: Select only necessary fields to reduce payload size (Requirement 6.9, 6.10)
     // Feature: event-registration-closed - Include registration closure fields
@@ -158,13 +161,16 @@ export class EventService {
       }),
       prisma.event.count({ where }),
     ]);
-    
+
     const eventsWithSeats = (events as any[]).map((event) => ({
       ...event,
       attendeeCount: event._count?.attendees || 0,
-      availableSeats: event.maxSeats !== null && event.maxSeats !== undefined ? event.maxSeats - (event._count?.attendees || 0) : null,
+      availableSeats:
+        event.maxSeats !== null && event.maxSeats !== undefined
+          ? event.maxSeats - (event._count?.attendees || 0)
+          : null,
     }));
-    
+
     return {
       events: eventsWithSeats,
       pagination: {
@@ -175,7 +181,7 @@ export class EventService {
       },
     };
   }
-  
+
   /**
    * Get event by ID or slug with full details
    */
@@ -211,7 +217,7 @@ export class EventService {
         },
       },
     });
-    
+
     if (!event) {
       throw new NotFoundError("Event");
     }
@@ -255,15 +261,18 @@ export class EventService {
         console.error("Failed to backfill slug for event:", event.id, e);
       }
     }
-    
+
     const eventData = event as any;
     return {
       ...eventData,
       attendeeCount: eventData._count?.attendees || 0,
-      availableSeats: eventData.maxSeats !== null && eventData.maxSeats !== undefined ? eventData.maxSeats - (eventData._count?.attendees || 0) : null,
+      availableSeats:
+        eventData.maxSeats !== null && eventData.maxSeats !== undefined
+          ? eventData.maxSeats - (eventData._count?.attendees || 0)
+          : null,
     };
   }
-  
+
   /**
    * Create a new event
    */
@@ -314,15 +323,18 @@ export class EventService {
         },
       },
     });
-    
+
     const eventData = event as any;
     return {
       ...eventData,
       attendeeCount: eventData._count?.attendees || 0,
-      availableSeats: eventData.maxSeats !== null && eventData.maxSeats !== undefined ? eventData.maxSeats - (eventData._count?.attendees || 0) : null,
+      availableSeats:
+        eventData.maxSeats !== null && eventData.maxSeats !== undefined
+          ? eventData.maxSeats - (eventData._count?.attendees || 0)
+          : null,
     };
   }
-  
+
   /**
    * Update an existing event
    */
@@ -342,7 +354,7 @@ export class EventService {
       howItWorks?: string | null;
       registrationDeadline?: string;
       registrationManuallyClosedAt?: string;
-    }
+    },
   ) {
     // Check if event exists
     const existingEvent = await prisma.event.findUnique({
@@ -360,14 +372,14 @@ export class EventService {
         },
       },
     });
-    
+
     if (!existingEvent) {
       throw new NotFoundError("Event");
     }
-    
+
     // Build update data
     const updateData: Prisma.EventUpdateInput = {};
-    
+
     if (data.title !== undefined) {
       updateData.title = data.title;
       if (data.title !== existingEvent.title) {
@@ -377,35 +389,50 @@ export class EventService {
 
     // Backfill slug for existing events that do not have one yet
     if (!(existingEvent as any).slug && !updateData.slug) {
-      updateData.slug = await generateUniqueEventSlug(data.title || existingEvent.title, id);
+      updateData.slug = await generateUniqueEventSlug(
+        data.title || existingEvent.title,
+        id,
+      );
     }
-    if (data.description !== undefined) updateData.description = data.description;
+    if (data.description !== undefined)
+      updateData.description = data.description;
     if (data.type !== undefined) updateData.type = data.type as any;
     if (data.date !== undefined) updateData.date = new Date(data.date);
-    if (data.endDate !== undefined) updateData.endDate = data.endDate ? new Date(data.endDate) : null;
+    if (data.endDate !== undefined)
+      updateData.endDate = data.endDate ? new Date(data.endDate) : null;
     if (data.location !== undefined) updateData.location = data.location;
     if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
-    if (data.maxSeats !== undefined) (updateData as any).maxSeats = data.maxSeats;
-    if (data.whoCanParticipate !== undefined) (updateData as any).whoCanParticipate = data.whoCanParticipate;
-    if (data.howItWorks !== undefined) (updateData as any).howItWorks = data.howItWorks;
+    if (data.maxSeats !== undefined)
+      (updateData as any).maxSeats = data.maxSeats;
+    if (data.whoCanParticipate !== undefined)
+      (updateData as any).whoCanParticipate = data.whoCanParticipate;
+    if (data.howItWorks !== undefined)
+      (updateData as any).howItWorks = data.howItWorks;
     if (data.status !== undefined) updateData.status = data.status as any;
     if (data.registrationDeadline !== undefined) {
-      updateData.registrationDeadline = data.registrationDeadline ? new Date(data.registrationDeadline) : null;
+      updateData.registrationDeadline = data.registrationDeadline
+        ? new Date(data.registrationDeadline)
+        : null;
     }
     if (data.registrationManuallyClosedAt !== undefined) {
-      updateData.registrationManuallyClosedAt = data.registrationManuallyClosedAt ? new Date(data.registrationManuallyClosedAt) : null;
+      updateData.registrationManuallyClosedAt =
+        data.registrationManuallyClosedAt
+          ? new Date(data.registrationManuallyClosedAt)
+          : null;
     }
-    
+
     // Validate registrationDeadline is before event date
     if (data.registrationDeadline) {
       const eventDate = data.date ? new Date(data.date) : existingEvent.date;
       const deadline = new Date(data.registrationDeadline);
-      
+
       if (deadline >= eventDate) {
-        throw new ValidationError("Registration deadline must be before event start date");
+        throw new ValidationError(
+          "Registration deadline must be before event start date",
+        );
       }
     }
-    
+
     const event = await prisma.event.update({
       where: { id },
       data: updateData,
@@ -425,80 +452,98 @@ export class EventService {
         },
       },
     });
-    
+
     // Track manual closure if registration was manually closed
     // Requirements: 10.1, 10.2, 10.5, 9.1, 9.2, 9.4, 9.5
-    if (data.registrationManuallyClosedAt && !existingEvent.registrationManuallyClosedAt) {
-      eventAnalyticsService.hasClosureBeenTracked(id, 'manual').then((tracked) => {
-        if (!tracked) {
-          eventAnalyticsService.trackRegistrationClosure({
-            eventId: id,
-            closureReason: 'manual',
-            attendeeCount: existingEvent._count.attendees,
-            eventCreatedAt: existingEvent.createdAt,
-          }).catch((error) => {
-            console.error('Failed to track manual closure:', error);
-          });
-        }
-      });
+    if (
+      data.registrationManuallyClosedAt &&
+      !existingEvent.registrationManuallyClosedAt
+    ) {
+      eventAnalyticsService
+        .hasClosureBeenTracked(id, "manual")
+        .then((tracked) => {
+          if (!tracked) {
+            eventAnalyticsService
+              .trackRegistrationClosure({
+                eventId: id,
+                closureReason: "manual",
+                attendeeCount: existingEvent._count.attendees,
+                eventCreatedAt: existingEvent.createdAt,
+              })
+              .catch((error) => {
+                console.error("Failed to track manual closure:", error);
+              });
+          }
+        });
 
       // Send notification to event creator about manual closure
       // Requirements: 9.1, 9.2, 9.4, 9.5
-      notificationService.createEventRegistrationClosedNotification({
-        eventId: id,
-        eventTitle: event.title,
-        creatorId: event.creatorId,
-        closureReason: 'manual',
-        closureTimestamp: new Date(),
-        attendeeCount: existingEvent._count.attendees,
-        maxSeats: event.maxSeats ?? undefined,
-      }).catch((error) => {
-        console.error('Failed to send manual closure notification:', error);
-        // Don't fail the update if notification fails
-      });
+      notificationService
+        .createEventRegistrationClosedNotification({
+          eventId: id,
+          eventTitle: event.title,
+          creatorId: event.creatorId,
+          closureReason: "manual",
+          closureTimestamp: new Date(),
+          attendeeCount: existingEvent._count.attendees,
+          maxSeats: event.maxSeats ?? undefined,
+        })
+        .catch((error) => {
+          console.error("Failed to send manual closure notification:", error);
+          // Don't fail the update if notification fails
+        });
     }
-    
+
     // Track deadline closure if deadline was set and is in the past
     // Requirements: 10.1, 10.2, 10.5, 9.1, 9.2, 9.4, 9.5
     if (data.registrationDeadline && !existingEvent.registrationDeadline) {
       const deadline = new Date(data.registrationDeadline);
       if (deadline < new Date()) {
-        eventAnalyticsService.hasClosureBeenTracked(id, 'deadline').then((tracked) => {
-          if (!tracked) {
-            eventAnalyticsService.trackRegistrationClosure({
-              eventId: id,
-              closureReason: 'deadline',
-              attendeeCount: existingEvent._count.attendees,
-              eventCreatedAt: existingEvent.createdAt,
-            }).catch((error) => {
-              console.error('Failed to track deadline closure:', error);
-            });
-          }
-        });
+        eventAnalyticsService
+          .hasClosureBeenTracked(id, "deadline")
+          .then((tracked) => {
+            if (!tracked) {
+              eventAnalyticsService
+                .trackRegistrationClosure({
+                  eventId: id,
+                  closureReason: "deadline",
+                  attendeeCount: existingEvent._count.attendees,
+                  eventCreatedAt: existingEvent.createdAt,
+                })
+                .catch((error) => {
+                  console.error("Failed to track deadline closure:", error);
+                });
+            }
+          });
 
         // Send notification to event creator about deadline closure
         // Requirements: 9.1, 9.2, 9.4, 9.5
-        notificationService.createEventRegistrationClosedNotification({
-          eventId: id,
-          eventTitle: event.title,
-          creatorId: event.creatorId,
-          closureReason: 'deadline',
-          closureTimestamp: deadline,
-          attendeeCount: existingEvent._count.attendees,
-          maxSeats: event.maxSeats ?? undefined,
-        }).catch((error) => {
-          console.error('Failed to send deadline closure notification:', error);
-          // Don't fail the update if notification fails
-        });
+        notificationService
+          .createEventRegistrationClosedNotification({
+            eventId: id,
+            eventTitle: event.title,
+            creatorId: event.creatorId,
+            closureReason: "deadline",
+            closureTimestamp: deadline,
+            attendeeCount: existingEvent._count.attendees,
+            maxSeats: event.maxSeats ?? undefined,
+          })
+          .catch((error) => {
+            console.error(
+              "Failed to send deadline closure notification:",
+              error,
+            );
+            // Don't fail the update if notification fails
+          });
       }
     }
-    
+
     // Create notifications based on status change
     if (data.status && data.status !== existingEvent.status) {
-      const attendeeIds = existingEvent.attendees.map(a => a.userId);
-      
+      const attendeeIds = existingEvent.attendees.map((a) => a.userId);
+
       try {
-        if (data.status === 'CANCELLED') {
+        if (data.status === "CANCELLED") {
           // Notify all attendees about cancellation
           await notificationService.createEventCancelledNotification({
             eventId: id,
@@ -507,7 +552,7 @@ export class EventService {
             location: event.location || undefined,
             attendeeIds,
           });
-        } else if (data.status === 'ONGOING') {
+        } else if (data.status === "ONGOING") {
           // Notify all attendees that event is now ongoing
           await notificationService.createEventOngoingNotification({
             eventId: id,
@@ -518,19 +563,22 @@ export class EventService {
           });
         }
       } catch (error) {
-        console.error('Failed to create event status notification:', error);
+        console.error("Failed to create event status notification:", error);
         // Don't fail the update if notification fails
       }
     }
-    
+
     const eventData = event as any;
     return {
       ...eventData,
       attendeeCount: eventData._count?.attendees || 0,
-      availableSeats: eventData.maxSeats !== null && eventData.maxSeats !== undefined ? eventData.maxSeats - (eventData._count?.attendees || 0) : null,
+      availableSeats:
+        eventData.maxSeats !== null && eventData.maxSeats !== undefined
+          ? eventData.maxSeats - (eventData._count?.attendees || 0)
+          : null,
     };
   }
-  
+
   /**
    * Delete an event
    */
@@ -539,18 +587,18 @@ export class EventService {
     const existingEvent = await prisma.event.findUnique({
       where: { id },
     });
-    
+
     if (!existingEvent) {
       throw new NotFoundError("Event");
     }
-    
+
     await prisma.event.delete({
       where: { id },
     });
-    
+
     return { success: true };
   }
-  
+
   /**
    * Register a user for an event
    */
@@ -569,11 +617,11 @@ export class EventService {
           },
         },
       });
-      
+
       if (!event) {
         throw new NotFoundError("Event");
       }
-      
+
       // Check if user is already registered
       const existingRegistration = await tx.eventAttendee.findUnique({
         where: {
@@ -583,91 +631,98 @@ export class EventService {
           },
         },
       });
-      
+
       if (existingRegistration) {
         throw new ConflictError("Already registered for this event");
       }
-      
+
       // Compute registration status before processing
       // Requirements: 2.4, 7.1, 7.2
       const registrationStatus = computeRegistrationStatus(
         event as any,
-        event._count.attendees
+        event._count.attendees,
       );
-      
+
       // Validate registration is open
       if (!registrationStatus.isOpen) {
         // Log failed registration attempt for analytics
         // Requirements: 7.4, 10.3
-        const errorCode = registrationStatus.reason === 'manual' 
-          ? 'REGISTRATION_CLOSED_MANUAL'
-          : registrationStatus.reason === 'deadline'
-          ? 'REGISTRATION_CLOSED_DEADLINE'
-          : 'REGISTRATION_CLOSED_CAPACITY';
-        
+        const errorCode =
+          registrationStatus.reason === "manual"
+            ? "REGISTRATION_CLOSED_MANUAL"
+            : registrationStatus.reason === "deadline"
+              ? "REGISTRATION_CLOSED_DEADLINE"
+              : "REGISTRATION_CLOSED_CAPACITY";
+
         // Log asynchronously (don't block the error response)
-        eventAnalyticsService.logFailedRegistrationAttempt({
-          eventId,
-          userId,
-          closureReason: registrationStatus.reason!,
-          errorCode,
-        }).catch((error) => {
-          console.error('Failed to log registration attempt:', error);
-        });
-        
+        eventAnalyticsService
+          .logFailedRegistrationAttempt({
+            eventId,
+            userId,
+            closureReason: registrationStatus.reason!,
+            errorCode,
+          })
+          .catch((error) => {
+            console.error("Failed to log registration attempt:", error);
+          });
+
         // Track registration closure if not already tracked
         // Requirements: 10.1, 10.2, 10.5
-        eventAnalyticsService.hasClosureBeenTracked(eventId, registrationStatus.reason!).then((tracked) => {
-          if (!tracked) {
-            eventAnalyticsService.trackRegistrationClosure({
-              eventId,
-              closureReason: registrationStatus.reason!,
-              attendeeCount: event._count.attendees,
-              eventCreatedAt: event.createdAt,
-            }).catch((error) => {
-              console.error('Failed to track closure:', error);
-            });
-          }
-        });
-        
+        eventAnalyticsService
+          .hasClosureBeenTracked(eventId, registrationStatus.reason!)
+          .then((tracked) => {
+            if (!tracked) {
+              eventAnalyticsService
+                .trackRegistrationClosure({
+                  eventId,
+                  closureReason: registrationStatus.reason!,
+                  attendeeCount: event._count.attendees,
+                  eventCreatedAt: event.createdAt,
+                })
+                .catch((error) => {
+                  console.error("Failed to track closure:", error);
+                });
+            }
+          });
+
         // Return appropriate error based on closure reason
         // Requirements: 7.5
         switch (registrationStatus.reason) {
-          case 'manual':
+          case "manual":
             // HTTP 400 for manual closure
             throw new AppError(
               400,
-              'REGISTRATION_CLOSED_MANUAL',
+              "REGISTRATION_CLOSED_MANUAL",
               registrationStatus.message,
-              { reason: 'manual' }
+              { reason: "manual" },
             );
-          case 'deadline':
+          case "deadline":
             // HTTP 400 for deadline closure
             throw new AppError(
               400,
-              'REGISTRATION_CLOSED_DEADLINE',
+              "REGISTRATION_CLOSED_DEADLINE",
               registrationStatus.message,
-              { reason: 'deadline' }
+              { reason: "deadline" },
             );
-          case 'capacity':
+          case "capacity":
             // HTTP 409 for capacity closure
             throw new AppError(
               409,
-              'REGISTRATION_CLOSED_CAPACITY',
+              "REGISTRATION_CLOSED_CAPACITY",
               registrationStatus.message,
               {
-                reason: 'capacity',
+                reason: "capacity",
                 maxSeats: event.maxSeats,
                 currentAttendees: event._count.attendees,
-              }
+              },
             );
           default:
-            throw new ValidationError('Registration is not available', {
-              code: 'REGISTRATION_CLOSED',
+            throw new ValidationError("Registration is not available", {
+              code: "REGISTRATION_CLOSED",
             });
         }
       }
-      
+
       // Register user for event
       const registration = await tx.eventAttendee.create({
         data: {
@@ -693,49 +748,61 @@ export class EventService {
           },
         },
       });
-      
+
       // Check if this registration caused the event to reach capacity
       // Requirements: 10.1, 10.2, 10.5, 9.1, 9.2, 9.4, 9.5
       const newAttendeeCount = event._count.attendees + 1;
       if (event.maxSeats !== null && newAttendeeCount >= event.maxSeats) {
         // Track capacity closure asynchronously
-        eventAnalyticsService.hasClosureBeenTracked(eventId, 'capacity').then((tracked) => {
-          if (!tracked) {
-            eventAnalyticsService.trackRegistrationClosure({
-              eventId,
-              closureReason: 'capacity',
-              attendeeCount: newAttendeeCount,
-              eventCreatedAt: event.createdAt,
-            }).catch((error) => {
-              console.error('Failed to track capacity closure:', error);
-            });
-          }
-        });
+        eventAnalyticsService
+          .hasClosureBeenTracked(eventId, "capacity")
+          .then((tracked) => {
+            if (!tracked) {
+              eventAnalyticsService
+                .trackRegistrationClosure({
+                  eventId,
+                  closureReason: "capacity",
+                  attendeeCount: newAttendeeCount,
+                  eventCreatedAt: event.createdAt,
+                })
+                .catch((error) => {
+                  console.error("Failed to track capacity closure:", error);
+                });
+            }
+          });
 
         // Send notification to event creator about registration closure
         // Requirements: 9.1, 9.2, 9.4, 9.5
-        notificationService.createEventRegistrationClosedNotification({
-          eventId,
-          eventTitle: event.title,
-          creatorId: event.creatorId,
-          closureReason: 'capacity',
-          closureTimestamp: new Date(),
-          attendeeCount: newAttendeeCount,
-          maxSeats: event.maxSeats,
-        }).catch((error) => {
-          console.error('Failed to send registration closure notification:', error);
-          // Don't fail the registration if notification fails
-        });
+        notificationService
+          .createEventRegistrationClosedNotification({
+            eventId,
+            eventTitle: event.title,
+            creatorId: event.creatorId,
+            closureReason: "capacity",
+            closureTimestamp: new Date(),
+            attendeeCount: newAttendeeCount,
+            maxSeats: event.maxSeats,
+          })
+          .catch((error) => {
+            console.error(
+              "Failed to send registration closure notification:",
+              error,
+            );
+            // Don't fail the registration if notification fails
+          });
       }
-      
+
       // XP for event registration is now awarded lazily when the event has passed
 
       // Check and award first activity milestone (async, don't block response)
-      const { checkAndAwardFirstActivity } = await import('@/lib/services/referral.service');
-      checkAndAwardFirstActivity(userId, 'event_registration').catch((error) => {
-        console.error('Failed to check first activity milestone:', error);
-      });
-      
+      const { checkAndAwardFirstActivity } =
+        await import("@/lib/services/referral.service");
+      checkAndAwardFirstActivity(userId, "event_registration").catch(
+        (error) => {
+          console.error("Failed to check first activity milestone:", error);
+        },
+      );
+
       // Create notification for user about event registration
       try {
         await notificationService.createEventRegistrationNotification({
@@ -746,14 +813,17 @@ export class EventService {
           location: registration.event.location || undefined,
         });
       } catch (error) {
-        console.error('Failed to create event registration notification:', error);
+        console.error(
+          "Failed to create event registration notification:",
+          error,
+        );
         // Don't fail the registration if notification fails
       }
-      
+
       return registration;
     });
   }
-  
+
   /**
    * Unregister a user from an event
    */
@@ -767,11 +837,11 @@ export class EventService {
         },
       },
     });
-    
+
     if (!existingRegistration) {
       throw new NotFoundError("Event registration");
     }
-    
+
     // Delete registration
     await prisma.eventAttendee.delete({
       where: {
@@ -781,7 +851,7 @@ export class EventService {
         },
       },
     });
-    
+
     return { success: true };
   }
 
@@ -793,7 +863,7 @@ export class EventService {
   async markAttendance(
     eventId: string,
     attendeeIds: string[],
-    action: "mark" | "unmark"
+    action: "mark" | "unmark",
   ) {
     // Validate event exists
     const event = await prisma.event.findUnique({
@@ -832,55 +902,74 @@ export class EventService {
       // Mark as ATTENDED and award XP
       const { awardXP, XP_REWARDS } = await import("@/lib/utils/xp");
 
-      for (const attendee of attendees) {
-        if (attendee.status === "ATTENDED") continue; // Already attended
+      const attendeesToUpdate = attendees.filter((a) => a.status !== "ATTENDED");
+      const attendeeIdsToUpdate = attendeesToUpdate.map((a) => a.id);
 
-        // Update status to ATTENDED
-        await prisma.eventAttendee.update({
-          where: { id: attendee.id },
+      if (attendeeIdsToUpdate.length > 0) {
+        // Bulk update status to ATTENDED
+        await prisma.eventAttendee.updateMany({
+          where: { id: { in: attendeeIdsToUpdate } },
           data: { status: "ATTENDED" },
         });
 
-        // Award XP if not already awarded
-        if (!attendee.xpAwarded) {
-          await awardXP(
-            attendee.userId,
-            XP_REWARDS.EVENT_ATTENDANCE,
-            `Attended event: ${event.title}`
-          );
+        const attendeesToAwardXP = attendeesToUpdate.filter((a) => !a.xpAwarded);
 
-          await prisma.eventAttendee.update({
-            where: { id: attendee.id },
-            data: { xpAwarded: true },
-          });
+        if (attendeesToAwardXP.length > 0) {
+          const awardedAttendeeIds: string[] = [];
+
+          // Award XP individually (since it modifies user records and creates notifications)
+          for (const attendee of attendeesToAwardXP) {
+            try {
+              await awardXP(
+                attendee.userId,
+                XP_REWARDS.EVENT_ATTENDANCE,
+                `Attended event: ${event.title}`
+              );
+              awardedAttendeeIds.push(attendee.id);
+            } catch (error) {
+              console.error(`Failed to award XP to user ${attendee.userId}:`, error);
+            }
+          }
+
+          if (awardedAttendeeIds.length > 0) {
+            // Bulk update xpAwarded flag only for successfully awarded attendees
+            await prisma.eventAttendee.updateMany({
+              where: { id: { in: awardedAttendeeIds } },
+              data: { xpAwarded: true },
+            });
+          }
         }
 
         // Send attendance confirmation notification
-        try {
-          await notificationService.createNotification({
-            userId: attendee.userId,
-            type: "SUCCESS" as any,
-            title: "Attendance Confirmed!",
-            description: `Your attendance for "${event.title}" has been confirmed. You earned ${XP_REWARDS.EVENT_ATTENDANCE} XP!`,
-            actionUrl: `/events`,
-          });
-        } catch (error) {
-          console.error("Failed to send attendance notification:", error);
+        for (const attendee of attendeesToUpdate) {
+          try {
+            await notificationService.createNotification({
+              userId: attendee.userId,
+              type: "SUCCESS" as any,
+              title: "Attendance Confirmed!",
+              description: `Your attendance for "${event.title}" has been confirmed. You earned ${XP_REWARDS.EVENT_ATTENDANCE} XP!`,
+              actionUrl: `/events`,
+            });
+          } catch (error) {
+            console.error("Failed to send attendance notification:", error);
+          }
         }
 
-        updatedCount++;
+        updatedCount += attendeesToUpdate.length;
       }
+
     } else {
       // Unmark — revert to REGISTERED (no XP clawback)
-      for (const attendee of attendees) {
-        if (attendee.status !== "ATTENDED") continue; // Not attended, skip
+      const attendeesToRevert = attendees.filter((a) => a.status === "ATTENDED");
+      const attendeeIdsToRevert = attendeesToRevert.map((a) => a.id);
 
-        await prisma.eventAttendee.update({
-          where: { id: attendee.id },
+      if (attendeeIdsToRevert.length > 0) {
+        await prisma.eventAttendee.updateMany({
+          where: { id: { in: attendeeIdsToRevert } },
           data: { status: "REGISTERED" },
         });
 
-        updatedCount++;
+        updatedCount += attendeesToRevert.length;
       }
     }
 
