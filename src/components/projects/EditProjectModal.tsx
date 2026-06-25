@@ -180,9 +180,9 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => { if (!open && !saving) onClose(); }}>
-            <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-2xl max-h-[92vh] overflow-y-auto">
                 {/* Accent top bar */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-violet-600 rounded-t-lg" aria-hidden="true" />
+                <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-blue-500 to-violet-600 rounded-t-lg" aria-hidden="true" />
 
                 <DialogHeader className="pt-2">
                     <DialogTitle className="flex items-center gap-2 text-xl font-bold">

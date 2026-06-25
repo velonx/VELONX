@@ -533,7 +533,7 @@ export default function CareerManagement() {
 
             {/* Opportunity Dialog */}
             <Dialog open={showOpportunityDialog} onOpenChange={setShowOpportunityDialog}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>
                             {editingOpportunity ? "Edit" : "Create"} {opportunityForm.type === "INTERNSHIP" ? "Internship" : "Job"}
@@ -670,7 +670,7 @@ export default function CareerManagement() {
 
             {/* Interview Update Dialog */}
             <Dialog open={showInterviewDialog} onOpenChange={setShowInterviewDialog}>
-                <DialogContent className="max-w-lg">
+                <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
                         <DialogTitle>Manage Mock Interview</DialogTitle>
                         <DialogDescription className="sr-only">Update mock interview</DialogDescription>

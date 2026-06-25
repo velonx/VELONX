@@ -957,25 +957,6 @@ export class EventService {
 
         updatedCount += attendeesToUpdate.length;
       }
-
-      // 3. Send attendance confirmation notifications in parallel (fail-safe)
-      await Promise.allSettled(
-        attendeesToMark.map(async (attendee) => {
-          try {
-            await notificationService.createNotification({
-              userId: attendee.userId,
-              type: "SUCCESS" as any,
-              title: "Attendance Confirmed!",
-              description: `Your attendance for "${event.title}" has been confirmed. You earned ${XP_REWARDS.EVENT_ATTENDANCE} XP!`,
-              actionUrl: `/events`,
-            });
-          } catch (error) {
-            console.error("Failed to send attendance notification:", error);
-          }
-        }),
-      );
-
-      updatedCount = attendeesToMark.length;
     } else {
       // Unmark — revert to REGISTERED (no XP clawback)
       const attendeesToRevert = attendees.filter((a) => a.status === "ATTENDED");

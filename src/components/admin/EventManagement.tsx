@@ -761,7 +761,7 @@ export default function EventManagement() {
 
       {/* Attendees Dialog with Attendance Marking */}
       <Dialog open={!!viewingAttendeesEvent} onOpenChange={(open) => !open && setViewingAttendeesEvent(null)}>
-        <DialogContent className="max-w-2xl bg-background border-border rounded-3xl overflow-hidden p-0 gap-0">
+        <DialogContent className="sm:max-w-2xl bg-background border-border rounded-3xl overflow-hidden p-0 gap-0">
           <DialogHeader className="p-8 border-b border-border bg-muted/30">
             <div className="flex items-center justify-between">
               <div>
