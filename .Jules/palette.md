@@ -14,3 +14,6 @@
 ## 2024-06-20 - Adding ARIA labels to career management buttons
 **Learning:** Icon-only buttons for CRUD operations (like Edit or Delete) need descriptive `aria-label`s to be accessible. Dynamically generating these labels with contextual information (e.g. `aria-label="Edit Software Engineer job"`) significantly improves the screen reader experience compared to generic labels like "Edit".
 **Action:** When creating lists of items with actions, always ensure action buttons either have visible text or include specific `aria-label`s incorporating the item's title or identifying information.
+## 2024-05-24 - Accessibility for Mobile Nav Buttons
+**Learning:** Icon-only buttons used to trigger mobile navigations (like the Sheet trigger in EventsSidebar) are often overlooked for ARIA labels because they function as secondary navigation elements. These need explicit labeling so screen readers can convey the action to the user properly.
+**Action:** Always verify that `<SheetTrigger asChild><Button size="icon">` implementations include an `aria-label` describing the action (e.g., "Toggle navigation menu").
