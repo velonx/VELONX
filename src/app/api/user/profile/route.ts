@@ -296,6 +296,8 @@ export async function PATCH(request: NextRequest) {
           twitterUrl: true,
           portfolioUrl: true,
           profileComplete: true,
+          xp: true,
+          level: true,
         },
       });
     } catch (dbError) {
@@ -345,6 +347,47 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // Check if the profile is complete (needs all core fields filled)
+    const isProfileComplete = !!(
+      updatedUser.name &&
+      updatedUser.bio &&
+      updatedUser.image &&
+      updatedUser.headline &&
+      updatedUser.college &&
+      updatedUser.graduationYear &&
+      updatedUser.skills &&
+      updatedUser.skills.length > 0
+    );
+
+    let xpAwarded = 0;
+    if (isProfileComplete && !updatedUser.profileComplete) {
+      try {
+        const { awardXP } = await import("@/lib/utils/xp");
+        const xpResult = await awardXP(userId, 100, "Completed developer profile");
+        
+        // Mark user profileComplete as true
+        await prisma.user.update({
+          where: { id: userId },
+          data: { profileComplete: true }
+        });
+        
+        updatedUser.profileComplete = true;
+        xpAwarded = 100;
+        if (xpResult.user) {
+          updatedUser.xp = xpResult.user.xp;
+          updatedUser.level = xpResult.user.level;
+        }
+      } catch (xpError) {
+        console.error("Failed to award profile completion XP:", xpError);
+        // Fallback: just mark complete
+        await prisma.user.update({
+          where: { id: userId },
+          data: { profileComplete: true }
+        }).catch(err => console.error("Failed to set profileComplete:", err));
+        updatedUser.profileComplete = true;
+      }
+    }
+
     // Return updated user data with session update flag
     // The client will use this to trigger a session refresh
     const response = NextResponse.json(
@@ -352,9 +395,11 @@ export async function PATCH(request: NextRequest) {
         success: true,
         data: updatedUser,
         message: "Profile updated successfully",
+        xpAwarded,
         sessionUpdate: {
           name: updatedUser.name,
           image: updatedUser.image,
+          profileComplete: updatedUser.profileComplete,
         },
       },
       { status: 200 }

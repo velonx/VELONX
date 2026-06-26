@@ -22,6 +22,7 @@ declare module "next-auth" {
             level?: number
             currentStreak?: number
             longestStreak?: number
+            profileComplete?: boolean
         }
     }
 
@@ -31,6 +32,7 @@ declare module "next-auth" {
         level?: number
         currentStreak?: number
         longestStreak?: number
+        profileComplete?: boolean
     }
 }
 
@@ -41,6 +43,7 @@ declare module "next-auth/jwt" {
         level?: number
         currentStreak?: number
         longestStreak?: number
+        profileComplete?: boolean
     }
 }
 
@@ -159,6 +162,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         level: true,
                         currentStreak: true,
                         longestStreak: true,
+                        profileComplete: true,
                     },
                 });
 
@@ -229,6 +233,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     level: user.level,
                     currentStreak: user.currentStreak,
                     longestStreak: user.longestStreak,
+                    profileComplete: user.profileComplete,
                 };
             },
         }),
@@ -256,6 +261,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                                 level: true,
                                 currentStreak: true,
                                 longestStreak: true,
+                                profileComplete: true,
                             },
                         });
                         if (dbUser) {
@@ -263,6 +269,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             user.level = dbUser.level;
                             user.currentStreak = dbUser.currentStreak;
                             user.longestStreak = dbUser.longestStreak;
+                            user.profileComplete = dbUser.profileComplete;
 
                             if (!dbUser.emailVerified) {
                                 await prisma.user.update({
@@ -289,6 +296,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     token.level = user.level;
                     token.currentStreak = user.currentStreak;
                     token.longestStreak = user.longestStreak;
+                    token.profileComplete = user.profileComplete;
                 }
 
                 // Fetch latest user data on session update
@@ -303,6 +311,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             level: true,
                             currentStreak: true,
                             longestStreak: true,
+                            profileComplete: true,
                         },
                     });
                     if (dbUser) {
@@ -313,6 +322,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         token.level = dbUser.level;
                         token.currentStreak = dbUser.currentStreak;
                         token.longestStreak = dbUser.longestStreak;
+                        token.profileComplete = dbUser.profileComplete;
                     }
                 }
 
@@ -332,6 +342,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user.level = token.level as number | undefined;
                 session.user.currentStreak = token.currentStreak as number | undefined;
                 session.user.longestStreak = token.longestStreak as number | undefined;
+                session.user.profileComplete = token.profileComplete as boolean | undefined;
             }
             return session;
         },

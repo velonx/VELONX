@@ -31,6 +31,7 @@ import {
 import SwagOrdersList from "@/components/dashboard/student/SwagOrdersList";
 import { useProjects, useMeetings, useUserStats } from "@/lib/api/hooks";
 import { DailyCheckIn } from "@/components/daily-check-in";
+import { ProfileCompletionWizard } from "@/components/dashboard/ProfileCompletionWizard";
 import { getTier, getTierLabel } from "@/lib/utils/tiers";
 import ReviewDialog from "@/components/dashboard/ReviewDialog";
 import { FollowersList } from "@/components/community/FollowersList";
@@ -1507,6 +1508,9 @@ function StudentDashboardContent() {
                 }}
                 badge={selectedBadge}
             />
+
+            {/* Profile Completion Wizard */}
+            <ProfileCompletionWizard />
         </div>
     );
 }

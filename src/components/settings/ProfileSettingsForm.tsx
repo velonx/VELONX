@@ -233,6 +233,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         await updateSession({
           name: result.data.name,
           image: result.data.image,
+          profileComplete: result.data.profileComplete,
         });
       }
 
