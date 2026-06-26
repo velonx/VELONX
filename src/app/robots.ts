@@ -11,6 +11,8 @@ export default function robots(): MetadataRoute.Robots {
         "/api/",
         "/dashboard/", // Private student and admin dashboards
         "/settings/", // Private settings
+        "/admin/",     // Admin routes
+        "/auth/",      // Auth flow pages (login, signup, forgot password, etc.)
       ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,

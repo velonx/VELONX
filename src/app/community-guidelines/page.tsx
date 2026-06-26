@@ -1,7 +1,15 @@
+import { Metadata } from "next";
+import { generatePageMetadata } from "@/lib/seo.config";
 import { Shield, Heart, Users, MessageCircle, AlertTriangle, CheckCircle, XCircle, BookOpen } from "lucide-react";
 
 // Enable ISR with revalidation every 7 days (604800 seconds)
 export const revalidate = 604800;
+
+export const metadata: Metadata = generatePageMetadata(
+  "Community Guidelines | Velonx",
+  "Our standards for a safe, inclusive, and collaborative learning environment for all members of Velonx.",
+  "/community-guidelines"
+);
 
 export default function CommunityGuidelinesPage() {
     return (
