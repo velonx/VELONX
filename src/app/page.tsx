@@ -210,7 +210,7 @@ export default function Home() {
             {/* ==================== 1. HERO SECTION ==================== */}
             <header className="relative pt-28 pb-16 md:pt-36 md:pb-24 flex items-center justify-center z-10 overflow-hidden">
                 <MeshGradientHero />
-                <div className="container mx-auto px-6 max-w-7xl grid grid-cols-1 lg:grid-cols-[1fr_1.45fr] gap-10 items-center relative z-10">
+                <div className="container mx-auto px-6 max-w-7xl grid grid-cols-1 lg:grid-cols-[1fr_1.7fr] gap-10 items-center relative z-10">
                     {/* Left: Content */}
                     <motion.div
                         initial={{ opacity: 0, y: 36 }}
@@ -328,14 +328,144 @@ export default function Home() {
                         transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
                         className="relative w-full flex items-center justify-center select-none"
                     >
-                        <Image
-                            src="/hero.jpeg"
-                            alt="Students building projects and growing their careers with Velonx"
-                            width={720}
-                            height={540}
-                            priority
-                            className="w-full max-w-145 lg:max-w-160 h-auto object-contain rounded-2xl"
+
+
+                        {/* Decorative blur orbs */}
+                        <motion.div
+                            className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#226ce0]/10 blur-3xl pointer-events-none"
+                            animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
+                            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                         />
+                        <motion.div
+                            className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-[#f0771a]/10 blur-3xl pointer-events-none"
+                            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                        />
+
+                        <Image
+                            src="/hero.png"
+                            alt="Students building projects and growing their careers with Velonx"
+                            width={900}
+                            height={675}
+                            priority
+                            className="w-full h-auto object-contain rounded-2xl relative z-[1] drop-shadow-[0_8px_30px_rgba(34,108,224,0.12)]"
+                        />
+
+
+                        {/* Floating Cards with SVG icons */}
+                        {[
+                            {
+                                icon: (
+                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#226ce0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                        <path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5" />
+                                    </svg>
+                                ),
+                                iconBg: "bg-blue-100 dark:bg-blue-900/40",
+                                title: "Mentorship",
+                                desc: "Learn from industry mentors",
+                                position: "top-[3%] left-[-2%]",
+                                delay: 0.3,
+                                float: "animate-[floatY_4s_ease-in-out_infinite]",
+                            },
+                            {
+                                icon: (
+                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7" />
+                                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7" />
+                                        <path d="M4 22h16" />
+                                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                                    </svg>
+                                ),
+                                iconBg: "bg-amber-100 dark:bg-amber-900/40",
+                                title: "Hackathons",
+                                desc: "Compete. Build. Win.",
+                                position: "top-[-4%] left-[30%]",
+                                delay: 0.5,
+                                float: "animate-[floatY_5s_ease-in-out_0.5s_infinite]",
+                            },
+                            {
+                                icon: (
+                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                ),
+                                iconBg: "bg-purple-100 dark:bg-purple-900/40",
+                                title: "Community",
+                                desc: "Connect. Share. Grow.",
+                                position: "bottom-[28%] left-[-3%]",
+                                delay: 0.7,
+                                float: "animate-[floatY_4.5s_ease-in-out_1s_infinite]",
+                            },
+                            {
+                                icon: (
+                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="16 18 22 12 16 6" />
+                                        <polyline points="8 6 2 12 8 18" />
+                                        <line x1="14" y1="4" x2="10" y2="20" />
+                                    </svg>
+                                ),
+                                iconBg: "bg-emerald-100 dark:bg-emerald-900/40",
+                                title: "Projects",
+                                desc: "Build real-world projects",
+                                position: "top-[25%] right-[-8%]",
+                                delay: 0.9,
+                                float: "animate-[floatY_5.5s_ease-in-out_0.3s_infinite]",
+                            },
+                            {
+                                icon: (
+                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                                    </svg>
+                                ),
+                                iconBg: "bg-sky-100 dark:bg-sky-900/40",
+                                title: "Internships",
+                                desc: "Find the right opportunities",
+                                position: "bottom-[8%] right-[-3%]",
+                                delay: 1.1,
+                                float: "animate-[floatY_4.8s_ease-in-out_0.7s_infinite]",
+                            },
+                            {
+                                icon: (
+                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#f0771a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                                        <path d="M9 10l2 2 4-4" />
+                                    </svg>
+                                ),
+                                iconBg: "bg-orange-100 dark:bg-orange-900/40",
+                                title: "Resources",
+                                desc: "Learn & get certified",
+                                position: "top-[-4%] right-[-3%]",
+                                delay: 1.3,
+                                float: "animate-[floatY_5.2s_ease-in-out_0.4s_infinite]",
+                            },
+                        ].map((card) => (
+                            <motion.div
+                                key={card.title}
+                                initial={{ opacity: 0, scale: 0.7, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                transition={{
+                                    duration: 0.6,
+                                    delay: card.delay,
+                                    type: "spring",
+                                    stiffness: 180,
+                                    damping: 14,
+                                }}
+                                className={`absolute ${card.position} ${card.float} z-20 hidden lg:flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl bg-white/90 dark:bg-[#1a1a2e]/90 backdrop-blur-md border border-white/60 dark:border-white/10 shadow-md shadow-black/5 text-center`}
+                            >
+                                <div className={`w-7 h-7 rounded-md ${card.iconBg} flex items-center justify-center shrink-0`}>
+                                    {card.icon}
+                                </div>
+                                <p className="text-[11px] font-bold text-[#1A234A] dark:text-white leading-tight">{card.title}</p>
+                                <p className="text-[9px] text-muted-foreground leading-tight max-w-[90px]">{card.desc}</p>
+                            </motion.div>
+                        ))}
                     </motion.div>
                 </div>
             </header>
