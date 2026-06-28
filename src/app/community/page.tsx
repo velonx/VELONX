@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
 import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import { CommentSection } from "@/components/community/CommentSection";
-import { Skeleton } from "@/components/ui/skeleton";
+import { CommunityGroupItemSkeleton } from "@/components/boneyard";
 import type { CommunityPostData } from "@/lib/types/community.types";
 import { Loader2Icon, MessageSquare, ChevronUpIcon, ChevronDownIcon, Share2, Check } from "lucide-react";
 import toast from "react-hot-toast";
@@ -739,12 +739,8 @@ export default function CommunityPage() {
               </div>
 
               {groupsLoading ? (
-                // Skeletons for groups
                 Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="group-item pointer-events-none">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-4 w-6" />
-                  </div>
+                  <CommunityGroupItemSkeleton key={i} />
                 ))
               ) : (
                 groups && groups.map(group => (

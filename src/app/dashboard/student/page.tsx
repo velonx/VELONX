@@ -42,7 +42,20 @@ import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
 import BadgeIcon from "@/components/badges/BadgeIcon";
 import BadgeModal from "@/components/badges/BadgeModal";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+    DashboardSidebarSkeleton as SidebarSkeleton,
+    DashboardWelcomeSkeleton as WelcomeSectionSkeleton,
+    DashboardStatsSkeleton as BentoStatsSkeleton,
+    DashboardProjectSkeleton,
+    DashboardCheckInSkeleton as DailyCheckInSkeleton,
+    DashboardBadgesSkeleton as BadgesWidgetSkeleton,
+    DashboardBadgesGridSkeleton,
+    DashboardSkillsSkeleton as SkillIndexSkeleton,
+    DashboardActivitySkeleton as ActivityTimelineSkeleton,
+    DashboardReportSkeleton,
+    DashboardFullSkeleton as FullDashboardSkeleton,
+    BoneyardLoader
+} from "@/components/boneyard";
 import { FeedSkeleton } from "@/components/community/FeedSkeleton";
 import { GroupCardSkeletonLoader } from "@/components/community/GroupCardSkeleton";
 
@@ -97,205 +110,15 @@ interface ExtendedUser {
 }
 
 // ====== SKELETON LOADING COMPONENTS ======
-function SidebarSkeleton() {
-    return (
-        <aside className="card-glass-redesign dashboard-sidebar-card hidden md:block rounded-2xl w-full flex-col p-6 space-y-6 animate-pulse">
-            <div className="flex flex-col items-center gap-3">
-                <Skeleton className="w-18 h-18 rounded-full" />
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-4 w-24 rounded-full" />
-            </div>
-            <div className="space-y-3 pt-6 w-full px-2">
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <Skeleton key={i} className="h-10 w-full rounded-xl" />
-                ))}
-            </div>
-        </aside>
-    );
-}
-
-function WelcomeSectionSkeleton() {
-    return (
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-            <div className="space-y-2">
-                <Skeleton className="h-8 w-64" />
-                <Skeleton className="h-4 w-48" />
-            </div>
-            <Skeleton className="h-12 w-64 rounded-xl" />
-        </div>
-    );
-}
-
-function BentoStatsSkeleton() {
-    return (
-        <section className="dashboard-bento mb-8">
-            {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="dashboard-widget-card space-y-3">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-8 w-32" />
-                    <Skeleton className="h-3 w-20" />
-                </div>
-            ))}
-        </section>
-    );
-}
-
 function ProjectsListSkeleton() {
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="bg-card border border-border rounded-[40px] p-8 space-y-6">
-                    <div className="flex justify-between items-start">
-                        <div className="flex -space-x-2">
-                            {Array.from({ length: 3 }).map((_, idx) => (
-                                <Skeleton key={idx} className="w-10 h-10 rounded-full border border-background" />
-                            ))}
-                        </div>
-                        <div className="flex gap-2">
-                            <Skeleton className="w-8 h-8 rounded-full" />
-                            <Skeleton className="w-8 h-8 rounded-full" />
-                        </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                        <Skeleton className="h-6 w-3/4" />
-                        <Skeleton className="h-6 w-1/2" />
-                    </div>
-
-                    <div className="space-y-3">
-                        <div className="flex justify-between">
-                            <Skeleton className="h-4 w-20" />
-                            <Skeleton className="h-4 w-12" />
-                        </div>
-                        <Skeleton className="h-2 w-full rounded-full" />
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-function DailyCheckInSkeleton() {
-    return (
-        <div className="w-full rounded-[20px] bg-linear-to-br from-orange-500/80 to-amber-400/80 p-5 text-white shadow-lg space-y-4 animate-pulse">
-            <div className="flex justify-between items-center">
-                <div className="space-y-2">
-                    <div className="h-3 w-20 bg-white/20 rounded" />
-                    <div className="h-8 w-16 bg-white/20 rounded" />
-                </div>
-                <div className="text-4xl opacity-50">🔥</div>
-            </div>
-            <div className="flex justify-between">
-                {Array.from({ length: 7 }).map((_, i) => (
-                    <div key={i} className="flex flex-col items-center gap-1">
-                        <div className="h-3 w-4 bg-white/20 rounded" />
-                        <div className="w-8 h-8 rounded-full bg-white/20" />
-                    </div>
-                ))}
-            </div>
-            <div className="h-11 w-full bg-white/20 rounded-2xl" />
-        </div>
-    );
-}
-
-function BadgesWidgetSkeleton() {
-    return (
-        <div className="bg-card border border-border rounded-2xl p-6 shadow-xl relative overflow-hidden">
-            <div className="absolute -top-12 -right-12 w-24 h-24 bg-primary/5 rounded-full blur-2xl" />
-            <div className="flex justify-between items-center mb-4">
-                <Skeleton className="h-4 w-16" />
-                <Skeleton className="h-5 w-24 rounded-full" />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-zinc-900/10 border border-transparent space-y-2 animate-pulse">
-                        <Skeleton className="w-12 h-12 rounded-full" />
-                        <Skeleton className="h-3 w-14" />
-                    </div>
-                ))}
-            </div>
-            <Skeleton className="h-8 w-full mt-4 rounded-xl" />
-        </div>
-    );
-}
-
-function ActivityTimelineSkeleton() {
-    return (
-        <div className="bg-card border border-border rounded-2xl p-6">
-            <Skeleton className="h-4 w-36 mb-4" />
-            <div className="space-y-4">
-                {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="flex gap-3 items-start animate-pulse">
-                        <Skeleton className="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0" />
-                        <div className="space-y-2 flex-1">
-                            <Skeleton className="h-3 w-20" />
-                            <Skeleton className="h-4 w-full" />
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-function SkillIndexSkeleton() {
-    return (
-        <div className="bg-card border border-border rounded-2xl p-6">
-            <Skeleton className="h-4 w-24 mb-4" />
-            <div className="space-y-4">
-                {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="space-y-2 animate-pulse">
-                        <div className="flex justify-between">
-                            <Skeleton className="h-3 w-32" />
-                            <Skeleton className="h-3 w-8" />
-                        </div>
-                        <Skeleton className="h-2 w-full rounded-full" />
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-function FullDashboardSkeleton() {
-    return (
-        <div className="container dashboard-layout px-4 md:px-8 pb-24 md:pb-16 min-h-screen">
-            {/* ====== Sidebar ====== */}
-            <SidebarSkeleton />
-
-            {/* ====== Main Content Panel Area ====== */}
-            <main className="w-full min-w-0 md:ml-20 md:mr-96">
-                <div className="dashboard-content-panel active">
-                    <WelcomeSectionSkeleton />
-                    <BentoStatsSkeleton />
-
-                    <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8">
-                        {/* Left Column: Projects, Mentorship, Requests */}
-                        <div className="space-y-10 min-w-0">
-                            <div>
-                                <div className="flex items-center justify-between mb-6">
-                                    <Skeleton className="h-8 w-36" />
-                                </div>
-                                <div className="flex flex-wrap gap-3 mb-6">
-                                    {Array.from({ length: 3 }).map((_, i) => (
-                                        <Skeleton key={i} className="h-10 w-28 rounded-2xl" />
-                                    ))}
-                                </div>
-                                <ProjectsListSkeleton />
-                            </div>
-                        </div>
-
-                        {/* Right Column: Widgets */}
-                        <div className="space-y-6">
-                            <DailyCheckInSkeleton />
-                            <BadgesWidgetSkeleton />
-                            <SkillIndexSkeleton />
-                            <ActivityTimelineSkeleton />
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
+        <BoneyardLoader
+            skeleton={DashboardProjectSkeleton}
+            count={3}
+            columns={3}
+            label="Loading projects"
+            gridClassName="mb-12"
+        />
     );
 }
 
@@ -766,14 +589,7 @@ function StudentDashboardContent() {
                                 </div>
 
                                 {loadingBadges ? (
-                                    <div className="grid grid-cols-3 gap-3">
-                                        {Array.from({ length: 6 }).map((_, i) => (
-                                            <div key={i} className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-zinc-900/10 border border-transparent space-y-2 animate-pulse">
-                                                <Skeleton className="w-12 h-12 rounded-full" />
-                                                <Skeleton className="h-3 w-10" />
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <DashboardBadgesGridSkeleton />
                                 ) : badges.length === 0 ? (
                                     <div className="text-center py-6 text-zinc-500 text-xs">
                                         No badges configured yet.
@@ -1278,23 +1094,13 @@ function StudentDashboardContent() {
                                 Refresh
                             </button>
                         </div>
-
                         {reportsLoading ? (
-                            <div className="space-y-4">
-                                {Array.from({ length: 3 }).map((_, i) => (
-                                    <div key={i} className="bg-card border border-border rounded-2xl p-6 space-y-4 animate-pulse">
-                                        <div className="flex items-center gap-4">
-                                            <Skeleton className="w-10 h-10 rounded-2xl shrink-0" />
-                                            <div className="space-y-2 flex-1">
-                                                <Skeleton className="h-4 w-1/4" />
-                                                <Skeleton className="h-5 w-1/2" />
-                                            </div>
-                                        </div>
-                                        <Skeleton className="h-4 w-full" />
-                                        <Skeleton className="h-3 w-24" />
-                                    </div>
-                                ))}
-                            </div>
+                            <BoneyardLoader
+                                skeleton={DashboardReportSkeleton}
+                                count={3}
+                                layout="list"
+                                label="Loading reports"
+                            />
                         ) : myReports.length === 0 ? (
                             <div className="bg-muted/40 border border-border rounded-2xl p-12 text-center">
                                 <Flag className="w-14 h-14 text-muted-foreground mx-auto mb-4" />

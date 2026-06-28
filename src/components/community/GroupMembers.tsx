@@ -4,7 +4,7 @@ import { GroupMember } from "@/lib/hooks/useGroupMembers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BoneAvatar, BoneText } from "@/components/boneyard";
 import { Users, Crown, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -80,10 +80,10 @@ export default function GroupMembers({
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3">
-                <Skeleton className="w-10 h-10 rounded-full" />
+                <BoneAvatar size="md" />
                 <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-48" />
+                  <BoneText lines={1} height="h-4" className="w-32" />
+                  <BoneText lines={1} height="h-3" className="w-48" />
                 </div>
               </div>
             ))}

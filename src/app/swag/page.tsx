@@ -7,7 +7,7 @@ import { Zap, Package, Search, ChevronDown, X, Gift, Truck, Sparkles } from 'luc
 import toast from "react-hot-toast";
 import SwagCheckoutModal from "@/components/swag/SwagCheckoutModal";
 import { SwagOrderSuccess } from "@/components/swag/SwagOrderSuccess";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BoneyardLoader, SwagCardSkeleton } from "@/components/boneyard";
 
 type SwagCategory = "ALL" | "NOTEBOOK" | "DIARY" | "BOTTLE" | "BAG" | "PLANT" | "LAMP" | "STATIONERY" | "APPAREL" | "OTHER";
 
@@ -228,22 +228,7 @@ export default function SwagPage() {
 
         {/* Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="card-redesign card-glass-redesign swag-card pointer-events-none flex flex-col justify-between gap-4">
-                <div className="flex flex-col flex-1 gap-3">
-                  <Skeleton className="w-full h-48 rounded-xl bg-muted/20" />
-                  <Skeleton className="h-5 rounded w-3/4 mt-4 bg-muted/20" />
-                  <Skeleton className="h-4 rounded w-full bg-muted/20" />
-                  <Skeleton className="h-4 rounded w-5/6 bg-muted/20" />
-                </div>
-                <div className="flex justify-between items-center pt-4 border-t border-border/40 mt-6">
-                  <Skeleton className="h-6 rounded w-1/3 bg-muted/20" />
-                  <Skeleton className="h-8 rounded w-1/4 bg-muted/20" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <BoneyardLoader skeleton={SwagCardSkeleton} count={6} columns={3} label="Loading swag items" />
         ) : filtered.length === 0 ? (
           <div className="text-center py-28 border border-dashed border-border/50 rounded-3xl bg-muted/5">
             <Package className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />

@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import { useMentors } from "@/lib/api/hooks";
 import BookingDialog from "@/components/mentors/BookingDialog";
 import { MentorCard } from "@/components/mentors/MentorCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BoneyardLoader, MentorCardSkeleton } from "@/components/boneyard";
 
 export default function MentorsPage() {
     const { data: session } = useSession();
@@ -109,25 +109,7 @@ export default function MentorsPage() {
             <section className="py-12 bg-muted/10">
                 <div className="container mx-auto px-4">
                     {loading ? (
-                        <div className="p-mentor-grid">
-                            {Array.from({ length: 8 }).map((_, i) => (
-                                <div key={i} className="p-mentor-card pointer-events-none w-full min-h-87.5">
-                                    <div className="p-mentor-avatar-wrapper">
-                                        <Skeleton className="w-full h-full rounded-full" />
-                                    </div>
-                                    <Skeleton className="h-6 w-32 rounded mx-auto mb-2 mt-4" />
-                                    <Skeleton className="h-4 w-24 rounded mx-auto mb-4" />
-                                    <div className="flex justify-center gap-2 mb-6">
-                                        <Skeleton className="h-5 w-12 rounded" />
-                                        <Skeleton className="h-5 w-12 rounded" />
-                                    </div>
-                                    <div className="p-mentor-footer mt-auto w-full">
-                                        <Skeleton className="h-4 w-28 rounded mx-auto mb-2" />
-                                        <Skeleton className="h-10 w-full rounded" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <BoneyardLoader skeleton={MentorCardSkeleton} count={8} columns={4} label="Loading mentors" gridClassName="p-mentor-grid" />
                     ) : filteredMentors.length > 0 ? (
                         <div className="p-mentor-grid">
                             {filteredMentors.map((mentor, index) => (

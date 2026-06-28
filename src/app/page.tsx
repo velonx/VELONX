@@ -9,7 +9,7 @@ import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSp
 import toast from "react-hot-toast";
 import { useMentors } from "@/lib/api/hooks";
 import { MentorCard } from "@/components/mentors/MentorCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BoneyardLoader, MentorCardSkeleton } from "@/components/boneyard";
 
 
 
@@ -758,23 +758,7 @@ export default function Home() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
                         {showSkeletons ? (
-                            Array.from({ length: 4 }).map((_, i) => (
-                                <div key={i} className="p-mentor-card pointer-events-none w-full min-h-87.5 bg-card flex flex-col items-center">
-                                    <div className="p-mentor-avatar-wrapper">
-                                        <Skeleton className="w-full h-full rounded-full" />
-                                    </div>
-                                    <Skeleton className="h-6 w-32 rounded mx-auto mb-2 mt-4" />
-                                    <Skeleton className="h-4 w-24 rounded mx-auto mb-4" />
-                                    <div className="flex justify-center gap-2 mb-6">
-                                        <Skeleton className="h-5 w-12 rounded" />
-                                        <Skeleton className="h-5 w-12 rounded" />
-                                    </div>
-                                    <div className="p-mentor-footer mt-auto w-full">
-                                        <Skeleton className="h-4 w-28 rounded mx-auto mb-2" />
-                                        <Skeleton className="h-10 w-full rounded" />
-                                    </div>
-                                </div>
-                            ))
+                            <BoneyardLoader skeleton={MentorCardSkeleton} count={4} columns={4} label="Loading mentors" gridClassName="gap-8" />
                         ) : (
                             mentorsToShow.map((mentor, idx) => (
                                 <motion.div

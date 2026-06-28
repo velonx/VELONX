@@ -6,7 +6,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import DOMPurify from "isomorphic-dompurify";
 import { Calendar, Clock, ArrowLeft, Share2, Check, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BlogPostSkeleton } from "@/components/boneyard";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -114,35 +114,7 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen pt-24 bg-background pb-20">
-                <div className="sticky top-24 z-40 w-full bg-background/80 backdrop-blur-xl border-b border-border/50">
-                    <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                        <Skeleton className="h-5 w-32 rounded-full" />
-                        <Skeleton className="h-9 w-24 rounded-full" />
-                    </div>
-                </div>
-                <article className="container mx-auto px-4 max-w-3xl pt-20 space-y-10">
-                    <div className="text-center space-y-6">
-                        <div className="flex justify-center gap-2">
-                            <Skeleton className="h-7 w-20 rounded-xl" />
-                            <Skeleton className="h-7 w-20 rounded-xl" />
-                        </div>
-                        <Skeleton className="h-16 w-full rounded-xl" />
-                        <div className="flex justify-center gap-8">
-                            <Skeleton className="h-5 w-28 rounded-md" />
-                            <Skeleton className="h-5 w-20 rounded-md" />
-                        </div>
-                    </div>
-                    <Skeleton className="w-full h-90 rounded-3xl" />
-                    <div className="space-y-3">
-                        {Array.from({ length: 8 }).map((_, i) => (
-                            <Skeleton key={i} className={`h-4 rounded-md ${i % 4 === 3 ? "w-3/4" : "w-full"}`} />
-                        ))}
-                    </div>
-                </article>
-            </div>
-        );
+        return <BlogPostSkeleton />;
     }
 
     if (error || !post) {

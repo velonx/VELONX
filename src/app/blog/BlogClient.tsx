@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useBlogPosts } from "@/lib/api/hooks";
 import { calculateReadTime, deriveCategories } from "@/lib/utils/blog";
 import type { BlogPost } from "@/lib/api/types";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BlogHeroSkeleton, BlogCardSkeleton, BoneyardLoader } from "@/components/boneyard";
 import { analytics } from "@/components/analytics";
 
 export default function BlogClient() {
@@ -118,30 +118,16 @@ export default function BlogClient() {
     if (loading) {
         return (
             <div className="min-h-screen pt-24 bg-background">
-                <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center">
-                    <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
-                        <Skeleton className="h-6 w-44 rounded-full mb-4" />
-                        <Skeleton className="h-14 w-80 rounded-xl" />
-                        <Skeleton className="h-5 w-96 rounded-lg mt-4" />
-                    </div>
-                </header>
+                <BlogHeroSkeleton />
                 <section className="py-12 bg-muted/10">
                     <div className="container mx-auto px-4 max-w-6xl">
-                        <div className="p-blog-grid">
-                            {[1, 2, 3, 4, 5, 6].map((i) => (
-                                <div key={i} className="p-blog-card pointer-events-none w-full min-h-87.5">
-                                    <Skeleton className="p-blog-card-banner w-full h-50" />
-                                    <Skeleton className="h-5 w-24 rounded mb-3 mt-4" />
-                                    <Skeleton className="h-7 w-full rounded mb-4" />
-                                    <Skeleton className="h-4 w-5/6 rounded mb-2" />
-                                    <Skeleton className="h-4 w-4/5 rounded mb-6" />
-                                    <div className="p-blog-footer mt-auto">
-                                        <Skeleton className="h-5 w-28 rounded" />
-                                        <Skeleton className="h-6 w-16 rounded" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <BoneyardLoader
+                            skeleton={BlogCardSkeleton}
+                            count={6}
+                            columns={3}
+                            label="Loading blog posts"
+                            gridClassName="p-blog-grid"
+                        />
                     </div>
                 </section>
             </div>

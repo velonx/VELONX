@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, IndianRupee, Share2, Check, LogIn, X, Lock, CalendarClock } from 'lucide-react';
-import { Skeleton } from "@/components/ui/skeleton";
+import { BoneyardLoader, CareerCardSkeleton } from "@/components/boneyard";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import Link from "next/link";
@@ -268,34 +268,7 @@ export default function CareerPage() {
         );
     };
     
-    const renderOpportunitySkeleton = (key: number) => {
-        return (
-            <div className="p-job-card animate-pulse border-border/60" key={key}>
-                <Skeleton className="shrink-0 w-14 h-14 rounded-xl bg-muted/20" />
-                <div className="p-job-info-main flex-1 w-full">
-                    <div className="flex items-center gap-2 mb-1.5">
-                        <Skeleton className="h-6 w-1/3 min-w-37.5 max-w-60 bg-muted/30 rounded" />
-                    </div>
-                    <div className="p-job-details-meta flex flex-wrap gap-4 items-center">
-                        <Skeleton className="h-4 w-24 bg-muted/20 rounded" />
-                        <Skeleton className="h-4 w-28 bg-muted/20 rounded" />
-                        <Skeleton className="h-4 w-20 bg-muted/20 rounded" />
-                        <Skeleton className="h-4 w-24 bg-muted/20 rounded" />
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                        <Skeleton className="h-6 w-16 bg-muted/15 rounded" />
-                        <Skeleton className="h-6 w-20 bg-muted/15 rounded" />
-                        <Skeleton className="h-6 w-24 bg-muted/15 rounded" />
-                    </div>
-                </div>
-                <div className="p-job-action shrink-0 flex items-center gap-3">
-                    <Skeleton className="h-6 w-16 bg-muted/20 rounded-full" />
-                    <Skeleton className="h-9 w-28 bg-muted/30 rounded-lg" />
-                    <Skeleton className="h-9 w-9 bg-muted/20 rounded-lg" />
-                </div>
-            </div>
-        );
-    };
+
 
     return (
         <div className="min-h-screen pt-24 bg-background">
@@ -532,12 +505,14 @@ export default function CareerPage() {
 
                     {activeTab === "internships" && (
                         <div>
-                            {loading ? (
-                                <div className="p-job-list">
-                                    {renderOpportunitySkeleton(1)}
-                                    {renderOpportunitySkeleton(2)}
-                                    {renderOpportunitySkeleton(3)}
-                                </div>
+                             {loading ? (
+                                <BoneyardLoader
+                                    skeleton={CareerCardSkeleton}
+                                    count={3}
+                                    layout="list"
+                                    label="Loading internships"
+                                    gridClassName="p-job-list"
+                                />
                             ) : filteredInternships.length > 0 ? (
                                 <div className="p-job-list">
                                     {filteredInternships.map((internship) => renderOpportunityCard(internship, 'internship'))}
@@ -552,12 +527,14 @@ export default function CareerPage() {
 
                     {activeTab === "jobs" && (
                         <div>
-                            {loading ? (
-                                <div className="p-job-list">
-                                    {renderOpportunitySkeleton(1)}
-                                    {renderOpportunitySkeleton(2)}
-                                    {renderOpportunitySkeleton(3)}
-                                </div>
+                             {loading ? (
+                                <BoneyardLoader
+                                    skeleton={CareerCardSkeleton}
+                                    count={3}
+                                    layout="list"
+                                    label="Loading jobs"
+                                    gridClassName="p-job-list"
+                                />
                             ) : filteredJobs.length > 0 ? (
                                 <div className="p-job-list">
                                     {filteredJobs.map((job) => renderOpportunityCard(job, 'job'))}

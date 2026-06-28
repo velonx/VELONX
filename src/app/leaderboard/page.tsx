@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useLeaderboard } from "@/lib/api/hooks";
 import Image from "next/image";
 import Link from "next/link";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BoneyardLoader, LeaderboardPodiumSkeleton, LeaderboardRowSkeleton } from "@/components/boneyard";
 import { motion } from "framer-motion";
 import { getTier, getTierLabel } from "@/lib/utils/tiers";
 
@@ -216,42 +216,7 @@ export default function LeaderboardPage() {
                     </div>
 
                     {loading ? (
-                        <div className="flex justify-center items-end gap-4 max-w-175 mx-auto animate-pulse">
-                            {/* Silver Podium Skeleton */}
-                            <div className="flex-1 max-w-50 text-center">
-                                <div className="podium-card-inner border-border/40 bg-muted/20">
-                                    <Skeleton className="w-6 h-6 rounded-full mx-auto mb-2" />
-                                    <Skeleton className="w-16 h-16 rounded-full mx-auto mb-3" />
-                                    <Skeleton className="w-24 h-4 mx-auto mb-2" />
-                                    <Skeleton className="w-28 h-3 mx-auto mb-4" />
-                                    <Skeleton className="w-16 h-5 mx-auto" />
-                                </div>
-                                <div className="podium-block bg-muted/10 h-13.75 text-muted-foreground/30 text-lg">2</div>
-                            </div>
-                            {/* Gold Podium Skeleton */}
-                            <div className="flex-1 max-w-55 text-center -mt-6">
-                                <div className="podium-card-inner border-border/40 bg-muted/20">
-                                    <Skeleton className="w-8 h-6 mx-auto mb-2" />
-                                    <Skeleton className="w-6 h-6 rounded-full mx-auto mb-2" />
-                                    <Skeleton className="w-20 h-20 rounded-full mx-auto mb-3" />
-                                    <Skeleton className="w-28 h-5 mx-auto mb-2" />
-                                    <Skeleton className="w-32 h-3 mx-auto mb-4" />
-                                    <Skeleton className="w-20 h-6 mx-auto" />
-                                </div>
-                                <div className="podium-block bg-muted/15 h-20 text-muted-foreground/40 text-2xl">1</div>
-                            </div>
-                            {/* Bronze Podium Skeleton */}
-                            <div className="flex-1 max-w-50 text-center">
-                                <div className="podium-card-inner border-border/40 bg-muted/20">
-                                    <Skeleton className="w-6 h-6 rounded-full mx-auto mb-2" />
-                                    <Skeleton className="w-16 h-16 rounded-full mx-auto mb-3" />
-                                    <Skeleton className="w-24 h-4 mx-auto mb-2" />
-                                    <Skeleton className="w-28 h-3 mx-auto mb-4" />
-                                    <Skeleton className="w-16 h-5 mx-auto" />
-                                </div>
-                                <div className="podium-block bg-muted/10 h-10 text-muted-foreground/30 text-lg">3</div>
-                            </div>
-                        </div>
+                        <LeaderboardPodiumSkeleton />
                     ) : (
                         <div className="podium-stage">
                             {/* Rank 2 - Silver */}
@@ -461,31 +426,12 @@ export default function LeaderboardPage() {
 
                         <div className="divide-y divide-border">
                             {loading ? (
-                                Array.from({ length: 6 }).map((_, index) => (
-                                    <div
-                                        key={index}
-                                        className="lb-row animate-pulse pointer-events-none"
-                                    >
-                                        <Skeleton className="w-6 h-5 rounded" />
-                                        <div className="flex items-center gap-3">
-                                            <Skeleton className="w-10 h-10 rounded-full" />
-                                            <div className="space-y-1.5">
-                                                <Skeleton className="w-28 h-4 rounded" />
-                                                <Skeleton className="w-36 h-3 rounded" />
-                                            </div>
-                                        </div>
-                                        <div className="col-tier flex items-center">
-                                            <Skeleton className="w-20 h-5 rounded-full" />
-                                        </div>
-                                        <div className="col-skill flex items-center">
-                                            <Skeleton className="w-16 h-4 rounded" />
-                                        </div>
-                                        <Skeleton className="w-16 h-5 rounded" />
-                                        <div className="col-hackathons flex justify-center">
-                                            <Skeleton className="w-8 h-5 rounded" />
-                                        </div>
-                                    </div>
-                                ))
+                                <BoneyardLoader
+                                    skeleton={LeaderboardRowSkeleton}
+                                    count={6}
+                                    layout="list"
+                                    label="Loading leaderboard"
+                                />
                             ) : filteredUsers.length === 0 ? (
                                 <div className="lb-empty-state block!">
                                     <svg width="56" height="56" viewBox="0 0 56 56" fill="none" className="mx-auto mb-3 block">
