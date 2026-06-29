@@ -303,9 +303,9 @@ export function PostCard({
             {post.imageUrls.length > 0 && (
               <div className={`grid gap-2 mt-3 ${post.imageUrls.length === 1 ? 'grid-cols-1' : post.imageUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
                 {post.imageUrls.map((url, i) => (
-                  <div key={i} className="cursor-pointer rounded-lg overflow-hidden" onClick={() => window.open(url, '_blank')}>
-                    <CardImage src={url} alt={`Post image ${i + 1}`} aspectRatio="16/9" className="hover:scale-105 transition-transform" />
-                  </div>
+                  <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="cursor-pointer rounded-lg overflow-hidden block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`View post image ${i + 1} in new tab`}>
+                    <CardImage src={url} alt={`Post image ${i + 1}`} aspectRatio="16/9" className="hover:scale-105 transition-transform block" />
+                  </a>
                 ))}
               </div>
             )}
@@ -352,6 +352,7 @@ export function PostCard({
               onClick={handleShare}
               title={copied ? 'Link copied!' : 'Share'}
               className="text-muted-foreground hover:text-foreground gap-1.5 h-8 px-3 rounded-full ml-auto"
+              aria-live="polite"
             >
               {copied ? (
                 <>

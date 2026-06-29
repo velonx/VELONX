@@ -17,3 +17,10 @@
 ## 2024-05-24 - Accessibility for Mobile Nav Buttons
 **Learning:** Icon-only buttons used to trigger mobile navigations (like the Sheet trigger in EventsSidebar) are often overlooked for ARIA labels because they function as secondary navigation elements. These need explicit labeling so screen readers can convey the action to the user properly.
 **Action:** Always verify that `<SheetTrigger asChild><Button size="icon">` implementations include an `aria-label` describing the action (e.g., "Toggle navigation menu").
+## 2024-05-20 - Semantic Image Links in PostCard
+**Learning:** Using a `<div>` with an `onClick` handler for image links breaks accessibility as it cannot be focused via keyboard, is not announced as a link to screen readers, and disables native browser features like right-clicking to "Open in new tab".
+**Action:** Always wrap actionable external images in semantic `<a>` tags with appropriate `target="_blank"`, `rel="noopener noreferrer"`, `focus-visible` styling, and an `aria-label` to ensure fully accessible navigation.
+
+## 2024-05-20 - Announcing Share Button State in PostCard
+**Learning:** When a button briefly changes text (e.g., from "Share" to "Copied") without moving focus or opening a dialog, screen readers miss the feedback because there's no live region alert.
+**Action:** Add `aria-live="polite"` to buttons with temporary text state changes (like "Copied" indicators) to ensure screen readers announce the success state without interrupting the user.
