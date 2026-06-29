@@ -3,7 +3,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const apiKey = process.env.GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
 
 export interface MatchResult {
   score: number;
@@ -131,7 +130,28 @@ Rules:
 - gaps: maximum 3 items. If no gaps, return empty array []
 - tip: must be specific to this job, not generic advice`;
 
-    const response = await model.generateContent(prompt);
+    // Try models in order of preference
+    const modelCandidates = ["gemini-3.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+    let response;
+    let success = false;
+    let lastError: any = null;
+
+    for (const modelName of modelCandidates) {
+      try {
+        const modelInstance = genAI.getGenerativeModel({ model: modelName });
+        response = await modelInstance.generateContent(prompt);
+        success = true;
+        break;
+      } catch (err: any) {
+        console.warn(`[aiMatch.service] Failed with model ${modelName}:`, err.message || err);
+        lastError = err;
+      }
+    }
+
+    if (!success || !response) {
+      throw lastError || new Error("All model candidates failed");
+    }
+
     const text = response.response.text();
 
     let cleanJson = text.trim();
