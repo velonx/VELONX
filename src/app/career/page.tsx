@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, IndianRupee, Share2, Check, LogIn, X, Lock, CalendarClock, Sparkles, Zap } from 'lucide-react';
+import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, IndianRupee, Share2, Check, LogIn, X, Lock, CalendarClock, Sparkles, Zap, ArrowLeft, ArrowRight, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
 import { BoneyardLoader, CareerCardSkeleton } from "@/components/boneyard";
 import toast from "react-hot-toast";
 import Image from "next/image";
@@ -32,6 +32,14 @@ export default function CareerPage() {
     const [aiSearchQuery, setAiSearchQuery] = useState("");
     const [aiSearchResults, setAiSearchResults] = useState<any[] | null>(null);
     const [aiSearchLoading, setAiSearchLoading] = useState(false);
+
+    // AI Match Dashboard state
+    const [aiView, setAiView] = useState<"dashboard" | "recommendations" | "target" | "search">("dashboard");
+    const [allOpportunities, setAllOpportunities] = useState<any[]>([]);
+    const [selectedJobId, setSelectedJobId] = useState("");
+    const [targetAnalysis, setTargetAnalysis] = useState<any>(null);
+    const [targetLoading, setTargetLoading] = useState(false);
+    const [showProfileModal, setShowProfileModal] = useState(false);
 
     const handleShare = async (idOrSlug: string, originalId: string, title: string, type: 'internship' | 'job') => {
         const url = `${window.location.origin}/career/${idOrSlug}`;
@@ -130,6 +138,36 @@ export default function CareerPage() {
         }, 600);
         return () => clearTimeout(timer);
     }, [aiSearchQuery, activeTab]);
+
+    // Fetch all active opportunities to target specifically
+    const fetchAllOpportunities = async () => {
+        try {
+            const response = await fetch("/api/opportunities");
+            const data = await response.json();
+            if (data.success) {
+                setAllOpportunities(data.data.filter((j: any) => j.status === "ACTIVE"));
+            }
+        } catch (error) {
+            console.error("Error fetching all opportunities:", error);
+        }
+    };
+
+    // Analyze fit for selected targeted opportunity
+    const analyzeTargetJob = async (jobId: string) => {
+        if (!jobId) return;
+        setTargetLoading(true);
+        setTargetAnalysis(null);
+        try {
+            const response = await fetch(`/api/ai/match/${jobId}`);
+            const data = await response.json();
+            setTargetAnalysis(data);
+        } catch (error) {
+            console.error("Error analyzing job:", error);
+            toast.error("Failed to analyze job match");
+        } finally {
+            setTargetLoading(false);
+        }
+    };
 
     const handleMockSchedule = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -387,6 +425,59 @@ export default function CareerPage() {
                 </div>
             )}
 
+            {/* Profile Completion Required Modal */}
+            {showProfileModal && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    style={{ backdropFilter: "blur(8px)", background: "rgba(0,0,0,0.55)" }}
+                    onClick={() => setShowProfileModal(false)}
+                >
+                    <div
+                        className="relative w-full max-w-md bg-card border border-border rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="h-1.5 w-full bg-linear-to-r from-violet-500 to-cyan-500" />
+
+                        <button
+                            onClick={() => setShowProfileModal(false)}
+                            className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            aria-label="Close"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="px-8 py-10 text-center">
+                            <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mx-auto mb-5">
+                                <Sparkles className="w-8 h-8 text-violet-400" />
+                            </div>
+
+                            <h2 className="text-2xl font-bold text-foreground mb-2">Complete Your Profile</h2>
+                            <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
+                                To unlock AI Career Match, you need to upload your resume PDF and complete your profile details (Name, Bio, Headline, College, Graduation Year, and Skills).
+                            </p>
+
+                            <div className="space-y-3">
+                                <button
+                                    onClick={() => {
+                                        setShowProfileModal(false);
+                                        router.push("/settings");
+                                    }}
+                                    className="w-full h-12 bg-linear-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white font-bold rounded-xl text-base shadow-lg transition-all flex items-center justify-center gap-2"
+                                >
+                                    Go to Profile Settings
+                                </button>
+                                <button
+                                    onClick={() => setShowProfileModal(false)}
+                                    className="w-full h-11 text-muted-foreground hover:text-foreground font-medium transition-colors"
+                                >
+                                    Maybe Later
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Page Hero */}
             <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center" aria-labelledby="page-title">
                 <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
@@ -423,10 +514,30 @@ export default function CareerPage() {
                                 </span>
                             </button>
                             <button
-                                onClick={() => {
+                                onClick={async () => {
                                     if (status !== "authenticated") {
                                         setPendingAction("AI Match");
                                         setShowLoginModal(true);
+                                        return;
+                                    }
+                                    setAiView("dashboard");
+                                    // Fetch profile completeness status
+                                    try {
+                                        const response = await fetch("/api/user/profile");
+                                        const resData = await response.json();
+                                        if (resData.success) {
+                                            const u = resData.data;
+                                            const isComplete = !!(u.name && u.bio && u.image && u.headline && u.college && u.graduationYear && u.skills && u.skills.length > 0 && u.resumeUrl);
+                                            if (!isComplete) {
+                                                setShowProfileModal(true);
+                                                return;
+                                            }
+                                        } else {
+                                            setShowProfileModal(true);
+                                            return;
+                                        }
+                                    } catch {
+                                        setShowProfileModal(true);
                                         return;
                                     }
                                     setActiveTab("ai");
@@ -585,159 +696,399 @@ export default function CareerPage() {
 
                     {activeTab === "ai" && (
                         <div>
-                            {/* AI Tab Header */}
-                            <div className="mb-8 p-6 rounded-2xl border border-violet-500/20 bg-linear-to-br from-violet-500/5 to-cyan-500/5">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg">
-                                        <Sparkles className="w-5 h-5 text-white animate-pulse" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-lg font-black text-foreground">AI Career Match</h2>
-                                        <p className="text-xs text-muted-foreground">Ranked by how well each role fits your profile &amp; resume</p>
-                                    </div>
-                                    <button
-                                        onClick={fetchAiRecommendations}
-                                        disabled={aiLoading}
-                                        className="ml-auto flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl border border-violet-500/30 text-violet-400 hover:bg-violet-500/10 transition-colors disabled:opacity-50"
-                                    >
-                                        {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-                                        Refresh
-                                    </button>
-                                </div>
-                                <div className="flex flex-wrap gap-4 mt-4 text-xs text-muted-foreground">
-                                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-green-400 inline-block"></span>80–100 = Strong Match</span>
-                                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span>60–79 = Good Match</span>
-                                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block"></span>40–59 = Partial Match</span>
-                                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>0–39 = Low Match</span>
-                                </div>
-                            </div>
-
-                            {/* AI Loading state */}
-                            {(aiLoading || aiSearchLoading) && (
-                                <BoneyardLoader
-                                    skeleton={CareerCardSkeleton}
-                                    count={4}
-                                    layout="list"
-                                    label="AI is scoring matches..."
-                                    gridClassName="p-job-list"
-                                />
+                            {/* Sub-view Header with Back Navigation */}
+                            {aiView !== "dashboard" && (
+                                <button
+                                    onClick={() => setAiView("dashboard")}
+                                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-bold mb-6 border border-border px-3 py-1.5 rounded-xl transition-colors hover:bg-muted/30"
+                                >
+                                    <ArrowLeft className="w-4 h-4" /> Back to AI Dashboard
+                                </button>
                             )}
 
-                            {/* AI Results */}
-                            {!aiLoading && !aiSearchLoading && (() => {
-                                const displayJobs = aiSearchQuery.trim()
-                                    ? (aiSearchResults ?? [])
-                                    : aiJobs;
+                            {/* 1. DASHBOARD VIEW */}
+                            {aiView === "dashboard" && (
+                                <div>
+                                    <div className="mb-8 p-6 rounded-2xl border border-violet-500/20 bg-linear-to-br from-violet-500/5 to-cyan-500/5 text-center">
+                                        <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg mx-auto mb-4">
+                                            <Sparkles className="w-6 h-6 text-white animate-pulse" />
+                                        </div>
+                                        <h2 className="text-2xl font-black text-foreground">AI Career Hub</h2>
+                                        <p className="text-muted-foreground text-sm mt-1 max-w-md mx-auto">
+                                            Vetted opportunities matching your unique skills, college, projects, and resume text.
+                                        </p>
+                                    </div>
 
-                                if (displayJobs.length === 0) {
-                                    return (
+                                    {/* Dashboard Options */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {/* Smart Recommendations */}
+                                        <div className="bg-card border border-border hover:border-violet-500/40 p-6 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-violet-500/5 group flex flex-col justify-between">
+                                            <div>
+                                                <div className="w-12 h-12 rounded-2xl bg-violet-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                                    <Sparkles className="w-6 h-6 text-violet-400" />
+                                                </div>
+                                                <h3 className="text-xl font-extrabold text-foreground mb-2">Smart Job Feed</h3>
+                                                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                                                    Get a personalized list of internships and jobs sorted dynamically by how well they match your skills and resume.
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    setAiView("recommendations");
+                                                    fetchAiRecommendations();
+                                                }}
+                                                className="w-full py-3 bg-linear-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2"
+                                            >
+                                                Get Recommendations <ArrowRight className="w-4 h-4" />
+                                            </button>
+                                        </div>
+
+                                        {/* Target Role Analysis */}
+                                        <div className="bg-card border border-border hover:border-cyan-500/40 p-6 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-cyan-500/5 group flex flex-col justify-between">
+                                            <div>
+                                                <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                                    <Zap className="w-6 h-6 text-cyan-400" />
+                                                </div>
+                                                <h3 className="text-xl font-extrabold text-foreground mb-2">Target Specific Job</h3>
+                                                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                                                    Select any active opportunity to check your selection chance, strengths, gaps, and get a direct custom tip.
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    setAiView("target");
+                                                    fetchAllOpportunities();
+                                                }}
+                                                className="w-full py-3 bg-linear-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2"
+                                            >
+                                                Target Role Analysis <ArrowRight className="w-4 h-4" />
+                                            </button>
+                                        </div>
+
+                                        {/* AI Job Search */}
+                                        <div className="bg-card border border-border hover:border-emerald-500/40 p-6 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-emerald-500/5 group flex flex-col justify-between">
+                                            <div>
+                                                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                                    <Search className="w-6 h-6 text-emerald-400" />
+                                                </div>
+                                                <h3 className="text-xl font-extrabold text-foreground mb-2">AI Job Search</h3>
+                                                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                                                    Describe your ideal job in natural language (e.g. "Remote React Developer") and get matching roles.
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    setAiView("search");
+                                                }}
+                                                className="w-full py-3 bg-linear-to-r from-emerald-500 to-violet-500 hover:from-emerald-600 hover:to-violet-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2"
+                                            >
+                                                Start AI Search <ArrowRight className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* 2. SMART RECOMMENDATIONS VIEW */}
+                            {aiView === "recommendations" && (
+                                <div>
+                                    <div className="mb-8 p-6 rounded-2xl border border-violet-500/20 bg-linear-to-br from-violet-500/5 to-cyan-500/5">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                                                <Sparkles className="w-5 h-5 text-white animate-pulse" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-lg font-black text-foreground">Smart Recommendations Feed</h2>
+                                                <p className="text-xs text-muted-foreground">Opportunities sorted dynamically by fit</p>
+                                            </div>
+                                            <button
+                                                onClick={fetchAiRecommendations}
+                                                disabled={aiLoading}
+                                                className="ml-auto flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl border border-violet-500/30 text-violet-400 hover:bg-violet-500/10 transition-colors disabled:opacity-50"
+                                            >
+                                                {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                                                Refresh
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {aiLoading && (
+                                        <BoneyardLoader
+                                            skeleton={CareerCardSkeleton}
+                                            count={4}
+                                            layout="list"
+                                            label="AI is scoring matches..."
+                                            gridClassName="p-job-list"
+                                        />
+                                    )}
+
+                                    {!aiLoading && aiJobs.length === 0 && (
                                         <div className="text-center py-20 bg-card rounded-2xl border border-border">
                                             <Sparkles className="w-10 h-10 text-muted-foreground mx-auto mb-4 opacity-40" />
-                                            <p className="text-muted-foreground font-medium">
-                                                {aiSearchQuery.trim()
-                                                    ? `No AI matches found for "${aiSearchQuery}"`
-                                                    : "No recommendations yet. Complete your profile and upload your resume for best results!"}
-                                            </p>
+                                            <p className="text-muted-foreground font-medium">No recommendations found. Try completing your profile fields or uploading a resume PDF.</p>
                                         </div>
-                                    );
-                                }
+                                    )}
 
-                                return (
-                                    <div className="p-job-list">
-                                        {displayJobs.map((item: any) => {
-                                            const score = item.aiScore ?? 0;
-                                            const verdict = item.verdict ?? "";
-                                            const scoreColor =
-                                                score >= 80 ? '#4ade80'
-                                                : score >= 60 ? '#22d3ee'
-                                                : score >= 40 ? '#facc15'
-                                                : '#f87171';
-                                            const scoreBg =
-                                                score >= 80 ? 'rgba(74,222,128,0.1)'
-                                                : score >= 60 ? 'rgba(34,211,238,0.1)'
-                                                : score >= 40 ? 'rgba(250,204,21,0.1)'
-                                                : 'rgba(248,113,113,0.1)';
-                                            const type = item.type === 'INTERNSHIP' ? 'internship' : 'job';
-                                            const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
-                                            const logoColors = ['#A78BFA','#22D3EE','#34D399','#FCD34D','#F9A8D4'];
-                                            const logoColor = logoColors[(item.company?.charCodeAt(0) ?? 0) % logoColors.length];
+                                    {!aiLoading && aiJobs.length > 0 && (
+                                        <div className="p-job-list">
+                                            {aiJobs.map((item: any) => {
+                                                const score = item.aiScore ?? 0;
+                                                const verdict = item.verdict ?? "";
+                                                const scoreColor = score >= 80 ? '#4ade80' : score >= 60 ? '#22d3ee' : score >= 40 ? '#facc15' : '#f87171';
+                                                const scoreBg = score >= 80 ? 'rgba(74,222,128,0.1)' : score >= 60 ? 'rgba(34,211,238,0.1)' : score >= 40 ? 'rgba(250,204,21,0.1)' : 'rgba(248,113,113,0.1)';
+                                                const type = item.type === 'INTERNSHIP' ? 'internship' : 'job';
+                                                const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
+                                                const logoColor = ['#A78BFA','#22D3EE','#34D399','#FCD34D','#F9A8D4'][(item.company?.charCodeAt(0) ?? 0) % 5];
 
-                                            return (
-                                                <article className="p-job-card" key={item.id} style={{ borderLeft: `3px solid ${scoreColor}` }}>
-                                                    {/* AI Score Badge */}
-                                                    <div className="flex flex-col items-center justify-center shrink-0 w-16 gap-1">
-                                                        <div
-                                                            className="w-14 h-14 rounded-xl flex flex-col items-center justify-center font-black text-lg leading-none"
-                                                            style={{ background: scoreBg, color: scoreColor, border: `1.5px solid ${scoreColor}40` }}
-                                                        >
-                                                            {score}%
-                                                        </div>
-                                                        <span className="text-[9px] font-bold text-center leading-tight" style={{ color: scoreColor }}>
-                                                            {verdict.split(' ')[0]}
-                                                        </span>
-                                                    </div>
-
-                                                    {/* Company Logo */}
-                                                    {item.imageUrl ? (
-                                                        <div className="shrink-0 w-12 h-12 rounded-xl bg-white dark:bg-gray-800 p-1.5 shadow-md border border-border flex items-center justify-center">
-                                                            <Image src={item.imageUrl} alt={item.company} width={48} height={48} className="object-contain" />
-                                                        </div>
-                                                    ) : (
-                                                        <div className="p-job-logo shrink-0 w-12 h-12 text-sm" style={{ color: logoColor }}>{initials}</div>
-                                                    )}
-
-                                                    {/* Main info */}
-                                                    <div className="p-job-info-main">
-                                                        <div className="flex items-center gap-2 flex-wrap">
-                                                            <h2 className="p-job-title">
-                                                                <Link href={`/career/${item.slug || item.id}`} className="hover:underline hover:text-primary transition-colors">
-                                                                    {item.title}
-                                                                </Link>
-                                                            </h2>
-                                                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: scoreBg, color: scoreColor }}>
-                                                                {verdict}
-                                                            </span>
-                                                        </div>
-                                                        <div className="p-job-details-meta">
-                                                            <span className="font-semibold text-foreground">🏢 {item.company}</span>
-                                                            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
-                                                            {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary}</span>}
-                                                            <span className="text-[10px] px-2 py-0.5 rounded-md font-bold" style={{ background: type === 'internship' ? 'rgba(167,139,250,0.12)' : 'rgba(34,211,238,0.12)', color: type === 'internship' ? '#a78bfa' : '#22d3ee' }}>
-                                                                {type === 'internship' ? 'INTERNSHIP' : 'JOB'}
-                                                            </span>
-                                                        </div>
-                                                        {item.requirements && item.requirements.length > 0 && (
-                                                            <div className="flex flex-wrap gap-1.5 mt-2">
-                                                                {item.requirements.slice(0, 3).map((req: string, idx: number) => (
-                                                                    <span key={idx} className="tag text-[10px] py-1 px-2.5 rounded-md font-medium">{req}</span>
-                                                                ))}
+                                                return (
+                                                    <article className="p-job-card" key={item.id} style={{ borderLeft: `3px solid ${scoreColor}` }}>
+                                                        <div className="flex flex-col items-center justify-center shrink-0 w-16 gap-1">
+                                                            <div className="w-14 h-14 rounded-xl flex flex-col items-center justify-center font-black text-lg leading-none" style={{ background: scoreBg, color: scoreColor, border: `1.5px solid ${scoreColor}40` }}>
+                                                                {score}%
                                                             </div>
+                                                            <span className="text-[9px] font-bold text-center leading-tight" style={{ color: scoreColor }}>
+                                                                {verdict.split(' ')[0]}
+                                                            </span>
+                                                        </div>
+                                                        {item.imageUrl ? (
+                                                            <div className="shrink-0 w-12 h-12 rounded-xl bg-white dark:bg-gray-800 p-1.5 shadow-md border border-border flex items-center justify-center">
+                                                                <Image src={item.imageUrl} alt={item.company} width={48} height={48} className="object-contain" />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="p-job-logo shrink-0 w-12 h-12 text-sm" style={{ color: logoColor }}>{initials}</div>
                                                         )}
-                                                    </div>
+                                                        <div className="p-job-info-main">
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <h2 className="p-job-title">
+                                                                    <Link href={`/career/${item.slug || item.id}`} className="hover:underline hover:text-primary transition-colors">
+                                                                        {item.title}
+                                                                    </Link>
+                                                                </h2>
+                                                                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: scoreBg, color: scoreColor }}>{verdict}</span>
+                                                            </div>
+                                                            <div className="p-job-details-meta">
+                                                                <span className="font-semibold text-foreground">🏢 {item.company}</span>
+                                                                <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
+                                                                {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary}</span>}
+                                                            </div>
+                                                        </div>
+                                                        <div className="p-job-action">
+                                                            <Link href={`/career/${item.slug || item.id}`} className="btn-redesign btn-redesign-primary btn-redesign-sm font-bold text-xs inline-flex items-center gap-1">
+                                                                View Details <ExternalLink className="w-4 h-4" />
+                                                            </Link>
+                                                        </div>
+                                                    </article>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
-                                                    {/* Actions */}
-                                                    <div className="p-job-action">
-                                                        <Link
-                                                            href={`/career/${item.slug || item.id}`}
-                                                            className="btn-redesign btn-redesign-primary btn-redesign-sm font-bold text-xs inline-flex items-center gap-1"
-                                                        >
-                                                            View Details <ExternalLink className="w-4 h-4" />
-                                                        </Link>
-                                                        <button
-                                                            onClick={() => handleShare(item.slug || item.id, item.id, item.title, type)}
-                                                            title={copiedId === item.id ? 'Link copied!' : 'Share'}
-                                                            className="btn-redesign btn-redesign-secondary btn-redesign-sm p-2 rounded-lg flex items-center justify-center hover:bg-muted"
-                                                            type="button"
-                                                        >
-                                                            {copiedId === item.id ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4 text-muted-foreground" />}
-                                                        </button>
-                                                    </div>
-                                                </article>
-                                            );
-                                        })}
+                            {/* 3. TARGET ROLE ANALYSIS VIEW */}
+                            {aiView === "target" && (
+                                <div>
+                                    <div className="mb-8 p-6 rounded-2xl border border-border bg-card">
+                                        <h2 className="text-xl font-bold mb-4 text-foreground flex items-center gap-2">
+                                            <Zap className="w-5 h-5 text-cyan-400 animate-pulse" />
+                                            Target A Specific Opportunity
+                                        </h2>
+                                        <div className="flex flex-col md:flex-row gap-4 items-end">
+                                            <div className="flex-1 space-y-2 w-full text-left">
+                                                <label htmlFor="target-select" className="text-sm font-semibold text-muted-foreground">Select Active Job or Internship</label>
+                                                <select
+                                                    id="target-select"
+                                                    value={selectedJobId}
+                                                    onChange={(e) => setSelectedJobId(e.target.value)}
+                                                    className="w-full flex h-11 rounded-lg border border-border bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground"
+                                                >
+                                                    <option value="">Choose role...</option>
+                                                    {allOpportunities.map((op: any) => (
+                                                        <option key={op.id} value={op.id}>
+                                                            {op.title} at {op.company} ({op.type})
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <button
+                                                onClick={() => analyzeTargetJob(selectedJobId)}
+                                                disabled={targetLoading || !selectedJobId}
+                                                className="py-3 px-6 h-11 w-full md:w-auto bg-linear-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                                            >
+                                                {targetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Analyze Match"}
+                                            </button>
+                                        </div>
                                     </div>
-                                );
-                            })()}
+
+                                    {targetLoading && (
+                                        <BoneyardLoader
+                                            skeleton={CareerCardSkeleton}
+                                            count={1}
+                                            layout="list"
+                                            label="AI is performing selection audit..."
+                                            gridClassName="p-job-list"
+                                        />
+                                    )}
+
+                                    {targetAnalysis && (
+                                        <div className="space-y-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                {/* Score Card */}
+                                                <div className="bg-card border border-border p-6 rounded-3xl flex flex-col items-center justify-center text-center shadow-lg">
+                                                    <h3 className="text-sm font-bold text-muted-foreground mb-4">MATCH SCORE</h3>
+                                                    <div 
+                                                        className="w-32 h-32 rounded-full flex flex-col items-center justify-center border-4 font-black text-4xl mb-4"
+                                                        style={{
+                                                            borderColor: targetAnalysis.score >= 80 ? '#4ade80' : targetAnalysis.score >= 60 ? '#22d3ee' : targetAnalysis.score >= 40 ? '#facc15' : '#f87171',
+                                                            color: targetAnalysis.score >= 80 ? '#4ade80' : targetAnalysis.score >= 60 ? '#22d3ee' : targetAnalysis.score >= 40 ? '#facc15' : '#f87171',
+                                                            boxShadow: `0 0 20px ${targetAnalysis.score >= 80 ? 'rgba(74,222,128,0.1)' : targetAnalysis.score >= 60 ? 'rgba(34,211,238,0.1)' : targetAnalysis.score >= 40 ? 'rgba(250,204,21,0.1)' : 'rgba(248,113,113,0.1)'}`
+                                                        }}
+                                                    >
+                                                        {targetAnalysis.score}%
+                                                    </div>
+                                                    <span className="text-lg font-black" style={{ color: targetAnalysis.score >= 80 ? '#4ade80' : targetAnalysis.score >= 60 ? '#22d3ee' : targetAnalysis.score >= 40 ? '#facc15' : '#f87171' }}>
+                                                        {targetAnalysis.verdict}
+                                                    </span>
+                                                </div>
+
+                                                {/* Strengths & Gaps */}
+                                                <div className="bg-card border border-border p-6 rounded-3xl shadow-lg md:col-span-2 space-y-6 text-left">
+                                                    <div>
+                                                        <h4 className="text-sm font-black text-green-400 flex items-center gap-1.5 mb-3">
+                                                            <CheckCircle2 className="w-4 h-4" /> KEY STRENGTHS
+                                                        </h4>
+                                                        <ul className="space-y-2">
+                                                            {targetAnalysis.strengths.map((str: string, idx: number) => (
+                                                                <li key={idx} className="text-sm text-foreground/90 flex items-start gap-2">
+                                                                    <span className="text-green-400 mt-0.5">•</span>
+                                                                    {str}
+                                                                </li>
+                                                            ))}
+                                                            {targetAnalysis.strengths.length === 0 && (
+                                                                <li className="text-sm text-muted-foreground italic">No strengths highlighted.</li>
+                                                            )}
+                                                        </ul>
+                                                    </div>
+                                                    <hr className="border-border/50" />
+                                                    <div>
+                                                        <h4 className="text-sm font-black text-yellow-400 flex items-center gap-1.5 mb-3">
+                                                            <AlertTriangle className="w-4 h-4" /> POTENTIAL GAPS
+                                                        </h4>
+                                                        <ul className="space-y-2">
+                                                            {targetAnalysis.gaps.map((gap: string, idx: number) => (
+                                                                <li key={idx} className="text-sm text-foreground/90 flex items-start gap-2">
+                                                                    <span className="text-yellow-400 mt-0.5">•</span>
+                                                                    {gap}
+                                                                </li>
+                                                            ))}
+                                                            {targetAnalysis.gaps.length === 0 && (
+                                                                <li className="text-sm text-green-400/90 font-medium flex items-center gap-1.5">✓ No critical gaps identified!</li>
+                                                            )}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                {/* Recommended Tip Card */}
+                                                <div className="bg-linear-to-br from-violet-500/5 to-cyan-500/5 border border-violet-500/20 p-6 rounded-3xl md:col-span-3 flex gap-4 items-start shadow-md text-left">
+                                                    <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0 border border-violet-500/20">
+                                                        <Lightbulb className="w-5 h-5 text-violet-400" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-sm font-black text-foreground mb-1">AI Recommendation Tip</h4>
+                                                        <p className="text-sm text-muted-foreground leading-relaxed">{targetAnalysis.tip}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* 4. AI JOB SEARCH VIEW */}
+                            {aiView === "search" && (
+                                <div>
+                                    {aiSearchLoading && (
+                                        <BoneyardLoader
+                                            skeleton={CareerCardSkeleton}
+                                            count={4}
+                                            layout="list"
+                                            label="AI is scanning and ranking roles..."
+                                            gridClassName="p-job-list"
+                                        />
+                                    )}
+
+                                    {!aiSearchLoading && (() => {
+                                        const displayJobs = aiSearchResults ?? [];
+
+                                        if (displayJobs.length === 0) {
+                                            return (
+                                                <div className="text-center py-20 bg-card rounded-2xl border border-border">
+                                                    <Sparkles className="w-10 h-10 text-muted-foreground mx-auto mb-4 opacity-40 animate-pulse" />
+                                                    <p className="text-muted-foreground font-semibold">
+                                                        {aiSearchQuery.trim()
+                                                            ? `No matching jobs found for "${aiSearchQuery}"`
+                                                            : "Enter keywords in the AI search bar above (e.g. 'React intern', 'node developer')"}
+                                                    </p>
+                                                </div>
+                                            );
+                                        }
+
+                                        return (
+                                            <div className="p-job-list">
+                                                {displayJobs.map((item: any) => {
+                                                    const score = item.aiScore ?? 0;
+                                                    const verdict = item.verdict ?? "";
+                                                    const scoreColor = score >= 80 ? '#4ade80' : score >= 60 ? '#22d3ee' : score >= 40 ? '#facc15' : '#f87171';
+                                                    const scoreBg = score >= 80 ? 'rgba(74,222,128,0.1)' : score >= 60 ? 'rgba(34,211,238,0.1)' : score >= 40 ? 'rgba(250,204,21,0.1)' : 'rgba(248,113,113,0.1)';
+                                                    const type = item.type === 'INTERNSHIP' ? 'internship' : 'job';
+                                                    const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
+                                                    const logoColor = ['#A78BFA','#22D3EE','#34D399','#FCD34D','#F9A8D4'][(item.company?.charCodeAt(0) ?? 0) % 5];
+
+                                                    return (
+                                                        <article className="p-job-card" key={item.id} style={{ borderLeft: `3px solid ${scoreColor}` }}>
+                                                            <div className="flex flex-col items-center justify-center shrink-0 w-16 gap-1">
+                                                                <div className="w-14 h-14 rounded-xl flex flex-col items-center justify-center font-black text-lg leading-none" style={{ background: scoreBg, color: scoreColor, border: `1.5px solid ${scoreColor}40` }}>
+                                                                    {score}%
+                                                                </div>
+                                                                <span className="text-[9px] font-bold text-center leading-tight" style={{ color: scoreColor }}>
+                                                                    {verdict.split(' ')[0]}
+                                                                </span>
+                                                            </div>
+                                                            {item.imageUrl ? (
+                                                                <div className="shrink-0 w-12 h-12 rounded-xl bg-white dark:bg-gray-800 p-1.5 shadow-md border border-border flex items-center justify-center">
+                                                                    <Image src={item.imageUrl} alt={item.company} width={48} height={48} className="object-contain" />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="p-job-logo shrink-0 w-12 h-12 text-sm" style={{ color: logoColor }}>{initials}</div>
+                                                            )}
+                                                            <div className="p-job-info-main">
+                                                                <div className="flex items-center gap-2 flex-wrap">
+                                                                    <h2 className="p-job-title">
+                                                                        <Link href={`/career/${item.slug || item.id}`} className="hover:underline hover:text-primary transition-colors">
+                                                                            {item.title}
+                                                                        </Link>
+                                                                    </h2>
+                                                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: scoreBg, color: scoreColor }}>{verdict}</span>
+                                                                </div>
+                                                                <div className="p-job-details-meta">
+                                                                    <span className="font-semibold text-foreground">🏢 {item.company}</span>
+                                                                    <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
+                                                                    {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary}</span>}
+                                                                </div>
+                                                            </div>
+                                                            <div className="p-job-action">
+                                                                <Link href={`/career/${item.slug || item.id}`} className="btn-redesign btn-redesign-primary btn-redesign-sm font-bold text-xs inline-flex items-center gap-1">
+                                                                    View Details <ExternalLink className="w-4 h-4" />
+                                                                </Link>
+                                                            </div>
+                                                        </article>
+                                                    );
+                                                })}
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            )}
                         </div>
                     )}
 
