@@ -706,19 +706,9 @@ export default function CareerPage() {
                                 </button>
                             )}
 
-                            {/* 1. DASHBOARD VIEW */}
+                             {/* 1. DASHBOARD VIEW */}
                             {aiView === "dashboard" && (
                                 <div>
-                                    <div className="mb-8 p-6 rounded-2xl border border-violet-500/20 bg-linear-to-br from-violet-500/5 to-cyan-500/5 text-center">
-                                        <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg mx-auto mb-4">
-                                            <Sparkles className="w-6 h-6 text-white animate-pulse" />
-                                        </div>
-                                        <h2 className="text-2xl font-black text-foreground">AI Career Hub</h2>
-                                        <p className="text-muted-foreground text-sm mt-1 max-w-md mx-auto">
-                                            Vetted opportunities matching your unique skills, college, projects, and resume text.
-                                        </p>
-                                    </div>
-
                                     {/* Dashboard Options */}
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         {/* Smart Recommendations */}
