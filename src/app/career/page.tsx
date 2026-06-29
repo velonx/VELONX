@@ -839,24 +839,39 @@ export default function CareerPage() {
                                                 const type = item.type === 'INTERNSHIP' ? 'internship' : 'job';
                                                 const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
                                                 const logoColor = ['#A78BFA','#22D3EE','#34D399','#FCD34D','#F9A8D4'][(item.company?.charCodeAt(0) ?? 0) % 5];
-
                                                 return (
                                                     <article className="p-job-card" key={item.id} style={{ borderLeft: `3px solid ${scoreColor}` }}>
-                                                        <div className="flex flex-col items-center justify-center shrink-0 w-16 gap-1">
-                                                            <div className="w-14 h-14 rounded-xl flex flex-col items-center justify-center font-black text-lg leading-none" style={{ background: scoreBg, color: scoreColor, border: `1.5px solid ${scoreColor}40` }}>
-                                                                {score}%
+                                                        {/* Left Side: Score + Logo */}
+                                                        <div className="flex items-center gap-4 shrink-0">
+                                                            {/* AI Score Badge */}
+                                                            <div className="flex flex-col items-center justify-center shrink-0 w-16 gap-1">
+                                                                <div className="w-14 h-14 rounded-xl flex flex-col items-center justify-center font-black text-lg leading-none" style={{ background: scoreBg, color: scoreColor, border: `1.5px solid ${scoreColor}40` }}>
+                                                                    {score}%
+                                                                </div>
+                                                                <span className="text-[9px] font-bold text-center leading-tight" style={{ color: scoreColor }}>
+                                                                    {verdict.split(' ')[0]}
+                                                                </span>
                                                             </div>
-                                                            <span className="text-[9px] font-bold text-center leading-tight" style={{ color: scoreColor }}>
-                                                                {verdict.split(' ')[0]}
-                                                            </span>
+
+                                                            {/* Company Logo */}
+                                                            {item.imageUrl ? (
+                                                                <div className="shrink-0 w-14 h-14 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center relative">
+                                                                    <Image 
+                                                                        src={item.imageUrl} 
+                                                                        alt={item.company} 
+                                                                        width={56} 
+                                                                        height={56} 
+                                                                        className="object-contain" 
+                                                                    />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="p-job-logo shrink-0" style={{ color: logoColor }}>
+                                                                    {initials}
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                        {item.imageUrl ? (
-                                                            <div className="shrink-0 w-12 h-12 rounded-xl bg-white dark:bg-gray-800 p-1.5 shadow-md border border-border flex items-center justify-center">
-                                                                <Image src={item.imageUrl} alt={item.company} width={48} height={48} className="object-contain" />
-                                                            </div>
-                                                        ) : (
-                                                            <div className="p-job-logo shrink-0 w-12 h-12 text-sm" style={{ color: logoColor }}>{initials}</div>
-                                                        )}
+
+                                                        {/* Middle: Main Info */}
                                                         <div className="p-job-info-main">
                                                             <div className="flex items-center gap-2 flex-wrap">
                                                                 <h2 className="p-job-title">
@@ -872,6 +887,8 @@ export default function CareerPage() {
                                                                 {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary}</span>}
                                                             </div>
                                                         </div>
+
+                                                        {/* Right Side: Action Button */}
                                                         <div className="p-job-action">
                                                             <Link href={`/career/${item.slug || item.id}`} className="btn-redesign btn-redesign-primary btn-redesign-sm font-bold text-xs inline-flex items-center gap-1">
                                                                 View Details <ExternalLink className="w-4 h-4" />
