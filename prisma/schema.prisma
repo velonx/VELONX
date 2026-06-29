@@ -153,6 +153,9 @@ model User {
   githubUrl       String?
   twitterUrl      String?
   portfolioUrl    String?
+  resumeUrl       String?
+  resumeText      String?   // Extracted plain text from the uploaded PDF resume
+  lookingFor      String?   // "INTERNSHIP" | "JOB" | "BOTH"
   profileComplete Boolean   @default(false)
 
   // Email notification preferences

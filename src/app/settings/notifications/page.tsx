@@ -79,7 +79,7 @@ export default async function NotificationPreferencesPage() {
                 <p className="text-xs text-muted-foreground text-center mt-6">
                     To stop all VELONX emails at once, go to{' '}
                     <Link href="/settings" className="text-[#226CE0] underline hover:no-underline">
-                        Account Settings
+                        Profile
                     </Link>{' '}
                     and disable "Email Notifications".
                 </p>

@@ -4,6 +4,7 @@ import { handleError } from "@/lib/utils/errors";
 import { partialProfileUpdateSchema } from "@/lib/validations/profile";
 import { prisma } from "@/lib/prisma";
 import { checkAndAwardProfileCompletion } from "@/lib/services/referral.service";
+import { getRedisClient } from "@/lib/redis";
 
 /**
  * Sanitize text input to prevent XSS attacks
@@ -95,6 +96,9 @@ export async function GET() {
           githubUrl: true,
           twitterUrl: true,
           portfolioUrl: true,
+          resumeUrl: true,
+          resumeText: true,
+          lookingFor: true,
           profileComplete: true,
         },
       });
@@ -210,6 +214,8 @@ export async function PATCH(request: NextRequest) {
       githubUrl?: string | null;
       twitterUrl?: string | null;
       portfolioUrl?: string | null;
+      resumeUrl?: string | null;
+      lookingFor?: string | null;
     } = {};
 
     if (validatedData.name !== undefined) {
@@ -272,6 +278,12 @@ export async function PATCH(request: NextRequest) {
     if (validatedData.portfolioUrl !== undefined) {
       updateData.portfolioUrl = validatedData.portfolioUrl;
     }
+    if (validatedData.resumeUrl !== undefined) {
+      updateData.resumeUrl = validatedData.resumeUrl;
+    }
+    if (validatedData.lookingFor !== undefined) {
+      updateData.lookingFor = validatedData.lookingFor;
+    }
 
     // Update user profile in database with error handling
     let updatedUser;
@@ -295,11 +307,25 @@ export async function PATCH(request: NextRequest) {
           githubUrl: true,
           twitterUrl: true,
           portfolioUrl: true,
+          resumeUrl: true,
+          resumeText: true,
+          lookingFor: true,
           profileComplete: true,
           xp: true,
           level: true,
         },
       });
+
+      // Invalidate AI match cache for this user
+      try {
+        const redisClient = getRedisClient();
+        const keys = await redisClient.keys(`match:${userId}:*`);
+        if (keys.length > 0) {
+          await redisClient.del(...keys);
+        }
+      } catch (redisError) {
+        console.error("[Redis Error] Profile cache invalidation failed:", redisError);
+      }
     } catch (dbError) {
       console.error("Database error while updating user:", dbError);
       
@@ -356,7 +382,8 @@ export async function PATCH(request: NextRequest) {
       updatedUser.college &&
       updatedUser.graduationYear &&
       updatedUser.skills &&
-      updatedUser.skills.length > 0
+      updatedUser.skills.length > 0 &&
+      updatedUser.resumeUrl
     );
 
     let xpAwarded = 0;
@@ -383,7 +410,7 @@ export async function PATCH(request: NextRequest) {
         await prisma.user.update({
           where: { id: userId },
           data: { profileComplete: true }
-        }).catch(err => console.error("Failed to set profileComplete:", err));
+        }).catch((err: unknown) => console.error("Failed to set profileComplete:", err));
         updatedUser.profileComplete = true;
       }
     }

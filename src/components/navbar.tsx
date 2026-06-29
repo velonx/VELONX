@@ -168,7 +168,7 @@ export function Navbar() {
                                     <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-blue-50 focus:text-[#226CE0]">
                                         <Link href="/settings" className="flex items-center gap-3 font-bold">
                                             <Settings className="w-4 h-4" />
-                                            Account Settings
+                                            Profile
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator className="bg-gray-50 mx-2" />

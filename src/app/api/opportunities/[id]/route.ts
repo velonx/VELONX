@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { OpportunityService } from "@/lib/services/career.service";
 import { updateOpportunitySchema } from "@/lib/validations/career";
 import { ZodError } from "zod";
+import { getRedisClient } from "@/lib/redis";
 
 // GET - Get single opportunity
 export async function GET(
@@ -60,6 +61,17 @@ export async function PATCH(
 
     const opportunity = await OpportunityService.update(id, validatedData);
 
+    // Invalidate AI match cache for this job
+    try {
+      const redisClient = getRedisClient();
+      const keys = await redisClient.keys(`match:*:${id}`);
+      if (keys.length > 0) {
+        await redisClient.del(...keys);
+      }
+    } catch (redisError) {
+      console.error("[Redis Error] Opportunity PATCH cache invalidation failed:", redisError);
+    }
+
     return NextResponse.json({
       success: true,
       data: opportunity,
@@ -111,6 +123,17 @@ export async function DELETE(
 
     const { id } = await params;
     await OpportunityService.delete(id);
+
+    // Invalidate AI match cache for this job
+    try {
+      const redisClient = getRedisClient();
+      const keys = await redisClient.keys(`match:*:${id}`);
+      if (keys.length > 0) {
+        await redisClient.del(...keys);
+      }
+    } catch (redisError) {
+      console.error("[Redis Error] Opportunity DELETE cache invalidation failed:", redisError);
+    }
 
     return NextResponse.json({
       success: true,

@@ -215,13 +215,13 @@ export async function checkAndAwardProfileCompletion(userId: string): Promise<vo
       return;
     }
     
-    // Check if profile is complete (name, bio, and image)
+    // Check if profile is complete (name, bio, image, and resume)
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true, bio: true, image: true }
+      select: { name: true, bio: true, image: true, resumeUrl: true }
     });
     
-    if (!user?.name || !user?.bio || !user?.image) {
+    if (!user?.name || !user?.bio || !user?.image || !user?.resumeUrl) {
       return; // Profile not complete yet
     }
     

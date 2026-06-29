@@ -156,6 +156,8 @@ export const partialProfileUpdateSchema = z.object({
   githubUrl: socialUrlSchema,
   twitterUrl: socialUrlSchema,
   portfolioUrl: socialUrlSchema,
+  resumeUrl: z.string().url("Must be a valid URL").optional().nullable().transform((val) => (val === "" ? null : val)),
+  lookingFor: z.preprocess((val) => (val === "" ? null : val), z.enum(["INTERNSHIP", "JOB", "BOTH"]).optional().nullable()),
 });
 
 /**

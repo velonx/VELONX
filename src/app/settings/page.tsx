@@ -33,6 +33,9 @@ export default async function SettingsPage() {
         githubUrl: true,
         twitterUrl: true,
         portfolioUrl: true,
+        resumeUrl: true,
+        resumeText: true,
+        lookingFor: true,
       },
     });
   } catch (error) {
@@ -41,9 +44,9 @@ export default async function SettingsPage() {
       <div className="min-h-screen bg-background pt-20">
         <div className="container mx-auto px-4 py-12 max-w-4xl">
           <div className="bg-card border border-border rounded-3xl shadow-2xl p-12 text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Unable to Load Settings</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-4">Unable to Load Profile</h1>
             <p className="text-muted-foreground mb-6">
-              We encountered an error while loading your account settings. Please try again later.
+              We encountered an error while loading your profile settings. Please try again later.
             </p>
             <a
               href="/dashboard/student"
@@ -70,7 +73,7 @@ export default async function SettingsPage() {
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
               <Settings className="w-6 h-6 text-primary" />
             </div>
-            <h1 className="text-4xl font-black text-foreground">Account Settings</h1>
+            <h1 className="text-4xl font-black text-foreground">Profile</h1>
           </div>
           <p className="text-muted-foreground text-lg">
             Manage your profile information and preferences
@@ -114,7 +117,7 @@ export default async function SettingsPage() {
           <div className="bg-card rounded-2xl p-6 border border-border">
             <h3 className="text-foreground font-bold mb-2">Need Help?</h3>
             <p className="text-muted-foreground text-sm">
-              Contact our support team if you have any questions about your account settings.
+              Contact our support team if you have any questions about your profile settings.
             </p>
           </div>
         </div>

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import AvatarSection from "@/components/settings/AvatarSection";
 import CoverImageSection from "@/components/settings/CoverImageSection";
-import { Loader2, CheckCircle2, XCircle, GraduationCap, Link2, User } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, GraduationCap, Link2, User, Briefcase, FileText } from "lucide-react";
 
 interface ProfileSettingsFormProps {
   initialData: {
@@ -27,6 +27,9 @@ interface ProfileSettingsFormProps {
     githubUrl: string | null;
     twitterUrl: string | null;
     portfolioUrl: string | null;
+    resumeUrl?: string | null;
+    resumeText?: string | null;
+    lookingFor?: string | null;
   };
 }
 
@@ -44,6 +47,8 @@ interface FormState {
   githubUrl: string;
   twitterUrl: string;
   portfolioUrl: string;
+  resumeUrl: string | null;
+  lookingFor: string;
   isLoading: boolean;
   error: string | null;
   success: boolean;
@@ -51,6 +56,11 @@ interface FormState {
 
 export default function ProfileSettingsForm({ initialData }: ProfileSettingsFormProps) {
   const { update: updateSession } = useSession();
+
+  const [isResumeUploading, setIsResumeUploading] = useState(false);
+  const [resumeTextExtracted, setResumeTextExtracted] = useState<boolean>(
+    !!(initialData.resumeText && initialData.resumeText.trim().length > 20)
+  );
 
   // Initialize state
   const [formState, setFormState] = useState<FormState>({
@@ -67,6 +77,8 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
     githubUrl: initialData.githubUrl || "",
     twitterUrl: initialData.twitterUrl || "",
     portfolioUrl: initialData.portfolioUrl || "",
+    resumeUrl: initialData.resumeUrl || null,
+    lookingFor: initialData.lookingFor || "",
     isLoading: false,
     error: null,
     success: false,
@@ -87,6 +99,8 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
     githubUrl: initialData.githubUrl || "",
     twitterUrl: initialData.twitterUrl || "",
     portfolioUrl: initialData.portfolioUrl || "",
+    resumeUrl: initialData.resumeUrl || null,
+    lookingFor: initialData.lookingFor || "",
   });
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -168,6 +182,58 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
     setFormState((prev) => ({ ...prev, coverImage: result.data.url }));
   };
 
+  const handleResumeFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      setFormState((prev) => ({
+        ...prev,
+        error: "Only PDF format is supported for resumes.",
+      }));
+      return;
+    }
+
+    setIsResumeUploading(true);
+    setFormState((prev) => ({ ...prev, error: null, success: false }));
+
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
+      });
+
+      const { getCSRFToken } = await import("@/lib/utils/csrf");
+      const csrfToken = await getCSRFToken();
+
+      const response = await fetch("/api/user/profile/upload-resume", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken,
+        },
+        body: JSON.stringify({ resume: base64, fileName: file.name }),
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error?.message || "Failed to upload resume");
+      }
+
+      setFormState((prev) => ({ ...prev, resumeUrl: result.data.url }));
+      setResumeTextExtracted(!!result.data.textExtracted);
+    } catch (error: any) {
+      setFormState((prev) => ({
+        ...prev,
+        error: error.message || "An error occurred during resume upload",
+      }));
+    } finally {
+      setIsResumeUploading(false);
+    }
+  };
+
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
     if (!formState.name.trim()) errors.name = "Name is required";
@@ -221,6 +287,8 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
           githubUrl: formState.githubUrl.trim() || null,
           twitterUrl: formState.twitterUrl.trim() || null,
           portfolioUrl: formState.portfolioUrl.trim() || null,
+          resumeUrl: formState.resumeUrl || null,
+          lookingFor: formState.lookingFor || null,
         }),
       });
 
@@ -251,6 +319,8 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         githubUrl: formState.githubUrl,
         twitterUrl: formState.twitterUrl,
         portfolioUrl: formState.portfolioUrl,
+        resumeUrl: formState.resumeUrl,
+        lookingFor: formState.lookingFor,
       };
 
       setOriginalValues(updatedVals);
@@ -363,7 +433,85 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         </div>
       </div>
 
-      {/* Group 3: Links */}
+      {/* Group 3: Career & Resume */}
+      <div className="space-y-4 bg-muted/20 p-6 rounded-2xl border border-border/50">
+        <h3 className="text-md font-bold text-foreground flex items-center gap-2 mb-2">
+          <Briefcase className="w-5 h-5 text-primary" />
+          Career &amp; Resume
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="lookingFor" className="text-foreground/90 font-medium">What are you looking for? *</Label>
+            <select
+              id="lookingFor"
+              value={formState.lookingFor}
+              onChange={(e) => handleInputChange("lookingFor", e.target.value)}
+              className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="">Select option...</option>
+              <option value="INTERNSHIP">Internships Only</option>
+              <option value="JOB">Full-Time Jobs Only</option>
+              <option value="BOTH">Both Internships &amp; Jobs</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="resume" className="text-foreground/90 font-medium flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" />
+              Upload Resume (PDF only) *
+            </Label>
+            <div className="flex flex-col gap-2">
+              <input
+                id="resume"
+                type="file"
+                accept=".pdf"
+                onChange={handleResumeFileChange}
+                disabled={isResumeUploading || formState.isLoading}
+                className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+              />
+              {isResumeUploading && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                  Uploading &amp; extracting resume text for AI...
+                </div>
+              )}
+              {formState.resumeUrl ? (
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center gap-2 text-xs text-green-400">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Resume uploaded!</span>
+                    <a
+                      href={formState.resumeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-primary hover:text-primary/80 font-bold ml-1"
+                    >
+                      View PDF
+                    </a>
+                  </div>
+                  {resumeTextExtracted ? (
+                    <div className="flex items-center gap-1.5 text-xs text-cyan-400 font-semibold">
+                      <span>✨</span>
+                      AI can read your resume — matching accuracy is high
+                    </div>
+                  ) : (
+                    <div className="text-xs text-yellow-500">
+                      ⚙️ Resume text not extracted yet — re-upload to enable full AI matching
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-xs text-orange-400 font-semibold">
+                  ⚠️ Resume is required to complete your profile.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Group 4: Links */}
       <div className="space-y-4 bg-muted/20 p-6 rounded-2xl border border-border/50">
         <h3 className="text-md font-bold text-foreground flex items-center gap-2 mb-2">
           <Link2 className="w-5 h-5 text-primary" />

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, IndianRupee, Share2, Check, LogIn, X, Lock, CalendarClock } from 'lucide-react';
+import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, IndianRupee, Share2, Check, LogIn, X, Lock, CalendarClock, Sparkles, Zap } from 'lucide-react';
 import { BoneyardLoader, CareerCardSkeleton } from "@/components/boneyard";
 import toast from "react-hot-toast";
 import Image from "next/image";
@@ -25,6 +25,13 @@ export default function CareerPage() {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [pendingAction, setPendingAction] = useState<string>("");
     const [searchQuery, setSearchQuery] = useState("");
+
+    // AI Match tab state
+    const [aiJobs, setAiJobs] = useState<any[]>([]);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiSearchQuery, setAiSearchQuery] = useState("");
+    const [aiSearchResults, setAiSearchResults] = useState<any[] | null>(null);
+    const [aiSearchLoading, setAiSearchLoading] = useState(false);
 
     const handleShare = async (idOrSlug: string, originalId: string, title: string, type: 'internship' | 'job') => {
         const url = `${window.location.origin}/career/${idOrSlug}`;
@@ -57,6 +64,8 @@ export default function CareerPage() {
             fetchOpportunities("INTERNSHIP");
         } else if (activeTab === "jobs") {
             fetchOpportunities("JOB");
+        } else if (activeTab === "ai") {
+            fetchAiRecommendations();
         }
     }, [activeTab]);
 
@@ -79,6 +88,48 @@ export default function CareerPage() {
             setLoading(false);
         }
     };
+
+    // Fetch AI recommendations when switching to AI tab
+    const fetchAiRecommendations = async () => {
+        if (status !== "authenticated") return;
+        setAiLoading(true);
+        setAiSearchResults(null);
+        setAiSearchQuery("");
+        try {
+            const response = await fetch("/api/ai/recommendations");
+            if (!response.ok) throw new Error("Failed");
+            const data = await response.json();
+            setAiJobs(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("AI recommendations error:", error);
+            setAiJobs([]);
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
+    // Debounced AI search
+    useEffect(() => {
+        if (activeTab !== "ai") return;
+        if (!aiSearchQuery.trim()) {
+            setAiSearchResults(null);
+            return;
+        }
+        const timer = setTimeout(async () => {
+            setAiSearchLoading(true);
+            try {
+                const res = await fetch(`/api/ai/search?q=${encodeURIComponent(aiSearchQuery.trim())}`);
+                if (!res.ok) throw new Error("Failed");
+                const data = await res.json();
+                setAiSearchResults(Array.isArray(data) ? data : []);
+            } catch {
+                setAiSearchResults([]);
+            } finally {
+                setAiSearchLoading(false);
+            }
+        }, 600);
+        return () => clearTimeout(timer);
+    }, [aiSearchQuery, activeTab]);
 
     const handleMockSchedule = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -372,6 +423,22 @@ export default function CareerPage() {
                                 </span>
                             </button>
                             <button
+                                onClick={() => {
+                                    if (status !== "authenticated") {
+                                        setPendingAction("AI Match");
+                                        setShowLoginModal(true);
+                                        return;
+                                    }
+                                    setActiveTab("ai");
+                                }}
+                                className={`p-filter-chip ${activeTab === "ai" ? "active" : ""} relative`}
+                            >
+                                <span className="inline-flex items-center gap-1.5">
+                                    <Sparkles className="w-4 h-4 text-violet-400" /> AI Match
+                                </span>
+                                <span className="absolute -top-1.5 -right-1.5 bg-linear-to-r from-violet-500 to-cyan-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none">NEW</span>
+                            </button>
+                            <button
                                 onClick={() => setActiveTab("mock")}
                                 className={`p-filter-chip ${activeTab === "mock" ? "active" : ""}`}
                             >
@@ -381,7 +448,7 @@ export default function CareerPage() {
                             </button>
                         </div>
 
-                        {activeTab !== "mock" && (
+                        {activeTab !== "mock" && activeTab !== "ai" && (
                             <div className="p-search-bar">
                                 <Search className="w-5 h-5 text-muted-foreground shrink-0" />
                                 <input
@@ -391,6 +458,19 @@ export default function CareerPage() {
                                     placeholder="Search by title, tech stack, or company..."
                                     aria-label="Search opportunities"
                                 />
+                            </div>
+                        )}
+                        {activeTab === "ai" && (
+                            <div className="p-search-bar" style={{ borderColor: 'rgba(139,92,246,0.3)', background: 'rgba(139,92,246,0.03)' }}>
+                                <Sparkles className="w-5 h-5 text-violet-400 shrink-0" />
+                                <input
+                                    type="text"
+                                    value={aiSearchQuery}
+                                    onChange={(e) => setAiSearchQuery(e.target.value)}
+                                    placeholder="Search with AI — e.g. React internship, backend dev..."
+                                    aria-label="AI job search"
+                                />
+                                {aiSearchLoading && <Loader2 className="w-4 h-4 animate-spin text-violet-400 shrink-0" />}
                             </div>
                         )}
                     </div>
@@ -500,6 +580,164 @@ export default function CareerPage() {
                                     </button>
                                 </form>
                             </div>
+                        </div>
+                    )}
+
+                    {activeTab === "ai" && (
+                        <div>
+                            {/* AI Tab Header */}
+                            <div className="mb-8 p-6 rounded-2xl border border-violet-500/20 bg-linear-to-br from-violet-500/5 to-cyan-500/5">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                                        <Sparkles className="w-5 h-5 text-white animate-pulse" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-lg font-black text-foreground">AI Career Match</h2>
+                                        <p className="text-xs text-muted-foreground">Ranked by how well each role fits your profile &amp; resume</p>
+                                    </div>
+                                    <button
+                                        onClick={fetchAiRecommendations}
+                                        disabled={aiLoading}
+                                        className="ml-auto flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl border border-violet-500/30 text-violet-400 hover:bg-violet-500/10 transition-colors disabled:opacity-50"
+                                    >
+                                        {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                                        Refresh
+                                    </button>
+                                </div>
+                                <div className="flex flex-wrap gap-4 mt-4 text-xs text-muted-foreground">
+                                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-green-400 inline-block"></span>80–100 = Strong Match</span>
+                                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span>60–79 = Good Match</span>
+                                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block"></span>40–59 = Partial Match</span>
+                                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>0–39 = Low Match</span>
+                                </div>
+                            </div>
+
+                            {/* AI Loading state */}
+                            {(aiLoading || aiSearchLoading) && (
+                                <BoneyardLoader
+                                    skeleton={CareerCardSkeleton}
+                                    count={4}
+                                    layout="list"
+                                    label="AI is scoring matches..."
+                                    gridClassName="p-job-list"
+                                />
+                            )}
+
+                            {/* AI Results */}
+                            {!aiLoading && !aiSearchLoading && (() => {
+                                const displayJobs = aiSearchQuery.trim()
+                                    ? (aiSearchResults ?? [])
+                                    : aiJobs;
+
+                                if (displayJobs.length === 0) {
+                                    return (
+                                        <div className="text-center py-20 bg-card rounded-2xl border border-border">
+                                            <Sparkles className="w-10 h-10 text-muted-foreground mx-auto mb-4 opacity-40" />
+                                            <p className="text-muted-foreground font-medium">
+                                                {aiSearchQuery.trim()
+                                                    ? `No AI matches found for "${aiSearchQuery}"`
+                                                    : "No recommendations yet. Complete your profile and upload your resume for best results!"}
+                                            </p>
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <div className="p-job-list">
+                                        {displayJobs.map((item: any) => {
+                                            const score = item.aiScore ?? 0;
+                                            const verdict = item.verdict ?? "";
+                                            const scoreColor =
+                                                score >= 80 ? '#4ade80'
+                                                : score >= 60 ? '#22d3ee'
+                                                : score >= 40 ? '#facc15'
+                                                : '#f87171';
+                                            const scoreBg =
+                                                score >= 80 ? 'rgba(74,222,128,0.1)'
+                                                : score >= 60 ? 'rgba(34,211,238,0.1)'
+                                                : score >= 40 ? 'rgba(250,204,21,0.1)'
+                                                : 'rgba(248,113,113,0.1)';
+                                            const type = item.type === 'INTERNSHIP' ? 'internship' : 'job';
+                                            const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
+                                            const logoColors = ['#A78BFA','#22D3EE','#34D399','#FCD34D','#F9A8D4'];
+                                            const logoColor = logoColors[(item.company?.charCodeAt(0) ?? 0) % logoColors.length];
+
+                                            return (
+                                                <article className="p-job-card" key={item.id} style={{ borderLeft: `3px solid ${scoreColor}` }}>
+                                                    {/* AI Score Badge */}
+                                                    <div className="flex flex-col items-center justify-center shrink-0 w-16 gap-1">
+                                                        <div
+                                                            className="w-14 h-14 rounded-xl flex flex-col items-center justify-center font-black text-lg leading-none"
+                                                            style={{ background: scoreBg, color: scoreColor, border: `1.5px solid ${scoreColor}40` }}
+                                                        >
+                                                            {score}%
+                                                        </div>
+                                                        <span className="text-[9px] font-bold text-center leading-tight" style={{ color: scoreColor }}>
+                                                            {verdict.split(' ')[0]}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Company Logo */}
+                                                    {item.imageUrl ? (
+                                                        <div className="shrink-0 w-12 h-12 rounded-xl bg-white dark:bg-gray-800 p-1.5 shadow-md border border-border flex items-center justify-center">
+                                                            <Image src={item.imageUrl} alt={item.company} width={48} height={48} className="object-contain" />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="p-job-logo shrink-0 w-12 h-12 text-sm" style={{ color: logoColor }}>{initials}</div>
+                                                    )}
+
+                                                    {/* Main info */}
+                                                    <div className="p-job-info-main">
+                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                            <h2 className="p-job-title">
+                                                                <Link href={`/career/${item.slug || item.id}`} className="hover:underline hover:text-primary transition-colors">
+                                                                    {item.title}
+                                                                </Link>
+                                                            </h2>
+                                                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: scoreBg, color: scoreColor }}>
+                                                                {verdict}
+                                                            </span>
+                                                        </div>
+                                                        <div className="p-job-details-meta">
+                                                            <span className="font-semibold text-foreground">🏢 {item.company}</span>
+                                                            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
+                                                            {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary}</span>}
+                                                            <span className="text-[10px] px-2 py-0.5 rounded-md font-bold" style={{ background: type === 'internship' ? 'rgba(167,139,250,0.12)' : 'rgba(34,211,238,0.12)', color: type === 'internship' ? '#a78bfa' : '#22d3ee' }}>
+                                                                {type === 'internship' ? 'INTERNSHIP' : 'JOB'}
+                                                            </span>
+                                                        </div>
+                                                        {item.requirements && item.requirements.length > 0 && (
+                                                            <div className="flex flex-wrap gap-1.5 mt-2">
+                                                                {item.requirements.slice(0, 3).map((req: string, idx: number) => (
+                                                                    <span key={idx} className="tag text-[10px] py-1 px-2.5 rounded-md font-medium">{req}</span>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Actions */}
+                                                    <div className="p-job-action">
+                                                        <Link
+                                                            href={`/career/${item.slug || item.id}`}
+                                                            className="btn-redesign btn-redesign-primary btn-redesign-sm font-bold text-xs inline-flex items-center gap-1"
+                                                        >
+                                                            View Details <ExternalLink className="w-4 h-4" />
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => handleShare(item.slug || item.id, item.id, item.title, type)}
+                                                            title={copiedId === item.id ? 'Link copied!' : 'Share'}
+                                                            className="btn-redesign btn-redesign-secondary btn-redesign-sm p-2 rounded-lg flex items-center justify-center hover:bg-muted"
+                                                            type="button"
+                                                        >
+                                                            {copiedId === item.id ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4 text-muted-foreground" />}
+                                                        </button>
+                                                    </div>
+                                                </article>
+                                            );
+                                        })}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     )}
 
