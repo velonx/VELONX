@@ -131,7 +131,7 @@ Rules:
 - tip: must be specific to this job, not generic advice`;
 
     // Try models in order of preference
-    const modelCandidates = ["gemini-3.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+    const modelCandidates = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.0-flash"];
     let response;
     let success = false;
     let lastError: any = null;
@@ -188,6 +188,7 @@ Rules:
 
 /**
  * Matches a user profile against an array of job posts, returning them sorted by match score descending.
+ * Sequentially checks cache to prevent 429 rate limit errors for Tier 1 keys.
  */
 export async function getRecommendedJobs(userProfile: any, jobsArray: any[]): Promise<any[]> {
   try {
@@ -201,17 +202,40 @@ export async function getRecommendedJobs(userProfile: any, jobsArray: any[]): Pr
       }
     }
 
-    const matchedJobs = await Promise.all(
-      filteredJobs.map(async (job) => {
-        const matchResult = await matchUserToJob(userProfile, job);
-        const jobObj = typeof job.toObject === "function" ? job.toObject() : { ...job };
-        return {
-          ...jobObj,
-          aiScore: matchResult.score,
-          verdict: matchResult.verdict
-        };
-      })
-    );
+    const matchedJobs: any[] = [];
+    const userId = userProfile?.id || userProfile?._id?.toString();
+
+    for (const job of filteredJobs) {
+      const jobId = job.id || job._id?.toString();
+      let matchResult: MatchResult | null = null;
+
+      // 1. Try to read from cache first (no API call, avoids rate limit)
+      if (userId && jobId) {
+        const redisKey = `match:${userId}:${jobId}`;
+        try {
+          const redis = getRedisClient();
+          const cached = await redis.get<any>(redisKey);
+          if (cached) {
+            matchResult = typeof cached === "string" ? JSON.parse(cached) : (cached as MatchResult);
+          }
+        } catch (redisError) {
+          console.error(`[Redis Error] Failed to read recommendation cache for ${userId}:${jobId}:`, redisError);
+        }
+      }
+
+      // 2. Cache miss: trigger Gemini API call with a 400ms safety delay to prevent 429 rate limits
+      if (!matchResult) {
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        matchResult = await matchUserToJob(userProfile, job);
+      }
+
+      const jobObj = typeof job.toObject === "function" ? job.toObject() : { ...job };
+      matchedJobs.push({
+        ...jobObj,
+        aiScore: matchResult.score,
+        verdict: matchResult.verdict
+      });
+    }
 
     return matchedJobs.sort((a, b) => b.aiScore - a.aiScore);
   } catch (error) {

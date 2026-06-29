@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   if (process.env.GEMINI_API_KEY) {
     diagnostics.gemini = { models: {} };
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const modelCandidates = ["gemini-3.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+    const modelCandidates = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.0-flash"];
     
     for (const mName of modelCandidates) {
       try {
