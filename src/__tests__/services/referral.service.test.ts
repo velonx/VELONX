@@ -5,12 +5,12 @@ import {
   createReferralRelationship,
   checkAndAwardProfileCompletion,
   checkAndAwardFirstActivity
-} from '@/lib/services/referral.service';
-import { prisma } from '@/lib/prisma';
-import { awardXP } from '@/lib/utils/xp';
+} from '../../lib/services/referral.service';
+import { prisma } from '../../lib/prisma';
+import { awardXP } from '../../lib/utils/xp';
 
 // Mock dependencies
-vi.mock('@/lib/prisma', () => ({
+vi.mock('../../lib/prisma', () => ({
   prisma: {
     user: {
       findUnique: vi.fn(),
@@ -24,7 +24,7 @@ vi.mock('@/lib/prisma', () => ({
   },
 }));
 
-vi.mock('@/lib/utils/xp', () => ({
+vi.mock('../../lib/utils/xp', () => ({
   awardXP: vi.fn(),
   XP_REWARDS: {
     REFERRAL_SIGNUP: 25,
@@ -197,6 +197,7 @@ describe('Referral Service', () => {
         name: 'John Doe',
         bio: 'Software developer',
         image: 'https://example.com/avatar.jpg',
+        resumeUrl: 'https://example.com/resume.pdf',
       };
       
       vi.mocked(prisma.referralRelationship.findFirst).mockResolvedValue(mockRelationship as any);
@@ -286,6 +287,7 @@ describe('Referral Service', () => {
         name: 'John Doe',
         bio: 'Software developer',
         image: 'https://example.com/avatar.jpg',
+        resumeUrl: 'https://example.com/resume.pdf',
       };
       
       vi.mocked(prisma.referralRelationship.findFirst).mockResolvedValue(mockRelationship as any);
