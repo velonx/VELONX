@@ -19,6 +19,7 @@ export class BlogService {
     tag?: string;
     search?: string;
     includesDrafts?: boolean;
+    sortBy?: string;
   }) {
     const {
       page = 1,
@@ -28,6 +29,7 @@ export class BlogService {
       tag,
       search,
       includesDrafts = false,
+      sortBy,
     } = params;
 
     // Build where clause for filtering
@@ -77,9 +79,7 @@ export class BlogService {
         },
         skip: (page - 1) * pageSize,
         take: pageSize,
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy: sortBy === "views" ? { views: "desc" } : { createdAt: "desc" },
       }),
       prisma.blogPost.count({ where }),
     ]);

@@ -147,15 +147,6 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
         return "badge-pink";
     };
 
-    const getBookSessionLink = () => {
-        if (!post.author?.name) return "/mentors";
-        const authorLower = post.author.name.toLowerCase();
-        if (authorLower.includes("staff") || authorLower.includes("team") || authorLower.includes("editorial")) {
-            return "/mentors";
-        }
-        return `/mentors?mentor=${post.author.name.toLowerCase().replace(/\s+/g, '-')}`;
-    };
-
     return (
         <div className="min-h-screen pt-24 bg-background pb-20 selection:bg-primary/30">
             {/* Reading Progress Bar */}
@@ -325,45 +316,6 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
                     className="w-full"
                 >
                     
-                    {/* Widget 1: About the Author */}
-                    {post.author && (
-                        <div className="p-sidebar-widget text-left">
-                            <h3 className="p-widget-title">The Author</h3>
-                            <div className="flex items-center gap-3 mb-4">
-                                {post.author.image ? (
-                                    <Image
-                                        src={post.author.image}
-                                        alt={post.author.name || "Author"}
-                                        width={48}
-                                        height={48}
-                                        className="rounded-full object-cover ring-2 ring-primary/20"
-                                    />
-                                ) : (
-                                    <div className="p-author-avatar w-12 h-12 text-sm font-black">
-                                        {(post.author.name || "V").split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
-                                    </div>
-                                )}
-                                <div>
-                                    <div className="font-bold text-foreground text-base leading-tight">{post.author.name || "Velonx Team"}</div>
-                                    <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Author</div>
-                                </div>
-                            </div>
-                            
-                            {post.author.bio && (
-                                <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-                                    {post.author.bio}
-                                </p>
-                            )}
-                            
-                            <Link 
-                                href={getBookSessionLink()} 
-                                className="btn-redesign btn-redesign-secondary btn-redesign-sm w-full text-center flex items-center justify-center font-bold"
-                            >
-                                Book session with {post.author.name ? post.author.name.split(' ')[0] : 'Author'}
-                            </Link>
-                        </div>
-                    )}
-
                     {/* Widget 2: Related/Trending Guides */}
                     {relatedPosts.length > 0 && (
                         <div className="p-sidebar-widget text-left">

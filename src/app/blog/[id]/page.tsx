@@ -105,65 +105,33 @@ export default async function BlogPostPage({ params }: Props) {
       keywords: post.tags?.join(", "),
     };
 
-    // Fetch related posts by first tag, exclude current post
-    if (post.tags && post.tags.length > 0) {
-      try {
-        const related = await blogService.listBlogPosts({
-          tag: post.tags[0],
-          status: "PUBLISHED",
-          pageSize: 4,
-        });
-        relatedPosts = related.blogPosts
-          .filter((p) => p.id !== id)
-          .slice(0, 3)
-          .map((p) => ({
-            id: p.id,
-            slug: p.slug,
-            title: p.title,
-            excerpt: p.excerpt,
-            imageUrl: p.imageUrl,
-            tags: p.tags,
-            publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-            createdAt: p.createdAt.toISOString(),
-            views: p.views,
-            content: p.content,
-            author: p.author
-              ? { name: p.author.name, image: p.author.image }
-              : null,
-          }));
-      } catch {
-        // Related posts are non-critical — fail silently
-      }
-    }
-
-    // If no tag-based related posts found, fetch latest posts instead
-    if (relatedPosts.length === 0) {
-      try {
-        const latest = await blogService.listBlogPosts({
-          status: "PUBLISHED",
-          pageSize: 4,
-        });
-        relatedPosts = latest.blogPosts
-          .filter((p) => p.id !== id)
-          .slice(0, 3)
-          .map((p) => ({
-            id: p.id,
-            slug: p.slug,
-            title: p.title,
-            excerpt: p.excerpt,
-            imageUrl: p.imageUrl,
-            tags: p.tags,
-            publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-            createdAt: p.createdAt.toISOString(),
-            views: p.views,
-            content: p.content,
-            author: p.author
-              ? { name: p.author.name, image: p.author.image }
-              : null,
-          }));
-      } catch {
-        // Non-critical
-      }
+    // Fetch trending posts by views, excluding the current post
+    try {
+      const trending = await blogService.listBlogPosts({
+        status: "PUBLISHED",
+        pageSize: 4,
+        sortBy: "views",
+      });
+      relatedPosts = trending.blogPosts
+        .filter((p: any) => p.id !== id)
+        .slice(0, 3)
+        .map((p: any) => ({
+          id: p.id,
+          slug: p.slug,
+          title: p.title,
+          excerpt: p.excerpt,
+          imageUrl: p.imageUrl,
+          tags: p.tags,
+          publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
+          createdAt: p.createdAt.toISOString(),
+          views: p.views,
+          content: p.content,
+          author: p.author
+            ? { name: p.author.name, image: p.author.image }
+            : null,
+        }));
+    } catch {
+      // Non-critical — fail silently
     }
   } catch {
     // If post not found, JSON-LD is omitted — 404 handled client-side
