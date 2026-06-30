@@ -54,7 +54,7 @@ bash
 npx prisma db push
 4. Run Development Server
 bash
-npm run dev
+npm run dev:next
 Open http://localhost:3000
 
 📁 Project Structure

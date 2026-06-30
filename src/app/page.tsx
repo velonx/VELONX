@@ -611,22 +611,22 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                tag: "Web Dev", tagColor: "bg-[#226CE0]/10 text-[#226CE0] dark:bg-[#226CE0]/20 dark:text-[#7096D1]",
-                                stars: "⭐ 42", title: "DevClans — Teammate Finder",
-                                desc: "A real-time workspace for developers to find hackathon team members matching complementary stack profiles. Powered by WebSockets.",
-                                author: "Suresh P. (LPU)", hoverShadow: "hover:shadow-[0_20px_40px_rgba(34,108,224,0.1)] hover:border-[#226ce0]/30"
+                                tag: "Social Impact", tagColor: "bg-[#226CE0]/10 text-[#226CE0] dark:bg-[#226CE0]/20 dark:text-[#7096D1]",
+                                stars: "⭐ 64", title: "UnityDrive",
+                                desc: "An NGO Connect Platform bridging the gap between nonprofits and volunteers. Enables real-time coordination, campaign management, and meaningful community-driven change.",
+                                author: "Velonx Community", liveUrl: "https://unitydrive.netlify.app", hoverShadow: "hover:shadow-[0_20px_40px_rgba(34,108,224,0.1)] hover:border-[#226ce0]/30"
                             },
                             {
-                                tag: "Blockchain", tagColor: "bg-[#F0771A]/10 text-[#F0771A] dark:bg-[#F0771A]/20 dark:text-orange-400",
-                                stars: "⭐ 58", title: "SolPay Checkout SDK",
-                                desc: "Minimalist drop-in React widget for merchants to accept instant USDC payments on Solana network with sub-second finality.",
-                                author: "Sneha G. (KIIT)", hoverShadow: "hover:shadow-[0_20px_40px_rgba(240,119,26,0.1)] hover:border-[#f0771a]/30"
+                                tag: "Web App", tagColor: "bg-[#F0771A]/10 text-[#F0771A] dark:bg-[#F0771A]/20 dark:text-orange-400",
+                                stars: "⭐ 91", title: "KeyRacer",
+                                desc: "A competitive real-time typing race platform where developers sharpen their keyboard speed. Features live multiplayer races, leaderboards, and code-snippet challenges.",
+                                author: "Velonx Community", liveUrl: "https://keyracer.in", hoverShadow: "hover:shadow-[0_20px_40px_rgba(240,119,26,0.1)] hover:border-[#f0771a]/30"
                             },
                             {
                                 tag: "System Design", tagColor: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
                                 stars: "⭐ 37", title: "EduChain Certificates",
                                 desc: "Decentralized registry built using Solidity smart contracts for universities to issue fraud-proof verifiable degree transcripts.",
-                                author: "Rahul S. (VIT)", hoverShadow: "hover:shadow-[0_20px_40px_rgba(16,185,129,0.1)] hover:border-emerald-500/30"
+                                author: "Rahul S. (VIT)", liveUrl: "/projects", hoverShadow: "hover:shadow-[0_20px_40px_rgba(16,185,129,0.1)] hover:border-emerald-500/30"
                             }
                         ].map((proj, idx) => (
                             <motion.div
@@ -646,7 +646,7 @@ export default function Home() {
                                 <p className="text-muted-foreground text-sm leading-relaxed mb-6">{proj.desc}</p>
                                 <div className="flex justify-between items-center pt-4 border-t border-border/35 mt-auto">
                                     <span className="text-xs text-muted-foreground">{proj.author}</span>
-                                    <Link href="/projects" className="text-primary hover:underline text-sm font-bold flex items-center gap-1">Explore <ArrowRight className="w-3.5 h-3.5" /></Link>
+                                    <a href={proj.liveUrl} target={proj.liveUrl.startsWith("http") ? "_blank" : "_self"} rel="noopener noreferrer" className="text-primary hover:underline text-sm font-bold flex items-center gap-1">Explore <ArrowRight className="w-3.5 h-3.5" /></a>
                                 </div>
                             </motion.div>
                         ))}
@@ -667,7 +667,7 @@ export default function Home() {
             </SectionReveal>
 
             {/* ==================== 6. HACKATHONS & EVENTS ==================== */}
-            <SectionReveal className="py-20 border-t border-border/30 relative z-10">
+            {/* <SectionReveal className="py-20 border-t border-border/30 relative z-10">
                 <div className="container mx-auto px-6 max-w-6xl">
                     <SectionHeader
                         label="Skill Battles"
@@ -745,7 +745,7 @@ export default function Home() {
                         ))}
                     </div>
                 </div>
-            </SectionReveal>
+            </SectionReveal> */}
 
             {/* ==================== 7. MENTORS SPOTLIGHT ==================== */}
             <SectionReveal className="py-20 border-t border-border/30 relative z-10">
@@ -950,21 +950,21 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                badge: "✔ Placed at Razorpay — ₹22 LPA", badgeColor: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600",
-                                quote: "\"I came from a no-name college in Bihar. Velonx's project hub and mentor sessions changed my life. Got a full-time offer in just 4 months.\"",
-                                initials: "PN", name: "Priya Nair", sub: "Amrita University · SWE @ Razorpay",
+                                badge: "✔ Full Stack developer and vice president", badgeColor: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600",
+                                quote: "\"I came from a no-name college in Bhopal. Velonx's project was a huge opportunity and it changed my life.\"",
+                                initials: "RL", name: "Ritika Lodhi", sub: "Barkatullah University · Co-founder @ Velonx",
                                 avatarColor: "bg-primary/10 text-primary ring-primary/10"
                             },
                             {
-                                badge: "✔ Won Solana Hackathon — ₹1.5L prize", badgeColor: "bg-amber-500/10 border border-amber-500/20 text-amber-600",
-                                quote: "\"The hackathon community on Velonx is unreal. Found my co-founder here, won my first prize, and now we are building a startup together.\"",
-                                initials: "DB", name: "Devraj Bansal", sub: "Thapar University · Co-founder @ BuildAI",
+                                badge: "✔ Full Stack Devloper and precident of Velonx", badgeColor: "bg-amber-500/10 border border-amber-500/20 text-amber-600",
+                                quote: "\"The community on Velonx is unreal. Found my team and now we are building a startup together.\"",
+                                initials: "RP", name: "Rishi Pandey", sub: "Barkatullah University · precident @ Velonx",
                                 avatarColor: "bg-accent/10 text-accent ring-accent/10"
                             },
                             {
-                                badge: "✔ Internship at Google via Velonx", badgeColor: "bg-purple-500/10 border border-purple-500/20 text-purple-600",
-                                quote: "\"I had zero connections from my college. The blind-screen career pipeline at Velonx meant my college tag didn't matter — only my GitHub did.\"",
-                                initials: "SK", name: "Simran Kaur", sub: "PEC Chandigarh · SWE Intern @ Google",
+                                badge: "✔ AI/ML Head and Vice president", badgeColor: "bg-purple-500/10 border border-purple-500/20 text-purple-600",
+                                quote: "\"I came from a no-name college in Bhopal. Velonx's project was a huge opportunity and it changed my life.\"",
+                                initials: "MD", name: "Mahak Dangi", sub: "Barkatullah University · Co-founder @ Velonx",
                                 avatarColor: "bg-emerald-500/10 text-emerald-600 ring-emerald-500/10"
                             }
                         ].map((t, idx) => (
