@@ -241,7 +241,7 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
 
                     {/* Cover image banner */}
                     {post.imageUrl && (
-                        <div className="w-full rounded-2xl overflow-hidden mb-12 border border-border/10 relative aspect-video bg-linear-to-br from-primary/10 to-primary/5">
+                        <div className="w-full rounded-2xl overflow-hidden mb-8 border border-border/10 relative aspect-video bg-linear-to-br from-primary/10 to-primary/5">
                             <Image
                                 src={post.imageUrl}
                                 alt={post.title}

@@ -7,7 +7,7 @@
   .rich-text-content {
     @apply prose prose-lg max-w-none transition-colors duration-300;
     @apply prose-headings:font-black prose-headings:tracking-tight prose-headings:text-[#1A234A];
-    @apply prose-p:text-gray-700 prose-p:leading-[1.8] prose-p:mb-8;
+    @apply prose-p:text-gray-700 prose-p:leading-[1.8] prose-p:mb-6;
     @apply prose-a:text-[#226CE0] prose-a:no-underline hover:prose-a:underline prose-a:font-bold;
     @apply prose-strong:text-[#1A234A] prose-strong:font-black;
     @apply prose-ul:list-disc prose-ol:list-decimal prose-li:mb-2;
@@ -4931,7 +4931,7 @@ body {
   gap: 1.5rem;
   border-bottom: 1px solid var(--border);
   padding-bottom: 1.25rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
   flex-wrap: wrap;
 }
 
@@ -4958,9 +4958,7 @@ body {
   color: var(--text-secondary);
   font-size: 1.0625rem;
   line-height: 1.8;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  display: block;
 }
 
 .p-article-content h2 {
