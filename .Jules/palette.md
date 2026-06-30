@@ -24,3 +24,6 @@
 ## 2024-05-20 - Announcing Share Button State in PostCard
 **Learning:** When a button briefly changes text (e.g., from "Share" to "Copied") without moving focus or opening a dialog, screen readers miss the feedback because there's no live region alert.
 **Action:** Add `aria-live="polite"` to buttons with temporary text state changes (like "Copied" indicators) to ensure screen readers announce the success state without interrupting the user.
+## 2026-06-30 - Announcing Share/Copy Button State
+**Learning:** When a copy/share button briefly changes text (e.g., from "Share" to "Copied") without moving focus or opening a dialog, screen readers miss the feedback because there's no live region alert. This issue was found across multiple components (ProjectCard, GroupCard, ResourceCard, ReferralCodeDisplay).
+**Action:** Add `aria-live="polite"` and a dynamic `aria-label` (e.g., `aria-label={copied ? 'Link copied!' : 'Share ' + title}`) to buttons with temporary text state changes to ensure screen readers announce the success state without interrupting the user.

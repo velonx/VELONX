@@ -274,7 +274,8 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
           onClick={handleShare}
           title={copied ? 'Link copied!' : 'Share'}
           className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"
-          aria-label={`Share ${resource.title}`}
+          aria-label={copied ? 'Link copied!' : `Share ${resource.title}`}
+          aria-live="polite"
         >
           {copied ? (
             <Check className="h-3.5 w-3.5 text-green-500" aria-hidden="true" />

@@ -198,7 +198,8 @@ export function GroupCard({
           size="icon"
           title={copied ? 'Link copied!' : 'Share'}
           className="shrink-0"
-          aria-label={`Share ${group.name}`}
+          aria-label={copied ? 'Link copied!' : `Share ${group.name}`}
+          aria-live="polite"
         >
           {copied ? (
             <Check className="h-4 w-4 text-green-500" aria-hidden="true" />

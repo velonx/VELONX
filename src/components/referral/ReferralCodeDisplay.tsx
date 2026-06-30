@@ -92,6 +92,7 @@ export const ReferralCodeDisplay: React.FC<ReferralCodeDisplayProps> = ({ code, 
                 copiedCode && 'bg-green-500/10 border-green-500 text-green-600 dark:text-green-400'
               )}
               aria-label={copiedCode ? 'Code copied' : 'Copy referral code'}
+              aria-live="polite"
             >
               {copiedCode ? (
                 <Check className="h-4 w-4" aria-hidden="true" />
@@ -124,6 +125,7 @@ export const ReferralCodeDisplay: React.FC<ReferralCodeDisplayProps> = ({ code, 
                 copiedLink && 'bg-green-500/10 border-green-500 text-green-600 dark:text-green-400'
               )}
               aria-label={copiedLink ? 'Link copied' : 'Copy referral link'}
+              aria-live="polite"
             >
               {copiedLink ? (
                 <Check className="h-4 w-4" aria-hidden="true" />
