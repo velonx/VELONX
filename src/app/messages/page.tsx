@@ -131,7 +131,7 @@ function ConversationList({
             className="w-full pl-9 pr-8 py-2 bg-muted/50 border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
           {search && (
-            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2">
+            <button aria-label="Clear search" onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2">
               <X className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
           )}
@@ -457,7 +457,7 @@ function ChatThread({
     <div className="flex flex-col h-full">
       {/* Chat Header */}
       <div className="flex items-center gap-3 p-4 border-b border-border bg-card/50 backdrop-blur-sm">
-        <button onClick={onBack} className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
+        <button aria-label="Go back" onClick={onBack} className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-5 h-5" />
         </button>
         {otherUser && (
