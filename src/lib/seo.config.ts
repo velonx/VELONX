@@ -88,7 +88,7 @@ export const defaultMetadata: Metadata = {
         },
     },
     verification: {
-        google: 'your-google-verification-code', // Add your Google Search Console verification code
+        google: process.env.GOOGLE_VERIFICATION_CODE || process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE || undefined,
         // yandex: 'your-yandex-verification-code',
         // bing: 'your-bing-verification-code',
     },

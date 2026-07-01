@@ -11,7 +11,12 @@ import type { BlogPost } from "@/lib/api/types";
 import { BlogHeroSkeleton, BlogCardSkeleton, BoneyardLoader } from "@/components/boneyard";
 import { analytics } from "@/components/analytics";
 
-export default function BlogClient() {
+interface BlogClientProps {
+    initialPosts?: BlogPost[];
+    initialPagination?: any;
+}
+
+export default function BlogClient({ initialPosts = [], initialPagination = null }: BlogClientProps) {
     const [searchInput, setSearchInput] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All Posts");
@@ -57,7 +62,7 @@ export default function BlogClient() {
         page,
         search: debouncedSearch || undefined,
         tag: selectedCategory !== "All Posts" ? selectedCategory : undefined,
-    });
+    }, initialPosts, initialPagination);
 
     const [availableCategories, setAvailableCategories] = useState<string[]>(["All Posts"]);
 

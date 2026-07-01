@@ -348,7 +348,7 @@ export default function Home() {
                             width={900}
                             height={675}
                             priority
-                            className="w-full h-auto object-contain rounded-2xl relative z-[1] drop-shadow-[0_8px_30px_rgba(34,108,224,0.12)]"
+                            className="w-full h-auto object-contain rounded-2xl relative z-1 drop-shadow-[0_8px_30px_rgba(34,108,224,0.12)]"
                         />
 
 
@@ -463,7 +463,7 @@ export default function Home() {
                                     {card.icon}
                                 </div>
                                 <p className="text-[11px] font-bold text-[#1A234A] dark:text-white leading-tight">{card.title}</p>
-                                <p className="text-[9px] text-muted-foreground leading-tight max-w-[90px]">{card.desc}</p>
+                                <p className="text-[9px] text-muted-foreground leading-tight max-w-22.5">{card.desc}</p>
                             </motion.div>
                         ))}
                     </motion.div>
@@ -950,20 +950,20 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                badge: "✔ Full Stack developer and vice president", badgeColor: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600",
+                                badge: "✔ Full Stack Developer & Vice President", badgeColor: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600",
                                 quote: "\"I came from a no-name college in Bhopal. Velonx's project was a huge opportunity and it changed my life.\"",
                                 initials: "RL", name: "Ritika Lodhi", sub: "Barkatullah University · Co-founder @ Velonx",
                                 avatarColor: "bg-primary/10 text-primary ring-primary/10"
                             },
                             {
-                                badge: "✔ Full Stack Devloper and precident of Velonx", badgeColor: "bg-amber-500/10 border border-amber-500/20 text-amber-600",
+                                badge: "✔ Full Stack Developer & President", badgeColor: "bg-amber-500/10 border border-amber-500/20 text-amber-600",
                                 quote: "\"The community on Velonx is unreal. Found my team and now we are building a startup together.\"",
-                                initials: "RP", name: "Rishi Pandey", sub: "Barkatullah University · precident @ Velonx",
+                                initials: "RP", name: "Rishi Pandey", sub: "Barkatullah University · President @ Velonx",
                                 avatarColor: "bg-accent/10 text-accent ring-accent/10"
                             },
                             {
-                                badge: "✔ AI/ML Head and Vice president", badgeColor: "bg-purple-500/10 border border-purple-500/20 text-purple-600",
-                                quote: "\"I came from a no-name college in Bhopal. Velonx's project was a huge opportunity and it changed my life.\"",
+                                badge: "✔ AI/ML Lead & Vice President", badgeColor: "bg-purple-500/10 border border-purple-500/20 text-purple-600",
+                                quote: "\"Working on real-world AI projects at Velonx gave me the practical engineering experience that classroom lectures couldn't. It completely transformed my technical capability.\"",
                                 initials: "MD", name: "Mahak Dangi", sub: "Barkatullah University · Co-founder @ Velonx",
                                 avatarColor: "bg-emerald-500/10 text-emerald-600 ring-emerald-500/10"
                             }

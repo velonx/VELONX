@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   eventsApi,
   projectsApi,
@@ -113,14 +113,24 @@ function useApiResource<T>(
 // Generic hook for paginated resources
 function usePaginatedApiResource<T>(
   fetcher: () => Promise<{ success: true; data: T[]; pagination: any }>,
-  dependencies: any[] = []
+  dependencies: any[] = [],
+  initialData?: T[],
+  initialPagination?: any
 ): UsePaginatedApiState<T> {
-  const [data, setData] = useState<T[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<T[]>(initialData || []);
+  const [loading, setLoading] = useState(initialData ? false : true);
   const [error, setError] = useState<ApiClientError | null>(null);
-  const [pagination, setPagination] = useState<any>(null);
+  const [pagination, setPagination] = useState<any>(initialPagination || null);
+
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
+    // If we have initial data, skip the first fetch on mount to prevent double request.
+    if (isInitialMount.current && initialData && initialData.length > 0) {
+      isInitialMount.current = false;
+      return;
+    }
+
     let cancelled = false;
     
     const fetchData = async () => {
@@ -286,10 +296,12 @@ export function useResource(id: string) {
 }
 
 // Blog hooks
-export function useBlogPosts(filters?: BlogFilters) {
+export function useBlogPosts(filters?: BlogFilters, initialData?: BlogPost[], initialPagination?: any) {
   return usePaginatedApiResource<BlogPost>(
     () => blogApi.list(filters),
-    [JSON.stringify(filters)]
+    [JSON.stringify(filters)],
+    initialData,
+    initialPagination
   );
 }
 
