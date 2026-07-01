@@ -117,6 +117,26 @@ export class EmailService {
     }
 
     /**
+     * Send profile completion reminder email
+     */
+    static async sendProfileCompletionEmail(user: { email: string; name: string | null }) {
+        const { render } = await import('@react-email/components');
+        const { ProfileCompletionEmail } = await import('@/emails/profile-completion');
+
+        const html = await render(
+            ProfileCompletionEmail({
+                userName: user.name || 'there',
+            })
+        );
+
+        return this.sendWithRetry(
+            user.email,
+            'Complete your VELONX profile to unlock AI matching & networking! 🚀',
+            html
+        );
+    }
+
+    /**
      * Send badge earned notification email
      */
     static async sendBadgeEarnedEmail(

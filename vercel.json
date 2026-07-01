@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/digest-email?frequency=WEEKLY",
       "schedule": "0 8 * * 1"
+    },
+    {
+      "path": "/api/cron/profile-completion",
+      "schedule": "0 9 * * 1"
     }
   ]
 }
