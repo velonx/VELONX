@@ -10,6 +10,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   try {
     const post = await blogService.getBlogPostById(id, false);
+    if (!post) {
+      console.warn(`[SEO generateMetadata] Blog post not found for ID/slug: ${id}`);
+      return {
+        title: "Blog Article | Velonx Insights",
+        description: "Read the latest tech articles and community stories on Velonx Insights.",
+      };
+    }
     const excerpt =
       post.excerpt ||
       (post.content
@@ -18,6 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
     const postSlugOrId = post.slug || id;
     const postUrl = `${siteUrl}/blog/${postSlugOrId}`;
+    const authorName = post.author?.name || "Velonx Team";
+    const tags = post.tags || [];
 
     return {
       title: `${post.title} | Velonx Insights`,
@@ -31,9 +40,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         publishedTime: post.publishedAt
           ? new Date(post.publishedAt).toISOString()
           : undefined,
-        modifiedTime: new Date(post.updatedAt).toISOString(),
-        authors: post.author?.name ? [post.author.name] : ["Velonx Team"],
-        tags: post.tags,
+        modifiedTime: post.updatedAt
+          ? new Date(post.updatedAt).toISOString()
+          : new Date().toISOString(),
+        authors: [authorName],
+        tags: tags,
         images: post.imageUrl
           ? [{ url: post.imageUrl, width: 1200, height: 630, alt: post.title }]
           : [],
@@ -45,7 +56,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         images: post.imageUrl ? [post.imageUrl] : [],
       },
     };
-  } catch {
+  } catch (err) {
+    console.error(`[SEO generateMetadata] Failed to generate blog metadata for ID/slug: ${id}`, err);
     return {
       title: "Blog Article | Velonx Insights",
       description:

@@ -88,7 +88,11 @@ export const defaultMetadata: Metadata = {
         },
     },
     verification: {
-        google: process.env.GOOGLE_VERIFICATION_CODE || process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE || undefined,
+        google: (process.env.GOOGLE_VERIFICATION_CODE && process.env.GOOGLE_VERIFICATION_CODE !== 'your-google-verification-code')
+            ? process.env.GOOGLE_VERIFICATION_CODE
+            : (process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE && process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE !== 'your-google-verification-code')
+                ? process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE
+                : undefined,
         // yandex: 'your-yandex-verification-code',
         // bing: 'your-bing-verification-code',
     },

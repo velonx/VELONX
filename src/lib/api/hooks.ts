@@ -266,10 +266,12 @@ export function useProject(id: string) {
 }
 
 // Mentors hooks
-export function useMentors(filters?: MentorFilters) {
+export function useMentors(filters?: MentorFilters, initialData?: Mentor[], initialPagination?: any) {
   return usePaginatedApiResource<Mentor>(
     () => mentorsApi.list(filters),
-    [JSON.stringify(filters)]
+    [JSON.stringify(filters)],
+    initialData,
+    initialPagination
   );
 }
 
