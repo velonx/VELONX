@@ -11,21 +11,21 @@ import { Sparkles, Check, ChevronRight, ChevronLeft, Award, AwardIcon, Github, L
 import Image from 'next/image';
 
 const AVATARS = [
-  { id: 1, name: 'Tech Explorer', src: '/avatars/1.jpg', rarity: 'Common', color: 'from-gray-500 to-gray-600' },
-  { id: 2, name: 'Cyber Nomad', src: '/avatars/2.jpg', rarity: 'Common', color: 'from-gray-500 to-gray-600' },
-  { id: 3, name: 'Data Wizard', src: '/avatars/3.jpg', rarity: 'Common', color: 'from-gray-500 to-gray-600' },
-  { id: 4, name: 'Cloud Voyager', src: '/avatars/4.jpg', rarity: 'Common', color: 'from-gray-500 to-gray-600' },
-  { id: 5, name: 'Neural Hacker', src: '/avatars/5.jpg', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
-  { id: 6, name: 'Logic Catalyst', src: '/avatars/6.jpg', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
-  { id: 7, name: 'Pixel Architect', src: '/avatars/7.jpg', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
-  { id: 8, name: 'Quantum Ranger', src: '/avatars/8.jpg', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
-  { id: 9, name: 'Velo Maverick', src: '/avatars/9.jpg', rarity: 'Epic', color: 'from-violet-500 to-purple-500' },
-  { id: 10, name: 'Shadow Scribe', src: '/avatars/10.jpg', rarity: 'Epic', color: 'from-violet-500 to-purple-500' },
-  { id: 11, name: 'Apex Sentinel', src: '/avatars/11.jpg', rarity: 'Epic', color: 'from-violet-500 to-purple-500' },
-  { id: 12, name: 'Nova Wanderer', src: '/avatars/12.jpg', rarity: 'Epic', color: 'from-violet-500 to-purple-500' },
-  { id: 13, name: 'Cosmic Overlord', src: '/avatars/13.jpg', rarity: 'Legendary', color: 'from-yellow-500 to-orange-500' },
-  { id: 14, name: 'Synth Oracle', src: '/avatars/14.jpg', rarity: 'Legendary', color: 'from-yellow-500 to-orange-500' },
-  { id: 15, name: 'Genesis Prime', src: '/avatars/15.jpg', rarity: 'Legendary', color: 'from-yellow-500 to-orange-500' },
+  { id: 1, name: 'Tech Explorer', src: '/avatars/1.jpeg', rarity: 'Common', color: 'from-gray-500 to-gray-600' },
+  { id: 2, name: 'Cyber Nomad', src: '/avatars/2.jpeg', rarity: 'Common', color: 'from-gray-500 to-gray-600' },
+  { id: 3, name: 'Data Wizard', src: '/avatars/3.jpeg', rarity: 'Common', color: 'from-gray-500 to-gray-600' },
+  { id: 4, name: 'Cloud Voyager', src: '/avatars/4.jpeg', rarity: 'Common', color: 'from-gray-500 to-gray-600' },
+  { id: 5, name: 'Neural Hacker', src: '/avatars/5.jpeg', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
+  { id: 6, name: 'Logic Catalyst', src: '/avatars/6.jpeg', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
+  { id: 7, name: 'Pixel Architect', src: '/avatars/7.jpeg', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
+  { id: 8, name: 'Quantum Ranger', src: '/avatars/8.jpeg', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
+  { id: 9, name: 'Velo Maverick', src: '/avatars/9.jpeg', rarity: 'Epic', color: 'from-violet-500 to-purple-500' },
+  { id: 10, name: 'Shadow Scribe', src: '/avatars/10.jpeg', rarity: 'Epic', color: 'from-violet-500 to-purple-500' },
+  { id: 11, name: 'Apex Sentinel', src: '/avatars/11.jpeg', rarity: 'Epic', color: 'from-violet-500 to-purple-500' },
+  { id: 12, name: 'Nova Wanderer', src: '/avatars/12.jpeg', rarity: 'Epic', color: 'from-violet-500 to-purple-500' },
+  { id: 13, name: 'Cosmic Overlord', src: '/avatars/13.jpeg', rarity: 'Legendary', color: 'from-yellow-500 to-orange-500' },
+  { id: 14, name: 'Synth Oracle', src: '/avatars/14.jpeg', rarity: 'Legendary', color: 'from-yellow-500 to-orange-500' },
+  { id: 15, name: 'Genesis Prime', src: '/avatars/15.jpeg', rarity: 'Legendary', color: 'from-yellow-500 to-orange-500' },
 ];
 
 // Simple, lightweight client-side confetti particles
@@ -83,7 +83,7 @@ export function ProfileCompletionWizard() {
   const [submitting, setSubmitting] = useState(false);
 
   // Form states
-  const [avatar, setAvatar] = useState('/avatars/1.jpg');
+  const [avatar, setAvatar] = useState('/avatars/1.jpeg');
   const [bio, setBio] = useState('');
   const [headline, setHeadline] = useState('');
   const [college, setCollege] = useState('');

@@ -8,21 +8,21 @@ import Image from "next/image";
 
 // Available avatar options
 export const AVATAR_OPTIONS = [
-    { id: 1, name: "Tech Explorer", src: "/avatars/1.jpg", rarity: "Common" },
-    { id: 2, name: "Cyber Nomad", src: "/avatars/2.jpg", rarity: "Common" },
-    { id: 3, name: "Data Wizard", src: "/avatars/3.jpg", rarity: "Common" },
-    { id: 4, name: "Cloud Voyager", src: "/avatars/4.jpg", rarity: "Common" },
-    { id: 5, name: "Neural Hacker", src: "/avatars/5.jpg", rarity: "Rare" },
-    { id: 6, name: "Logic Catalyst", src: "/avatars/6.jpg", rarity: "Rare" },
-    { id: 7, name: "Pixel Architect", src: "/avatars/7.jpg", rarity: "Rare" },
-    { id: 8, name: "Quantum Ranger", src: "/avatars/8.jpg", rarity: "Rare" },
-    { id: 9, name: "Velo Maverick", src: "/avatars/9.jpg", rarity: "Epic" },
-    { id: 10, name: "Shadow Scribe", src: "/avatars/10.jpg", rarity: "Epic" },
-    { id: 11, name: "Apex Sentinel", src: "/avatars/11.jpg", rarity: "Epic" },
-    { id: 12, name: "Nova Wanderer", src: "/avatars/12.jpg", rarity: "Epic" },
-    { id: 13, name: "Cosmic Overlord", src: "/avatars/13.jpg", rarity: "Legendary" },
-    { id: 14, name: "Synth Oracle", src: "/avatars/14.jpg", rarity: "Legendary" },
-    { id: 15, name: "Genesis Prime", src: "/avatars/15.jpg", rarity: "Legendary" },
+    { id: 1, name: "Tech Explorer", src: "/avatars/1.jpeg", rarity: "Common" },
+    { id: 2, name: "Cyber Nomad", src: "/avatars/2.jpeg", rarity: "Common" },
+    { id: 3, name: "Data Wizard", src: "/avatars/3.jpeg", rarity: "Common" },
+    { id: 4, name: "Cloud Voyager", src: "/avatars/4.jpeg", rarity: "Common" },
+    { id: 5, name: "Neural Hacker", src: "/avatars/5.jpeg", rarity: "Rare" },
+    { id: 6, name: "Logic Catalyst", src: "/avatars/6.jpeg", rarity: "Rare" },
+    { id: 7, name: "Pixel Architect", src: "/avatars/7.jpeg", rarity: "Rare" },
+    { id: 8, name: "Quantum Ranger", src: "/avatars/8.jpeg", rarity: "Rare" },
+    { id: 9, name: "Velo Maverick", src: "/avatars/9.jpeg", rarity: "Epic" },
+    { id: 10, name: "Shadow Scribe", src: "/avatars/10.jpeg", rarity: "Epic" },
+    { id: 11, name: "Apex Sentinel", src: "/avatars/11.jpeg", rarity: "Epic" },
+    { id: 12, name: "Nova Wanderer", src: "/avatars/12.jpeg", rarity: "Epic" },
+    { id: 13, name: "Cosmic Overlord", src: "/avatars/13.jpeg", rarity: "Legendary" },
+    { id: 14, name: "Synth Oracle", src: "/avatars/14.jpeg", rarity: "Legendary" },
+    { id: 15, name: "Genesis Prime", src: "/avatars/15.jpeg", rarity: "Legendary" },
 ];
 
 const RARITY_COLORS: Record<string, string> = {
