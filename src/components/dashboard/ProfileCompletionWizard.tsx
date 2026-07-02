@@ -16,6 +16,7 @@ const AVATARS = [
   { id: 3, name: 'Space Cat', src: '/avatars/space-cat.png', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
   { id: 4, name: 'Wizard Owl', src: '/avatars/wizard-owl.png', rarity: 'Epic', color: 'from-violet-500 to-purple-500' },
   { id: 5, name: 'Punk Dog', src: '/avatars/punk-dog.png', rarity: 'Rare', color: 'from-cyan-500 to-blue-500' },
+  { id: 6, name: 'Cool', src: '/avatars/cool.png', rarity: 'Legendary', color: 'from-yellow-500 to-orange-500' },
 ];
 
 // Simple, lightweight client-side confetti particles

@@ -128,7 +128,7 @@ Comprehensive test coverage:
 - `student-onboarding.spec.ts` - Onboarding flow tests
 
 ### Static Assets (`public/`)
-- `avatars/` - Default avatar images (cool-ape, punk-dog, robot-hero, space-cat, wizard-owl)
+- `avatars/` - Default avatar images (cool, cool-ape, punk-dog, robot-hero, space-cat, wizard-owl)
 - `illustrations/` - Feature illustrations (community, mentor, projects) in light/dark variants
 - `images/` - General images (hero backgrounds, community illustrations)
 - `logo.png` - Platform logo

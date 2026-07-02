@@ -60,6 +60,7 @@ describe('User Account Settings - Integration Tests', () => {
           '/avatars/robot-hero.png',
           '/avatars/space-cat.png',
           '/avatars/wizard-owl.png',
+          '/avatars/cool.png',
         ];
         
         // Verify all predefined avatars have correct path format

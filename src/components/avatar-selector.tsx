@@ -13,6 +13,7 @@ export const AVATAR_OPTIONS = [
     { id: 3, name: "Space Cat", src: "/avatars/space-cat.png", rarity: "Rare" },
     { id: 4, name: "Wizard Owl", src: "/avatars/wizard-owl.png", rarity: "Epic" },
     { id: 5, name: "Punk Dog", src: "/avatars/punk-dog.png", rarity: "Rare" },
+    { id: 6, name: "Cool", src: "/avatars/cool.png", rarity: "Legendary" },
 ];
 
 const RARITY_COLORS: Record<string, string> = {
