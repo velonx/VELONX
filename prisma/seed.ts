@@ -28,7 +28,7 @@ async function main() {
       bio: 'Platform administrator',
       xp: 5000,
       level: 8,
-      image: '/avatars/robot-hero.png',
+      image: '/avatars/1.jpg',
     },
   });
 
@@ -42,7 +42,7 @@ async function main() {
         bio: 'Full-stack developer passionate about React and Node.js',
         xp: 2500,
         level: 5,
-        image: '/avatars/space-cat.png',
+        image: '/avatars/2.jpg',
       },
     }),
     prisma.user.create({
@@ -54,7 +54,7 @@ async function main() {
         bio: 'Data science enthusiast learning machine learning',
         xp: 1800,
         level: 4,
-        image: '/avatars/cool-ape.png',
+        image: '/avatars/3.jpg',
       },
     }),
     prisma.user.create({
@@ -66,7 +66,7 @@ async function main() {
         bio: 'UI/UX designer who codes',
         xp: 3200,
         level: 6,
-        image: '/avatars/wizard-owl.png',
+        image: '/avatars/4.jpg',
       },
     }),
     prisma.user.create({
@@ -78,7 +78,7 @@ async function main() {
         bio: 'Mobile app developer specializing in React Native',
         xp: 1200,
         level: 3,
-        image: '/avatars/punk-dog.png',
+        image: '/avatars/5.jpg',
       },
     }),
   ]);

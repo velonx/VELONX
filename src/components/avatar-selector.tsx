@@ -8,12 +8,21 @@ import Image from "next/image";
 
 // Available avatar options
 export const AVATAR_OPTIONS = [
-    { id: 1, name: "Cool Ape", src: "/avatars/cool-ape.png", rarity: "Epic" },
-    { id: 2, name: "Robot Hero", src: "/avatars/robot-hero.png", rarity: "Legendary" },
-    { id: 3, name: "Space Cat", src: "/avatars/space-cat.png", rarity: "Rare" },
-    { id: 4, name: "Wizard Owl", src: "/avatars/wizard-owl.png", rarity: "Epic" },
-    { id: 5, name: "Punk Dog", src: "/avatars/punk-dog.png", rarity: "Rare" },
-    { id: 6, name: "Cool", src: "/avatars/cool.png", rarity: "Legendary" },
+    { id: 1, name: "Tech Explorer", src: "/avatars/1.jpg", rarity: "Common" },
+    { id: 2, name: "Cyber Nomad", src: "/avatars/2.jpg", rarity: "Common" },
+    { id: 3, name: "Data Wizard", src: "/avatars/3.jpg", rarity: "Common" },
+    { id: 4, name: "Cloud Voyager", src: "/avatars/4.jpg", rarity: "Common" },
+    { id: 5, name: "Neural Hacker", src: "/avatars/5.jpg", rarity: "Rare" },
+    { id: 6, name: "Logic Catalyst", src: "/avatars/6.jpg", rarity: "Rare" },
+    { id: 7, name: "Pixel Architect", src: "/avatars/7.jpg", rarity: "Rare" },
+    { id: 8, name: "Quantum Ranger", src: "/avatars/8.jpg", rarity: "Rare" },
+    { id: 9, name: "Velo Maverick", src: "/avatars/9.jpg", rarity: "Epic" },
+    { id: 10, name: "Shadow Scribe", src: "/avatars/10.jpg", rarity: "Epic" },
+    { id: 11, name: "Apex Sentinel", src: "/avatars/11.jpg", rarity: "Epic" },
+    { id: 12, name: "Nova Wanderer", src: "/avatars/12.jpg", rarity: "Epic" },
+    { id: 13, name: "Cosmic Overlord", src: "/avatars/13.jpg", rarity: "Legendary" },
+    { id: 14, name: "Synth Oracle", src: "/avatars/14.jpg", rarity: "Legendary" },
+    { id: 15, name: "Genesis Prime", src: "/avatars/15.jpg", rarity: "Legendary" },
 ];
 
 const RARITY_COLORS: Record<string, string> = {

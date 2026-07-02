@@ -28,7 +28,7 @@ describe('User Account Settings - Integration Tests', () => {
           id: 'test-user-id',
           name: 'Test User',
           email: 'test@example.com',
-          image: '/avatars/cool-ape.png',
+          image: '/avatars/1.jpg',
           bio: 'Test bio',
         };
         
@@ -43,7 +43,7 @@ describe('User Account Settings - Integration Tests', () => {
         const updateData = {
           name: 'Updated Name',
           bio: 'Updated bio',
-          avatar: '/avatars/space-cat.png',
+          avatar: '/avatars/2.jpg',
         };
         
         expect(updateData.name).toBeTruthy();
@@ -55,27 +55,36 @@ describe('User Account Settings - Integration Tests', () => {
     describe('12.2: Avatar Selection Flow', () => {
       it('should handle predefined avatar selection', () => {
         const predefinedAvatars = [
-          '/avatars/cool-ape.png',
-          '/avatars/punk-dog.png',
-          '/avatars/robot-hero.png',
-          '/avatars/space-cat.png',
-          '/avatars/wizard-owl.png',
-          '/avatars/cool.png',
+          '/avatars/1.jpg',
+          '/avatars/2.jpg',
+          '/avatars/3.jpg',
+          '/avatars/4.jpg',
+          '/avatars/5.jpg',
+          '/avatars/6.jpg',
+          '/avatars/7.jpg',
+          '/avatars/8.jpg',
+          '/avatars/9.jpg',
+          '/avatars/10.jpg',
+          '/avatars/11.jpg',
+          '/avatars/12.jpg',
+          '/avatars/13.jpg',
+          '/avatars/14.jpg',
+          '/avatars/15.jpg',
         ];
         
         // Verify all predefined avatars have correct path format
         predefinedAvatars.forEach(avatar => {
-          expect(avatar).toMatch(/^\/avatars\/.+\.png$/);
+          expect(avatar).toMatch(/^\/avatars\/.+\.(png|jpg)$/);
         });
         
         // Simulate avatar selection
         const selectedAvatar = predefinedAvatars[0];
-        expect(selectedAvatar).toBe('/avatars/cool-ape.png');
+        expect(selectedAvatar).toBe('/avatars/1.jpg');
       });
       
       it('should validate avatar path format', () => {
         const validPaths = [
-          '/avatars/cool-ape.png',
+          '/avatars/1.jpg',
           'https://res.cloudinary.com/test/image.jpg',
         ];
         
@@ -331,7 +340,7 @@ describe('User Account Settings - Integration Tests', () => {
             id: 'test-id',
             name: 'Test User',
             email: 'test@example.com',
-            image: '/avatars/cool-ape.png',
+            image: '/avatars/1.jpg',
             bio: 'Test bio',
           },
           message: 'Profile updated successfully',
@@ -419,13 +428,13 @@ describe('User Account Settings - Integration Tests', () => {
         const originalValues = {
           name: 'Original Name',
           bio: 'Original bio',
-          avatar: '/avatars/cool-ape.png',
+          avatar: '/avatars/1.jpg',
         };
         
         const modifiedValues = {
           name: 'Modified Name',
           bio: 'Modified bio',
-          avatar: '/avatars/space-cat.png',
+          avatar: '/avatars/2.jpg',
         };
         
         // Simulate cancel - revert to original
