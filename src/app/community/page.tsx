@@ -8,6 +8,7 @@ import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import { CommentSection } from "@/components/community/CommentSection";
 import { CommunityGroupItemSkeleton } from "@/components/boneyard";
 import type { CommunityPostData } from "@/lib/types/community.types";
+import { AvatarImage } from "@/components/responsive-image";
 import { Loader2Icon, MessageSquare, ChevronUpIcon, ChevronDownIcon, Share2, Check } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -108,9 +109,18 @@ function CommunityPostCard({
     <div className="post-card">
       <div className="post-header">
         <div className="post-author">
-          <div className="author-avatar" style={{ backgroundColor: avatarStyle.bg, color: avatarStyle.text }}>
-            {authorInitials}
-          </div>
+          {post.authorImage ? (
+            <AvatarImage
+              src={post.authorImage}
+              alt={post.authorName}
+              size={44}
+              className="author-avatar object-cover flex-shrink-0"
+            />
+          ) : (
+            <div className="author-avatar" style={{ backgroundColor: avatarStyle.bg, color: avatarStyle.text }}>
+              {authorInitials}
+            </div>
+          )}
           <div className="author-info">
             <h3>{post.authorName}</h3>
             <p>Student Builder</p>
@@ -234,6 +244,7 @@ export default function CommunityPage() {
 
           --bg-card: var(--card);
           --border-default: var(--border);
+          --border-accent: rgba(34, 108, 224, 0.12);
           --border-subtle: rgba(34, 108, 224, 0.08);
           --bg-secondary: var(--muted);
           --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -609,6 +620,8 @@ export default function CommunityPage() {
           color: var(--violet);
           font-size: 1rem;
           box-shadow: var(--shadow-sm);
+          flex-shrink: 0;
+          overflow: hidden;
         }
 
         .author-info h3 {

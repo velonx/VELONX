@@ -537,7 +537,19 @@ export default function LeaderboardPage() {
                     {showYourRank && (
                         <div className="your-rank-section">
                             <div className="your-rank-left">
-                                <div className="your-rank-avatar">{yourInitials}</div>
+                                <div className="your-rank-avatar flex-shrink-0 overflow-hidden">
+                                    {session?.user?.image ? (
+                                        <Image
+                                            src={session.user.image}
+                                            alt={session.user.name || "User"}
+                                            width={56}
+                                            height={56}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        yourInitials
+                                    )}
+                                </div>
                                 <div>
                                     <div className="your-rank-info-title">Your Position</div>
                                     <div className="your-rank-name">{session?.user?.name || "Rishi Pandey"}</div>

@@ -5719,6 +5719,8 @@ body {
       font-weight: 800;
       color: #fff;
       box-shadow: 0 0 0 3px rgba(34, 108, 224, 0.25);
+      flex-shrink: 0;
+      overflow: hidden;
     }
 
     .your-rank-info-title {
