@@ -537,7 +537,7 @@ export default function LeaderboardPage() {
                     {showYourRank && (
                         <div className="your-rank-section">
                             <div className="your-rank-left">
-                                <div className="your-rank-avatar flex-shrink-0 overflow-hidden">
+                                <div className="your-rank-avatar shrink-0 overflow-hidden">
                                     {session?.user?.image ? (
                                         <Image
                                             src={session.user.image}

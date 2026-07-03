@@ -114,7 +114,7 @@ function CommunityPostCard({
               src={post.authorImage}
               alt={post.authorName}
               size={44}
-              className="author-avatar object-cover flex-shrink-0"
+              className="author-avatar object-cover shrink-0"
             />
           ) : (
             <div className="author-avatar" style={{ backgroundColor: avatarStyle.bg, color: avatarStyle.text }}>
