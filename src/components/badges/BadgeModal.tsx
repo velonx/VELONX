@@ -169,6 +169,8 @@ export default function BadgeModal({ isOpen, onClose, badge }: BadgeModalProps) 
               <button
                 onClick={handleCopyLink}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs font-bold hover:bg-zinc-800 hover:text-white transition-all duration-200 cursor-pointer"
+                aria-label={copied ? "Link copied" : "Copy badge link"}
+                aria-live="polite"
               >
                 {copied ? (
                   <>

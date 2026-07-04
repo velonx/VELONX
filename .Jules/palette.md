@@ -27,3 +27,6 @@
 ## 2026-06-30 - Announcing Share/Copy Button State
 **Learning:** When a copy/share button briefly changes text (e.g., from "Share" to "Copied") without moving focus or opening a dialog, screen readers miss the feedback because there's no live region alert. This issue was found across multiple components (ProjectCard, GroupCard, ResourceCard, ReferralCodeDisplay).
 **Action:** Add `aria-live="polite"` and a dynamic `aria-label` (e.g., `aria-label={copied ? 'Link copied!' : 'Share ' + title}`) to buttons with temporary text state changes to ensure screen readers announce the success state without interrupting the user.
+## 2024-05-18 - [Add aria-live to momentarily changing button text in badges]
+**Learning:** Found that the "Copy URL" button in BadgeModal.tsx momentarily changes its state to "Copied!" but lacked `aria-live="polite"` and a dynamically updated `aria-label`, so screen readers would not announce the state change properly.
+**Action:** Always add `aria-live="polite"` and update the `aria-label` dynamically for buttons with temporary text state changes (e.g. "Copy" changing to "Copied!") to ensure the state change is announced by screen readers without requiring focus shifts.
