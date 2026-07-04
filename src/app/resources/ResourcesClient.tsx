@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Suspense } from 'react';
 import { Search, X, Compass, FileText } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import {
   ResourcesGrid,
   Pagination,
@@ -20,9 +21,18 @@ import toast from 'react-hot-toast';
 
 function ResourcesPage() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
 
   // Tab State
   const [activeTab, setActiveTab] = React.useState<'paths' | 'references'>('paths');
+
+  // Sync tab from URL if present
+  React.useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'references' || tabParam === 'paths') {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   // Drilldown Learning Path State
   const [activePathId, setActivePathId] = React.useState<string | null>(null);

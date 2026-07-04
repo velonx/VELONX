@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import BlogPostClient from "./BlogPostClient";
 import { blogService } from "@/lib/services/blog.service";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ id: string }>;
 }

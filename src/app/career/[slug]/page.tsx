@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import CareerDetailClient from "./CareerDetailClient";
 import { OpportunityService } from "@/lib/services/career.service";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

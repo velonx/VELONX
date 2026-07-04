@@ -630,7 +630,7 @@ export default function HomeClient({ initialMentors = [] }: HomeClientProps) {
                                 tag: "System Design", tagColor: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
                                 stars: "⭐ 37", title: "EduChain Certificates",
                                 desc: "Decentralized registry built using Solidity smart contracts for universities to issue fraud-proof verifiable degree transcripts.",
-                                author: "Rahul S. (VIT)", liveUrl: "/projects", hoverShadow: "hover:shadow-[0_20px_40px_rgba(16,185,129,0.1)] hover:border-emerald-500/30"
+                                author: "Rahul S. (VIT)", liveUrl: "https://github.com/velonx-in/educhain", hoverShadow: "hover:shadow-[0_20px_40px_rgba(16,185,129,0.1)] hover:border-emerald-500/30"
                             }
                         ].map((proj, idx) => (
                             <motion.div
@@ -801,19 +801,22 @@ export default function HomeClient({ initialMentors = [] }: HomeClientProps) {
                                 icon: "🌳", iconBg: "bg-primary/10", badge: "PDF Sheet", badgeColor: "bg-[#226CE0]/10 text-[#226CE0]",
                                 title: "Ultimate 75 DSA Interview Sheet",
                                 desc: "A highly curated set of 75 essential DSA problems covering arrays, trees, graphs, dynamic programming, and greedy algorithms. Includes solutions in C++, Java, and Python.",
-                                downloads: "📥 12.4k downloads", resourceName: "DSA Interview Sheet"
+                                downloads: "📥 12.4k downloads", resourceName: "DSA Interview Sheet",
+                                link: "/resources?tab=references&search=DSA"
                             },
                             {
                                 icon: "🌐", iconBg: "bg-accent/10", badge: "Interactive", badgeColor: "bg-[#F0771A]/10 text-[#F0771A]",
                                 title: "System Design Core Cheat Sheet",
                                 desc: "Learn visual fundamentals of load balancers, caching strategies, horizontal/vertical scaling, database replication, and message queues.",
-                                downloads: "📥 8.9k downloads", resourceName: "System Design Cheat Sheet"
+                                downloads: "📥 8.9k downloads", resourceName: "System Design Cheat Sheet",
+                                link: "/resources?tab=references&search=System Design"
                             },
                             {
                                 icon: "🚀", iconBg: "bg-emerald-500/10", badge: "Roadmap", badgeColor: "bg-emerald-500/10 text-emerald-600",
                                 title: "NextJS & React Premium Roadmap",
                                 desc: "A comprehensive, industry-aligned learning map teaching hooks, state stores, performance optimization (LCP, INP), and NextJS Server Components.",
-                                downloads: "📥 15.1k downloads", resourceName: "React/NextJS Roadmap"
+                                downloads: "📥 15.1k downloads", resourceName: "React/NextJS Roadmap",
+                                link: "/resources?tab=paths"
                             }
                         ].map((res, idx) => (
                             <motion.div
@@ -837,7 +840,7 @@ export default function HomeClient({ initialMentors = [] }: HomeClientProps) {
                                 </div>
                                 <div className="flex justify-between items-center pt-4 border-t border-border/40 mt-auto">
                                     <span className="text-[10px] text-muted-foreground">{res.downloads}</span>
-                                    <Link href="/resources">
+                                    <Link href={res.link}>
                                         <motion.button
                                             className="btn-redesign btn-redesign-primary text-xs py-2.5 px-6 font-bold shadow-md"
                                             whileHover={{ scale: 1.05 }}
@@ -1173,19 +1176,22 @@ export default function HomeClient({ initialMentors = [] }: HomeClientProps) {
                                 tag: "Interview Prep", tagColor: "bg-[#226CE0]/10 text-[#226CE0]",
                                 title: "How to Crack Off-Campus Roles in India",
                                 desc: "A complete roadmap for Tier-3 college students to bypass standard campus hiring limitations and apply directly.",
-                                meta: "June 1, 2026 · 5 min"
+                                meta: "June 1, 2026 · 5 min",
+                                slug: "how-to-crack-off-campus-placements-in-india"
                             },
                             {
                                 tag: "Career Paths", tagColor: "bg-[#F0771A]/10 text-[#F0771A]",
                                 title: "Why Open Source is Your Golden Ticket",
                                 desc: "How contributing to public GitHub repositories builds a real-world resume far stronger than any college brand.",
-                                meta: "May 24, 2026 · 8 min"
+                                meta: "May 24, 2026 · 8 min",
+                                slug: "open-source-contributions-your-golden-ticket-to-a-dev-career"
                             },
                             {
                                 tag: "System Design", tagColor: "bg-emerald-500/10 text-emerald-600",
                                 title: "Mastering Microservices Architecture",
                                 desc: "Visual breakdown of scalable systems design architectures for technical interviews at fast-growing unicorns.",
-                                meta: "May 18, 2026 · 12 min"
+                                meta: "May 18, 2026 · 12 min",
+                                slug: "microservices-architecture-the-system-design-interview-guide-for-companies"
                             }
                         ].map((post, idx) => (
                             <motion.div
@@ -1206,7 +1212,7 @@ export default function HomeClient({ initialMentors = [] }: HomeClientProps) {
                                 </div>
                                 <div className="flex justify-between items-center pt-4 border-t border-border/30 mt-auto text-[10px] text-muted-foreground">
                                     <span>{post.meta}</span>
-                                    <Link href="/blog" className="text-primary font-bold hover:underline text-xs flex items-center gap-1">Read <ArrowRight className="w-3.5 h-3.5" /></Link>
+                                    <Link href={`/blog/${post.slug}`} className="text-primary font-bold hover:underline text-xs flex items-center gap-1">Read <ArrowRight className="w-3.5 h-3.5" /></Link>
                                 </div>
                             </motion.div>
                         ))}
