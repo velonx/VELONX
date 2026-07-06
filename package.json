@@ -6,7 +6,7 @@
     "dev": "NODE_OPTIONS='--max-old-space-size=1024' tsx server.js",
     "dev:next": "next dev",
     "dev:legacy": "NODE_OPTIONS='--openssl-legacy-provider --max-old-space-size=1024' tsx server.js",
-    "build": "prisma generate && next build --no-turbo",
+    "build": "prisma generate && next build --webpack",
     "build:analyze": "ANALYZE=true next build",
     "start": "NODE_ENV=production NODE_OPTIONS='--max-old-space-size=400 --gc-interval=100' tsx server.js",
     "start:next": "NODE_ENV=production NODE_OPTIONS='--max-old-space-size=400' next start",
