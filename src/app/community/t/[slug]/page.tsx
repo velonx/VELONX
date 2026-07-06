@@ -39,7 +39,12 @@ export async function generateMetadata({
     const normalized = normalizeStylizedText(post.content);
     const isIndexable = getThreadIndexability(normalized, post._count.comments);
     const cleanedContent = normalized.replace(/(?:\s*#\w+)+\s*$/, "");
-    const descriptionSnippet = cleanedContent.slice(0, 150) + (cleanedContent.length > 150 ? "..." : "");
+    let cleanSnippet = cleanedContent.slice(0, 150);
+    // Correct common typos for a cleaner meta description snippet
+    cleanSnippet = cleanSnippet
+      .replace(/\bin there college\b/gi, "in their college")
+      .replace(/\bthere college life\b/gi, "their college life");
+    const descriptionSnippet = cleanSnippet + (cleanedContent.length > 150 ? "..." : "");
 
     const baseMetadata = generatePageMetadata(
       "Discussion | Velonx Connect",
