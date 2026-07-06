@@ -11,7 +11,6 @@ import type { CommunityPostData, CommunityGroupData } from "@/lib/types/communit
 import { AvatarImage } from "@/components/responsive-image";
 import { Loader2Icon, MessageSquare, ChevronUpIcon, ChevronDownIcon, Share2, Check, ImageIcon, Link as LinkIcon, X } from "lucide-react";
 import toast from "react-hot-toast";
-import { slugifyPost } from "@/lib/utils";
 import Image from "next/image";
 import { useCallback } from "react";
 
@@ -103,7 +102,7 @@ function CommunityPostCard({
     e.stopPropagation();
     
     // Generate SEO friendly thread slug
-    const slug = slugifyPost(post.id, displayContent);
+    const slug = post.slug;
 
     const url = `${window.location.origin}/community/t/${slug}`;
     await navigator.clipboard.writeText(url);
@@ -139,7 +138,7 @@ function CommunityPostCard({
       </div>
       
       {/* Clickable link to the thread page for SEO discovery */}
-      <Link href={`/community/t/${slugifyPost(post.id, displayContent)}`} className="block group">
+      <Link href={`/community/t/${post.slug}`} className="block group">
         <div className="post-body group-hover:text-primary transition-colors cursor-pointer">
           {displayContent}
         </div>

@@ -216,7 +216,7 @@ export function useCommunityPosts(
     return () => {
       isMountedRef.current = false;
     };
-  }, [fetchPosts, initialPosts]);
+  }, [fetchPosts]);
 
   /**
    * Refetch function for manual refresh

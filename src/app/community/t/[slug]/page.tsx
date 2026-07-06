@@ -2,16 +2,35 @@ import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo.config";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { maskSensitiveData, normalizeStylizedText } from "@/lib/utils";
+import { maskSensitiveData, normalizeStylizedText, slugifyPost } from "@/lib/utils";
 import ThreadClient from "./ThreadClient";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 // Helper to determine if a thread meets the SEO indexing quality bar
-function getThreadIndexability(content: string, replyCount: number): boolean {
-  const wordCount = content.trim().split(/\s+/).length;
-  return wordCount >= 40 || replyCount > 0;
+function getThreadIndexability(
+  content: string,
+  authorId: string,
+  comments: { authorId: string; content: string }[]
+): boolean {
+  const normalized = normalizeStylizedText(content);
+  const postWordCount = normalized.trim().split(/\s+/).filter(Boolean).length;
+  
+  const externalReplies = comments.filter(c => c.authorId !== authorId);
+  const externalReplyCount = externalReplies.length;
+  
+  const totalExternalCommentsWordCount = externalReplies.reduce((acc, c) => {
+    return acc + c.content.trim().split(/\s+/).filter(Boolean).length;
+  }, 0);
+  
+  const totalWordCount = postWordCount + totalExternalCommentsWordCount;
+  
+  // Index if:
+  // 1. Post is substantial on its own (>= 40 words)
+  // 2. OR post has a real reply from a different user and total thread substance is at least 35 words
+  // 3. OR post has multiple real replies (>= 2) from different users
+  return postWordCount >= 40 || (externalReplyCount > 0 && totalWordCount >= 35) || externalReplyCount >= 2;
 }
 
 // Dynamic metadata generation with SEO Quality Gates & canonicals
@@ -28,8 +47,12 @@ export async function generateMetadata({
       where: { id: postId },
       select: {
         content: true,
-        _count: {
-          select: { comments: true },
+        authorId: true,
+        comments: {
+          select: {
+            authorId: true,
+            content: true,
+          },
         },
       },
     });
@@ -37,7 +60,7 @@ export async function generateMetadata({
     if (!post) return {};
 
     const normalized = normalizeStylizedText(post.content);
-    const isIndexable = getThreadIndexability(normalized, post._count.comments);
+    const isIndexable = getThreadIndexability(post.content, post.authorId, post.comments);
     const cleanedContent = normalized.replace(/(?:\s*#\w+)+\s*$/, "");
     let cleanSnippet = cleanedContent.slice(0, 150);
     // Correct common typos for a cleaner meta description snippet
@@ -46,10 +69,12 @@ export async function generateMetadata({
       .replace(/\bthere college life\b/gi, "their college life");
     const descriptionSnippet = cleanSnippet + (cleanedContent.length > 150 ? "..." : "");
 
+    // Generate canonical URL based on the server-side generated slug
+    const canonicalSlug = slugifyPost(postId, post.content);
     const baseMetadata = generatePageMetadata(
       "Discussion | Velonx Connect",
       descriptionSnippet,
-      `/community/t/${slug}`
+      `/community/t/${canonicalSlug}`
     );
 
     return {
@@ -234,6 +259,7 @@ export default async function ThreadPage({
   const relatedPosts = dbRelated.map((r) => ({
     id: r.id,
     content: r.content,
+    slug: slugifyPost(r.id, r.content), // Server-computed slug
     author: {
       name: r.author.name || "Unknown",
     },
@@ -245,6 +271,7 @@ export default async function ThreadPage({
   const formattedPost = {
     id: post.id,
     content,
+    slug: slugifyPost(post.id, post.content), // Server-computed slug
     authorId: post.authorId,
     authorName: post.author.name || "Unknown",
     authorImage: post.author.image || undefined,

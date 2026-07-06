@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo.config";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { maskSensitiveData } from "@/lib/utils";
+import { maskSensitiveData, slugifyPost } from "@/lib/utils";
 import GroupDetailClient from "./GroupDetailClient";
 import { notFound } from "next/navigation";
 
@@ -157,6 +157,7 @@ export default async function GroupDetailPage({
       return {
         id: post.id,
         content,
+        slug: slugifyPost(post.id, post.content), // Server-computed slug
         authorId: post.authorId,
         authorName: post.author.name || "Unknown",
         authorImage: post.author.image || undefined,

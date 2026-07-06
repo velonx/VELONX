@@ -6,6 +6,7 @@ import { postService } from "@/lib/services/post.service";
 import { cacheService, CacheKeys } from "@/lib/services/cache.service";
 import { applyCustomRateLimit } from "@/lib/middleware/rate-limit.middleware";
 import { z } from "zod";
+import { slugifyPost } from "@/lib/utils";
 
 /**
  * Validation schema for creating a post
@@ -247,6 +248,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const formattedPosts = posts.map((post) => ({
     id: post.id,
     content: post.content,
+    slug: slugifyPost(post.id, post.content), // Server-computed slug
     authorId: post.authorId,
     authorName: post.author.name || "Unknown",
     authorImage: post.author.image,

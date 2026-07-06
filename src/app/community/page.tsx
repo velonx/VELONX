@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo.config";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { maskSensitiveData } from "@/lib/utils";
+import { maskSensitiveData, slugifyPost } from "@/lib/utils";
 import CommunityClient from "./CommunityClient";
 
 export const dynamic = "force-dynamic";
@@ -90,6 +90,7 @@ export default async function CommunityPage() {
     return {
       id: post.id,
       content,
+      slug: slugifyPost(post.id, post.content), // Server-computed slug
       authorId: post.authorId,
       authorName: post.author.name || "Unknown",
       authorImage: post.author.image || undefined,

@@ -88,6 +88,7 @@ export interface CommunityPostData {
   upvotes: number
   downvotes: number
   score: number
+  slug?: string
   createdAt: Date
   updatedAt: Date
 }

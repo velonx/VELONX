@@ -127,8 +127,12 @@ export function useCommunityGroups(initialGroups?: CommunityGroupData[]): UseCom
   const fetchGroups = useCallback(async () => {
     if (!isMountedRef.current) return;
     
-    // Only set loading if not already loading or if there's an error to clear
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    // Only show blocking loader if we have no groups loaded yet
+    setState(prev => ({
+      ...prev,
+      isLoading: prev.groups.length === 0,
+      error: null
+    }));
 
     try {
       const response = await fetch('/api/community/groups');
@@ -162,13 +166,11 @@ export function useCommunityGroups(initialGroups?: CommunityGroupData[]): UseCom
         ? err
         : new ApiClientError(500, 'NETWORK_ERROR', getErrorMessage(err));
 
-      setState({
-        groups: [],
-        memberGroupIds: [],
-        pendingRequestGroupIds: [],
+      setState(prev => ({
+        ...prev,
         isLoading: false,
         error,
-      });
+      }));
     }
   }, []);
 
@@ -192,7 +194,7 @@ export function useCommunityGroups(initialGroups?: CommunityGroupData[]): UseCom
     return () => {
       isMountedRef.current = false;
     };
-  }, [fetchGroups, status, initialGroups]);
+  }, [fetchGroups, status]);
 
   /**
    * Refetch function for manual refresh
