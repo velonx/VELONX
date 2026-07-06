@@ -9,9 +9,11 @@ import { CommentSection } from "@/components/community/CommentSection";
 import { CommunityGroupItemSkeleton } from "@/components/boneyard";
 import type { CommunityPostData, CommunityGroupData } from "@/lib/types/community.types";
 import { AvatarImage } from "@/components/responsive-image";
-import { Loader2Icon, MessageSquare, ChevronUpIcon, ChevronDownIcon, Share2, Check } from "lucide-react";
+import { Loader2Icon, MessageSquare, ChevronUpIcon, ChevronDownIcon, Share2, Check, ImageIcon, Link as LinkIcon, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { slugifyPost } from "@/lib/utils";
+import Image from "next/image";
+import { useCallback } from "react";
 
 // Stable colors for initials avatars
 const getAvatarStyle = (name: string) => {
@@ -142,6 +144,29 @@ function CommunityPostCard({
           {displayContent}
         </div>
       </Link>
+
+      {/* Images */}
+      {post.imageUrls && post.imageUrls.length > 0 && (
+        <div className={`grid gap-2 mt-3 mb-4 ${post.imageUrls.length === 1 ? 'grid-cols-1' : post.imageUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
+          {post.imageUrls.map((url, i) => (
+            <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="cursor-pointer rounded-lg overflow-hidden block border bg-muted aspect-video">
+              <img src={url} alt={`Post image ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform" />
+            </a>
+          ))}
+        </div>
+      )}
+
+      {/* Links */}
+      {post.linkUrls && post.linkUrls.length > 0 && (
+        <div className="space-y-2 mt-3 mb-4">
+          {post.linkUrls.map((url, i) => (
+            <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2.5 bg-muted/50 rounded-lg text-sm hover:bg-muted transition-colors">
+              <LinkIcon className="size-4 text-muted-foreground shrink-0" />
+              <span className="flex-1 truncate text-primary font-medium">{url}</span>
+            </a>
+          ))}
+        </div>
+      )}
       
       {hashtags.length > 0 && (
         <div className="post-tags">
@@ -197,6 +222,74 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
   const [newPostContent, setNewPostContent] = useState("");
   const [newPostTags, setNewPostTags] = useState("");
 
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [linkUrls, setLinkUrls] = useState<string[]>([]);
+  const [linkInput, setLinkInput] = useState("");
+  const [showLinkInput, setShowLinkInput] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const MAX_IMAGES = 5;
+  const MAX_LINKS = 3;
+
+  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    if (imageUrls.length + files.length > MAX_IMAGES) {
+      toast.error(`You can only upload up to ${MAX_IMAGES} images`);
+      return;
+    }
+    setIsUploadingImage(true);
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        if (!file.type.startsWith('image/')) throw new Error(`${file.name} is not an image`);
+        if (file.size > 5 * 1024 * 1024) throw new Error(`${file.name} is too large (max 5MB)`);
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
+          reader.readAsDataURL(file);
+        });
+      });
+      const base64Images = await Promise.all(uploadPromises);
+
+      const { secureFetch } = await import("@/lib/utils/csrf");
+      const uploadRequests = base64Images.map(async (base64) => {
+        const response = await secureFetch('/api/user/profile/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64, folder: 'community-posts' }),
+        });
+        if (!response.ok) throw new Error('Failed to upload image');
+        const data = await response.json();
+        return data.url;
+      });
+
+      const uploadedUrls = await Promise.all(uploadRequests);
+
+      setImageUrls(prev => [...prev, ...uploadedUrls]);
+      toast.success(`${uploadedUrls.length} image(s) uploaded`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to upload images');
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }, [imageUrls.length]);
+
+  const addLink = useCallback(() => {
+    const trimmed = linkInput.trim();
+    if (!trimmed) return;
+    if (linkUrls.length >= MAX_LINKS) { toast.error(`Max ${MAX_LINKS} links`); return; }
+    try {
+      new URL(trimmed);
+      setLinkUrls(prev => [...prev, trimmed]);
+      setLinkInput("");
+    } catch {
+      toast.error("Please enter a valid URL (e.g., https://example.com)");
+    }
+  }, [linkInput, linkUrls.length]);
+
   // Database hooks initialized with pre-fetched SSR data
   const { groups, isLoading: groupsLoading } = useCommunityGroups(initialGroups);
   const {
@@ -223,12 +316,18 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
       const created = await createPost({
         content: contentWithTags,
         visibility: activeGroupId !== "all" ? "GROUP" : "PUBLIC",
-        groupId: activeGroupId !== "all" ? activeGroupId : undefined
+        groupId: activeGroupId !== "all" ? activeGroupId : undefined,
+        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+        linkUrls: linkUrls.length > 0 ? linkUrls : undefined
       });
 
       if (created) {
         setNewPostContent("");
         setNewPostTags("");
+        setImageUrls([]);
+        setLinkUrls([]);
+        setLinkInput("");
+        setShowLinkInput(false);
         refetch();
       }
     } catch (e) {
@@ -238,6 +337,17 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
 
   return (
     <div className="community-page min-h-screen pt-24 pb-28 bg-background">
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleImageUpload}
+        className="hidden"
+        disabled={isCreating || imageUrls.length >= MAX_IMAGES}
+      />
+
       {/* Breadcrumbs */}
       <nav className="container mx-auto px-4 py-4" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
@@ -335,22 +445,97 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
                     placeholder="Share a recent win, drop a project Github link, or ask a question..."
                     disabled={isCreating}
                   />
-                  <div className="create-post-actions">
-                    <input 
-                      type="text"
-                      value={newPostTags}
-                      onChange={(e) => setNewPostTags(e.target.value)}
-                      className="tag-input"
-                      placeholder="Tags (e.g. #Web3 #React)"
-                      disabled={isCreating}
-                    />
-                    <button 
-                      onClick={handleCreatePost}
-                      className="btn btn-primary btn-sm"
-                      disabled={isCreating || !newPostContent.trim()}
-                    >
-                      {isCreating ? "Sharing..." : "Share Post 🚀"}
-                    </button>
+
+                  {/* Image Previews */}
+                  {imageUrls.length > 0 && (
+                    <div className="flex gap-2 flex-wrap mb-3 mt-3">
+                      {imageUrls.map((url, i) => (
+                        <div key={i} className="relative group size-16 rounded-lg overflow-hidden border border-border/50">
+                          <Image src={url} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" width={64} height={64} />
+                          <button
+                            type="button"
+                            onClick={() => setImageUrls(prev => prev.filter((_, idx) => idx !== i))}
+                            className="absolute top-0.5 right-0.5 p-0.5 bg-destructive text-white rounded-full opacity-100 transition-opacity"
+                          >
+                            <X className="size-2.5 text-white" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Link Previews */}
+                  {linkUrls.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3 mt-3">
+                      {linkUrls.map((url, i) => (
+                        <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 bg-muted/50 rounded-full text-xs border border-border/30">
+                          <LinkIcon className="size-3 text-muted-foreground" />
+                          <span className="truncate max-w-50 text-primary">{url}</span>
+                          <button onClick={() => setLinkUrls(prev => prev.filter((_, idx) => idx !== i))} className="hover:text-destructive">
+                            <X className="size-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Link Input */}
+                  {showLinkInput && (
+                    <div className="flex gap-2 mb-3 mt-3">
+                      <input
+                        type="url"
+                        value={linkInput}
+                        onChange={(e) => setLinkInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addLink(); } }}
+                        placeholder="https://..."
+                        className="flex-1 px-3 py-1.5 text-sm border border-border/50 rounded-full bg-muted/20 focus:outline-none focus:ring-1 focus:ring-ring"
+                        autoFocus
+                      />
+                      <button type="button" className="btn btn-outline btn-sm rounded-full px-3 text-xs" onClick={addLink} disabled={!linkInput.trim()}>
+                        Add
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Composer actions bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-border/30 mt-3">
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2.5 rounded-full"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isCreating || isUploadingImage || imageUrls.length >= MAX_IMAGES}
+                      >
+                        {isUploadingImage ? <Loader2Icon className="size-4 animate-spin" /> : <ImageIcon className="size-4" />}
+                        <span className="text-xs">{imageUrls.length > 0 ? `${imageUrls.length}/${MAX_IMAGES}` : "Image"}</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2.5 rounded-full"
+                        onClick={() => setShowLinkInput(!showLinkInput)}
+                        disabled={linkUrls.length >= MAX_LINKS}
+                      >
+                        <LinkIcon className="size-4" />
+                        <span className="text-xs">{linkUrls.length > 0 ? `${linkUrls.length}/${MAX_LINKS}` : "Link"}</span>
+                      </button>
+                    </div>
+                    <div className="create-post-actions flex flex-1 sm:flex-none justify-end gap-2">
+                      <input 
+                        type="text"
+                        value={newPostTags}
+                        onChange={(e) => setNewPostTags(e.target.value)}
+                        className="tag-input"
+                        placeholder="Tags (e.g. #Web3 #React)"
+                        disabled={isCreating}
+                      />
+                      <button 
+                        onClick={handleCreatePost}
+                        className="btn btn-primary btn-sm"
+                        disabled={isCreating || isUploadingImage || !newPostContent.trim()}
+                      >
+                        {isCreating ? "Sharing..." : "Share Post 🚀"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (

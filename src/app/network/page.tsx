@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -249,7 +249,7 @@ function SignInPlaceholder({ title, description }: { title: string; description:
 // Main Page
 // ============================================================
 
-export default function NetworkPage() {
+function NetworkPageContent() {
   const { data: session, status: authStatus } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -750,5 +750,19 @@ export default function NetworkPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function NetworkPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background pt-28 flex items-center justify-center">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <NetworkPageContent />
+    </Suspense>
   );
 }

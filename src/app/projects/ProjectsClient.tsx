@@ -266,6 +266,9 @@ function ProjectsPageContent() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({
+                    message: 'I would like to join this project.',
+                }),
             });
 
             const data = await response.json();

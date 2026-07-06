@@ -104,7 +104,17 @@ export async function POST(
     const { id: projectId } = await params;
 
     // Validate request body
-    const body = await request.json();
+    let body: any;
+    try {
+      body = await request.json();
+    } catch {
+      body = { message: "I would like to join this project." };
+    }
+
+    if (body && (body.message === undefined || body.message === null)) {
+      body.message = "I would like to join this project.";
+    }
+
     const validatedData = createJoinRequestSchema.parse(body);
 
     // Check if project exists

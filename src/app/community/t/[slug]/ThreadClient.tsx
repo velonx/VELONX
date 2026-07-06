@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AvatarImage } from "@/components/responsive-image";
-import { ArrowLeft, MessageSquare, Share2, Check, Lock, ChevronUp } from "lucide-react";
+import { ArrowLeft, MessageSquare, Share2, Check, Lock, ChevronUp, Link as LinkIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { CommentSection } from "@/components/community/CommentSection";
 import { slugifyPost } from "@/lib/utils";
@@ -171,6 +171,29 @@ export default function ThreadClient({
               <div className="post-body text-base md:text-lg text-foreground/90 leading-relaxed mb-6 whitespace-pre-wrap">
                 {displayContent}
               </div>
+
+              {/* Images */}
+              {post.imageUrls && post.imageUrls.length > 0 && (
+                <div className={`grid gap-2 mt-3 mb-6 ${post.imageUrls.length === 1 ? 'grid-cols-1' : post.imageUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
+                  {post.imageUrls.map((url: string, i: number) => (
+                    <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="cursor-pointer rounded-lg overflow-hidden block border bg-muted aspect-video">
+                      <img src={url} alt={`Post image ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {/* Links */}
+              {post.linkUrls && post.linkUrls.length > 0 && (
+                <div className="space-y-2 mt-3 mb-6">
+                  {post.linkUrls.map((url: string, i: number) => (
+                    <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2.5 bg-muted/50 rounded-lg text-sm hover:bg-muted transition-colors">
+                      <LinkIcon className="size-4 text-muted-foreground shrink-0" />
+                      <span className="flex-1 truncate text-primary font-medium">{url}</span>
+                    </a>
+                  ))}
+                </div>
+              )}
 
               {hashtags.length > 0 && (
                 <div className="post-tags mb-6">
