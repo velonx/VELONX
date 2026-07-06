@@ -620,7 +620,7 @@ export default function Home() {
                                 tag: "Web App", tagColor: "bg-[#F0771A]/10 text-[#F0771A] dark:bg-[#F0771A]/20 dark:text-orange-400",
                                 stars: "⭐ 91", title: "KeyRacer",
                                 desc: "A competitive real-time typing race platform where developers sharpen their keyboard speed. Features live multiplayer races, leaderboards, and code-snippet challenges.",
-                                author: "Velonx Community", liveUrl: "https://keyracer.in", hoverShadow: "hover:shadow-[0_20px_40px_rgba(240,119,26,0.1)] hover:border-[#f0771a]/30"
+                                author: "Velonx Community", liveUrl: "/projects", hoverShadow: "hover:shadow-[0_20px_40px_rgba(240,119,26,0.1)] hover:border-[#f0771a]/30"
                             },
                             {
                                 tag: "System Design", tagColor: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
@@ -797,19 +797,19 @@ export default function Home() {
                                 icon: "🌳", iconBg: "bg-primary/10", badge: "PDF Sheet", badgeColor: "bg-[#226CE0]/10 text-[#226CE0]",
                                 title: "Ultimate 75 DSA Interview Sheet",
                                 desc: "A highly curated set of 75 essential DSA problems covering arrays, trees, graphs, dynamic programming, and greedy algorithms. Includes solutions in C++, Java, and Python.",
-                                downloads: "📥 12.4k downloads", resourceName: "DSA Interview Sheet"
+                                downloads: "", resourceName: "DSA Interview Sheet"
                             },
                             {
                                 icon: "🌐", iconBg: "bg-accent/10", badge: "Interactive", badgeColor: "bg-[#F0771A]/10 text-[#F0771A]",
                                 title: "System Design Core Cheat Sheet",
                                 desc: "Learn visual fundamentals of load balancers, caching strategies, horizontal/vertical scaling, database replication, and message queues.",
-                                downloads: "📥 8.9k downloads", resourceName: "System Design Cheat Sheet"
+                                downloads: "", resourceName: "System Design Cheat Sheet"
                             },
                             {
                                 icon: "🚀", iconBg: "bg-emerald-500/10", badge: "Roadmap", badgeColor: "bg-emerald-500/10 text-emerald-600",
                                 title: "NextJS & React Premium Roadmap",
                                 desc: "A comprehensive, industry-aligned learning map teaching hooks, state stores, performance optimization (LCP, INP), and NextJS Server Components.",
-                                downloads: "📥 15.1k downloads", resourceName: "React/NextJS Roadmap"
+                                downloads: "", resourceName: "React/NextJS Roadmap"
                             }
                         ].map((res, idx) => (
                             <motion.div
@@ -839,7 +839,7 @@ export default function Home() {
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.97 }}
                                         >
-                                            Download Free
+                                            Visit Resources
                                         </motion.button>
                                     </Link>
                                 </div>
@@ -1055,9 +1055,9 @@ export default function Home() {
                         </div>
                         <div className="divide-y divide-border/30 px-6">
                             {[
-                                { rank: "#1", rankColor: "text-amber-500", initials: "KS", avatarColor: "bg-amber-500/10 border-amber-500/30 text-amber-600", name: "Karthik Suresh", college: "BITS Pilani", coins: "6,150 VX" },
-                                { rank: "#2", rankColor: "text-slate-400", initials: "AT", avatarColor: "bg-slate-400/10 border-slate-400/30 text-slate-500", name: "Ananya Tiwari", college: "NIT Silchar", coins: "4,820 VX" },
-                                { rank: "#3", rankColor: "text-amber-700", initials: "RM", avatarColor: "bg-amber-700/10 border-amber-700/30 text-amber-800", name: "Rohan Mehta", college: "IIIT Hyderabad", coins: "4,310 VX" },
+                                { rank: "#1", rankColor: "text-amber-500", initials: "RP", avatarColor: "bg-amber-500/10 border-amber-500/30 text-amber-600", name: "Rishi Pandey", college: "UIT BU", coins: "4236 VX" },
+                                { rank: "#2", rankColor: "text-slate-400", initials: "RL", avatarColor: "bg-slate-400/10 border-slate-400/30 text-slate-500", name: "Ritika Lodhi", college: "UIT BU", coins: "3512 VX" },
+                                { rank: "#3", rankColor: "text-amber-700", initials: "AR", avatarColor: "bg-amber-700/10 border-amber-700/30 text-amber-800", name: "Aashima Rajpoot", college: "UIT BU", coins: "3251 VX" },
                             ].map((user, i) => (
                                 <motion.div
                                     key={user.name}
