@@ -75,7 +75,9 @@ export interface CommunityPostData {
   authorId: string
   authorName: string
   authorImage?: string
+  authorCollege?: string
   groupId?: string
+  groupName?: string
   visibility: PostVisibility
   imageUrls: string[]
   linkUrls: string[]

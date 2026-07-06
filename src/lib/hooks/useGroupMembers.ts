@@ -100,17 +100,18 @@ function getErrorMessage(err: unknown): string {
  * await rejectRequest('request-id-789');
  * ```
  */
-export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
+export function useGroupMembers(groupId: string | null, initialMembers?: any[]): UseGroupMembersReturn {
   const [state, setState] = useState<UseGroupMembersState>({
-    members: [],
+    members: initialMembers || [],
     joinRequests: [],
-    isLoading: true,
+    isLoading: initialMembers ? false : true,
     error: null,
   });
 
   const [isManagingRequest, setIsManagingRequest] = useState(false);
 
   const isMountedRef = useRef(true);
+  const didMountRef = useRef(false);
 
   /**
    * Fetch group members from API
@@ -203,13 +204,20 @@ export function useGroupMembers(groupId: string | null): UseGroupMembersReturn {
    */
   useEffect(() => {
     isMountedRef.current = true;
+    
+    if (initialMembers && !didMountRef.current) {
+      didMountRef.current = true;
+      fetchJoinRequests();
+      return;
+    }
+
     fetchMembers();
     fetchJoinRequests();
 
     return () => {
       isMountedRef.current = false;
     };
-  }, [fetchMembers, fetchJoinRequests]);
+  }, [fetchMembers, fetchJoinRequests, initialMembers]);
 
   /**
    * Refetch function for manual refresh

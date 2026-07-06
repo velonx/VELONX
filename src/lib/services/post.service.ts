@@ -33,7 +33,9 @@ export interface CommunityPostData {
   authorId: string;
   authorName: string;
   authorImage?: string | null;
+  authorCollege?: string | null;
   groupId?: string | null;
+  groupName?: string | null;
   visibility: "PUBLIC" | "FOLLOWERS" | "GROUP";
   imageUrls: string[];
   linkUrls: string[];

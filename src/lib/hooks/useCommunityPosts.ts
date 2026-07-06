@@ -70,6 +70,7 @@ export interface UseCommunityPostsOptions {
   groupId?: string | null;
   authorId?: string | null;
   limit?: number;
+  initialPosts?: CommunityPostData[];
 }
 
 /**
@@ -108,11 +109,11 @@ export interface UseCommunityPostsOptions {
 export function useCommunityPosts(
   options?: UseCommunityPostsOptions
 ): UseCommunityPostsReturn {
-  const { groupId, authorId, limit = 20 } = options || {};
+  const { groupId, authorId, limit = 20, initialPosts } = options || {};
   const [state, setState] = useState<UseCommunityPostsState>({
-    posts: [],
-    hasMore: true,
-    isLoading: true,
+    posts: initialPosts || [],
+    hasMore: initialPosts ? initialPosts.length >= limit : true,
+    isLoading: initialPosts ? false : true,
     error: null,
   });
 
@@ -122,6 +123,7 @@ export function useCommunityPosts(
 
   const isMountedRef = useRef(true);
   const cursorRef = useRef<string | null>(null);
+  const didMountRef = useRef(false);
 
   /**
    * Fetch posts from API
@@ -199,13 +201,22 @@ export function useCommunityPosts(
    */
   useEffect(() => {
     isMountedRef.current = true;
+    
+    if (initialPosts && !didMountRef.current) {
+      didMountRef.current = true;
+      if (initialPosts.length > 0) {
+        cursorRef.current = initialPosts[initialPosts.length - 1].createdAt as any;
+      }
+      return;
+    }
+
     cursorRef.current = null;
     fetchPosts();
 
     return () => {
       isMountedRef.current = false;
     };
-  }, [fetchPosts]);
+  }, [fetchPosts, initialPosts]);
 
   /**
    * Refetch function for manual refresh

@@ -4,6 +4,8 @@ import { withErrorHandler } from "@/lib/utils/errors";
 import { postService } from "@/lib/services/post.service";
 import { cacheService, CacheKeys } from "@/lib/services/cache.service";
 import { z } from "zod";
+import { auth } from "@/auth";
+import { maskSensitiveData } from "@/lib/utils";
 
 /**
  * Validation schema for editing a post
@@ -17,7 +19,7 @@ const editPostSchema = z.object({
  * /api/community/posts/{id}:
  *   get:
  *     summary: Get a post by ID
- *     description: Retrieve a specific community post with details
+ *     description: Retrieve a specific community post with details (optional auth)
  *     tags:
  *       - Community - Posts
  *     security:
@@ -33,7 +35,7 @@ const editPostSchema = z.object({
  *       200:
  *         description: Post retrieved successfully
  *       401:
- *         description: Unauthorized - Authentication required
+ *         description: Unauthorized - Access denied
  *       404:
  *         description: Post not found
  */
@@ -43,11 +45,9 @@ export const GET = withErrorHandler(async (
 ) => {
   const { id: postId } = await params;
 
-  // Require authentication
-  const sessionOrResponse = await requireAuth();
-  if (sessionOrResponse instanceof NextResponse) {
-    return sessionOrResponse;
-  }
+  // Optional authentication
+  const session = await auth();
+  const userId = session?.user?.id;
 
   // Get post from database
   const { prisma } = await import("@/lib/prisma");
@@ -60,6 +60,14 @@ export const GET = withErrorHandler(async (
           id: true,
           name: true,
           image: true,
+          college: true,
+        },
+      },
+      group: {
+        select: {
+          id: true,
+          name: true,
+          isPrivate: true,
         },
       },
       _count: {
@@ -84,14 +92,84 @@ export const GET = withErrorHandler(async (
     );
   }
 
+  // Gating check
+  let hasAccess = false;
+  if (post.visibility === "PUBLIC") {
+    if (post.group && post.group.isPrivate) {
+      if (userId) {
+        const membership = await prisma.groupMember.findUnique({
+          where: {
+            groupId_userId: {
+              groupId: post.groupId!,
+              userId,
+            },
+          },
+        });
+        hasAccess = !!membership || post.authorId === userId;
+      }
+    } else {
+      hasAccess = true;
+    }
+  } else if (post.visibility === "GROUP" && post.groupId) {
+    if (post.group && !post.group.isPrivate) {
+      hasAccess = true;
+    } else {
+      if (userId) {
+        const membership = await prisma.groupMember.findUnique({
+          where: {
+            groupId_userId: {
+              groupId: post.groupId,
+              userId,
+            },
+          },
+        });
+        hasAccess = !!membership || post.authorId === userId;
+      }
+    }
+  } else if (post.visibility === "FOLLOWERS") {
+    if (userId) {
+      if (post.authorId === userId) {
+        hasAccess = true;
+      } else {
+        const follow = await prisma.follow.findUnique({
+          where: {
+            followerId_followingId: {
+              followerId: userId,
+              followingId: post.authorId,
+            },
+          },
+        });
+        hasAccess = !!follow;
+      }
+    }
+  }
+
+  if (!hasAccess) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: "UNAUTHORIZED",
+          message: "You do not have permission to view this post",
+        },
+      },
+      { status: 401 }
+    );
+  }
+
+  // Privacy masking for unauthenticated users
+  const content = userId ? post.content : maskSensitiveData(post.content);
+
   // Format response
   const formattedPost = {
     id: post.id,
-    content: post.content,
+    content,
     authorId: post.authorId,
     authorName: post.author.name || "Unknown",
     authorImage: post.author.image,
+    authorCollege: post.author.college,
     groupId: post.groupId,
+    groupName: post.group?.name || null,
     visibility: post.visibility,
     imageUrls: post.imageUrls,
     linkUrls: post.linkUrls,

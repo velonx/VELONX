@@ -31,6 +31,22 @@ export const siteConfig = {
     },
 };
 
+// Helper to clean environment variables (strip quotes, whitespace, and ignore placeholders)
+const cleanEnvVar = (val: string | undefined): string | undefined => {
+    if (!val) return undefined;
+    const cleaned = val.trim().replace(/^['"]|['"]$/g, '');
+    if (
+        !cleaned ||
+        cleaned === 'your-google-verification-code' ||
+        cleaned === 'your-yandex-verification-code' ||
+        cleaned === 'your-bing-verification-code' ||
+        cleaned.includes('placeholder')
+    ) {
+        return undefined;
+    }
+    return cleaned;
+};
+
 // Default metadata for all pages
 export const defaultMetadata: Metadata = {
     metadataBase: new URL(siteConfig.url),
@@ -88,11 +104,7 @@ export const defaultMetadata: Metadata = {
         },
     },
     verification: {
-        google: (process.env.GOOGLE_VERIFICATION_CODE && process.env.GOOGLE_VERIFICATION_CODE !== 'your-google-verification-code')
-            ? process.env.GOOGLE_VERIFICATION_CODE
-            : (process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE && process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE !== 'your-google-verification-code')
-                ? process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE
-                : undefined,
+        google: cleanEnvVar(process.env.GOOGLE_VERIFICATION_CODE) || cleanEnvVar(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE),
         // yandex: 'your-yandex-verification-code',
         // bing: 'your-bing-verification-code',
     },

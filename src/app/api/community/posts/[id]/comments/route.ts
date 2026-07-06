@@ -3,6 +3,8 @@ import { requireAuth } from "@/lib/middleware/auth.middleware";
 import { withErrorHandler } from "@/lib/utils/errors";
 import { cacheService } from "@/lib/services/cache.service";
 import { z } from "zod";
+import { auth } from "@/auth";
+import { maskSensitiveData } from "@/lib/utils";
 
 /**
  * Validation schema for creating a comment
@@ -78,7 +80,7 @@ export const POST = withErrorHandler(async (
 
 /**
  * GET /api/community/posts/[id]/comments
- * Get comments for a post with cursor-based pagination (cached 30 seconds)
+ * Get comments for a post with cursor-based pagination (optional auth)
  */
 export const GET = withErrorHandler(async (
   request: NextRequest,
@@ -86,19 +88,22 @@ export const GET = withErrorHandler(async (
 ) => {
   const { id: postId } = await params;
 
-  // Require authentication
-  const sessionOrResponse = await requireAuth();
-  if (sessionOrResponse instanceof NextResponse) {
-    return sessionOrResponse;
-  }
+  // Optional authentication
+  const session = await auth();
+  const userId = session?.user?.id;
 
   // Parse query parameters
   const searchParams = request.nextUrl.searchParams;
-  const limit = parseInt(searchParams.get("limit") || "20", 10);
+  let limit = parseInt(searchParams.get("limit") || "20", 10);
   const cursor = searchParams.get("cursor");
 
-  // Try cache first (30-second TTL — fast enough to feel live, avoids DB on every open)
-  const cacheKey = commentsCacheKey(postId, limit, cursor);
+  // Limit comments to 3 for unauthenticated visitors
+  if (!userId) {
+    limit = Math.min(limit, 3);
+  }
+
+  // Try cache first
+  const cacheKey = `${commentsCacheKey(postId, limit, cursor)}:${userId ? "auth" : "anon"}`;
   const cached = await cacheService.get(cacheKey);
   if (cached) {
     return NextResponse.json(cached, { status: 200 });
@@ -106,6 +111,98 @@ export const GET = withErrorHandler(async (
 
   // Cache miss — query DB
   const { prisma } = await import("@/lib/prisma");
+
+  // Verify access to the post
+  const post = await prisma.communityPost.findUnique({
+    where: { id: postId },
+    select: {
+      visibility: true,
+      authorId: true,
+      groupId: true,
+      group: {
+        select: {
+          isPrivate: true,
+        },
+      },
+    },
+  });
+
+  if (!post) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: "NOT_FOUND",
+          message: "Post not found",
+        },
+      },
+      { status: 404 }
+    );
+  }
+
+  let hasAccess = false;
+  if (post.visibility === "PUBLIC") {
+    if (post.group && post.group.isPrivate) {
+      if (userId) {
+        const membership = await prisma.groupMember.findUnique({
+          where: {
+            groupId_userId: {
+              groupId: post.groupId!,
+              userId,
+            },
+          },
+        });
+        hasAccess = !!membership || post.authorId === userId;
+      }
+    } else {
+      hasAccess = true;
+    }
+  } else if (post.visibility === "GROUP" && post.groupId) {
+    if (post.group && !post.group.isPrivate) {
+      hasAccess = true;
+    } else {
+      if (userId) {
+        const membership = await prisma.groupMember.findUnique({
+          where: {
+            groupId_userId: {
+              groupId: post.groupId,
+              userId,
+            },
+          },
+        });
+        hasAccess = !!membership || post.authorId === userId;
+      }
+    }
+  } else if (post.visibility === "FOLLOWERS") {
+    if (userId) {
+      if (post.authorId === userId) {
+        hasAccess = true;
+      } else {
+        const follow = await prisma.follow.findUnique({
+          where: {
+            followerId_followingId: {
+              followerId: userId,
+              followingId: post.authorId,
+            },
+          },
+        });
+        hasAccess = !!follow;
+      }
+    }
+  }
+
+  if (!hasAccess) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: "UNAUTHORIZED",
+          message: "You do not have permission to view comments on this post",
+        },
+      },
+      { status: 401 }
+    );
+  }
 
   // Build where clause (parentId: null fetches only top-level comments)
   const whereClause: any = {
@@ -122,12 +219,12 @@ export const GET = withErrorHandler(async (
     take: limit + 1,
     include: {
       author: {
-        select: { id: true, name: true, image: true },
+        select: { id: true, name: true, image: true, college: true },
       },
       replies: {
         include: {
           author: {
-            select: { id: true, name: true, image: true },
+            select: { id: true, name: true, image: true, college: true },
           },
         },
         orderBy: { createdAt: "asc" },
@@ -140,9 +237,23 @@ export const GET = withErrorHandler(async (
   const resultComments = hasMore ? comments.slice(0, limit) : comments;
   const nextCursor = hasMore ? resultComments[resultComments.length - 1].createdAt.toISOString() : null;
 
+  // Mask sensitive content for anonymous visitors
+  const finalComments = resultComments.map((comment) => {
+    const commentContent = userId ? comment.content : maskSensitiveData(comment.content);
+    const replies = comment.replies.map((reply) => ({
+      ...reply,
+      content: userId ? reply.content : maskSensitiveData(reply.content),
+    }));
+    return {
+      ...comment,
+      content: commentContent,
+      replies,
+    };
+  });
+
   const response = {
     success: true,
-    data: resultComments,
+    data: finalComments,
     pagination: {
       cursor: nextCursor,
       limit,
@@ -150,7 +261,7 @@ export const GET = withErrorHandler(async (
     },
   };
 
-  // Cache for 30 seconds — fire-and-forget so we don't block the response
+  // Cache for 30 seconds
   cacheService.set(cacheKey, response, 30).catch(() => {});
 
   return NextResponse.json(response, { status: 200 });

@@ -105,12 +105,12 @@ function getErrorMessage(err: unknown): string {
  * await requestJoinGroup('private-group-id');
  * ```
  */
-export function useCommunityGroups(): UseCommunityGroupsReturn {
+export function useCommunityGroups(initialGroups?: CommunityGroupData[]): UseCommunityGroupsReturn {
   const [state, setState] = useState<UseCommunityGroupsState>({
-    groups: [],
+    groups: initialGroups || [],
     memberGroupIds: [],
     pendingRequestGroupIds: [],
-    isLoading: true,
+    isLoading: initialGroups ? false : true,
     error: null,
   });
 
@@ -119,6 +119,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
   const { status } = useSession();
 
   const isMountedRef = useRef(true);
+  const didMountRef = useRef(false);
 
   /**
    * Fetch community groups from API
@@ -178,6 +179,11 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
   useEffect(() => {
     isMountedRef.current = true;
     
+    if (initialGroups && !didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+
     // Fetch regardless of authentication status, as public groups are visible
     if (status !== 'loading') {
       fetchGroups();
@@ -186,7 +192,7 @@ export function useCommunityGroups(): UseCommunityGroupsReturn {
     return () => {
       isMountedRef.current = false;
     };
-  }, [fetchGroups, status]);
+  }, [fetchGroups, status, initialGroups]);
 
   /**
    * Refetch function for manual refresh

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo.config";
+import "./community.css";
 
 export const metadata: Metadata = generatePageMetadata(
   "Developer Community | Velonx Connect",
@@ -14,3 +15,4 @@ export default function CommunityLayout({
 }) {
   return <>{children}</>;
 }
+
