@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // Helper to determine if a thread meets the SEO indexing quality bar
 function getThreadIndexability(content: string, replyCount: number): boolean {
   const wordCount = content.trim().split(/\s+/).length;
-  return wordCount >= 40;
+  return wordCount >= 40 || replyCount > 0;
 }
 
 // Dynamic metadata generation with SEO Quality Gates & canonicals

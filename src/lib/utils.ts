@@ -64,12 +64,16 @@ export function normalizeStylizedText(text: string): string {
 
 export function slugifyPost(postId: string, content: string): string {
   const normalized = normalizeStylizedText(content);
-  const cleaned = normalized
+  let cleaned = normalized
     .replace(/(?:\s*#\w+)+\s*$/, "") // remove tags
     .replace(/[^\w\s-]/g, "") // remove special chars
     .trim()
     .toLowerCase()
     .replace(/[-\s]+/g, "-"); // merge spaces and dashes into a single dash
+  
+  if (cleaned.length > 80) {
+    cleaned = cleaned.slice(0, 80).replace(/-$/, "");
+  }
   return cleaned ? `${postId}-${cleaned}` : postId;
 }
 
