@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo.config";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { maskSensitiveData } from "@/lib/utils";
+import { maskSensitiveData, normalizeStylizedText } from "@/lib/utils";
 import ThreadClient from "./ThreadClient";
 import { notFound } from "next/navigation";
 
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // Helper to determine if a thread meets the SEO indexing quality bar
 function getThreadIndexability(content: string, replyCount: number): boolean {
   const wordCount = content.trim().split(/\s+/).length;
-  return wordCount >= 40 && replyCount >= 1;
+  return wordCount >= 40;
 }
 
 // Dynamic metadata generation with SEO Quality Gates & canonicals
@@ -36,8 +36,9 @@ export async function generateMetadata({
 
     if (!post) return {};
 
-    const isIndexable = getThreadIndexability(post.content, post._count.comments);
-    const cleanedContent = post.content.replace(/(?:\s*#\w+)+\s*$/, "");
+    const normalized = normalizeStylizedText(post.content);
+    const isIndexable = getThreadIndexability(normalized, post._count.comments);
+    const cleanedContent = normalized.replace(/(?:\s*#\w+)+\s*$/, "");
     const descriptionSnippet = cleanedContent.slice(0, 150) + (cleanedContent.length > 150 ? "..." : "");
 
     const baseMetadata = generatePageMetadata(
@@ -260,13 +261,14 @@ export default async function ThreadPage({
   };
 
   // Structured Data (JSON-LD) for DiscussionForumPosting
-  const cleanSnippet = formattedPost.content.replace(/(?:\s*#\w+)+\s*$/, "");
+  const normalizedSnippet = normalizeStylizedText(formattedPost.content);
+  const cleanSnippet = normalizedSnippet.replace(/(?:\s*#\w+)+\s*$/, "");
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "DiscussionForumPosting",
     "@id": `https://velonx.in/community/t/${slug}`,
     "headline": cleanSnippet.slice(0, 80) + (cleanSnippet.length > 80 ? "..." : ""),
-    "articleBody": formattedPost.content,
+    "articleBody": normalizedSnippet,
     "author": {
       "@type": "Person",
       "name": formattedPost.authorName,

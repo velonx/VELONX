@@ -18,6 +18,16 @@ export default async function CommunityPage() {
   const session = await auth();
   const userId = session?.user?.id;
 
+  // Run a one-time DB migration to rename 'APi' to 'API'
+  try {
+    await prisma.communityGroup.updateMany({
+      where: { name: "APi" },
+      data: { name: "API" },
+    });
+  } catch (err) {
+    console.error("Failed to rename group in database:", err);
+  }
+
   // Fetch initial groups (up to 50)
   const dbGroups = await prisma.communityGroup.findMany({
     take: 50,
@@ -100,10 +110,18 @@ export default async function CommunityPage() {
     };
   });
 
+  // Fetch total count of all public discussions
+  const totalPostsCount = await prisma.communityPost.count({
+    where: {
+      visibility: "PUBLIC",
+    },
+  });
+
   return (
     <CommunityClient
       initialPosts={initialPosts as any}
       initialGroups={initialGroups as any}
+      totalPostsCount={totalPostsCount}
     />
   );
 }

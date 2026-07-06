@@ -109,7 +109,7 @@ export default async function GroupDetailPage({
     user: {
       id: m.user.id,
       name: m.user.name,
-      email: m.user.email || "",
+      email: userId ? (m.user.email || "") : "",
       image: m.user.image,
     },
   }));

@@ -9,6 +9,7 @@ import { AvatarImage } from "@/components/responsive-image";
 import { ArrowLeft, MessageSquare, Share2, Check, Lock, ChevronUp } from "lucide-react";
 import toast from "react-hot-toast";
 import { CommentSection } from "@/components/community/CommentSection";
+import { slugifyPost } from "@/lib/utils";
 
 // Stable colors for initials avatars
 const getAvatarStyle = (name: string) => {
@@ -309,7 +310,7 @@ export default function ThreadClient({
               ) : (
                 <ul className="space-y-4">
                   {relatedPosts.map((rPost) => {
-                    const rSlug = `${rPost.id}-${rPost.content.trim().replace(/[^\w\s-]/g, '').toLowerCase().split(/\s+/).slice(0, 8).join('-')}`;
+                    const rSlug = slugifyPost(rPost.id, rPost.content);
                     return (
                       <li key={rPost.id} className="group">
                         <Link href={`/community/t/${rSlug}`} className="block">

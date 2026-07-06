@@ -11,6 +11,7 @@ import type { CommunityPostData, CommunityGroupData } from "@/lib/types/communit
 import { AvatarImage } from "@/components/responsive-image";
 import { Loader2Icon, MessageSquare, ChevronUpIcon, ChevronDownIcon, Share2, Check } from "lucide-react";
 import toast from "react-hot-toast";
+import { slugifyPost } from "@/lib/utils";
 
 // Stable colors for initials avatars
 const getAvatarStyle = (name: string) => {
@@ -100,14 +101,7 @@ function CommunityPostCard({
     e.stopPropagation();
     
     // Generate SEO friendly thread slug
-    const cleanedContent = displayContent
-      .trim()
-      .replace(/[^\w\s-]/g, '')
-      .toLowerCase()
-      .split(/\s+/)
-      .slice(0, 8)
-      .join('-');
-    const slug = cleanedContent ? `${post.id}-${cleanedContent}` : post.id;
+    const slug = slugifyPost(post.id, displayContent);
 
     const url = `${window.location.origin}/community/t/${slug}`;
     await navigator.clipboard.writeText(url);
@@ -143,7 +137,7 @@ function CommunityPostCard({
       </div>
       
       {/* Clickable link to the thread page for SEO discovery */}
-      <Link href={`/community/t/${post.id}-${displayContent.trim().replace(/[^\w\s-]/g, '').toLowerCase().split(/\s+/).slice(0, 8).join('-')}`} className="block group">
+      <Link href={`/community/t/${slugifyPost(post.id, displayContent)}`} className="block group">
         <div className="post-body group-hover:text-primary transition-colors cursor-pointer">
           {displayContent}
         </div>
@@ -193,9 +187,10 @@ function CommunityPostCard({
 interface CommunityClientProps {
   initialPosts: CommunityPostData[];
   initialGroups: CommunityGroupData[];
+  totalPostsCount: number;
 }
 
-export default function CommunityClient({ initialPosts, initialGroups }: CommunityClientProps) {
+export default function CommunityClient({ initialPosts, initialGroups, totalPostsCount }: CommunityClientProps) {
   const { data: session } = useSession();
 
   const [activeGroupId, setActiveGroupId] = useState<string>("all");
@@ -216,7 +211,7 @@ export default function CommunityClient({ initialPosts, initialGroups }: Communi
     initialPosts: activeGroupId === "all" ? initialPosts : undefined
   });
 
-  const totalDiscussionsCount = groups ? groups.reduce((acc, g) => acc + (g.postCount || 0), 0) : 0;
+  const totalDiscussionsCount = totalPostsCount;
 
   const handleCreatePost = async () => {
     if (!newPostContent.trim()) return;
