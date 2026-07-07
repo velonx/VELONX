@@ -21,6 +21,17 @@ export async function GET(
       );
     }
 
+    // Security: Only allow admins to view draft opportunities
+    if (opportunity.status === "DRAFT") {
+      const session = await auth();
+      if (session?.user?.role !== "ADMIN") {
+        return NextResponse.json(
+          { success: false, error: { code: "NOT_FOUND", message: "Opportunity not found" } },
+          { status: 404 }
+        );
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: opportunity,

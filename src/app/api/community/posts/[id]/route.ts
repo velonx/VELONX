@@ -5,7 +5,7 @@ import { postService } from "@/lib/services/post.service";
 import { cacheService, CacheKeys } from "@/lib/services/cache.service";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { maskSensitiveData } from "@/lib/utils";
+import { maskSensitiveData, slugifyPost } from "@/lib/utils";
 
 /**
  * Validation schema for editing a post
@@ -164,6 +164,7 @@ export const GET = withErrorHandler(async (
   const formattedPost = {
     id: post.id,
     content,
+    slug: slugifyPost(post.id, post.content),
     authorId: post.authorId,
     authorName: post.author.name || "Unknown",
     authorImage: post.author.image,

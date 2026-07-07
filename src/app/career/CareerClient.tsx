@@ -239,21 +239,25 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
         router.push(`/auth/login?callbackUrl=/career`);
     };
 
-    const filteredInternships = internships.filter(item => {
-        const query = searchQuery.toLowerCase();
-        return item.title.toLowerCase().includes(query) ||
-               item.company.toLowerCase().includes(query) ||
-               item.location.toLowerCase().includes(query) ||
-               item.requirements.some((req: string) => req.toLowerCase().includes(query));
-    });
+    const isItemOpen = (item: any) => {
+        return item.status === 'ACTIVE' && (!item.deadline || new Date(item.deadline) >= new Date());
+    };
 
-    const filteredJobs = jobs.filter(item => {
+    const matchesSearch = (item: any) => {
         const query = searchQuery.toLowerCase();
         return item.title.toLowerCase().includes(query) ||
                item.company.toLowerCase().includes(query) ||
                item.location.toLowerCase().includes(query) ||
                item.requirements.some((req: string) => req.toLowerCase().includes(query));
-    });
+    };
+
+    const filteredInternships = internships.filter(matchesSearch);
+    const activeInternships = filteredInternships.filter(isItemOpen);
+    const closedInternships = filteredInternships.filter(item => !isItemOpen(item));
+
+    const filteredJobs = jobs.filter(matchesSearch);
+    const activeJobs = filteredJobs.filter(isItemOpen);
+    const closedJobs = filteredJobs.filter(item => !isItemOpen(item));
 
     const renderOpportunityCard = (item: any, type: 'internship' | 'job') => {
         const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
@@ -1117,10 +1121,25 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                     label="Loading internships"
                                     gridClassName="p-job-list"
                                 />
-                            ) : filteredInternships.length > 0 ? (
-                                <div className="p-job-list">
-                                    {filteredInternships.map((internship) => renderOpportunityCard(internship, 'internship'))}
-                                </div>
+                            ) : activeInternships.length > 0 || closedInternships.length > 0 ? (
+                                <>
+                                    {activeInternships.length > 0 && (
+                                        <div className="p-job-list">
+                                            {activeInternships.map((internship) => renderOpportunityCard(internship, 'internship'))}
+                                        </div>
+                                    )}
+                                    {closedInternships.length > 0 && (
+                                        <div style={{ marginTop: '2.5rem', opacity: 0.7 }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
+                                                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--muted-foreground)' }}>Past Opportunities</h3>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>No longer accepting applications</span>
+                                            </div>
+                                            <div className="p-job-list">
+                                                {closedInternships.map((internship) => renderOpportunityCard(internship, 'internship'))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="text-center py-20 bg-card rounded-2xl border border-border italic text-muted-foreground shadow-sm">
                                     No internships available at the moment. Try a different query!
@@ -1139,10 +1158,25 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                     label="Loading jobs"
                                     gridClassName="p-job-list"
                                 />
-                            ) : filteredJobs.length > 0 ? (
-                                <div className="p-job-list">
-                                    {filteredJobs.map((job) => renderOpportunityCard(job, 'job'))}
-                                </div>
+                            ) : activeJobs.length > 0 || closedJobs.length > 0 ? (
+                                <>
+                                    {activeJobs.length > 0 && (
+                                        <div className="p-job-list">
+                                            {activeJobs.map((job) => renderOpportunityCard(job, 'job'))}
+                                        </div>
+                                    )}
+                                    {closedJobs.length > 0 && (
+                                        <div style={{ marginTop: '2.5rem', opacity: 0.7 }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
+                                                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--muted-foreground)' }}>Past Opportunities</h3>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>No longer accepting applications</span>
+                                            </div>
+                                            <div className="p-job-list">
+                                                {closedJobs.map((job) => renderOpportunityCard(job, 'job'))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="text-center py-20 bg-card rounded-2xl border border-border italic text-muted-foreground shadow-sm">
                                     No jobs available at the moment. Try a different query!

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -129,7 +130,7 @@ export function PostCard({
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = `${window.location.origin}/community?postId=${post.id}`;
+    const url = `${window.location.origin}/community/t/${post.slug || post.id}`;
     const shareData = {
       title: 'Community Post',
       text: `Check out this post: ${post.content.substring(0, 50)}...`,
@@ -272,22 +273,24 @@ export function PostCard({
                 </div>
               </div>
             ) : (
-              <div className="mt-1">
-                {post.content.includes('\n\n') ? (
-                  <>
-                    <h2 className="text-lg sm:text-xl font-bold text-foreground mb-2 leading-snug">
-                      {post.content.split('\n\n')[0]}
-                    </h2>
-                    <p className="text-sm text-foreground/80 whitespace-pre-wrap wrap-break-word leading-relaxed">
-                      {post.content.substring(post.content.indexOf('\n\n') + 2)}
+              <Link href={`/community/t/${post.slug || post.id}`} className="block group hover:no-underline mt-1">
+                <div className="group-hover:text-primary/95 transition-colors">
+                  {post.content.includes('\n\n') ? (
+                    <>
+                      <h2 className="text-lg sm:text-xl font-bold text-foreground mb-2 leading-snug group-hover:text-primary transition-colors">
+                        {post.content.split('\n\n')[0]}
+                      </h2>
+                      <p className="text-sm text-foreground/80 whitespace-pre-wrap wrap-break-word leading-relaxed">
+                        {post.content.substring(post.content.indexOf('\n\n') + 2)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm sm:text-base text-foreground whitespace-pre-wrap wrap-break-word leading-relaxed">
+                      {post.content}
                     </p>
-                  </>
-                ) : (
-                  <p className="text-sm sm:text-base text-foreground whitespace-pre-wrap wrap-break-word leading-relaxed">
-                    {post.content}
-                  </p>
-                )}
-              </div>
+                  )}
+                </div>
+              </Link>
             )}
 
             {/* Tags */}

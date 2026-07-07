@@ -16,193 +16,7 @@ import {
 import { CareerDetailSkeleton } from "@/components/boneyard";
 import "./career-detail.css";
 import { analytics } from "@/components/analytics";
-
-// Static mock data repository matching career-detail.html
-const MOCK_JOBS: Record<string, any> = {
-  razorpay: {
-    id: "razorpay",
-    type: "INTERNSHIP",
-    title: "Frontend Development Intern",
-    company: "Razorpay",
-    imageUrl: null,
-    logoText: "RP",
-    logoColor: "var(--violet-light)",
-    salary: "₹45,000 / mo",
-    location: "Bangalore / Remote",
-    duration: "6 Months",
-    exp: "Fresher / Student",
-    badge: "HOT OPPORTUNITY",
-    badgeClass: "badge-cyan",
-    stack: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Web Performance'],
-    about: "Razorpay is looking for an energetic, core-focused Frontend Development Intern to assist our payment experience teams. You will work directly with seasoned architects to design secure, lightning-fast landing panels, custom dashboard metrics, and progressive checkout widgets. We value builders who focus on writing dry, standard-compliant code, optimization frameworks, and clean systems over simple tutorials.",
-    responsibilities: [
-      "Build fully reusable, pixel-perfect user components based on Figma mockups.",
-      "Collaborate with backend engineers to integrate APIs using robust websocket streams and REST fetch requests.",
-      "Analyze web performance metrics, specifically debugging and optimizing Largest Contentful Paint (LCP) speeds.",
-      "Write modular unit test cases to secure checkout logic structures."
-    ],
-    requirements: [
-      "Strong foundations in native Modern Javascript (ES6+), HTML5, and CSS3 layouts.",
-      "Practical knowledge of building Single Page Applications using React or Next.js.",
-      "Excellent understanding of browser rendering architectures, DOM elements, and CSS custom variables.",
-      "Having a submitted project on the Velonx Projects Hub is a significant advantage."
-    ],
-    applyUrl: "https://razorpay.com/jobs"
-  },
-  snowflake: {
-    id: "snowflake",
-    type: "JOB",
-    title: "Junior Software Engineer (Backend)",
-    company: "Snowflake Inc",
-    imageUrl: null,
-    logoText: "SF",
-    logoColor: "var(--cyan-light)",
-    salary: "₹12 - 18 LPA",
-    location: "Remote (India)",
-    duration: "Full-Time",
-    exp: "Fresher / 0-1 Yr",
-    badge: "URGENT HIRING",
-    badgeClass: "badge-violet",
-    stack: ['Go', 'PostgreSQL', 'Docker', 'Kubernetes', 'CI/CD'],
-    about: "Snowflake is seeking a Junior Software Engineer to join our core backend data pipelines team. You will work on optimizing large-scale distributed queries, designing high-throughput data processing endpoints, and ensuring database consistency. You will be building resilient microservices using Go and deploying them in high-availability environments.",
-    responsibilities: [
-      "Design, build, and maintain efficient, reusable, and reliable Go backend microservices.",
-      "Optimize SQL query plans and manage schema migrations across relational databases like PostgreSQL.",
-      "Create clean API schemas and integrate authentication layers with JWT and OAuth frameworks.",
-      "Collaborate on CI/CD pipelines to package and deploy backend dockerized components."
-    ],
-    requirements: [
-      "Solid understanding of Go (Golang) programming and backend system design paradigms.",
-      "Good familiarity with relational databases, transaction isolation levels, and indexing strategies.",
-      "Familiarity with containerization technologies (Docker, Kubernetes) and Linux shells.",
-      "Strong problem-solving skills, solid algorithm fundamentals, and good system debugging."
-    ],
-    applyUrl: "https://snowflake.com/careers"
-  },
-  cred: {
-    id: "cred",
-    type: "INTERNSHIP",
-    title: "Product Design Intern",
-    company: "Cred",
-    imageUrl: null,
-    logoText: "CR",
-    logoColor: "rgba(16,185,129,1)",
-    salary: "₹35,000 / mo",
-    location: "Remote (India)",
-    duration: "6 Months",
-    exp: "Fresher / Student",
-    badge: "CREATIVE SPOTLIGHT",
-    badgeClass: "badge-green",
-    stack: ['Figma', 'UI Layout', 'Prototyping', 'Micro-interactions', 'Design Systems'],
-    about: "CRED is looking for a Product Design Intern who is deeply passionate about micro-interactions, clean glassmorphic aesthetic layers, and fluid transitions. You will work alongside our design core to craft intuitive payment tracks, interactive credit score visualizers, and gamified interface loops that amaze premium users.",
-    responsibilities: [
-      "Create high-fidelity interactive user interfaces and micro-animations in Figma.",
-      "Conduct user research, trace user flows, and compile wireframe documents.",
-      "Collaborate with frontend developers to ensure perfect visual translation and CSS compliance.",
-      "Participate in design reviews and iterate designs based on real user feedback logs."
-    ],
-    requirements: [
-      "Outstanding design portfolio showcasing UI/UX skills, typography, and visual hierarchies.",
-      "Expert knowledge of Figma components, auto-layouts, and prototyping interactions.",
-      "Basic understanding of HTML/CSS structures, rendering bounds, and layout engines is highly appreciated.",
-      "Keen eye for detail, animation curves, color harmony, and micro-interactions."
-    ],
-    applyUrl: "https://cred.club/careers"
-  },
-  zomato: {
-    id: "zomato",
-    type: "JOB",
-    title: "Associate Android Developer",
-    company: "Zomato",
-    imageUrl: null,
-    logoText: "ZM",
-    logoColor: "rgba(245,158,11,1)",
-    salary: "₹10 - 14 LPA",
-    location: "Gurgaon, India",
-    duration: "Full-Time",
-    exp: "Fresher / 0-1 Yr",
-    badge: "IMMEDIATE JOINER",
-    badgeClass: "badge-amber",
-    stack: ['Kotlin', 'Android SDK', 'Jetpack Compose', 'SQLite', 'Reactive Programming'],
-    about: "Zomato is seeking an Associate Android Developer to help scale our consumer delivery mobile applications. You will be building responsive UI layouts, designing efficient offline database caches, and optimizing location-tracking battery consumption across millions of active mobile devices in India.",
-    responsibilities: [
-      "Build modular, responsive android interfaces using Kotlin and Jetpack Compose.",
-      "Implement real-time location tracking APIs and local SQLite database architectures.",
-      "Optimize Android app bundle sizes, asset loads, and memory footprints for peak efficiency.",
-      "Diagnose app performance metrics, trace memory leaks, and debug background service threads."
-    ],
-    requirements: [
-      "Strong foundation in Kotlin development and the official Android SDK environment.",
-      "Good understanding of Android lifecycle states, background workers, and local storage.",
-      "Experience with modern UI toolkits like Jetpack Compose or XML layout styling.",
-      "Familiarity with reactive programming patterns and RESTful API integrations."
-    ],
-    applyUrl: "https://zomato.com/careers"
-  },
-  microsoft: {
-    id: "microsoft",
-    type: "INTERNSHIP",
-    title: "Machine Learning Research Intern",
-    company: "Microsoft Research",
-    imageUrl: null,
-    logoText: "MS",
-    logoColor: "rgba(236,72,153,1)",
-    salary: "₹80,000 / mo",
-    location: "Bangalore, India",
-    duration: "6 Months",
-    exp: "Student / PG",
-    badge: "RESEARCH TRACK",
-    badgeClass: "badge-pink",
-    stack: ['Python', 'PyTorch', 'Transformers', 'LLMs', 'Model Compression'],
-    about: "Microsoft Research (MSR) India is looking for a Research Intern to contribute to advanced machine learning projects. You will collaborate with world-class computer scientists on modern NLP model optimizations, low-power edge deployment algorithms, and interactive generative architectures.",
-    responsibilities: [
-      "Conduct empirical experiments to train, fine-tune, and optimize large language models.",
-      "Design model compression algorithms such as pruning, quantization, and knowledge distillation.",
-      "Document experimental outcomes, write technical reports, and contribute to academic papers.",
-      "Implement pipeline scripts to pre-process complex multimodal datasets."
-    ],
-    requirements: [
-      "Excellent coding capabilities in Python and modern deep learning frameworks (PyTorch / TensorFlow).",
-      "Solid mathematical foundations in linear algebra, calculus, and probability.",
-      "Strong grasp of machine learning fundamentals, transformers, and model optimization methods.",
-      "Prior research experience or contributions to open-source ML projects is a huge plus."
-    ],
-    applyUrl: "https://microsoft.com/careers"
-  }
-};
-
-const COMMON_TECH = [
-  'React', 'Next.js', 'TypeScript', 'JavaScript', 'HTML', 'CSS', 'Tailwind',
-  'Node.js', 'Express', 'Go', 'Golang', 'Python', 'PyTorch', 'TensorFlow', 'LLMs',
-  'Kotlin', 'Android', 'Java', 'Swift', 'iOS', 'Flutter', 'React Native',
-  'PostgreSQL', 'MongoDB', 'SQL', 'Docker', 'Kubernetes', 'AWS', 'CI/CD',
-  'Figma', 'UI/UX', 'Design Systems', 'Machine Learning', 'Deep Learning',
-  'Git', 'GitHub', 'Web Performance', 'LCP', 'Vite'
-];
-
-const PRECOMPILED_TECH_REGEXES = COMMON_TECH.map(tech => {
-  const escaped = tech.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-  return { tech, regex: new RegExp(`\\b${escaped}\\b`, 'i') };
-});
-
-function getTechStack(job: any): string[] {
-  if (job.stack && job.stack.length > 0) return job.stack;
-  
-  const tags = new Set<string>();
-  const searchStr = `${job.title} ${job.about || job.description || ""} ${(job.requirements || []).join(' ')}`.toLowerCase();
-  
-  for (const { tech, regex } of PRECOMPILED_TECH_REGEXES) {
-    if (regex.test(searchStr)) {
-      tags.add(tech);
-    }
-  }
-  
-  if (searchStr.includes('next.js') || searchStr.includes('nextjs')) tags.add('Next.js');
-  if (searchStr.includes('node.js') || searchStr.includes('nodejs')) tags.add('Node.js');
-  
-  const result = Array.from(tags);
-  return result.length > 0 ? result.slice(0, 6) : ['Developer', 'Engineering'];
-}
+import { MOCK_JOBS, getTechStack } from "@/lib/data/careerMockData";
 
 interface Props {
   id: string;
@@ -240,6 +54,17 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
 
   // Similar jobs
   const [similarOpportunities, setSimilarOpportunities] = useState<any[]>([]);
+
+  // SSR-to-client handoff: hide the server-rendered plain HTML once the interactive
+  // client version has mounted and loaded the job data.
+  useEffect(() => {
+    if (!loading && job) {
+      const ssrContent = document.getElementById("ssr-career-content");
+      if (ssrContent) {
+        ssrContent.style.display = "none";
+      }
+    }
+  }, [loading, job]);
 
   // Load active opportunity
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NotFoundError, ValidationError, AuthorizationError } from "@/lib/utils/errors";
+import { slugifyPost } from "@/lib/utils";
 
 /**
  * Feed query parameters for filtering and pagination
@@ -18,6 +19,7 @@ export interface FeedItemData {
   post: {
     id: string;
     content: string;
+    slug?: string;
     authorId: string;
     authorName: string;
     authorImage?: string | null;
@@ -462,6 +464,12 @@ export class FeedService {
             image: true,
           },
         },
+        _count: {
+          select: {
+            reactions: true,
+            comments: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -532,14 +540,31 @@ export class FeedService {
     });
 
     return {
-      posts: posts.map((post) => ({
-        id: post.id,
-        content: post.content,
-        authorId: post.authorId,
-        authorName: post.author.name || "Unknown",
-        authorImage: post.author.image,
-        createdAt: post.createdAt,
-      })),
+      posts: posts.map((post) => {
+        const upvotes = post.upvotes || 0;
+        const downvotes = post.downvotes || 0;
+        return {
+          id: post.id,
+          content: post.content,
+          slug: slugifyPost(post.id, post.content),
+          authorId: post.authorId,
+          authorName: post.author.name || "Unknown",
+          authorImage: post.author.image,
+          groupId: post.groupId,
+          visibility: post.visibility,
+          imageUrls: post.imageUrls,
+          linkUrls: post.linkUrls,
+          isEdited: post.isEdited,
+          isPinned: post.isPinned,
+          reactionCount: post._count?.reactions || 0,
+          commentCount: post._count?.comments || 0,
+          upvotes,
+          downvotes,
+          score: upvotes - downvotes,
+          createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
+        };
+      }),
       rooms: rooms.map((room) => ({
         id: room.id,
         name: room.name,
@@ -568,6 +593,7 @@ export class FeedService {
       post: {
         id: post.id,
         content: post.content,
+        slug: slugifyPost(post.id, post.content),
         authorId: post.authorId,
         authorName: post.author.name || "Unknown",
         authorImage: post.author.image,

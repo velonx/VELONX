@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NotFoundError, ValidationError, AuthorizationError } from "@/lib/utils/errors";
+import { slugifyPost } from "@/lib/utils";
 
 /**
  * Input type for creating a post
@@ -30,6 +31,7 @@ export type ReactionType = "LIKE" | "LOVE" | "INSIGHTFUL" | "CELEBRATE";
 export interface CommunityPostData {
   id: string;
   content: string;
+  slug?: string;
   authorId: string;
   authorName: string;
   authorImage?: string | null;
@@ -628,6 +630,7 @@ export class PostService {
     return {
       id: post.id,
       content: post.content,
+      slug: slugifyPost(post.id, post.content),
       authorId: post.authorId,
       authorName: post.author.name || "Unknown",
       authorImage: post.author.image,
