@@ -56,14 +56,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             try {
                 console.log("[auth][db] Attempting to create user:", user.email);
                 const referralCode = await generateReferralCode();
-                const { id, ...userData } = user; // NextAuth passes a UUID, but MongoDB needs a 24-char hex. Destructuring removes it.
-                const newUser = await prisma.user.create({
-                    data: {
-                        ...userData,
-                        emailVerified: userData.emailVerified || new Date(),
-                        referralCode,
-                    },
-                });
+                
+                // Explicitly copy only the fields that exist in Prisma User model to prevent any extra properties causing errors
+                const data: any = {
+                    email: user.email,
+                    referralCode,
+                };
+                
+                if (user.name) data.name = user.name;
+                if (user.image) data.image = user.image;
+                
+                // OAuth user email is verified automatically
+                data.emailVerified = user.emailVerified || new Date();
+                
+                const newUser = await prisma.user.create({ data });
                 console.log("[auth][db] User created successfully:", newUser.id);
                 return newUser as any;
             } catch (dbError) {
