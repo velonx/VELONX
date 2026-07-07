@@ -8,6 +8,7 @@ import bcrypt from "bcryptjs"
 import type { UserRole } from "@prisma/client"
 import { BruteForceProtection, createBruteForceIdentifier, type BruteForceCheckResult } from "@/lib/services/brute-force-protection.service"
 import { generateReferralCode } from "@/lib/services/referral.service"
+import { generateUniqueUserSlug } from "@/lib/utils/slug"
 
 // Extend the session type to include custom properties
 declare module "next-auth" {
@@ -56,11 +57,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             try {
                 console.log("[auth][db] Attempting to create user:", user.email);
                 const referralCode = await generateReferralCode();
+                const userSlug = await generateUniqueUserSlug(user.name || "user");
                 
                 // Explicitly copy only the fields that exist in Prisma User model to prevent any extra properties causing errors
                 const data: any = {
                     email: user.email,
                     referralCode,
+                    slug: userSlug,
                 };
                 
                 if (user.name) data.name = user.name;

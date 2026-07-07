@@ -157,4 +157,59 @@ export async function generateUniqueOpportunitySlug(
   return `${base}-${next}`;
 }
 
+/**
+ * Convert a user name into a URL-safe slug.
+ */
+export function toUserSlug(name: string): string {
+  return (name || "user")
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "") // Remove non-word characters
+    .replace(/[\s_-]+/g, "-") // Replace spaces/underscores/hyphens with a single hyphen
+    .replace(/^-+|-+$/g, "") // Trim hyphens
+    .substring(0, 50);
+}
+
+/**
+ * Generate a unique slug for a user, appending a numeric suffix if needed.
+ */
+export async function generateUniqueUserSlug(
+  name: string,
+  excludeUserId?: string
+): Promise<string> {
+  const base = toUserSlug(name);
+
+  // Check if base slug is available
+  const existing = await prisma.user.findFirst({
+    where: {
+      slug: base,
+      ...(excludeUserId ? { id: { not: excludeUserId } } : {}),
+    },
+    select: { id: true },
+  });
+
+  if (!existing) return base;
+
+  // Find all slugs that start with base + "-" + number
+  const siblings = await prisma.user.findMany({
+    where: {
+      slug: { startsWith: `${base}-` },
+      ...(excludeUserId ? { id: { not: excludeUserId } } : {}),
+    },
+    select: { slug: true },
+  });
+
+  const suffixPattern = new RegExp(`^${base}-(\\d+)$`);
+  const usedNumbers = siblings
+    .map((u) => {
+      const match = u.slug?.match(suffixPattern);
+      return match ? parseInt(match[1], 10) : 0;
+    })
+    .filter(Boolean);
+
+  const next = usedNumbers.length > 0 ? Math.max(...usedNumbers) + 1 : 2;
+  return `${base}-${next}`;
+}
+
+
 

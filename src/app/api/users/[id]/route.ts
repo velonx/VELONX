@@ -10,46 +10,9 @@ import {
   getMutualConnections,
   getConnectionCount,
 } from "@/lib/services/connection.service";
+import { generateUniqueUserSlug } from "@/lib/utils/slug";
 
-/**
- * Generate a URL slug from user name
- */
-function generateSlugFromName(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "") // Remove non-word characters
-    .replace(/[\s_-]+/g, "-") // Replace spaces/underscores/hyphens with a single hyphen
-    .replace(/^-+|-+$/g, ""); // Trim hyphens
-}
 
-/**
- * Get a unique URL slug for user profile
- */
-async function getUniqueSlug(name: string, userId: string): Promise<string> {
-  const baseSlug = generateSlugFromName(name || "user");
-  const existingUserWithSlug = await prisma.user.findFirst({
-    where: { slug: baseSlug }
-  });
-  if (!existingUserWithSlug || existingUserWithSlug.id === userId) {
-    return baseSlug;
-  }
-  let uniqueSlug = baseSlug;
-  let counter = 1;
-  let exists = true;
-  while (exists) {
-    uniqueSlug = `${baseSlug}-${counter}`;
-    const check = await prisma.user.findUnique({
-      where: { slug: uniqueSlug }
-    });
-    if (!check) {
-      exists = false;
-    } else {
-      counter++;
-    }
-  }
-  return uniqueSlug;
-}
 
 /**
  * GET /api/users/[id]
@@ -163,7 +126,7 @@ export async function GET(
 
     // Auto-populate slug if user exists but has no slug
     if (!user.slug && user.name) {
-      const uniqueSlug = await getUniqueSlug(user.name, user.id);
+      const uniqueSlug = await generateUniqueUserSlug(user.name, user.id);
       await prisma.user.update({
         where: { id: user.id },
         data: { slug: uniqueSlug }

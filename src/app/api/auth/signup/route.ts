@@ -6,6 +6,7 @@ import { handleError } from "@/lib/utils/errors";
 import { generateReferralCode, validateReferralCode, createReferralRelationship } from "@/lib/services/referral.service";
 import crypto from "crypto";
 import { EmailService } from "@/lib/services/email.service";
+import { generateUniqueUserSlug } from "@/lib/utils/slug";
 
 // Signup validation schema
 const signupSchema = z.object({
@@ -60,6 +61,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const userSlug = await generateUniqueUserSlug(validatedData.name);
+
     // Create user
     const user = await prisma.user.create({
       data: {
@@ -68,6 +71,7 @@ export async function POST(request: NextRequest) {
         password: hashedPassword,
         role: validatedData.role, // Use provided role or default to STUDENT
         referralCode, // Assign generated referral code
+        slug: userSlug,
       },
       select: {
         id: true,
