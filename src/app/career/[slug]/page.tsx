@@ -14,15 +14,30 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
-  const pageUrl = `${siteUrl}/career/${slug}`;
+  const pageUrl = `${siteUrl}/career/${decodedSlug}`;
 
   try {
     // 1. Check mock metadata first
-    if (MOCK_JOBS[slug]) {
-      const mock = MOCK_JOBS[slug];
+    if (MOCK_JOBS[decodedSlug]) {
+      const mock = MOCK_JOBS[decodedSlug];
       const isClosed = !isJobOpen(mock);
+
+      // Ensure absolute image URL
+      const rawImageUrl = mock.imageUrl?.trim();
+      let finalImageUrl = `${siteUrl}/og/default.png`; // Fallback default
+      if (rawImageUrl && rawImageUrl !== "null" && rawImageUrl !== "undefined") {
+        if (rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")) {
+          finalImageUrl = rawImageUrl;
+        } else {
+          const normalizedPath = rawImageUrl.startsWith("/") ? rawImageUrl : `/${rawImageUrl}`;
+          finalImageUrl = `${siteUrl}${normalizedPath}`;
+        }
+      }
+
       return {
+        metadataBase: new URL(siteUrl),
         title: `${mock.title} at ${mock.company} | Velonx Careers`,
         description: mock.metaDesc,
         alternates: { canonical: pageUrl },
@@ -31,6 +46,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: pageUrl,
           title: `${mock.title} at ${mock.company}`,
           description: mock.metaDesc,
+          images: [
+            {
+              url: finalImageUrl,
+              width: 1200,
+              height: 630,
+              alt: `${mock.title} at ${mock.company}`,
+            },
+          ],
+        },
+        twitter: {
+          card: "summary_large_image",
+          title: `${mock.title} at ${mock.company}`,
+          description: mock.metaDesc,
+          images: [finalImageUrl],
         },
         // Noindex closed listings so Google drops them from search results
         ...(isClosed ? { robots: { index: false, follow: true } } : {}),
@@ -38,7 +67,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     // 2. Fetch from database
-    const opportunity = await OpportunityService.getById(slug);
+    const opportunity = await OpportunityService.getById(decodedSlug);
     if (opportunity) {
       // Security: if DRAFT, metadata is only visible to ADMIN
       if (opportunity.status === "DRAFT") {
@@ -56,7 +85,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         status: opportunity.status,
         deadline: opportunity.deadline?.toISOString() ?? null,
       });
+
+      // Ensure absolute image URL
+      const rawImageUrl = opportunity.imageUrl?.trim();
+      let finalImageUrl = `${siteUrl}/og/default.png`; // Fallback default
+      if (rawImageUrl && rawImageUrl !== "null" && rawImageUrl !== "undefined") {
+        if (rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")) {
+          finalImageUrl = rawImageUrl;
+        } else {
+          const normalizedPath = rawImageUrl.startsWith("/") ? rawImageUrl : `/${rawImageUrl}`;
+          finalImageUrl = `${siteUrl}${normalizedPath}`;
+        }
+      }
+
       return {
+        metadataBase: new URL(siteUrl),
         title: `${opportunity.title} at ${opportunity.company} | Velonx Careers`,
         description: desc,
         alternates: { canonical: pageUrl },
@@ -65,7 +108,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: pageUrl,
           title: `${opportunity.title} at ${opportunity.company}`,
           description: desc,
-          images: opportunity.imageUrl ? [{ url: opportunity.imageUrl, alt: opportunity.title }] : [],
+          images: [
+            {
+              url: finalImageUrl,
+              width: 1200,
+              height: 630,
+              alt: `${opportunity.title} at ${opportunity.company}`,
+            },
+          ],
+        },
+        twitter: {
+          card: "summary_large_image",
+          title: `${opportunity.title} at ${opportunity.company}`,
+          description: desc,
+          images: [finalImageUrl],
         },
         // Noindex closed listings so Google drops them from search results
         ...(isClosed ? { robots: { index: false, follow: true } } : {}),
@@ -214,14 +270,15 @@ async function getRelatedBlogPosts(): Promise<{ slug: string; title: string }[]>
 
 export default async function CareerDetailPage({ params }: Props) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
   let opportunity: any = null;
 
   // Resolve job data — mock first, then database
-  const mockJob = MOCK_JOBS[slug] || null;
+  const mockJob = MOCK_JOBS[decodedSlug] || null;
 
   if (!mockJob) {
     try {
-      const dbOpp = await OpportunityService.getById(slug);
+      const dbOpp = await OpportunityService.getById(decodedSlug);
       if (dbOpp) {
         // Security check: only admins can view drafts
         if (dbOpp.status === "DRAFT") {
@@ -252,7 +309,7 @@ export default async function CareerDetailPage({ params }: Props) {
   const job = mockJob || opportunity;
 
   // Build JSON-LD structured data
-  const jsonLd = buildJsonLd(slug, opportunity);
+  const jsonLd = buildJsonLd(decodedSlug, opportunity);
 
   // Fetch related blog posts for interlinking CTA
   const blogPosts = await getRelatedBlogPosts();
@@ -575,7 +632,7 @@ export default async function CareerDetailPage({ params }: Props) {
         Handles: apply modals, login modals, GSAP animations, bookmarks, share,
         similar jobs section, and file upload flows.
       */}
-      <CareerDetailClient id={slug} initialOpportunity={opportunity} />
+      <CareerDetailClient id={decodedSlug} initialOpportunity={opportunity} />
     </>
   );
 }

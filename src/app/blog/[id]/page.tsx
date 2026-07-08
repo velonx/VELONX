@@ -8,12 +8,19 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
+function extractFirstImageUrl(content: string): string | null {
+  if (!content) return null;
+  const match = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return match ? match[1] : null;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
+  const decodedId = decodeURIComponent(id);
   try {
-    const post = await blogService.getBlogPostById(id, false);
+    const post = await blogService.getBlogPostById(decodedId, false);
     if (!post) {
-      console.warn(`[SEO generateMetadata] Blog post not found for ID/slug: ${id}`);
+      console.warn(`[SEO generateMetadata] Blog post not found for ID/slug: ${decodedId}`);
       return {
         title: "Blog Article | Velonx Insights",
         description: "Read the latest tech articles and community stories on Velonx Insights.",
@@ -25,13 +32,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         ? post.content.replace(/<[^>]*>/g, "").substring(0, 150) + "..."
         : "Read this article on Velonx Insights.");
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
-    const postSlugOrId = post.slug || id;
+    const postSlugOrId = post.slug || decodedId;
     const postUrl = `${siteUrl}/blog/${postSlugOrId}`;
     const authorName = post.author?.name || "Velonx Team";
     const tags = post.tags || [];
 
     // Ensure image URL is absolute (relative URLs are not parsed by social media crawlers)
-    const rawImageUrl = post.imageUrl?.trim();
+    const contentImage = extractFirstImageUrl(post.content || "");
+    const rawImageUrl = (post.imageUrl || contentImage || "").trim();
     let finalImageUrl = `${siteUrl}/og/default.png`; // Default fallback
     if (rawImageUrl && rawImageUrl !== "null" && rawImageUrl !== "undefined") {
       if (rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")) {
@@ -77,7 +85,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     };
   } catch (err) {
-    console.error(`[SEO generateMetadata] Failed to generate blog metadata for ID/slug: ${id}`, err);
+    console.error(`[SEO generateMetadata] Failed to generate blog metadata for ID/slug: ${decodedId}`, err);
     return {
       title: "Blog Article | Velonx Insights",
       description:
@@ -88,6 +96,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { id } = await params;
+  const decodedId = decodeURIComponent(id);
 
   // Fetch the current post and related posts in parallel (server-side)
   let jsonLd: object | null = null;
@@ -107,12 +116,13 @@ export default async function BlogPostPage({ params }: Props) {
   }> = [];
 
   try {
-    post = await blogService.getBlogPostById(id, false);
+    post = await blogService.getBlogPostById(decodedId, false);
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
-    const postSlugOrId = post.slug || id;
+    const postSlugOrId = post.slug || decodedId;
 
     // Ensure absolute image URL for structured data
-    const rawImageUrl = post.imageUrl?.trim();
+    const contentImage = extractFirstImageUrl(post.content || "");
+    const rawImageUrl = (post.imageUrl || contentImage || "").trim();
     let finalImageUrl = `${siteUrl}/og/default.png`;
     if (rawImageUrl && rawImageUrl !== "null" && rawImageUrl !== "undefined") {
       if (rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")) {
@@ -157,7 +167,7 @@ export default async function BlogPostPage({ params }: Props) {
         sortBy: "views",
       });
       relatedPosts = trending.blogPosts
-        .filter((p: any) => p.id !== id)
+        .filter((p: any) => p.id !== post.id)
         .slice(0, 3)
         .map((p: any) => ({
           id: p.id,
