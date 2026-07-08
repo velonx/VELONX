@@ -152,7 +152,15 @@ export async function POST(request: NextRequest) {
         type: 'video',
       });
     } else {
-      const imageUrl = await uploadImageToCloudinary(base64Data, folder);
+      // Determine transformation dimensions based on the folder/use-case
+      let width = 1200;
+      let height = 630; // default (1.91:1 standard OG)
+      
+      if (folder.includes('blog') || folder.includes('events') || folder.includes('career')) {
+        height = 675; // 16:9 aspect ratio
+      }
+
+      const imageUrl = await uploadImageToCloudinary(base64Data, folder, width, height);
       return NextResponse.json({
         success: true,
         url: imageUrl,

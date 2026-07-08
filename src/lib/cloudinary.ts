@@ -29,14 +29,16 @@ export default cloudinary;
 // Helper function to upload image from base64
 export async function uploadImageToCloudinary(
   base64Image: string,
-  folder: string = 'velonx'
+  folder: string = 'velonx',
+  width: number = 1200,
+  height: number = 630
 ): Promise<string> {
   try {
     const result = await cloudinary.uploader.upload(base64Image, {
       folder,
       resource_type: 'auto',
       transformation: [
-        { width: 1200, height: 630, crop: 'limit' },
+        { width, height, crop: 'limit' },
         { quality: 'auto' },
         { fetch_format: 'auto' }
       ]

@@ -30,7 +30,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const authorName = post.author?.name || "Velonx Team";
     const tags = post.tags || [];
 
+    // Ensure image URL is absolute (relative URLs are not parsed by social media crawlers)
+    const rawImageUrl = post.imageUrl?.trim();
+    let finalImageUrl = `${siteUrl}/og/default.png`; // Default fallback
+    if (rawImageUrl && rawImageUrl !== "null" && rawImageUrl !== "undefined") {
+      if (rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")) {
+        finalImageUrl = rawImageUrl;
+      } else {
+        const normalizedPath = rawImageUrl.startsWith("/") ? rawImageUrl : `/${rawImageUrl}`;
+        finalImageUrl = `${siteUrl}${normalizedPath}`;
+      }
+    }
+
     return {
+      metadataBase: new URL(siteUrl),
       title: `${post.title} | Velonx Insights`,
       description: excerpt,
       alternates: { canonical: postUrl },
@@ -47,15 +60,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           : new Date().toISOString(),
         authors: [authorName],
         tags: tags,
-        images: post.imageUrl
-          ? [{ url: post.imageUrl, width: 1200, height: 630, alt: post.title }]
-          : [],
+        images: [
+          {
+            url: finalImageUrl,
+            width: 1200,
+            height: 630,
+            alt: post.title,
+          },
+        ],
       },
       twitter: {
         card: "summary_large_image",
         title: post.title,
         description: excerpt,
-        images: post.imageUrl ? [post.imageUrl] : [],
+        images: [finalImageUrl],
       },
     };
   } catch (err) {
@@ -93,6 +111,18 @@ export default async function BlogPostPage({ params }: Props) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
     const postSlugOrId = post.slug || id;
 
+    // Ensure absolute image URL for structured data
+    const rawImageUrl = post.imageUrl?.trim();
+    let finalImageUrl = `${siteUrl}/og/default.png`;
+    if (rawImageUrl && rawImageUrl !== "null" && rawImageUrl !== "undefined") {
+      if (rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")) {
+        finalImageUrl = rawImageUrl;
+      } else {
+        const normalizedPath = rawImageUrl.startsWith("/") ? rawImageUrl : `/${rawImageUrl}`;
+        finalImageUrl = `${siteUrl}${normalizedPath}`;
+      }
+    }
+
     // Build JSON-LD structured data
     jsonLd = {
       "@context": "https://schema.org",
@@ -115,7 +145,7 @@ export default async function BlogPostPage({ params }: Props) {
         name: "Velonx",
         url: siteUrl,
       },
-      image: post.imageUrl || undefined,
+      image: finalImageUrl,
       keywords: post.tags?.join(", "),
     };
 

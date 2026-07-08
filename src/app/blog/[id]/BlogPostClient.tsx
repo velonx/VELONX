@@ -238,7 +238,7 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
                                 alt={post.title}
                                 fill
                                 priority
-                                sizes="(max-width: 768px) 100vw, 768px"
+                                sizes="(max-width: 1024px) 100vw, 800px"
                                 className="object-cover"
                             />
                         </div>
