@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { normalizeStylizedText, slugifyPost } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
 
@@ -108,10 +109,87 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[Sitemap Generation] Failed to fetch events:", err);
   }
 
+  // Fetch public community groups dynamically
+  let dynamicGroupEntries: MetadataRoute.Sitemap = [];
+  try {
+    const publicGroups = await prisma.communityGroup.findMany({
+      where: {
+        isPrivate: false,
+      },
+      select: {
+        id: true,
+        updatedAt: true,
+      },
+    });
+
+    dynamicGroupEntries = publicGroups.map((group) => ({
+      url: `${baseUrl}/community/groups/${group.id}`,
+      lastModified: group.updatedAt || currentDate,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+  } catch (err) {
+    console.error("[Sitemap Generation] Failed to fetch community groups:", err);
+  }
+
+  // Fetch public community posts dynamically to index them
+  let dynamicThreadEntries: MetadataRoute.Sitemap = [];
+  try {
+    const publicPosts = await prisma.communityPost.findMany({
+      where: {
+        visibility: "PUBLIC",
+        OR: [
+          { group: null },
+          { group: { isPrivate: false } }
+        ]
+      },
+      select: {
+        id: true,
+        content: true,
+        authorId: true,
+        updatedAt: true,
+        comments: {
+          select: {
+            authorId: true,
+            content: true,
+          },
+        },
+      },
+    });
+
+    const indexablePosts = publicPosts.filter((post) => {
+      // Replicate getThreadIndexability check
+      const normalized = normalizeStylizedText(post.content);
+      const postWordCount = normalized.trim().split(/\s+/).filter(Boolean).length;
+      
+      const externalReplies = post.comments.filter(c => c.authorId !== post.authorId);
+      const externalReplyCount = externalReplies.length;
+      
+      const totalExternalCommentsWordCount = externalReplies.reduce((acc, c) => {
+        return acc + c.content.trim().split(/\s+/).filter(Boolean).length;
+      }, 0);
+      
+      const totalWordCount = postWordCount + totalExternalCommentsWordCount;
+      
+      return postWordCount >= 40 || (externalReplyCount > 0 && totalWordCount >= 35) || externalReplyCount >= 2;
+    });
+
+    dynamicThreadEntries = indexablePosts.map((post) => ({
+      url: `${baseUrl}/community/t/${slugifyPost(post.id, post.content)}`,
+      lastModified: post.updatedAt || currentDate,
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
+    }));
+  } catch (err) {
+    console.error("[Sitemap Generation] Failed to fetch community threads:", err);
+  }
+
   return [
     ...siteMapEntries,
     ...dynamicBlogEntries,
     ...dynamicCareerEntries,
     ...dynamicEventEntries,
+    ...dynamicGroupEntries,
+    ...dynamicThreadEntries,
   ];
 }
