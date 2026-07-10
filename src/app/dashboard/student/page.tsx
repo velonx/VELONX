@@ -33,6 +33,7 @@ import { useProjects, useMeetings, useUserStats } from "@/lib/api/hooks";
 import { DailyCheckIn } from "@/components/daily-check-in";
 import { ProfileCompletionWizard } from "@/components/dashboard/ProfileCompletionWizard";
 import { getTier, getTierLabel } from "@/lib/utils/tiers";
+import { XP_THRESHOLDS } from "@/lib/utils/xp-constants";
 import ReviewDialog from "@/components/dashboard/ReviewDialog";
 import { FollowersList } from "@/components/community/FollowersList";
 import { FollowingList } from "@/components/community/FollowingList";
@@ -886,21 +887,19 @@ function StudentDashboardContent() {
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-xs font-bold opacity-90">
                                     {(() => {
-                                        const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
                                         const currentLevel = user?.level || 1;
                                         const currentXP = user?.xp || 0;
                                         if (currentLevel >= 10) return 'Max Level Reached!';
-                                        const currentThreshold = thresholds[currentLevel - 1];
+                                        const currentThreshold = XP_THRESHOLDS[currentLevel - 1];
                                         return `${currentXP - currentThreshold} XP`;
                                     })()}
                                 </span>
                                 <span className="text-xs font-bold opacity-90">
                                     {(() => {
-                                        const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
                                         const currentLevel = user?.level || 1;
                                         const currentXP = user?.xp || 0;
                                         if (currentLevel >= 10) return '';
-                                        const nextThreshold = thresholds[currentLevel];
+                                        const nextThreshold = XP_THRESHOLDS[currentLevel];
                                         const remaining = nextThreshold - currentXP;
                                         return `${remaining} XP to go`;
                                     })()}
@@ -911,12 +910,11 @@ function StudentDashboardContent() {
                                     className="h-full bg-background rounded-full transition-all duration-500 relative"
                                     style={{
                                         width: `${(() => {
-                                            const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000];
                                             const currentLevel = user?.level || 1;
                                             const currentXP = user?.xp || 0;
                                             if (currentLevel >= 10) return 100;
-                                            const currentThreshold = thresholds[currentLevel - 1];
-                                            const nextThreshold = thresholds[currentLevel];
+                                            const currentThreshold = XP_THRESHOLDS[currentLevel - 1];
+                                            const nextThreshold = XP_THRESHOLDS[currentLevel];
                                             const progress = ((currentXP - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
                                             return Math.min(100, Math.max(0, progress));
                                         })()}%`
@@ -926,6 +924,7 @@ function StudentDashboardContent() {
                                 </div>
                             </div>
                         </div>
+
 
                         {/* Level Milestones */}
                         <div className="grid grid-cols-3 gap-3 mb-4">

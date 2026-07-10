@@ -1,39 +1,27 @@
 import { prisma } from '@/lib/prisma';
 import { XPSource, XPTransaction } from '@prisma/client';
+import { XP_THRESHOLDS, calculateLevel } from '@/lib/utils/xp-constants';
 
 /**
  * XP Service - Manages user XP, levels, and multipliers
  */
 export class XPService {
-    // XP required for each level (exponential growth)
-    private static getXPForLevel(level: number): number {
-        return Math.floor(100 * Math.pow(level, 1.5));
-    }
-
     /**
      * Get total XP required to reach a specific level
      */
     static getRequiredXPForLevel(level: number): number {
-        let totalXP = 0;
-        for (let i = 1; i < level; i++) {
-            totalXP += this.getXPForLevel(i);
+        if (level <= 1) return 0;
+        if (level >= XP_THRESHOLDS.length) {
+            return XP_THRESHOLDS[XP_THRESHOLDS.length - 1];
         }
-        return totalXP;
+        return XP_THRESHOLDS[level - 1];
     }
 
     /**
      * Calculate level from total XP
      */
     static getLevelFromXP(xp: number): number {
-        let level = 1;
-        let requiredXP = 0;
-
-        while (requiredXP <= xp) {
-            level++;
-            requiredXP += this.getXPForLevel(level);
-        }
-
-        return level - 1;
+        return calculateLevel(xp);
     }
 
     /**
@@ -305,11 +293,24 @@ export class XPService {
             };
         }
 
-        const xpForCurrentLevel = this.getRequiredXPForLevel(user.level);
-        const xpForNextLevel = this.getRequiredXPForLevel(user.level + 1);
-        const xpInCurrentLevel = user.xp - xpForCurrentLevel;
-        const xpNeededForNextLevel = xpForNextLevel - xpForCurrentLevel;
-        const progress = (xpInCurrentLevel / xpNeededForNextLevel) * 100;
+        const level = user.level;
+        const totalXP = user.xp;
+        
+        let xpForCurrentLevel = 0;
+        let xpForNextLevel = 100;
+        let progress = 0;
+
+        if (level >= XP_THRESHOLDS.length) {
+            xpForCurrentLevel = XP_THRESHOLDS[XP_THRESHOLDS.length - 1];
+            xpForNextLevel = xpForCurrentLevel;
+            progress = 100;
+        } else {
+            xpForCurrentLevel = XP_THRESHOLDS[level - 1];
+            xpForNextLevel = XP_THRESHOLDS[level];
+            const xpInCurrentLevel = totalXP - xpForCurrentLevel;
+            const xpNeededForNextLevel = xpForNextLevel - xpForCurrentLevel;
+            progress = xpNeededForNextLevel > 0 ? (xpInCurrentLevel / xpNeededForNextLevel) * 100 : 100;
+        }
         const multiplier = await this.calculateMultiplier(userId);
 
         return {

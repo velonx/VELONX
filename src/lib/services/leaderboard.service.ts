@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { LeaderboardPeriod, LeaderboardSnapshot } from '@prisma/client';
+import { calculateLevel } from '@/lib/utils/xp-constants';
 
 /**
  * Enhanced Leaderboard Service - Manages leaderboards, rankings, and snapshots
@@ -406,10 +407,23 @@ export class LeaderboardService {
       },
     });
 
+    // Calculate new level based on updated XP
+    const newLevel = calculateLevel(user.xp);
+    let finalLevel = user.level;
+
+    if (newLevel !== user.level) {
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: { level: newLevel },
+        select: { level: true },
+      });
+      finalLevel = updatedUser.level;
+    }
+
     return {
       userId: user.id,
       newXP: user.xp,
-      newLevel: user.level,
+      newLevel: finalLevel,
       awarded: amount,
     };
   }
