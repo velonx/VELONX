@@ -30,3 +30,7 @@
 ## 2024-05-18 - [Add aria-live to momentarily changing button text in badges]
 **Learning:** Found that the "Copy URL" button in BadgeModal.tsx momentarily changes its state to "Copied!" but lacked `aria-live="polite"` and a dynamically updated `aria-label`, so screen readers would not announce the state change properly.
 **Action:** Always add `aria-live="polite"` and update the `aria-label` dynamically for buttons with temporary text state changes (e.g. "Copy" changing to "Copied!") to ensure the state change is announced by screen readers without requiring focus shifts.
+
+## 2024-07-09 - [Dynamic Button States Accessibility]
+ **Learning:** When a button undergoes momentary text changes (e.g., from 'Check In' to 'Checking in...' to 'Checked In Today'), screen readers may miss the state change unless they have focus. Adding `aria-live="polite"` to the button ensures the state change is announced without requiring a focus shift. Additionally, decorative emojis in buttons should be hidden from screen readers using `aria-hidden="true"`.
+ **Action:** Always add `aria-live="polite"` to buttons with dynamic text content, and ensure decorative elements are hidden from screen readers.
