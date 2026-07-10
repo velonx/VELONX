@@ -619,4 +619,37 @@ export class EmailService {
         `;
         return this.sendWithRetry(receiver.email, subject, html);
     }
+
+    /**
+     * Send project match recommendation email
+     */
+    static async sendProjectMatchEmail(
+        user: { id: string; email: string; name: string | null },
+        matchedProjects: Array<{
+            id: string;
+            title: string;
+            description: string;
+            techStack: string[];
+            matchedSkills: string[];
+        }>
+    ) {
+        const canSend = await this.canSendEmail(user.id, 'project');
+        if (!canSend) return { success: true, skipped: true };
+
+        const { render } = await import('@react-email/components');
+        const { ProjectMatchEmail } = await import('@/emails/project-match');
+
+        const html = await render(
+            ProjectMatchEmail({
+                userName: user.name || 'there',
+                matchedProjects,
+            })
+        );
+
+        return this.sendWithRetry(
+            user.email,
+            'New Project Collaborations Matched to Your Skills! 🚀',
+            html
+        );
+    }
 }
