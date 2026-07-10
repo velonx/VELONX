@@ -504,6 +504,7 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
                         className="btn btn-ghost btn-sm gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2.5 rounded-full"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isCreating || isUploadingImage || imageUrls.length >= MAX_IMAGES}
+                        title="Upload images (Max size: 5MB each, any aspect ratio)"
                       >
                         {isUploadingImage ? <Loader2Icon className="size-4 animate-spin" /> : <ImageIcon className="size-4" />}
                         <span className="text-xs">{imageUrls.length > 0 ? `${imageUrls.length}/${MAX_IMAGES}` : "Image"}</span>

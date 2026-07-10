@@ -94,7 +94,7 @@ export default function CoverImageSection({
           Cover Image / Profile Banner
         </label>
         <p className="text-sm text-muted-foreground mb-4">
-          Personalize your profile header with a cover image (recommended size: 1200x400)
+          Personalize your profile header with a cover image (Max size: 10MB, Recommended size: 1200x400, Aspect ratio: 3:1)
         </p>
       </div>
 

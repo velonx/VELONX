@@ -546,7 +546,7 @@ export default function MentorCRUD() {
                     )}
                   </Label>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Max size: 5MB. Formats: JPG, PNG, WebP
+                    Max size: 5MB. Formats: JPG, PNG, WebP. Aspect ratio: 1:1
                   </p>
                 </div>
               </div>

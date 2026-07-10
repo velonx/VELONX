@@ -341,7 +341,7 @@ export default function ApplyMentorPage() {
                         )}
                       </Label>
                       <p className="text-xs text-muted-foreground mt-3">
-                        Optional. Max size: 5MB. Formats: JPG, PNG, WebP
+                        Optional. Max size: 5MB. Formats: JPG, PNG, WebP. Aspect ratio: 1:1
                       </p>
                     </div>
                   </div>

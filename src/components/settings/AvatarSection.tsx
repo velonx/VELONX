@@ -112,7 +112,7 @@ export default function AvatarSection({
           Profile Picture
         </label>
         <p className="text-sm text-muted-foreground mb-4">
-          Choose a predefined avatar or upload your own image
+          Choose a predefined avatar or upload your own image (Max size: 10MB, Aspect ratio: 1:1)
         </p>
       </div>
 

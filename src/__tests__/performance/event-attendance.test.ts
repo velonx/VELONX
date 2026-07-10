@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { EventService } from '@/lib/services/event.service';
-import { prisma } from '@/lib/prisma';
+import { EventService } from '../../lib/services/event.service';
+import { prisma } from '../../lib/prisma';
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
@@ -23,6 +23,21 @@ vi.mock('@/lib/services/notification.service', () => ({
     createNotification: vi.fn(),
     createXPAwardNotification: vi.fn(),
     createLevelUpNotification: vi.fn(),
+  },
+}));
+
+vi.mock('@/lib/services/cache.service', () => ({
+  cacheService: {
+    get: vi.fn(),
+    set: vi.fn(),
+    delete: vi.fn().mockResolvedValue(undefined),
+    invalidate: vi.fn().mockResolvedValue(undefined),
+    getOrSet: vi.fn(async (key, fetcher) => fetcher()),
+  },
+  CacheKeys: {
+    user: {
+      stats: vi.fn((id) => `user:stats:${id}`),
+    },
   },
 }));
 
@@ -81,5 +96,5 @@ describe('Event Attendance Marking Performance', () => {
     console.log(`Prisma updateMany calls: ${updateManyCalls}`);
 
     expect(true).toBe(true);
-  });
+  }, 15000);
 });

@@ -424,9 +424,9 @@ export function ReportDialog({ open, onOpenChange, onSuccess }: ReportDialogProp
                         {isDragging ? "Drop files here" : "Drag & drop or click to upload"}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Photos: JPEG, PNG, WebP, GIF (max 5 MB)
+                        Photos: JPEG, PNG, WebP, GIF (max 5 MB, any aspect ratio)
                         <br />
-                        Videos: MP4, MOV, WebM (max 50 MB)
+                        Videos: MP4, MOV, WebM (max 50 MB, any aspect ratio)
                       </p>
                     </div>
                     <Button

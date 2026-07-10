@@ -134,7 +134,7 @@ export default function SwagItemManager() {
           <h3 className="text-2xl font-bold text-foreground">Swag Catalog</h3>
           <p className="text-muted-foreground text-sm">{items.length} items · {items.filter(i => i.isActive).length} active</p>
         </div>
-        <Button onClick={openCreate} className="bg-gradient-to-r from-[#226CE0] to-violet-600 text-white font-bold rounded-xl h-10 px-5 flex items-center gap-2 hover:opacity-90">
+        <Button onClick={openCreate} className="bg-linear-to-r from-[#226CE0] to-violet-600 text-white font-bold rounded-xl h-10 px-5 flex items-center gap-2 hover:opacity-90">
           <Plus className="w-4 h-4" /> Add Item
         </Button>
       </div>
@@ -162,7 +162,7 @@ export default function SwagItemManager() {
                   <tr key={item.id} className="hover:bg-muted/20 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-muted flex-shrink-0">
+                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-muted shrink-0">
                           {item.imageUrl
                             ? <Image src={item.imageUrl} alt={item.name} width={40} height={40} className="object-cover w-full h-full" />
                             : <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 text-muted-foreground" /></div>
@@ -170,7 +170,7 @@ export default function SwagItemManager() {
                         </div>
                         <div>
                           <p className="font-bold text-foreground text-sm">{item.name}</p>
-                          <p className="text-muted-foreground text-xs line-clamp-1 max-w-[200px]">{item.description}</p>
+                          <p className="text-muted-foreground text-xs line-clamp-1 max-w-50">{item.description}</p>
                         </div>
                       </div>
                     </td>
@@ -223,8 +223,9 @@ export default function SwagItemManager() {
               {/* Image upload */}
               <div>
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Product Image</label>
+                <p className="text-[10px] text-muted-foreground mb-1.5">Max size: 5MB. Recommended aspect ratio: 1:1 (square)</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center overflow-hidden shrink-0">
                     {form.imageUrl
                       ? <Image src={form.imageUrl} alt="Preview" width={64} height={64} className="object-cover w-full h-full" />
                       : <ImageIcon className="w-6 h-6 text-muted-foreground" />
@@ -279,7 +280,7 @@ export default function SwagItemManager() {
                 </button>
               </div>
 
-              <Button type="submit" disabled={saving} className="w-full h-11 bg-gradient-to-r from-[#226CE0] to-violet-600 text-white font-bold rounded-xl hover:opacity-90">
+              <Button type="submit" disabled={saving} className="w-full h-11 bg-linear-to-r from-[#226CE0] to-violet-600 text-white font-bold rounded-xl hover:opacity-90">
                 {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : <><Check className="w-4 h-4 mr-2" />{editItem ? "Update Item" : "Create Item"}</>}
               </Button>
             </form>

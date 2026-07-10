@@ -459,7 +459,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
           <div className="space-y-2">
             <Label htmlFor="resume" className="text-foreground/90 font-medium flex items-center gap-2">
               <FileText className="w-4 h-4 text-primary" />
-              Upload Resume (PDF only) *
+              Upload Resume (PDF only, Max size: 10MB) *
             </Label>
             <div className="flex flex-col gap-2">
               <input

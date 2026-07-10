@@ -495,6 +495,7 @@ export default function EventManagement() {
 
                 <div className="col-span-2">
                   <Label className="text-sm font-bold text-foreground">Event Image</Label>
+                  <p className="text-xs text-muted-foreground mt-1">Max size: 5MB. Recommended aspect ratio: 16:9</p>
                   <div className="bg-muted/30 rounded-2xl p-6 space-y-4 mt-2">
                     {imagePreview && (
                       <div className="relative w-full h-48 rounded-xl overflow-hidden bg-muted">

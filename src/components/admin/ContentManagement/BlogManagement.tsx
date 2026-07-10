@@ -329,6 +329,7 @@ export default function BlogManagement() {
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Cover Image</label>
+                <p className="text-[11px] text-gray-400 ml-1 -mt-1">Max size: 5MB. Recommended aspect ratio: 16:9</p>
                 <div className="bg-gray-50 rounded-3xl p-6 space-y-4">
                   {blogImagePreview && (
                     <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-200">

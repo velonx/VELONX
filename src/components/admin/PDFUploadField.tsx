@@ -223,7 +223,7 @@ export default function PDFUploadField({
       </label>
 
       <div 
-        className={`bg-gray-50 rounded-[32px] p-6 space-y-4 transition-colors ${
+        className={`bg-gray-50 rounded-4xl p-6 space-y-4 transition-colors ${
           isDragging ? "bg-blue-50/50 ring-2 ring-[#226CE0] ring-inset" : ""
         }`}
         {...dragHandlers}
@@ -259,7 +259,7 @@ export default function PDFUploadField({
           <div className="bg-white rounded-2xl p-4 border border-gray-200">
             <div className="flex items-start gap-4">
               {/* PDF Icon */}
-              <div className="flex-shrink-0 w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
+              <div className="shrink-0 w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
                 <FileText className="w-6 h-6 text-red-600" />
               </div>
 
@@ -276,7 +276,7 @@ export default function PDFUploadField({
                   </div>
 
                   {/* Success Icon */}
-                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
                 </div>
 
                 {/* Action Buttons */}
@@ -331,7 +331,7 @@ export default function PDFUploadField({
         {/* Error Message */}
         {error && !isUploading && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-sm font-bold text-red-600">Upload Error</p>
               <p className="text-xs text-red-600 mt-1">{error}</p>
@@ -349,7 +349,7 @@ export default function PDFUploadField({
         {/* Help Text */}
         {!uploadedPDF && !isUploading && !error && (
           <p className="text-xs text-gray-500 text-center">
-            Upload a PDF file (cheatsheet, roadmap, guide, etc.) for this resource
+            Upload a PDF file (cheatsheet, roadmap, guide, etc.) for this resource (Max size: 10MB)
           </p>
         )}
       </div>
