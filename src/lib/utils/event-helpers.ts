@@ -95,14 +95,16 @@ export function getRegistrationButtonText(
   isRegistered: boolean,
   statusInfo: RegistrationStatusInfo
 ): string {
-  if (isRegistered) return 'Registered';
+  if (isRegistered && (statusInfo.isOpen || statusInfo.reason === 'capacity')) {
+    return 'Registered';
+  }
 
   if (!statusInfo.isOpen) {
     switch (statusInfo.reason) {
       case 'capacity': return 'Event Full';
-      case 'deadline': return 'Deadline Passed';
-      case 'manual': return 'Registration Closed';
-      default: return 'Unavailable';
+      case 'deadline': return 'Closed';
+      case 'manual': return 'Closed';
+      default: return 'Closed';
     }
   }
 

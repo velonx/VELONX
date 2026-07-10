@@ -264,7 +264,7 @@ export default function EventCard({
         </Link>
 
         {/* Action Button */}
-        {isRegistered ? (
+        {isRegistered && (!isRegistrationClosed || registrationStatus.reason === 'capacity') ? (
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onUnregister?.(event.id); }}
             className="px-5 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer bg-[#10B981] hover:bg-[#059669] text-white border-none shadow-sm shadow-[#10B981]/20"

@@ -154,7 +154,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
             full && "w-full"
         );
 
-        if (isRegistered) {
+        if (isRegistered && (registrationStatus.isOpen || registrationStatus.reason === 'capacity')) {
             return (
                 <button
                     onClick={() => setShowUnregisterDialog(true)}
@@ -168,7 +168,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
         if (!registrationStatus.isOpen) {
             return (
                 <button disabled className={cn(baseClass, "bg-muted text-muted-foreground opacity-60 cursor-not-allowed")}>
-                    Registration Closed
+                    {buttonText}
                 </button>
             );
         }

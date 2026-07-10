@@ -5,8 +5,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { computeRegistrationStatus, getRegistrationButtonText } from '@/lib/utils/event-helpers';
-import type { Event } from '@/lib/api/types';
+import { computeRegistrationStatus, getRegistrationButtonText } from '../../lib/utils/event-helpers';
+import type { Event } from '../../lib/api/types';
 
 describe('Event Helpers - Registration Status', () => {
   let mockEvent: Event & { 
@@ -31,8 +31,9 @@ describe('Event Helpers - Registration Status', () => {
       creatorId: 'creator-1',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      registrationDeadline: null,
-      registrationManuallyClosedAt: null,
+      isRegistrationClosed: false,
+      registrationDeadline: undefined,
+      registrationManuallyClosedAt: undefined,
     };
   });
 
@@ -195,7 +196,7 @@ describe('Event Helpers - Registration Status', () => {
       expect(result).toBe('Event Full');
     });
 
-    it('should return "Deadline Passed" when closed due to deadline', () => {
+    it('should return "Closed" when closed due to deadline', () => {
       const statusInfo = { 
         isOpen: false, 
         reason: 'deadline' as const, 
@@ -204,10 +205,10 @@ describe('Event Helpers - Registration Status', () => {
       };
       const result = getRegistrationButtonText(false, statusInfo);
       
-      expect(result).toBe('Deadline Passed');
+      expect(result).toBe('Closed');
     });
 
-    it('should return "Registration Closed" when manually closed', () => {
+    it('should return "Closed" when manually closed', () => {
       const statusInfo = { 
         isOpen: false, 
         reason: 'manual' as const, 
@@ -216,10 +217,10 @@ describe('Event Helpers - Registration Status', () => {
       };
       const result = getRegistrationButtonText(false, statusInfo);
       
-      expect(result).toBe('Registration Closed');
+      expect(result).toBe('Closed');
     });
 
-    it('should return "Unavailable" when closed with no reason', () => {
+    it('should return "Closed" when closed with no reason', () => {
       const statusInfo = { 
         isOpen: false, 
         message: 'Not available', 
@@ -227,10 +228,10 @@ describe('Event Helpers - Registration Status', () => {
       };
       const result = getRegistrationButtonText(false, statusInfo);
       
-      expect(result).toBe('Unavailable');
+      expect(result).toBe('Closed');
     });
 
-    it('should prioritize registered status over closure status', () => {
+    it('should prioritize registered status only over capacity closure status', () => {
       const statusInfo = { 
         isOpen: false, 
         reason: 'capacity' as const, 
@@ -240,6 +241,18 @@ describe('Event Helpers - Registration Status', () => {
       const result = getRegistrationButtonText(true, statusInfo);
       
       expect(result).toBe('Registered');
+    });
+
+    it('should return "Closed" instead of "Registered" when closed due to deadline', () => {
+      const statusInfo = { 
+        isOpen: false, 
+        reason: 'deadline' as const, 
+        message: 'Registration deadline has passed', 
+        canReopen: false 
+      };
+      const result = getRegistrationButtonText(true, statusInfo);
+      
+      expect(result).toBe('Closed');
     });
   });
 });

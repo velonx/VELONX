@@ -683,7 +683,7 @@ export default function EventDetailsModal({
           />
 
           {/* Register/Unregister Button - full width on mobile with min 44px height */}
-          {isRegistered ? (
+          {isRegistered && (registrationStatus.isOpen || registrationStatus.reason === 'capacity') ? (
             <Button
               onClick={() => onUnregister?.(event.id)}
               disabled={isLoading}
