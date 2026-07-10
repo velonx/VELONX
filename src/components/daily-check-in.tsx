@@ -75,7 +75,7 @@ export function DailyCheckIn() {
             <span className="text-base font-bold opacity-90 mb-1">day{streak !== 1 ? 's' : ''}</span>
           </div>
         </div>
-        <div className="text-5xl select-none">🔥</div>
+        <div className="text-5xl select-none" aria-hidden="true">🔥</div>
       </div>
 
       {/* Day circles — Duolingo style */}
@@ -106,7 +106,8 @@ export function DailyCheckIn() {
       <button
         onClick={handleCheckIn}
         disabled={checkedIn || loading || animating}
-        className={`w-full py-3 px-4 rounded-2xl font-black text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2
+        aria-live="polite"
+        className={`w-full py-3 px-4 rounded-2xl font-black text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none
           ${checkedIn
             ? 'bg-white/20 text-white cursor-default border-2 border-white/40'
             : 'bg-white text-orange-500 hover:bg-orange-50 active:scale-95 shadow-md hover:shadow-lg'
@@ -114,17 +115,17 @@ export function DailyCheckIn() {
       >
         {loading || animating ? (
           <>
-            <span className="w-4 h-4 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
+            <span className="w-4 h-4 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" aria-hidden="true" />
             Checking in…
           </>
         ) : checkedIn ? (
           <>
-            <span className="text-base">✓</span>
+            <span className="text-base" aria-hidden="true">✓</span>
             Checked In Today
           </>
         ) : (
           <>
-            <span className="text-base">🔥</span>
+            <span className="text-base" aria-hidden="true">🔥</span>
             Check In
           </>
         )}
@@ -132,7 +133,7 @@ export function DailyCheckIn() {
 
       {checkedIn && (
         <p className="text-center text-xs font-bold opacity-75 mt-3">
-          🎉 +20 XP earned · Come back tomorrow!
+          <span aria-hidden="true">🎉</span> +20 XP earned · Come back tomorrow!
         </p>
       )}
     </div>
