@@ -166,6 +166,9 @@ function StudentDashboardContent() {
     // Only fetch user stats if we have a valid user ID
     const { data: userStats, loading: statsLoading } = useUserStats(session?.user?.id || 'skip');
 
+    const activeXP = userStats?.user?.xp !== undefined ? userStats.user.xp : (user?.xp || 0);
+    const activeLevel = userStats?.user?.level !== undefined ? userStats.user.level : (user?.level || 1);
+
     // Mentor sessions state with proper TypeScript types
     const [mentorSessions, setMentorSessions] = useState<MentorSession[]>([]);
     const [loadingSessions, setLoadingSessions] = useState(false);
@@ -396,7 +399,7 @@ function StudentDashboardContent() {
                         <div className="dashboard-user-avatar">{userInitials}</div>
                     )}
                     <div className="dashboard-user-name">{session.user?.name || 'Student'}</div>
-                    <div className="dashboard-user-tag">{getLevelLabel(user?.level || 1)}</div>
+                    <div className="dashboard-user-tag">{getLevelLabel(activeLevel)}</div>
                 </div>
 
                 <div className="dashboard-menu">
@@ -450,8 +453,8 @@ function StudentDashboardContent() {
                         <section className="dashboard-bento">
                             <div className="dashboard-widget-card">
                                 <span className="dashboard-widget-label">XP Balance</span>
-                                <span className="dashboard-widget-value">{user?.xp || 0} XP</span>
-                                <span className="dashboard-widget-footer text-[#22C55E]">⚡ Level {user?.level || 1}</span>
+                                <span className="dashboard-widget-value">{activeXP} XP</span>
+                                <span className="dashboard-widget-footer text-[#22C55E]">⚡ Level {activeLevel}</span>
                             </div>
                             <div className="dashboard-widget-card">
                                 <span className="dashboard-widget-label">Enrolled Events</span>
@@ -465,8 +468,8 @@ function StudentDashboardContent() {
                             </div>
                             <div className="dashboard-widget-card">
                                 <span className="dashboard-widget-label">Builder Level</span>
-                                <span className="dashboard-widget-value">Lvl {user?.level || 1}</span>
-                                <span className="dashboard-widget-footer text-[#226CE0]">{getLevelLabel(user?.level || 1)}</span>
+                                <span className="dashboard-widget-value">Lvl {activeLevel}</span>
+                                <span className="dashboard-widget-footer text-[#226CE0]">{getLevelLabel(activeLevel)}</span>
                             </div>
                         </section>
                     )}
@@ -872,9 +875,9 @@ function StudentDashboardContent() {
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
                                     <Award className="w-6 h-6" />
-                                    <h3 className="text-lg font-bold">Level {user?.level || 1}</h3>
+                                    <h3 className="text-lg font-bold">Level {activeLevel}</h3>
                                 </div>
-                                <p className="text-5xl font-black mb-1">{user?.xp || 0}</p>
+                                <p className="text-5xl font-black mb-1">{activeXP}</p>
                                 <p className="text-sm opacity-90">total XP earned</p>
                             </div>
                             <div className="text-right">
@@ -887,8 +890,8 @@ function StudentDashboardContent() {
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-xs font-bold opacity-90">
                                     {(() => {
-                                        const currentLevel = user?.level || 1;
-                                        const currentXP = user?.xp || 0;
+                                        const currentLevel = activeLevel;
+                                        const currentXP = activeXP;
                                         if (currentLevel >= 10) return 'Max Level Reached!';
                                         const currentThreshold = XP_THRESHOLDS[currentLevel - 1];
                                         return `${currentXP - currentThreshold} XP`;
@@ -896,8 +899,8 @@ function StudentDashboardContent() {
                                 </span>
                                 <span className="text-xs font-bold opacity-90">
                                     {(() => {
-                                        const currentLevel = user?.level || 1;
-                                        const currentXP = user?.xp || 0;
+                                        const currentLevel = activeLevel;
+                                        const currentXP = activeXP;
                                         if (currentLevel >= 10) return '';
                                         const nextThreshold = XP_THRESHOLDS[currentLevel];
                                         const remaining = nextThreshold - currentXP;
@@ -910,8 +913,8 @@ function StudentDashboardContent() {
                                     className="h-full bg-background rounded-full transition-all duration-500 relative"
                                     style={{
                                         width: `${(() => {
-                                            const currentLevel = user?.level || 1;
-                                            const currentXP = user?.xp || 0;
+                                            const currentLevel = activeLevel;
+                                            const currentXP = activeXP;
                                             if (currentLevel >= 10) return 100;
                                             const currentThreshold = XP_THRESHOLDS[currentLevel - 1];
                                             const nextThreshold = XP_THRESHOLDS[currentLevel];
@@ -931,13 +934,13 @@ function StudentDashboardContent() {
                             <div className="bg-background/20 rounded-xl p-3 text-center">
                                 <Flame className="w-5 h-5 mx-auto mb-1 opacity-75" />
                                 <p className="text-xs opacity-75 mb-1">Current</p>
-                                <p className="text-lg font-black">Lvl {user?.level || 1}</p>
+                                <p className="text-lg font-black">Lvl {activeLevel}</p>
                             </div>
                             <div className="bg-background/20 rounded-xl p-3 text-center">
                                 <Target className="w-5 h-5 mx-auto mb-1 opacity-75" />
                                 <p className="text-xs opacity-75 mb-1">Next</p>
                                 <p className="text-lg font-black">
-                                    {(user?.level || 1) >= 10 ? 'MAX' : `Lvl ${(user?.level || 1) + 1}`}
+                                    {activeLevel >= 10 ? 'MAX' : `Lvl ${activeLevel + 1}`}
                                 </p>
                             </div>
                             <div className="bg-background/20 rounded-xl p-3 text-center">
@@ -1199,7 +1202,7 @@ function StudentDashboardContent() {
                                 </div>
                                 <div className="p-3 bg-muted rounded-2xl">
                                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Developer Tier</p>
-                                    <p className="text-sm font-bold text-primary">{getTierLabel(getTier(user?.xp || 0))}</p>
+                                    <p className="text-sm font-bold text-primary">{getTierLabel(getTier(activeXP))}</p>
                                 </div>
                             </div>
                         </div>

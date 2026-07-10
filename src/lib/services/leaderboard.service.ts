@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { LeaderboardPeriod, LeaderboardSnapshot } from '@prisma/client';
 import { calculateLevel } from '@/lib/utils/xp-constants';
+import { cacheService, CacheKeys } from '@/lib/services/cache.service';
 
 /**
  * Enhanced Leaderboard Service - Manages leaderboards, rankings, and snapshots
@@ -406,6 +407,13 @@ export class LeaderboardService {
         level: true,
       },
     });
+
+    // Invalidate user stats cache
+    try {
+      await cacheService.delete(CacheKeys.user.stats(userId));
+    } catch (cacheError) {
+      console.error("Failed to invalidate user stats cache:", cacheError);
+    }
 
     // Calculate new level based on updated XP
     const newLevel = calculateLevel(user.xp);

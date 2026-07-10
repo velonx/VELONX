@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { notificationService } from "@/lib/services/notification.service";
 
+import { cacheService, CacheKeys } from "@/lib/services/cache.service";
+
 import {
   XP_THRESHOLDS,
   XP_REWARDS,
@@ -33,6 +35,13 @@ export async function awardXP(userId: string, amount: number, reason: string) {
       xp: { increment: amount },
     },
   });
+
+  // Invalidate user stats cache
+  try {
+    await cacheService.delete(CacheKeys.user.stats(userId));
+  } catch (cacheError) {
+    console.error("Failed to invalidate user stats cache:", cacheError);
+  }
 
   // Calculate new level based on updated XP
   const newLevel = calculateLevel(user.xp);
