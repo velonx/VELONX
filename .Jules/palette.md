@@ -34,3 +34,6 @@
 ## 2024-07-09 - [Dynamic Button States Accessibility]
  **Learning:** When a button undergoes momentary text changes (e.g., from 'Check In' to 'Checking in...' to 'Checked In Today'), screen readers may miss the state change unless they have focus. Adding `aria-live="polite"` to the button ensures the state change is announced without requiring a focus shift. Additionally, decorative emojis in buttons should be hidden from screen readers using `aria-hidden="true"`.
  **Action:** Always add `aria-live="polite"` to buttons with dynamic text content, and ensure decorative elements are hidden from screen readers.
+## 2024-08-01 - [ARIA Labels for Admin Icon Buttons]
+**Learning:** Found that icon-only buttons for CRUD operations (like Edit, Delete, Close) in administrative components (`EventFAQManager.tsx`) lacked `aria-label` attributes, making them unreadable to screen readers.
+**Action:** Always ensure icon-only buttons in admin tools have descriptive `aria-label` attributes to maintain accessibility standards for administrative users as well as regular users.
