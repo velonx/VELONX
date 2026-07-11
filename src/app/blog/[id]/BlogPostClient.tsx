@@ -37,8 +37,8 @@ export default function BlogPostClient({ params, initialPost, relatedPosts = [] 
     const { id } = use(params);
     
     const post = initialPost;
-    const loading = !post;
-    const error = null;
+    const loading = false; // Server always provides data or triggers 404/error boundary
+    const error = !post; // If post is still null, treat as error (defensive)
     
     const [copied, setCopied] = useState(false);
     const [clientViews, setClientViews] = useState<number | null>(null);

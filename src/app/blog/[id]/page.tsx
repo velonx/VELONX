@@ -1,6 +1,8 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import BlogPostClient from "./BlogPostClient";
 import { blogService } from "@/lib/services/blog.service";
+import { NotFoundError } from "@/lib/utils/errors";
 
 export const dynamic = "force-dynamic";
 
@@ -117,78 +119,89 @@ export default async function BlogPostPage({ params }: Props) {
 
   try {
     post = await blogService.getBlogPostById(decodedId, false);
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
-    const postSlugOrId = post.slug || decodedId;
-
-    // Ensure absolute image URL for structured data
-    const contentImage = extractFirstImageUrl(post.content || "");
-    const rawImageUrl = (post.imageUrl || contentImage || "").trim();
-    let finalImageUrl = `${siteUrl}/og/default.png`;
-    if (rawImageUrl && rawImageUrl !== "null" && rawImageUrl !== "undefined") {
-      if (rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")) {
-        finalImageUrl = rawImageUrl;
-      } else {
-        const normalizedPath = rawImageUrl.startsWith("/") ? rawImageUrl : `/${rawImageUrl}`;
-        finalImageUrl = `${siteUrl}${normalizedPath}`;
-      }
+  } catch (err) {
+    // If the post doesn't exist, trigger Next.js 404 (renders not-found.tsx)
+    if (err instanceof NotFoundError) {
+      notFound();
     }
+    // For other errors (DB issues, etc.), let the error boundary catch them
+    throw err;
+  }
 
-    // Build JSON-LD structured data
-    jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      headline: post.title,
-      description:
-        post.excerpt ||
-        post.content?.replace(/<[^>]*>/g, "").substring(0, 150),
-      url: `${siteUrl}/blog/${postSlugOrId}`,
-      datePublished: post.publishedAt
-        ? new Date(post.publishedAt).toISOString()
-        : new Date(post.createdAt).toISOString(),
-      dateModified: new Date(post.updatedAt).toISOString(),
-      author: {
-        "@type": "Person",
-        name: post.author?.name || "Velonx Team",
-      },
-      publisher: {
-        "@type": "Organization",
-        name: "Velonx",
-        url: siteUrl,
-      },
-      image: finalImageUrl,
-      keywords: post.tags?.join(", "),
-    };
+  // Defensive check — should not happen since getBlogPostById throws on miss
+  if (!post) {
+    notFound();
+  }
 
-    // Fetch trending posts by views, excluding the current post
-    try {
-      const trending = await blogService.listBlogPosts({
-        status: "PUBLISHED",
-        pageSize: 4,
-        sortBy: "views",
-      });
-      relatedPosts = trending.blogPosts
-        .filter((p: any) => p.id !== post.id)
-        .slice(0, 3)
-        .map((p: any) => ({
-          id: p.id,
-          slug: p.slug,
-          title: p.title,
-          excerpt: p.excerpt,
-          imageUrl: p.imageUrl,
-          tags: p.tags,
-          publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-          createdAt: p.createdAt.toISOString(),
-          views: p.views,
-          content: p.content,
-          author: p.author
-            ? { name: p.author.name, image: p.author.image }
-            : null,
-        }));
-    } catch {
-      // Non-critical — fail silently
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
+  const postSlugOrId = post.slug || decodedId;
+
+  // Ensure absolute image URL for structured data
+  const contentImage = extractFirstImageUrl(post.content || "");
+  const rawImageUrl = (post.imageUrl || contentImage || "").trim();
+  let finalImageUrl = `${siteUrl}/og/default.png`;
+  if (rawImageUrl && rawImageUrl !== "null" && rawImageUrl !== "undefined") {
+    if (rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")) {
+      finalImageUrl = rawImageUrl;
+    } else {
+      const normalizedPath = rawImageUrl.startsWith("/") ? rawImageUrl : `/${rawImageUrl}`;
+      finalImageUrl = `${siteUrl}${normalizedPath}`;
     }
+  }
+
+  // Build JSON-LD structured data
+  jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description:
+      post.excerpt ||
+      post.content?.replace(/<[^>]*>/g, "").substring(0, 150),
+    url: `${siteUrl}/blog/${postSlugOrId}`,
+    datePublished: post.publishedAt
+      ? new Date(post.publishedAt).toISOString()
+      : new Date(post.createdAt).toISOString(),
+    dateModified: new Date(post.updatedAt).toISOString(),
+    author: {
+      "@type": "Person",
+      name: post.author?.name || "Velonx Team",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Velonx",
+      url: siteUrl,
+    },
+    image: finalImageUrl,
+    keywords: post.tags?.join(", "),
+  };
+
+  // Fetch trending posts by views, excluding the current post
+  try {
+    const trending = await blogService.listBlogPosts({
+      status: "PUBLISHED",
+      pageSize: 4,
+      sortBy: "views",
+    });
+    relatedPosts = trending.blogPosts
+      .filter((p: any) => p.id !== post.id)
+      .slice(0, 3)
+      .map((p: any) => ({
+        id: p.id,
+        slug: p.slug,
+        title: p.title,
+        excerpt: p.excerpt,
+        imageUrl: p.imageUrl,
+        tags: p.tags,
+        publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
+        createdAt: p.createdAt.toISOString(),
+        views: p.views,
+        content: p.content,
+        author: p.author
+          ? { name: p.author.name, image: p.author.image }
+          : null,
+      }));
   } catch {
-    // If post not found, JSON-LD is omitted — 404 handled client-side
+    // Non-critical — fail silently
   }
 
   return (

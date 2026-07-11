@@ -16,15 +16,21 @@ import { analytics } from "@/components/analytics";
 interface CareerClientProps {
     initialInternships?: any[];
     initialJobs?: any[];
+    initialClosedInternships?: any[];
+    initialClosedJobs?: any[];
 }
 
-export default function CareerClient({ initialInternships = [], initialJobs = [] }: CareerClientProps) {
+export default function CareerClient({ initialInternships = [], initialJobs = [], initialClosedInternships = [], initialClosedJobs = [] }: CareerClientProps) {
     const { data: session, status } = useSession();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [activeTab, setActiveTab] = useState("internships");
     const [internships, setInternships] = useState<any[]>(initialInternships);
     const [jobs, setJobs] = useState<any[]>(initialJobs);
+    const [serverClosedInternships] = useState<any[]>(initialClosedInternships);
+    const [serverClosedJobs] = useState<any[]>(initialClosedJobs);
+    const [showArchivedInternships, setShowArchivedInternships] = useState(false);
+    const [showArchivedJobs, setShowArchivedJobs] = useState(false);
     const [loading, setLoading] = useState(false);
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -253,11 +259,18 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
 
     const filteredInternships = internships.filter(matchesSearch);
     const activeInternships = filteredInternships.filter(isItemOpen);
-    const closedInternships = filteredInternships.filter(item => !isItemOpen(item));
+    // Merge client-side closed (from refetch) with server-provided closed listings
+    const clientClosedInternships = filteredInternships.filter(item => !isItemOpen(item));
+    const closedInternships = clientClosedInternships.length > 0
+        ? clientClosedInternships
+        : serverClosedInternships.filter(matchesSearch);
 
     const filteredJobs = jobs.filter(matchesSearch);
     const activeJobs = filteredJobs.filter(isItemOpen);
-    const closedJobs = filteredJobs.filter(item => !isItemOpen(item));
+    const clientClosedJobs = filteredJobs.filter(item => !isItemOpen(item));
+    const closedJobs = clientClosedJobs.length > 0
+        ? clientClosedJobs
+        : serverClosedJobs.filter(matchesSearch);
 
     const renderOpportunityCard = (item: any, type: 'internship' | 'job') => {
         const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
@@ -1129,14 +1142,25 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                         </div>
                                     )}
                                     {closedInternships.length > 0 && (
-                                        <div style={{ marginTop: '2.5rem', opacity: 0.7 }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
-                                                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--muted-foreground)' }}>Past Opportunities</h3>
-                                                <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>No longer accepting applications</span>
-                                            </div>
-                                            <div className="p-job-list">
-                                                {closedInternships.map((internship) => renderOpportunityCard(internship, 'internship'))}
-                                            </div>
+                                        <div style={{ marginTop: '2.5rem' }}>
+                                            <button
+                                                onClick={() => setShowArchivedInternships(!showArchivedInternships)}
+                                                className="w-full flex items-center justify-between gap-3 py-3 px-4 rounded-xl bg-muted/30 border border-border hover:bg-muted/50 transition-colors cursor-pointer"
+                                                type="button"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--muted-foreground)' }}>Past Opportunities</h3>
+                                                    <span className="badge font-bold py-0.5 px-2 rounded-full text-[10px]" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>{closedInternships.length}</span>
+                                                </div>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', fontWeight: 600 }}>
+                                                    {showArchivedInternships ? '▲ Hide' : '▼ Show archived'}
+                                                </span>
+                                            </button>
+                                            {showArchivedInternships && (
+                                                <div className="p-job-list" style={{ marginTop: '1rem', opacity: 0.7 }}>
+                                                    {closedInternships.map((internship) => renderOpportunityCard(internship, 'internship'))}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </>
@@ -1166,14 +1190,25 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                         </div>
                                     )}
                                     {closedJobs.length > 0 && (
-                                        <div style={{ marginTop: '2.5rem', opacity: 0.7 }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
-                                                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--muted-foreground)' }}>Past Opportunities</h3>
-                                                <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>No longer accepting applications</span>
-                                            </div>
-                                            <div className="p-job-list">
-                                                {closedJobs.map((job) => renderOpportunityCard(job, 'job'))}
-                                            </div>
+                                        <div style={{ marginTop: '2.5rem' }}>
+                                            <button
+                                                onClick={() => setShowArchivedJobs(!showArchivedJobs)}
+                                                className="w-full flex items-center justify-between gap-3 py-3 px-4 rounded-xl bg-muted/30 border border-border hover:bg-muted/50 transition-colors cursor-pointer"
+                                                type="button"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--muted-foreground)' }}>Past Opportunities</h3>
+                                                    <span className="badge font-bold py-0.5 px-2 rounded-full text-[10px]" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>{closedJobs.length}</span>
+                                                </div>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', fontWeight: 600 }}>
+                                                    {showArchivedJobs ? '▲ Hide' : '▼ Show archived'}
+                                                </span>
+                                            </button>
+                                            {showArchivedJobs && (
+                                                <div className="p-job-list" style={{ marginTop: '1rem', opacity: 0.7 }}>
+                                                    {closedJobs.map((job) => renderOpportunityCard(job, 'job'))}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </>

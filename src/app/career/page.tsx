@@ -6,33 +6,60 @@ export const dynamic = "force-dynamic";
 export default async function CareerPage() {
   let initialInternships: any[] = [];
   let initialJobs: any[] = [];
+  let closedInternships: any[] = [];
+  let closedJobs: any[] = [];
 
   try {
-    const internships = await OpportunityService.getAll({
+    // Fetch ACTIVE internships (what visitors should see first)
+    const activeInterns = await OpportunityService.getAll({
       type: "INTERNSHIP",
-      status: { in: ["ACTIVE", "CLOSED"] } as any,
+      status: "ACTIVE",
     });
-    // Serialize Dates to Strings to avoid NextJS serialization/hydration warnings
-    initialInternships = JSON.parse(JSON.stringify(internships));
+    initialInternships = JSON.parse(JSON.stringify(activeInterns));
   } catch (error) {
-    console.error("Failed to fetch initial internships on server:", error);
+    console.error("Failed to fetch active internships on server:", error);
   }
 
   try {
-    const jobs = await OpportunityService.getAll({
-      type: "JOB",
-      status: { in: ["ACTIVE", "CLOSED"] } as any,
+    // Fetch CLOSED internships separately (collapsed by default on client)
+    const closedInterns = await OpportunityService.getAll({
+      type: "INTERNSHIP",
+      status: "CLOSED",
     });
-    // Serialize Dates to Strings to avoid NextJS serialization/hydration warnings
-    initialJobs = JSON.parse(JSON.stringify(jobs));
+    closedInternships = JSON.parse(JSON.stringify(closedInterns));
   } catch (error) {
-    console.error("Failed to fetch initial jobs on server:", error);
+    console.error("Failed to fetch closed internships on server:", error);
+  }
+
+  try {
+    // Fetch ACTIVE jobs
+    const activeJobs = await OpportunityService.getAll({
+      type: "JOB",
+      status: "ACTIVE",
+    });
+    initialJobs = JSON.parse(JSON.stringify(activeJobs));
+  } catch (error) {
+    console.error("Failed to fetch active jobs on server:", error);
+  }
+
+  try {
+    // Fetch CLOSED jobs separately
+    const closedJobsList = await OpportunityService.getAll({
+      type: "JOB",
+      status: "CLOSED",
+    });
+    closedJobs = JSON.parse(JSON.stringify(closedJobsList));
+  } catch (error) {
+    console.error("Failed to fetch closed jobs on server:", error);
   }
 
   return (
     <CareerClient
       initialInternships={initialInternships}
       initialJobs={initialJobs}
+      initialClosedInternships={closedInternships}
+      initialClosedJobs={closedJobs}
     />
   );
 }
+

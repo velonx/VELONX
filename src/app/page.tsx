@@ -348,7 +348,7 @@ export default function Home() {
                             width={900}
                             height={675}
                             priority
-                            className="w-full h-auto object-contain rounded-2xl relative z-[1] drop-shadow-[0_8px_30px_rgba(34,108,224,0.12)]"
+                            className="w-full h-auto object-contain rounded-2xl relative z-1 drop-shadow-[0_8px_30px_rgba(34,108,224,0.12)]"
                         />
 
 
@@ -463,7 +463,7 @@ export default function Home() {
                                     {card.icon}
                                 </div>
                                 <p className="text-[11px] font-bold text-[#1A234A] dark:text-white leading-tight">{card.title}</p>
-                                <p className="text-[9px] text-muted-foreground leading-tight max-w-[90px]">{card.desc}</p>
+                                <p className="text-[9px] text-muted-foreground leading-tight max-w-22.5">{card.desc}</p>
                             </motion.div>
                         ))}
                     </motion.div>
@@ -956,9 +956,9 @@ export default function Home() {
                                 avatarColor: "bg-primary/10 text-primary ring-primary/10"
                             },
                             {
-                                badge: "✔ Full Stack Devloper and precident of Velonx", badgeColor: "bg-amber-500/10 border border-amber-500/20 text-amber-600",
+                                badge: "✔ Full Stack Developer and President of Velonx", badgeColor: "bg-amber-500/10 border border-amber-500/20 text-amber-600",
                                 quote: "\"The community on Velonx is unreal. Found my team and now we are building a startup together.\"",
-                                initials: "RP", name: "Rishi Pandey", sub: "Barkatullah University · precident @ Velonx",
+                                initials: "RP", name: "Rishi Pandey", sub: "Barkatullah University · President @ Velonx",
                                 avatarColor: "bg-accent/10 text-accent ring-accent/10"
                             },
                             {

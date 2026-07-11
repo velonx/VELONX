@@ -91,7 +91,38 @@ export class OpportunityService {
     });
   }
 
+  /**
+   * Auto-close any ACTIVE opportunities whose deadline has passed.
+   * This ensures the DB stays consistent — crawlers and visitors never see
+   * an ACTIVE listing with a past deadline.
+   */
+  static async autoCloseExpiredOpportunities() {
+    try {
+      const result = await prisma.opportunity.updateMany({
+        where: {
+          status: "ACTIVE",
+          deadline: {
+            lt: new Date(),
+            not: null,
+          },
+        },
+        data: {
+          status: "CLOSED",
+        },
+      });
+      if (result && result.count > 0) {
+        console.log(`[Career] Auto-closed ${result.count} expired opportunities`);
+      }
+    } catch (err) {
+      // Non-critical — log but don't block the request
+      console.error("[Career] Failed to auto-close expired opportunities:", err);
+    }
+  }
+
   static async getAll(filters?: { type?: string; status?: string | any }) {
+    // Auto-close expired listings before fetching
+    await OpportunityService.autoCloseExpiredOpportunities();
+
     const where: any = {};
     
     if (filters?.type) {

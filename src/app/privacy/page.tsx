@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Shield, Lock, Eye, FileText, CheckCircle } from "lucide-react";
+import { Shield, Lock, Eye, FileText, CheckCircle, Cookie, Globe } from "lucide-react";
 
 export default function PrivacyPage() {
     const sections = [
@@ -22,6 +22,18 @@ export default function PrivacyPage() {
             title: "Security Measures",
             content: "We implement robust security standards to protect your personal information from unauthorized access, alteration, or disclosure.",
             list: ["Encrypted data storage", "Secure API endpoints", "Regular security audits", "Access control management"]
+        },
+        {
+            icon: Cookie,
+            title: "Cookies & Tracking Technologies",
+            content: "We use cookies and similar technologies to enhance your experience, remember your preferences, and understand how you interact with our platform. Some cookies are essential for the site to function, while others help us improve our services through analytics.",
+            list: ["Essential session cookies for authentication", "Google Analytics for usage insights", "Preference cookies for theme and settings", "Performance cookies for site optimization"]
+        },
+        {
+            icon: Globe,
+            title: "Third-Party Advertising",
+            content: "We partner with third-party ad networks, including Google AdSense, to display advertisements on our site. These partners may use cookies and similar technologies to serve ads based on your prior visits to this and other websites. You can opt out of personalized advertising by visiting Google's Ad Settings.",
+            list: ["Google AdSense for ad personalization", "Third-party cookies for ad targeting", "Opt-out via Google Ad Settings", "Ad preferences at aboutads.info"]
         }
     ];
 
@@ -50,7 +62,7 @@ export default function PrivacyPage() {
                         transition={{ delay: 0.1 }}
                         className="text-muted-foreground text-lg max-w-2xl mx-auto"
                     >
-                        Last updated: January 16, 2025. Your privacy is our priority. We are committed to protecting your personal data and being transparent about how we use it.
+                        Last updated: July 12, 2026. Your privacy is our priority. We are committed to protecting your personal data and being transparent about how we use it.
                     </motion.p>
                 </div>
             </section>
