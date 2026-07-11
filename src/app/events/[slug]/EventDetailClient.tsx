@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useEvent } from "@/lib/api/hooks";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Calendar, Clock, MapPin, Users, Video, ArrowLeft, AlertCircle, CheckCircle2, Trophy, Star, Gift, Award, Medal, Zap, Share2, LogIn } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Video, ArrowLeft, AlertCircle, CheckCircle2, Trophy, Star, Gift, Award, Medal, Zap, Share2, LogIn, ChevronDown, Mail } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
@@ -31,6 +31,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
     const [showRegistrationDialog, setShowRegistrationDialog] = useState(false);
     const [showUnregisterDialog, setShowUnregisterDialog] = useState(false);
     const [showLoginDialog, setShowLoginDialog] = useState(false);
+    const [openFaq, setOpenFaq] = useState<number | null>(null);
 
     // Prefer client hook data, fall back to initial server-rendered data
     const event = eventData || initialEvent;
@@ -49,15 +50,45 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
             .catch(() => {});
     }, [event?.id]);
 
+    type EventFAQ = { id: string; question: string; answer: string; order: number };
+    const [faqs, setFaqs] = useState<EventFAQ[]>([]);
+    useEffect(() => {
+        if (!event?.id) return;
+        fetch(`/api/events/${event.id}/faqs`)
+            .then(r => r.json())
+            .then(j => { if (j.success) setFaqs(j.data); })
+            .catch(() => {});
+    }, [event?.id]);
+
+    // ── Countdown Timer ──
+    const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+    useEffect(() => {
+        if (!event?.date || event.status !== 'UPCOMING') return;
+        const target = new Date(event.date).getTime();
+        const tick = () => {
+            const now = Date.now();
+            const diff = Math.max(0, target - now);
+            setCountdown({
+                days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+                minutes: Math.floor((diff / (1000 * 60)) % 60),
+                seconds: Math.floor((diff / 1000) % 60),
+            });
+        };
+        tick();
+        const id = setInterval(tick, 1000);
+        return () => clearInterval(id);
+    }, [event?.date, event?.status]);
+
     const getRewardIcon = (iconType: string) => {
         switch (iconType) {
-            case 'trophy':      return <Trophy className="w-7 h-7 text-[#FFB703]" />;
-            case 'star':        return <Star className="w-7 h-7 text-[#F9A8D4]" />;
-            case 'gift':        return <Gift className="w-7 h-7 text-[#6EE7B7]" />;
-            case 'certificate': return <Award className="w-7 h-7 text-[#A78BFA]" />;
-            case 'medal':       return <Medal className="w-7 h-7 text-orange-400" />;
-            case 'zap':         return <Zap className="w-7 h-7 text-purple-400" />;
-            default:            return <Trophy className="w-7 h-7 text-[#FFB703]" />;
+            case 'trophy':      return <span className="text-3xl select-none" role="img" aria-label="Trophy">🏆</span>;
+            case 'star':        return <span className="text-3xl select-none" role="img" aria-label="Star">🌟</span>;
+            case 'gift':        return <span className="text-3xl select-none" role="img" aria-label="Gift">🎁</span>;
+            case 'certificate': return <span className="text-3xl select-none" role="img" aria-label="Certificate">📜</span>;
+            case 'medal':       return <span className="text-3xl select-none" role="img" aria-label="Medal">🏅</span>;
+            case 'zap':         return <span className="text-3xl select-none" role="img" aria-label="Zap">⚡</span>;
+            default:            return <span className="text-3xl select-none" role="img" aria-label="Trophy">🏆</span>;
         }
     };
 
@@ -93,8 +124,8 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="relative w-14 h-14">
-                    <div className="absolute inset-0 rounded-full border-4 border-[#7C3AED]/20" />
-                    <div className="absolute inset-0 rounded-full border-4 border-[#7C3AED] border-t-transparent animate-spin" />
+                    <div className="absolute inset-0 rounded-full border-4 border-[#F0771A]/20" />
+                    <div className="absolute inset-0 rounded-full border-4 border-[#F0771A] border-t-transparent animate-spin" />
                 </div>
             </div>
         );
@@ -107,7 +138,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                 <AlertCircle className="w-14 h-14 text-red-500" />
                 <h2 className="text-3xl font-bold">Event not found</h2>
                 <p className="text-muted-foreground">The event could not be retrieved.</p>
-                <Link href="/events" className="inline-flex items-center gap-2 px-7 py-3 bg-[#7C3AED] text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
+                <Link href="/events" className="inline-flex items-center gap-2 px-7 py-3 bg-[#F0771A] text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
                     <ArrowLeft className="w-4 h-4" /> Back to Events
                 </Link>
             </div>
@@ -147,6 +178,13 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
 
     const displayButtonText = (buttonText === 'Register Now' && event.type === 'WEBINAR') ? 'Set Reminder 🔔' : buttonText;
 
+    const getTierColor = (rank: number | null) => {
+        if (rank === 1) return '#FFD700';
+        if (rank === 2) return '#C0C0C0';
+        if (rank === 3) return '#CD7F32';
+        return '#F0771A';
+    };
+
     const RegisterBtn = ({ full = false, lg = false }: { full?: boolean; lg?: boolean }) => {
         const baseClass = cn(
             "inline-flex items-center justify-center gap-2 font-bold rounded-full transition-all duration-200 cursor-pointer border-none",
@@ -177,8 +215,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
             <button
                 onClick={handleRegisterClick}
                 disabled={isRegistering}
-                className={cn(baseClass, "bg-[#7C3AED] text-white hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#7C3AED]/30")}
-                style={{ boxShadow: "0 0 30px rgba(124,58,237,0.4), 0 4px 15px rgba(0,0,0,0.3)" }}
+                className={cn(baseClass, "bg-[#F0771A] text-white hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#F0771A]/20")}
             >
                 {isRegistering ? (
                     <><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Processing...</>
@@ -190,141 +227,174 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
     };
 
     return (
-        <div className="min-h-screen text-foreground" style={{ background: "var(--background)" }}>
+        <div className="relative min-h-screen text-foreground" style={{ background: "var(--background)" }}>
 
-
-            {/* ── Back button ── */}
-            <div className="relative z-10 pt-20 pb-4">
-                <div className="max-w-7xl mx-auto px-8">
-                    <Link href="/events"
-                        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                        <ArrowLeft className="w-4 h-4" /> Back to Events
-                    </Link>
-                </div>
+            {/* ── Background Wave SVG ── */}
+            <div className="absolute top-0 left-0 right-0 max-lg:hidden w-full z-0 pointer-events-none overflow-hidden" style={{ height: "870px" }}>
+                <svg className="w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 850" fill="none" style={{ height: "870px" }}>
+                    <path
+                        className="animate-wave text-[#B6070A]/35 dark:text-[#F0771A]/15"
+                        d="M1521.31 -102.047C1556.63 -169.559 1451.75 -243.522 1292.21 -189.037C1132.67 -134.552 990.67 -147.713 792.588 -202.946C440.163 -301.237 290.492 -271.972 67.804 -190.187C2.423 -166.731 -132.058 -99.8707 -147.186 -20.099C-166.042 79.592 150.334 69.9201 -4.71201 198.963C-159.757 328.005 -121.278 519.277 687.628 300.168C791.215 272.11 961.58 259.304 1111.68 348.863C1261.78 438.422 1401.16 411.353 1454.55 345.384C1568.96 203.989 1461.92 11.379 1521.31 -102.047Z"
+                        fill="currentColor"
+                    />
+                </svg>
             </div>
 
-            {/* ── Main 2.5fr / 1fr layout ── */}
-            <div className="relative z-10 max-w-7xl mx-auto px-8 pb-24">
-                <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr] gap-12 lg:gap-16">
+            {/* ── Main layout container ── */}
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-20 pb-24">
+
+                {/* ══════════════ HERO BANNER ══════════════ */}
+                <div className="relative w-full mb-8 max-lg:mb-6">
+                    {event.imageUrl ? (
+                        <div
+                            className="relative w-full max-h-90 h-full max-w-7xl top-2 max-lg:top-0 max-lg:rounded-none rounded-2xl mx-auto overflow-hidden shadow-sm"
+                            style={{ aspectRatio: "3 / 1" }}
+                        >
+                            {/* Blurred background layer */}
+                            <div
+                                className="absolute inset-0 bg-cover bg-center rounded-2xl"
+                                style={{
+                                    filter: "blur(16px) brightness(0.5)",
+                                    backgroundImage: `url("${event.imageUrl}")`
+                                }}
+                            />
+                            {/* Inner container to center-align the sharp image */}
+                            <div className="max-w-270 max-lg:px-4 h-full relative mx-auto w-full flex items-center justify-center">
+                                <div className="relative h-full inline-flex" style={{ aspectRatio: "3 / 1" }}>
+                                    <img
+                                        src={event.imageUrl}
+                                        alt="Event banner"
+                                        className="h-full w-auto object-contain z-10"
+                                        loading="eager"
+                                        style={{ aspectRatio: "3 / 1" }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div
+                            className="relative w-full max-h-90 h-full max-w-7xl top-2 max-lg:top-0 max-lg:rounded-none rounded-2xl mx-auto overflow-hidden flex items-center justify-center shadow-sm"
+                            style={{ aspectRatio: "3 / 1", background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+                        >
+                            <span
+                                className="select-none font-black uppercase tracking-widest"
+                                style={{
+                                    fontFamily: "var(--font-heading, Inter)",
+                                    fontSize: "clamp(2rem, 5vw, 4.5rem)",
+                                    color: "rgba(255,255,255,0.06)",
+                                    letterSpacing: "0.08em",
+                                }}
+                            >
+                                {bannerLabel}
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                {/* ── Title Section ── */}
+                <div className="flex flex-col gap-3 mb-8 mt-12 max-lg:mt-6">
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                        <span
+                            className="px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white"
+                            style={{ background: "#F0771A" }}
+                        >
+                            {typeLabel}
+                        </span>
+                        <span
+                            className={cn(
+                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider",
+                                event.status === 'ONGOING'
+                                    ? "badge-event badge-green badge-live"
+                                    : event.status === 'UPCOMING'
+                                    ? "bg-amber-500/10 border border-amber-500/20 text-amber-500"
+                                    : "bg-gray-500/10 border border-gray-500/20 text-gray-400"
+                            )}
+                        >
+                            {event.status === 'ONGOING' ? `LIVE` : event.status}
+                        </span>
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl font-black text-[#29292B] dark:text-[#FFFBDB] leading-tight tracking-tight">
+                        {event.title}
+                    </h1>
+                </div>
+
+                {/* ── 2-column grid ── */}
+                <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr] gap-10 lg:gap-14">
 
                     {/* ══════════════ MAIN CONTENT ══════════════ */}
                     <main className="min-w-0">
 
-                        {/* Banner */}
-                        <div
-                            className="relative w-full overflow-hidden flex items-center justify-center mb-9"
-                            style={{
-                                height: "280px",
-                                borderRadius: "24px",
-                                background: "var(--bg-tertiary, #121428)",
-                                border: "1px solid rgba(124,58,237,0.30)",
-                                boxShadow: "0 0 40px rgba(124,58,237,0.25), 0 0 80px rgba(124,58,237,0.10)",
-                            }}
+                        {/* ── Info Bar ── */}
+                        <div className="ed-info-bar grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl border mb-8"
+                            style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}
                         >
-                            {event.imageUrl ? (
-                                <>
-                                    <Image
-                                        src={event.imageUrl}
-                                        alt={event.title}
-                                        fill
-                                        className="object-cover object-center"
-                                        sizes="(max-width: 1024px) 100vw, 75vw"
-                                        quality={90}
-                                        priority
-                                    />
-                                    <div className="absolute inset-0 bg-black/40" />
-                                </>
-                            ) : (
-                                <span
-                                    className="select-none font-black uppercase tracking-widest"
-                                    style={{
-                                        fontFamily: "var(--font-heading, Inter)",
-                                        fontSize: "clamp(2rem, 5vw, 4.5rem)",
-                                        color: "rgba(255,255,255,0.08)",
-                                        letterSpacing: "0.05em",
-                                    }}
-                                >
-                                    {bannerLabel}
-                                </span>
-                            )}
-
-                            {/* Status badge */}
-                            <span
-                                className={cn(
-                                    "absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider",
-                                    event.status === 'ONGOING'
-                                        ? "badge-event badge-green badge-live"
-                                        : event.status === 'UPCOMING'
-                                        ? "badge-event badge-violet"
-                                        : "bg-gray-500/10 border border-gray-500/20 text-gray-400"
-                                    )}
-                            >
-                                {event.status === 'ONGOING' ? `LIVE ${typeLabel.toUpperCase()}` : `${event.status} ${typeLabel.toUpperCase()}`}
-                            </span>
-
-                            {/* Share button */}
-                            <button
-                                onClick={handleShare}
-                                className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center border border-white/20 bg-black/30 backdrop-blur-sm text-white/80 hover:text-white hover:bg-black/50 transition-all cursor-pointer"
-                                title={copied ? "Link copied!" : "Share event"}
-                            >
-                                <Share2 className="w-4 h-4" />
-                            </button>
-                        </div>
-
-                        {/* Title */}
-                        <h1
-                            className="text-[#29292B] dark:text-[#FFFBDB]"
-                            style={{
-                                fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
-                                fontWeight: 900,
-                                lineHeight: 1.2,
-                                letterSpacing: "-0.02em",
-                                marginBottom: "1rem",
-                            }}
-                        >
-                            {event.title}
-                        </h1>
-
-                        {/* Meta chips */}
-                        <div className="flex flex-wrap gap-2 mb-6">
                             {[
-                                { icon: <Calendar className="w-3.5 h-3.5" />, text: dateDisplay },
-                                { icon: <Clock className="w-3.5 h-3.5" />, text: formatTime(eventDate) },
-                                { icon: <MapPin className="w-3.5 h-3.5" />, text: event.location || 'Online' },
-                                { icon: <Users className="w-3.5 h-3.5" />, text: `${attendeeCount}${event.maxSeats ? ` / ${event.maxSeats}` : ''} participants` },
-                            ].map((chip, i) => (
-                                <span
-                                    key={i}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border"
-                                    style={{
-                                        background: "rgba(124,58,237,0.08)",
-                                        borderColor: "rgba(124,58,237,0.20)",
-                                        color: "var(--muted-foreground)",
-                                    }}
-                                >
-                                    {chip.icon}{chip.text}
-                                </span>
+                                { icon: <Calendar className="w-5 h-5 text-[#F0771A]" />, label: "Date", value: dateDisplay },
+                                { icon: <Clock className="w-5 h-5 text-[#F0771A]" />, label: "Time", value: formatTime(eventDate) },
+                                { icon: <MapPin className="w-5 h-5 text-[#F0771A]" />, label: "Location", value: event.location || 'Online' },
+                                { icon: <Users className="w-5 h-5 text-[#F0771A]" />, label: "Participants", value: `${attendeeCount}${event.maxSeats ? ` / ${event.maxSeats}` : ''}` },
+                            ].map((item, i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                                        style={{ background: "rgba(240,119,26,0.08)" }}
+                                    >
+                                        {item.icon}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">{item.label}</p>
+                                        <p className="text-sm font-semibold text-foreground truncate">{item.value}</p>
+                                    </div>
+                                </div>
                             ))}
                         </div>
 
-                        {/* About description */}
-                        <p
-                            style={{
-                                color: "var(--muted-foreground)",
-                                lineHeight: 1.75,
-                                fontSize: "0.9375rem",
-                                marginBottom: "2.5rem",
-                                whiteSpace: "pre-wrap",
-                            }}
-                        >
-                            {event.description}
-                        </p>
+                        {/* ── About Section ── */}
+                        <div className="mb-10">
+                            <h2 className="ed-section-title">About</h2>
+                            <div className="ed-about-prose">
+                                {event.description.split('\n').map((line: string, i: number) => {
+                                    const trimmed = line.trim();
 
-                        {/* ── Prizes / Rewards Bento Grid ── */}
+                                    // Horizontal rule
+                                    if (/^[-]{3,}$/.test(trimmed) || /^[*]{3,}$/.test(trimmed)) {
+                                        return <hr key={i} className="ed-about-hr" />;
+                                    }
+
+                                    // Empty line = spacer
+                                    if (trimmed === '') {
+                                        return <div key={i} className="h-3" />;
+                                    }
+
+                                    // Check if entire line is bold (heading-style)
+                                    const headingMatch = trimmed.match(/^\*\*(.+)\*\*$/);
+                                    if (headingMatch) {
+                                        return (
+                                            <h3 key={i} className="ed-about-heading">
+                                                {headingMatch[1]}
+                                            </h3>
+                                        );
+                                    }
+
+                                    // Regular paragraph — parse inline bold
+                                    const parts = trimmed.split(/(\*\*[^*]+\*\*)/g);
+                                    return (
+                                        <p key={i} className="ed-about-text">
+                                            {parts.map((part, j) => {
+                                                const boldMatch = part.match(/^\*\*(.+)\*\*$/);
+                                                if (boldMatch) {
+                                                    return <strong key={j} className="text-foreground font-bold">{boldMatch[1]}</strong>;
+                                                }
+                                                return <span key={j}>{part}</span>;
+                                            })}
+                                        </p>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* ── Prizes / Rewards ── */}
                         {rewards.length > 0 && (
-                            <div style={{ marginBottom: "2.5rem" }}>
+                            <div className="mb-8">
                                 <h2 className="ed-section-title">Prizes &amp; Rewards</h2>
                                 <div className="ed-prize-grid">
                                     {rewards.map((r, i) => {
@@ -337,10 +407,26 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                                                 ? "🥉 3rd Place"
                                                 : `🏆 Top ${r.rankRequired}`
                                             : "🎁 Event Perk";
+                                        const tierColor = getTierColor(r.rankRequired);
                                         return (
-                                            <div key={i} className="ed-prize-card">
-                                                <div className="ed-prize-rank">{rankText}</div>
-                                                <div className="ed-prize-amount">{getRewardIcon(r.iconType)}</div>
+                                            <div key={i} className="ed-prize-card group"
+                                                style={{
+                                                    borderColor: `${tierColor}28`,
+                                                }}
+                                            >
+                                                {/* Tier rank label */}
+                                                <div className="ed-prize-rank" style={{ color: tierColor }}>{rankText}</div>
+                                                
+                                                {/* Icon container with soft backlight glow */}
+                                                <div className="ed-prize-amount relative mb-3">
+                                                    <div className="absolute inset-0 blur-lg rounded-full opacity-20 w-12 h-12 mx-auto transition-all duration-300 group-hover:opacity-40 group-hover:scale-110" 
+                                                        style={{ background: tierColor }}
+                                                    />
+                                                    <div className="relative z-10 p-3 rounded-2xl bg-slate-50 border border-slate-100 dark:bg-white/5 dark:border-white/10 inline-flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                                                        {getRewardIcon(r.iconType)}
+                                                    </div>
+                                                </div>
+
                                                 <div className="ed-prize-title">{r.title}</div>
                                                 {r.quantity && (
                                                     <div className="ed-prize-qty">Quantity: {r.quantity}</div>
@@ -353,19 +439,21 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                             </div>
                         )}
 
-                        {/* ── How it works / Timeline ── */}
+                        {/* ── Schedule & Tracks (Step Cards) ── */}
                         {howLines.length > 0 && (
-                            <div style={{ marginTop: "2rem" }}>
-                                <h2 className="ed-section-title">Schedule &amp; Tracks</h2>
-                                <div className="ed-timeline-list">
+                            <div className="mb-8">
+                                <h2 className="ed-section-title">Your Journey: Steps to Participation</h2>
+                                <div className="ed-steps-list">
                                     {howLines.map((line: string, i: number) => {
                                         const { title, desc } = parseLine(line);
                                         return (
-                                            <div key={i} className="ed-timeline-item">
-                                                <div className="ed-timeline-dot" />
-                                                <div className="ed-timeline-time">Step {i + 1}</div>
-                                                <h3 className="ed-timeline-title">{title}</h3>
-                                                {desc && <p className="ed-timeline-desc">{desc}</p>}
+                                            <div key={i} className="ed-step-card">
+                                                <div className="ed-step-title">Step {i + 1}: {title}</div>
+                                                {desc && (
+                                                    <div className="ed-step-content">
+                                                        <p>{desc}</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     })}
@@ -373,25 +461,80 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                             </div>
                         )}
 
-                        {/* ── Organizer ── */}
-                        {event.creator && (
-                            <div
-                                className="mt-12 flex items-center gap-4 p-5 rounded-2xl border"
-                                style={{
-                                    background: "rgba(255,255,255,0.02)",
-                                    borderColor: "rgba(255,255,255,0.06)",
-                                }}
-                            >
-                                <Avatar className="w-12 h-12 ring-2 ring-[#7C3AED]/30 shrink-0">
-                                    <AvatarImage src={event.creator.image || undefined} />
-                                    <AvatarFallback className="bg-[#7C3AED] text-white font-bold">
-                                        {event.creator.name?.[0] || 'V'}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-[#A78BFA] mb-0.5">Organized by</p>
-                                    <p className="font-bold text-foreground">{event.creator.name || 'Velonx Team'}</p>
-                                    <p className="text-xs text-muted-foreground">Event Organizer</p>
+                        {/* ── Timeline ── */}
+                        {(() => {
+                            const shortMonth = (d: Date) => d.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
+                            const fullRange = (start: Date, end: Date) =>
+                                `${start.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: '2-digit' })}, ${start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })} - ${end.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: '2-digit' })}, ${end.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+
+                            const phases: { startDate: Date; endDate: Date; label: string }[] = [];
+
+                            // Registration phase
+                            const regEnd = event.registrationDeadline ? new Date(event.registrationDeadline) : eventDate;
+                            phases.push({ startDate: new Date(), endDate: regEnd, label: 'Registration' });
+
+                            // Event phase
+                            if (endDate) {
+                                phases.push({ startDate: eventDate, endDate, label: `${typeLabel} Period` });
+                            } else {
+                                const sameDay = new Date(eventDate);
+                                sameDay.setHours(23, 59, 59);
+                                phases.push({ startDate: eventDate, endDate: sameDay, label: `${typeLabel} Day` });
+                            }
+
+                            return phases.length > 0 ? (
+                                <div className="mb-8">
+                                    <h2 className="ed-section-title">Timeline</h2>
+                                    <div className="flex flex-col gap-4">
+                                        {phases.map((phase, i) => (
+                                            <div key={i} className="ed-tl-row flex items-center gap-5 sm:gap-8">
+                                                {/* Date badge */}
+                                                <div className="ed-tl-badge shrink-0">
+                                                    <div className="ed-tl-badge-top">{shortMonth(phase.startDate)}</div>
+                                                    <div className="ed-tl-badge-bottom">{shortMonth(phase.endDate)}</div>
+                                                </div>
+                                                {/* Phase card */}
+                                                <div className="ed-tl-card flex-1">
+                                                    <div className="ed-tl-card-inner">
+                                                        <p className="ed-tl-range">{fullRange(phase.startDate, phase.endDate)}</p>
+                                                        <p className="ed-tl-label">{phase.label}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : null;
+                        })()}
+                        {/* ── FAQs ── */}
+                        {faqs.length > 0 && (
+                            <div className="mb-8 mt-12">
+                                <h2 className="ed-section-title">FAQs</h2>
+                                <div className="flex flex-col border-t border-white/10 dark:border-white/5">
+                                    {faqs.map((faq, idx) => {
+                                        const isOpen = openFaq === idx;
+                                        return (
+                                            <div key={faq.id || idx} className="border-b border-white/10 dark:border-white/5 py-4">
+                                                <button
+                                                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                                                    className="w-full flex items-center justify-between text-left font-semibold text-foreground hover:text-[#FF8A3D] transition-colors py-2 group cursor-pointer"
+                                                >
+                                                    <span className="text-sm sm:text-base leading-snug">{faq.question}</span>
+                                                    <ChevronDown className={cn("w-5 h-5 text-muted-foreground transition-transform duration-300", isOpen && "rotate-180 text-[#FF8A3D]")} />
+                                                </button>
+                                                <div
+                                                    className={cn(
+                                                        "overflow-hidden transition-all duration-300 ease-in-out max-h-0",
+                                                        isOpen && "max-h-125 mt-3"
+                                                    )}
+                                                >
+                                                    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap pl-1 pb-2">
+                                                        {faq.answer}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -401,9 +544,9 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                     <aside className="lg:pt-0">
                         <div className="lg:sticky lg:top-24 flex flex-col gap-5">
 
-                            {/* Quick Details Card */}
+                            {/* Registration Card */}
                             <div
-                                className="rounded-2xl border p-6"
+                                className="ed-sidebar-card rounded-2xl border p-6"
                                 style={{
                                     background: "rgba(255,255,255,0.025)",
                                     borderColor: "rgba(255,255,255,0.08)",
@@ -411,9 +554,29 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                                     WebkitBackdropFilter: "blur(20px)",
                                 }}
                             >
-                                <h3 className="font-bold text-foreground text-base mb-5">Quick Details</h3>
+                                {/* Countdown Timer */}
+                                {event.status === 'UPCOMING' && (
+                                    <div className="mb-5">
+                                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-3 text-center">Event starts in</p>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {[
+                                                { val: countdown.days, label: 'Days' },
+                                                { val: countdown.hours, label: 'Hrs' },
+                                                { val: countdown.minutes, label: 'Min' },
+                                                { val: countdown.seconds, label: 'Sec' },
+                                            ].map((unit, i) => (
+                                                <div key={i} className="ed-countdown-cell text-center">
+                                                    <div className="text-xl sm:text-2xl font-black text-foreground tabular-nums">{String(unit.val).padStart(2, '0')}</div>
+                                                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{unit.label}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
-                                <div className="flex flex-col gap-4 mb-6">
+                                {/* Quick Details */}
+                                <h3 className="font-bold text-foreground text-base mb-4">Quick Details</h3>
+                                <div className="flex flex-col gap-3.5 mb-5">
                                     {[
                                         { label: "Date", value: dateDisplay },
                                         { label: "Format", value: event.location || 'Online' },
@@ -441,10 +604,10 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
 
                                 {/* Seats progress bar */}
                                 {event.maxSeats && (
-                                    <div className="mb-6">
+                                    <div className="mb-5">
                                         <div className="h-1.5 rounded-full overflow-hidden bg-white/5">
                                             <div
-                                                className="h-full rounded-full bg-[#7C3AED] transition-all duration-1000"
+                                                className="h-full rounded-full bg-[#F0771A] transition-all duration-1000"
                                                 style={{ width: `${Math.min((attendeeCount / event.maxSeats) * 100, 100)}%` }}
                                             />
                                         </div>
@@ -486,41 +649,35 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                                 )}
                             </div>
 
-                            {/* Community Perks Card */}
-                            <div
-                                className="rounded-2xl border p-6"
-                                style={{
-                                    background: "rgba(255,255,255,0.025)",
-                                    borderColor: "rgba(255,255,255,0.08)",
-                                    backdropFilter: "blur(20px)",
-                                    WebkitBackdropFilter: "blur(20px)",
-                                }}
-                            >
-                                <h3 className="font-bold text-foreground text-base mb-3">Community Perks</h3>
-                                <p className="text-sm leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
-                                    All successful project submissions automatically receive{" "}
-                                    <strong className="text-[#A78BFA]">100 Velonx Coins (VX)</strong>{" "}
-                                    which can be redeemed in the Swag Shop for hoodies, flasks, and stickers.
-                                </p>
-                                <div className="mt-4 flex flex-wrap gap-2">
-                                    {["🎁 Swag", "🏅 Badges", "💰 VX Coins", "📜 Certificates"].map(perk => (
-                                        <span key={perk}
-                                            className="text-xs px-3 py-1 rounded-full border font-medium"
-                                            style={{
-                                                background: "rgba(124,58,237,0.08)",
-                                                borderColor: "rgba(124,58,237,0.20)",
-                                                color: "#A78BFA",
-                                            }}
-                                        >
-                                            {perk}
-                                        </span>
-                                    ))}
+                            {/* Organizer Card (moved to sidebar) */}
+                            {event.creator && (
+                                <div
+                                    className="ed-sidebar-card rounded-2xl border p-5"
+                                    style={{
+                                        background: "rgba(255,255,255,0.025)",
+                                        borderColor: "rgba(255,255,255,0.08)",
+                                    }}
+                                >
+                                    <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-3">Organized by</p>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="w-11 h-11 ring-2 ring-[#F0771A]/30 shrink-0">
+                                            <AvatarImage src={event.creator.image || undefined} />
+                                            <AvatarFallback className="bg-[#F0771A] text-white font-bold text-sm">
+                                                {event.creator.name?.[0] || 'V'}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-bold text-foreground text-sm">{event.creator.name || 'Velonx Team'}</p>
+                                            <p className="text-xs text-muted-foreground">Event Organizer</p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+
 
                             {/* Share Card */}
                             <div
-                                className="rounded-2xl border p-5 flex items-center gap-4"
+                                className="ed-sidebar-card rounded-2xl border p-5 flex items-center gap-4"
                                 style={{
                                     background: "rgba(255,255,255,0.02)",
                                     borderColor: "rgba(255,255,255,0.06)",
@@ -530,9 +687,9 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                                     onClick={handleShare}
                                     className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold border transition-all cursor-pointer hover:opacity-80"
                                     style={{
-                                        background: "rgba(6,182,212,0.08)",
-                                        borderColor: "rgba(6,182,212,0.25)",
-                                        color: "#06B6D4",
+                                        background: "rgba(240,119,26,0.08)",
+                                        borderColor: "rgba(240,119,26,0.25)",
+                                        color: "#F0771A",
                                     }}
                                 >
                                     <Share2 className="w-4 h-4" />
@@ -563,8 +720,8 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
             <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
                 <DialogContent className="max-w-md w-[calc(100%-2rem)] mx-auto rounded-2xl border border-border bg-card text-card-foreground">
                     <DialogHeader className="text-center">
-                        <div className="w-16 h-16 rounded-full bg-[#7C3AED]/10 flex items-center justify-center mx-auto mb-4">
-                            <LogIn className="w-8 h-8 text-[#A78BFA]" />
+                        <div className="w-16 h-16 rounded-full bg-[#F0771A]/10 flex items-center justify-center mx-auto mb-4">
+                            <LogIn className="w-8 h-8 text-[#FF8A3D]" />
                         </div>
                         <DialogTitle className="text-2xl font-bold text-center">Sign in required</DialogTitle>
                         <DialogDescription className="text-muted-foreground mt-2 text-center">
@@ -575,7 +732,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                         <Button
                             onClick={() => router.push('/auth/login')}
                             className="w-full h-12 font-semibold rounded-xl text-white border-none cursor-pointer"
-                            style={{ background: "#7C3AED" }}
+                            style={{ background: "#F0771A" }}
                         >
                             Sign In
                         </Button>

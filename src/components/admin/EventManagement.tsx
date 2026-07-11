@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, Edit, Trash2, Users, MapPin, Clock, Plus, X, Download, XCircle, Trophy, User, CheckCircle2, Circle, UserCheck, Loader2 } from "lucide-react";
+import { Calendar, Edit, Trash2, Users, MapPin, Clock, Plus, X, Download, XCircle, Trophy, User, CheckCircle2, Circle, UserCheck, Loader2, HelpCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { eventsApi } from "@/lib/api/client";
 import type { Event } from "@/lib/api/types";
 import { secureFetch } from "@/lib/utils/csrf";
 import EventRewardManager from "@/components/admin/EventRewardManager";
+import EventFAQManager from "@/components/admin/EventFAQManager";
 import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 import {
   Dialog,
@@ -32,6 +33,7 @@ export default function EventManagement() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [expandedRewardEventId, setExpandedRewardEventId] = useState<string | null>(null);
+  const [expandedFAQEventId, setExpandedFAQEventId] = useState<string | null>(null);
   const [viewingAttendeesEvent, setViewingAttendeesEvent] = useState<Event | null>(null);
   const [attendees, setAttendees] = useState<any[]>([]);
   const [loadingAttendees, setLoadingAttendees] = useState(false);
@@ -750,6 +752,24 @@ export default function EventManagement() {
                     {expandedRewardEventId === event.id && (
                       <div className="mt-4">
                         <EventRewardManager eventId={event.id} />
+                      </div>
+                    )}
+                  </div>
+                  {/* FAQs Manager - collapsible per event */}
+                  <div className="mt-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedFAQEventId(
+                        expandedFAQEventId === event.id ? null : event.id
+                      )}
+                      className="flex items-center gap-2 text-sm font-semibold text-[#F0771A] hover:text-[#FF8A3D] transition-colors"
+                    >
+                      <HelpCircle className="w-4 h-4" />
+                      {expandedFAQEventId === event.id ? 'Hide FAQs' : 'Manage FAQs'}
+                    </button>
+                    {expandedFAQEventId === event.id && (
+                      <div className="mt-4">
+                        <EventFAQManager eventId={event.id} />
                       </div>
                     )}
                   </div>

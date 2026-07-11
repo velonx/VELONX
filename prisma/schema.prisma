@@ -424,6 +424,7 @@ model Event {
   creator   User            @relation("EventCreator", fields: [creatorId], references: [id])
   attendees EventAttendee[]
   rewards   EventReward[]
+  faqs      EventFAQ[]
 
   // Performance indexes for registration closure queries
   @@index([registrationDeadline])
@@ -469,6 +470,23 @@ model EventReward {
 
   @@index([eventId, order])
   @@map("event_rewards")
+}
+
+// Event FAQ Model
+// Admin-defined FAQs shown on the event detail page
+model EventFAQ {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId     String   @db.ObjectId
+  question    String
+  answer      String
+  order       Int      @default(0) // display order
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, order])
+  @@map("event_faqs")
 }
 
 // Event Registration Closure Analytics Model
