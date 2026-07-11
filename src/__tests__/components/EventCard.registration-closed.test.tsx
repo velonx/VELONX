@@ -117,11 +117,11 @@ describe('EventCard - Registration Button State (Requirement 4.4, 6.1, 6.2, 6.3,
 
     render(<EventCard event={event} onRegister={vi.fn()} />);
     
-    // Button text is "Deadline Passed" but aria-label includes full message
+    // Button text is "Closed" but aria-label includes full message
     const button = screen.getByRole('button', { name: /Registration deadline has passed/i });
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute('aria-disabled', 'true');
-    expect(button).toHaveTextContent(/Deadline Passed/i);
+    expect(button).toHaveTextContent(/Closed/i);
   });
 
   it('should disable button when manually closed', () => {
@@ -132,11 +132,11 @@ describe('EventCard - Registration Button State (Requirement 4.4, 6.1, 6.2, 6.3,
 
     render(<EventCard event={event} onRegister={vi.fn()} />);
     
-    // Button text is "Registration Closed" but aria-label includes full message
+    // Button text is "Closed" but aria-label includes full message
     const button = screen.getByRole('button', { name: /Registration is currently closed/i });
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute('aria-disabled', 'true');
-    expect(button).toHaveTextContent(/Registration Closed/i);
+    expect(button).toHaveTextContent(/Closed/i);
   });
 
   it('should show "Register Now" button when registration is open', () => {
