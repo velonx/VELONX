@@ -16,6 +16,15 @@ function extractFirstImageUrl(content: string): string | null {
   return match ? match[1] : null;
 }
 
+function toSafeISOString(date: any): string | undefined {
+  if (!date) return undefined;
+  const str = String(date).trim();
+  if (str === "null" || str === "undefined" || str === "") return undefined;
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return undefined;
+  return d.toISOString();
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const decodedId = decodeURIComponent(id);
@@ -62,12 +71,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         url: postUrl,
         title: post.title,
         description: excerpt,
-        publishedTime: post.publishedAt
-          ? new Date(post.publishedAt).toISOString()
-          : undefined,
-        modifiedTime: post.updatedAt
-          ? new Date(post.updatedAt).toISOString()
-          : new Date().toISOString(),
+        publishedTime: toSafeISOString(post.publishedAt),
+        modifiedTime: toSafeISOString(post.updatedAt) || new Date().toISOString(),
         authors: [authorName],
         tags: tags,
         images: [
@@ -158,10 +163,8 @@ export default async function BlogPostPage({ params }: Props) {
       post.excerpt ||
       post.content?.replace(/<[^>]*>/g, "").substring(0, 150),
     url: `${siteUrl}/blog/${postSlugOrId}`,
-    datePublished: post.publishedAt
-      ? new Date(post.publishedAt).toISOString()
-      : new Date(post.createdAt).toISOString(),
-    dateModified: new Date(post.updatedAt).toISOString(),
+    datePublished: toSafeISOString(post.publishedAt) || toSafeISOString(post.createdAt) || new Date().toISOString(),
+    dateModified: toSafeISOString(post.updatedAt) || new Date().toISOString(),
     author: {
       "@type": "Person",
       name: post.author?.name || "Velonx Team",
@@ -192,8 +195,8 @@ export default async function BlogPostPage({ params }: Props) {
         excerpt: p.excerpt,
         imageUrl: p.imageUrl,
         tags: p.tags,
-        publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-        createdAt: p.createdAt.toISOString(),
+        publishedAt: toSafeISOString(p.publishedAt) || null,
+        createdAt: toSafeISOString(p.createdAt) || new Date().toISOString(),
         views: p.views,
         content: p.content,
         author: p.author
@@ -204,6 +207,13 @@ export default async function BlogPostPage({ params }: Props) {
     // Non-critical — fail silently
   }
 
+  const serializedPost = {
+    ...post,
+    publishedAt: toSafeISOString(post.publishedAt) || null,
+    createdAt: toSafeISOString(post.createdAt) || new Date().toISOString(),
+    updatedAt: toSafeISOString(post.updatedAt) || new Date().toISOString(),
+  };
+
   return (
     <>
       {jsonLd && (
@@ -212,7 +222,7 @@ export default async function BlogPostPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
       )}
-      <BlogPostClient params={params} initialPost={post} relatedPosts={relatedPosts} />
+      <BlogPostClient params={params} initialPost={serializedPost} relatedPosts={relatedPosts} />
     </>
   );
 }

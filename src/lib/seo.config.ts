@@ -104,9 +104,7 @@ export const defaultMetadata: Metadata = {
         },
     },
     verification: {
-        google: cleanEnvVar(process.env.GOOGLE_VERIFICATION_CODE) || cleanEnvVar(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE),
-        // yandex: 'your-yandex-verification-code',
-        // bing: 'your-bing-verification-code',
+        google: cleanEnvVar(process.env.GOOGLE_VERIFICATION_CODE) || cleanEnvVar(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE) || '34x0ScPsUcmgX6fnMwLlkgRAzmTJv8DIkjfVABS6n3o',
     },
 };
 
@@ -143,6 +141,9 @@ export const generatePageMetadata = (
         },
         alternates: {
             canonical: url,
+        },
+        verification: {
+            google: cleanEnvVar(process.env.GOOGLE_VERIFICATION_CODE) || cleanEnvVar(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE) || '34x0ScPsUcmgX6fnMwLlkgRAzmTJv8DIkjfVABS6n3o',
         },
     };
 };
