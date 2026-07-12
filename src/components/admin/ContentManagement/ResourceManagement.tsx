@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +58,8 @@ interface TestSchedule {
     id: string;
     title: string;
     hasCertificate: boolean;
+    creatorId?: string | null;
+    modules?: Module[];
   };
 }
 
@@ -232,6 +234,7 @@ export default function ResourceManagement() {
   // Test Schedules Queue state
   const [testSchedules, setTestSchedules] = useState<TestSchedule[]>([]);
   const [loadingSchedules, setLoadingSchedules] = useState(false);
+  const [expandedScheduleId, setExpandedScheduleId] = useState<string | null>(null);
 
   const fetchTestSchedules = async () => {
     setLoadingSchedules(true);
@@ -1179,89 +1182,139 @@ export default function ResourceManagement() {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                           {testSchedules.map((schedule) => (
-                            <tr key={schedule.id} className="text-sm">
-                              <td className="py-6 flex items-center gap-3">
-                                {schedule.user.image ? (
-                                  <Image
-                                    src={schedule.user.image}
-                                    alt={schedule.user.name || "Student"}
-                                    width={32}
-                                    height={32}
-                                    className="w-8 h-8 rounded-full"
-                                    unoptimized
-                                  />
-                                ) : (
-                                  <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-bold text-xs">
-                                    {(schedule.user.name || schedule.user.email)[0].toUpperCase()}
+                            <React.Fragment key={schedule.id}>
+                              <tr className="text-sm">
+                                <td className="py-6 flex items-center gap-3">
+                                  {schedule.user.image ? (
+                                    <Image
+                                      src={schedule.user.image}
+                                      alt={schedule.user.name || "Student"}
+                                      width={32}
+                                      height={32}
+                                      className="w-8 h-8 rounded-full"
+                                      unoptimized
+                                    />
+                                  ) : (
+                                    <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-bold text-xs">
+                                      {(schedule.user.name || schedule.user.email)[0].toUpperCase()}
+                                    </div>
+                                  )}
+                                  <div>
+                                    <p className="font-bold text-[#1A234A]">{schedule.user.name || "No name"}</p>
+                                    <p className="text-xs text-gray-400">{schedule.user.email}</p>
                                   </div>
-                                )}
-                                <div>
-                                  <p className="font-bold text-[#1A234A]">{schedule.user.name || "No name"}</p>
-                                  <p className="text-xs text-gray-400">{schedule.user.email}</p>
-                                </div>
-                              </td>
-                              <td className="py-6">
-                                <p className="font-semibold text-[#1A234A]">{schedule.learningPath.title}</p>
-                              </td>
-                              <td className="py-6 text-gray-500">
-                                {new Date(schedule.testDate).toLocaleDateString(undefined, {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </td>
-                              <td className="py-6">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                                  schedule.status === "PASSED"
-                                    ? "bg-emerald-50 text-emerald-700"
-                                    : schedule.status === "FAILED"
-                                    ? "bg-red-50 text-red-700"
-                                    : "bg-amber-50 text-amber-700"
-                                }`}>
-                                  {schedule.status}
-                                </span>
-                              </td>
-                              <td className="py-6 text-gray-600 font-bold">
-                                {schedule.score !== null ? `${schedule.score}%` : "—"}
-                              </td>
-                              <td className="py-6 text-right">
-                                {schedule.status === "PENDING" || schedule.status === "SCHEDULED" ? (
-                                  <div className="flex gap-2 justify-end">
+                                </td>
+                                <td className="py-6">
+                                  <p className="font-semibold text-[#1A234A] flex items-center gap-1.5">
+                                    {schedule.learningPath.title}
+                                    {schedule.learningPath.creatorId && (
+                                      <Badge className="bg-purple-50 text-purple-700 border-0 font-bold text-[10px]">
+                                        Custom
+                                      </Badge>
+                                    )}
+                                  </p>
+                                  {schedule.learningPath.modules && schedule.learningPath.modules.length > 0 && (
                                     <button
                                       type="button"
-                                      onClick={() => {
-                                        const scoreStr = prompt("Enter student score (0-100):", "90");
-                                        if (scoreStr === null) return;
-                                        const score = parseInt(scoreStr, 10);
-                                        if (isNaN(score) || score < 0 || score > 100) {
-                                          toast.error("Please enter a valid number between 0 and 100");
-                                          return;
-                                        }
-                                        handleUpdateScheduleStatus(schedule.id, "PASSED", score);
-                                      }}
-                                      className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl font-bold text-xs transition-all cursor-pointer"
+                                      onClick={() => setExpandedScheduleId(expandedScheduleId === schedule.id ? null : schedule.id)}
+                                      className="text-xs text-[#226CE0] font-bold hover:underline mt-1 flex items-center gap-1 cursor-pointer"
                                     >
-                                      Approve & Pass
+                                      {expandedScheduleId === schedule.id ? "Hide Checkpoints" : "View Checkpoints"} ({schedule.learningPath.modules.length})
                                     </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        if (confirm("Are you sure you want to mark this test as failed/rejected?")) {
-                                          handleUpdateScheduleStatus(schedule.id, "FAILED");
-                                        }
-                                      }}
-                                      className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl font-bold text-xs transition-all cursor-pointer"
-                                    >
-                                      Reject & Fail
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <span className="text-xs text-gray-400">Reviewed</span>
-                                )}
-                              </td>
-                            </tr>
+                                  )}
+                                </td>
+                                <td className="py-6 text-gray-500">
+                                  {new Date(schedule.testDate).toLocaleDateString(undefined, {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </td>
+                                <td className="py-6">
+                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                                    schedule.status === "PASSED"
+                                      ? "bg-emerald-50 text-emerald-700"
+                                      : schedule.status === "FAILED"
+                                      ? "bg-red-50 text-red-700"
+                                      : "bg-amber-50 text-amber-700"
+                                  }`}>
+                                    {schedule.status}
+                                  </span>
+                                </td>
+                                <td className="py-6 text-gray-600 font-bold">
+                                  {schedule.score !== null ? `${schedule.score}%` : "—"}
+                                </td>
+                                <td className="py-6 text-right">
+                                  {schedule.status === "PENDING" || schedule.status === "SCHEDULED" ? (
+                                    <div className="flex gap-2 justify-end">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const scoreStr = prompt("Enter student score (0-100):", "90");
+                                          if (scoreStr === null) return;
+                                          const score = parseInt(scoreStr, 10);
+                                          if (isNaN(score) || score < 0 || score > 100) {
+                                            toast.error("Please enter a valid number between 0 and 100");
+                                            return;
+                                          }
+                                          handleUpdateScheduleStatus(schedule.id, "PASSED", score);
+                                        }}
+                                        className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl font-bold text-xs transition-all cursor-pointer"
+                                      >
+                                        Approve & Pass
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (confirm("Are you sure you want to mark this test as failed/rejected?")) {
+                                            handleUpdateScheduleStatus(schedule.id, "FAILED");
+                                          }
+                                        }}
+                                        className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl font-bold text-xs transition-all cursor-pointer"
+                                      >
+                                        Reject & Fail
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <span className="text-xs text-gray-400">Reviewed</span>
+                                  )}
+                                </td>
+                              </tr>
+                              {expandedScheduleId === schedule.id && schedule.learningPath.modules && (
+                                <tr className="bg-gray-50/40">
+                                  <td colSpan={6} className="p-6">
+                                    <div className="space-y-3 text-left">
+                                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                        Checkpoints Learned ({schedule.learningPath.modules.length}):
+                                      </h4>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {schedule.learningPath.modules.map((mod, idx) => (
+                                          <div key={mod.id} className="bg-white p-4 rounded-xl border border-gray-100 flex flex-col justify-between">
+                                            <div>
+                                              <span className="text-xs font-bold text-[#226CE0]">Checkpoint {idx + 1}: {mod.title}</span>
+                                              <p className="text-xs text-gray-400 mt-1">{mod.description}</p>
+                                            </div>
+                                            <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-50 text-[11px] text-gray-500">
+                                              <span>⏱️ {mod.duration}</span>
+                                              <a
+                                                href={mod.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[#226CE0] hover:underline font-bold"
+                                              >
+                                                View Resource Link
+                                              </a>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
                           ))}
                         </tbody>
                       </table>

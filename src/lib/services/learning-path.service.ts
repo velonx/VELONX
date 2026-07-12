@@ -10,7 +10,17 @@ export class LearningPathService {
    * List all learning paths, optionally annotated with progress for a specific user
    */
   async listLearningPaths(userId?: string) {
+    const whereClause = userId
+      ? {
+          OR: [
+            { creatorId: null },
+            { creatorId: userId },
+          ],
+        }
+      : { creatorId: null };
+
     const paths = await prisma.learningPath.findMany({
+      where: whereClause,
       include: {
         modules: {
           orderBy: { order: "asc" },
@@ -86,7 +96,7 @@ export class LearningPathService {
   /**
    * Get single learning path with details, modules, and user progress
    */
-  async getLearningPathById(id: string, userId?: string) {
+  async getLearningPathById(id: string, userId?: string, isAdmin: boolean = false) {
     const path = await prisma.learningPath.findUnique({
       where: { id },
       include: {
@@ -98,6 +108,10 @@ export class LearningPathService {
 
     if (!path) {
       throw new NotFoundError("Learning Path");
+    }
+
+    if (path.creatorId && path.creatorId !== userId && !isAdmin) {
+      throw new ValidationError("You do not have permission to access this learning path");
     }
 
     if (!userId) {
@@ -173,6 +187,7 @@ export class LearningPathService {
     badgeName?: string;
     badgeImageUrl?: string;
     hasCertificate?: boolean;
+    creatorId?: string | null;
   }) {
     return await prisma.learningPath.create({
       data: {
@@ -183,6 +198,7 @@ export class LearningPathService {
         badgeName: data.badgeName || null,
         badgeImageUrl: data.badgeImageUrl || null,
         hasCertificate: data.hasCertificate ?? false,
+        creatorId: data.creatorId || null,
       },
     });
   }
@@ -473,6 +489,17 @@ export class LearningPathService {
             id: true,
             title: true,
             hasCertificate: true,
+            creatorId: true,
+            modules: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                duration: true,
+                link: true,
+              },
+              orderBy: { order: "asc" },
+            },
           },
         },
       },

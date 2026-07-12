@@ -24,6 +24,7 @@ const primaryNavLinks = [
     { href: "/events", label: "Events" },
     { href: "/projects", label: "Projects" },
     { href: "/mentors", label: "Mentors" },
+    { href: "/resources", label: "Resources" },
     { href: "/career", label: "Career" },
     { href: "/community", label: "Community" },
     { href: "/network", label: "Network" },
@@ -31,7 +32,6 @@ const primaryNavLinks = [
 ];
 
 const moreNavLinks = [
-    { href: "/resources", label: "Resources" },
     { href: "/blog", label: "Blog" },
     { href: "/swag", label: "Swag 🛍️" },
 ];

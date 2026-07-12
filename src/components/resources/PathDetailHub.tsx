@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Compass, CheckCircle2, Circle, ExternalLink, Calendar, Timer, Award, Clock, HelpCircle, Loader2, XCircle } from 'lucide-react';
+import { ArrowLeft, Compass, CheckCircle2, Circle, ExternalLink, Calendar, Timer, Award, Clock, HelpCircle, Loader2, XCircle, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import toast from 'react-hot-toast';
 import { getCSRFToken } from '@/lib/utils/csrf';
-import { CertificateModal } from './CertificateModal';
 import Image from 'next/image';
 
 interface Module {
@@ -36,6 +35,7 @@ interface PathDetailHubProps {
     isCompleted: boolean;
     certificateEarned: boolean;
     certificateUrl?: string;
+    creatorId?: string | null;
     testStatus?: {
       id: string;
       testDate: string;
@@ -46,6 +46,8 @@ interface PathDetailHubProps {
   onBack: () => void;
   onRefresh: () => void;
   studentName?: string;
+  currentUserId?: string;
+  isAdmin?: boolean;
 }
 
 export const PathDetailHub: React.FC<PathDetailHubProps> = ({
@@ -53,13 +55,89 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
   onBack,
   onRefresh,
   studentName = "A Velonx Student",
+  currentUserId,
+  isAdmin = false,
 }) => {
   const [scheduling, setScheduling] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("10:00");
 
-  // Certificate Modal State
-  const [showCertModal, setShowCertModal] = useState(false);
+  const [showModuleModal, setShowModuleModal] = useState(false);
+  const [editingModule, setEditingModule] = useState<Module | null>(null);
+  const [savingModule, setSavingModule] = useState(false);
+
+  const isOwner = path.creatorId === currentUserId || isAdmin;
+
+  const handleSaveModule = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSavingModule(true);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const moduleData = {
+        title: formData.get("title") as string,
+        description: formData.get("description") as string,
+        link: formData.get("link") as string,
+        duration: formData.get("duration") as string,
+        order: editingModule ? editingModule.order : path.modules.length + 1,
+      };
+
+      const csrfToken = await getCSRFToken();
+      const apiUrl = editingModule
+        ? `/api/learning-paths/modules/${editingModule.id}`
+        : `/api/learning-paths/${path.id}/modules`;
+
+      const response = await fetch(apiUrl, {
+        method: editingModule ? "PATCH" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken,
+        },
+        body: JSON.stringify(moduleData),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success(editingModule ? "Checkpoint updated! 🎉" : "Checkpoint added! 🎉");
+        setShowModuleModal(false);
+        setEditingModule(null);
+        onRefresh();
+      } else {
+        throw new Error(data.error?.message || "Failed to save checkpoint");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save checkpoint");
+    } finally {
+      setSavingModule(false);
+    }
+  };
+
+  const handleDeleteModule = async (modId: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete checkpoint "${title}"?`)) {
+      return;
+    }
+
+    try {
+      const csrfToken = await getCSRFToken();
+      const response = await fetch(`/api/learning-paths/modules/${modId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-csrf-token': csrfToken,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Checkpoint deleted");
+        onRefresh();
+      } else {
+        throw new Error(data.error?.message || "Failed to delete checkpoint");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete checkpoint");
+    }
+  };
+
   const [completingModuleId, setCompletingModuleId] = useState<string | null>(null);
 
   const handleModuleClick = async (mod: Module) => {
@@ -177,10 +255,23 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
 
             {/* Checkpoints Checklist */}
             <div className="space-y-6">
-              <h3 className="text-base font-black text-[#1A234A] dark:text-white flex items-center gap-2">
-                <Compass className="w-5 h-5 text-[#226CE0]" />
-                Roadmap Checkpoints Timeline
-              </h3>
+              <div className="flex items-center justify-between gap-4">
+                <h3 className="text-base font-black text-[#1A234A] dark:text-white flex items-center gap-2">
+                  <Compass className="w-5 h-5 text-[#226CE0]" />
+                  Roadmap Checkpoints Timeline
+                </h3>
+                {isOwner && (
+                  <Button
+                    onClick={() => {
+                      setEditingModule(null);
+                      setShowModuleModal(true);
+                    }}
+                    className="h-9 px-3 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl text-xs cursor-pointer shadow-sm"
+                  >
+                    + Add Checkpoint
+                  </Button>
+                )}
+              </div>
 
               <div className="relative pl-6 space-y-8 border-l border-zinc-200 dark:border-zinc-800 ml-4">
                 {path.modules.map((mod, index) => (
@@ -214,25 +305,49 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                           </div>
                         </div>
 
-                        <Button
-                          size="sm"
-                          onClick={() => handleModuleClick(mod)}
-                          disabled={completingModuleId === mod.id}
-                          className={`h-9 px-4 rounded-xl font-bold text-xs flex items-center gap-1.5 shrink-0 shadow-none cursor-pointer ${
-                            mod.completed
-                              ? 'bg-muted hover:bg-muted/80 text-[#1A234A] border border-border'
-                              : 'bg-[#226CE0] hover:bg-[#334DAF] text-white'
-                          }`}
-                        >
-                          {completingModuleId === mod.id ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <>
-                              <span>{mod.completed ? "Review Checkpoint" : "Start Checkpoint"}</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {isOwner && (
+                            <div className="flex gap-1.5">
+                              <button
+                                onClick={() => {
+                                  setEditingModule(mod);
+                                  setShowModuleModal(true);
+                                }}
+                                className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition-all cursor-pointer border border-blue-200/50"
+                                title="Edit Checkpoint"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteModule(mod.id, mod.title)}
+                                className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-all cursor-pointer border border-red-200/50"
+                                title="Delete Checkpoint"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           )}
-                        </Button>
+
+                          <Button
+                            size="sm"
+                            onClick={() => handleModuleClick(mod)}
+                            disabled={completingModuleId === mod.id}
+                            className={`h-9 px-4 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-none cursor-pointer ${
+                              mod.completed
+                                ? 'bg-muted hover:bg-muted/80 text-[#1A234A] border border-border'
+                                : 'bg-[#226CE0] hover:bg-[#334DAF] text-white'
+                            }`}
+                          >
+                            {completingModuleId === mod.id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <>
+                                <span>{mod.completed ? "Review Checkpoint" : "Start Checkpoint"}</span>
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -325,15 +440,9 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                   <div>
                     <h4 className="text-sm font-black text-green-800 dark:text-green-400">Roadmap Certified!</h4>
                     <p className="text-xs text-green-700 dark:text-green-500 mt-1 leading-relaxed">
-                      You passed the proficiency test. Your Certificate of Excellence is unlocked!
+                      You passed the proficiency test! The Velonx team will coordinate with you to deliver your certificate.
                     </p>
                   </div>
-                  <Button
-                    onClick={() => setShowCertModal(true)}
-                    className="w-full h-11 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-green-500/10"
-                  >
-                    🏆 View Verified Certificate
-                  </Button>
                 </div>
               ) : path.testStatus?.status === 'PENDING' || path.testStatus?.status === 'SCHEDULED' ? (
                 // CASE 3: EXAM SCHEDULED
@@ -467,24 +576,90 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
         </div>
       </div>
 
-      {/* CERTIFICATE LIGHTBOX MODAL */}
-      {showCertModal && (
-        <CertificateModal
-          isOpen={showCertModal}
-          onClose={() => setShowCertModal(false)}
-          studentName={studentName}
-          pathTitle={path.title}
-          certificateId={
-            path.certificateUrl
-              ? path.certificateUrl.split('/').pop() || 'VAL-CERT-0001'
-              : 'VAL-CERT-0001'
-          }
-          earnedDate={
-            path.testStatus?.testDate
-              ? new Date(path.testStatus.testDate).toLocaleDateString()
-              : new Date().toLocaleDateString()
-          }
-        />
+      {/* ADD/EDIT MODULE MODAL */}
+      {showModuleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-card w-full max-w-lg rounded-3xl border border-border shadow-2xl p-8 space-y-6">
+            <div>
+              <h3 className="text-xl font-black text-[#1A234A] dark:text-white">
+                {editingModule ? "Edit Checkpoint" : "Add Checkpoint"}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">Specify checkpoint details and links to your learning materials.</p>
+            </div>
+
+            <form onSubmit={handleSaveModule} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Checkpoint Title *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 1. Intro to Rust Memory Management"
+                  name="title"
+                  defaultValue={editingModule?.title || ""}
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Description *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Learn about ownership, borrowing, and lifetimes."
+                  name="description"
+                  defaultValue={editingModule?.description || ""}
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5 col-span-2">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Resource URL (Destination) *</label>
+                  <input
+                    type="url"
+                    required
+                    placeholder="e.g. https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+                    name="link"
+                    defaultValue={editingModule?.link || ""}
+                    className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                  />
+                </div>
+
+                <div className="space-y-1.5 col-span-2">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Duration *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 2 hours"
+                    name="duration"
+                    defaultValue={editingModule?.duration || ""}
+                    className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/40">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModuleModal(false);
+                    setEditingModule(null);
+                  }}
+                  className="h-10 px-4 rounded-xl border border-border text-foreground hover:bg-muted font-bold text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingModule}
+                  className="h-10 px-5 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl text-xs cursor-pointer disabled:opacity-50"
+                >
+                  {savingModule ? "Saving..." : editingModule ? "Update Checkpoint" : "Add Checkpoint"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

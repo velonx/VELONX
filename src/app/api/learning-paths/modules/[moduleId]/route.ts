@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { learningPathService } from "@/lib/services/learning-path.service";
-import { requireAdmin } from "@/lib/middleware/auth.middleware";
+import { requireAdmin, requireAuth } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
+import { prisma } from "@/lib/prisma";
 
 interface RouteParams {
   params: Promise<{ moduleId: string }>;
@@ -13,10 +14,24 @@ interface RouteParams {
  */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const session = await requireAdmin();
+    const session = await requireAuth();
     if (session instanceof NextResponse) return session;
 
     const { moduleId } = await params;
+
+    // Check parent path ownership
+    const existingModule = await prisma.module.findUnique({
+      where: { id: moduleId },
+      include: { learningPath: true },
+    });
+    if (!existingModule) {
+      return NextResponse.json({ success: false, error: { code: "NOT_FOUND", message: "Module not found" } }, { status: 404 });
+    }
+
+    if (existingModule.learningPath.creatorId && existingModule.learningPath.creatorId !== session.user.id && session.user.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: { code: "FORBIDDEN", message: "Forbidden" } }, { status: 403 });
+    }
+
     const body = await request.json();
 
     const updated = await learningPathService.updateModule(moduleId, body);
@@ -36,10 +51,24 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const session = await requireAdmin();
+    const session = await requireAuth();
     if (session instanceof NextResponse) return session;
 
     const { moduleId } = await params;
+
+    // Check parent path ownership
+    const existingModule = await prisma.module.findUnique({
+      where: { id: moduleId },
+      include: { learningPath: true },
+    });
+    if (!existingModule) {
+      return NextResponse.json({ success: false, error: { code: "NOT_FOUND", message: "Module not found" } }, { status: 404 });
+    }
+
+    if (existingModule.learningPath.creatorId && existingModule.learningPath.creatorId !== session.user.id && session.user.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: { code: "FORBIDDEN", message: "Forbidden" } }, { status: 403 });
+    }
+
     await learningPathService.deleteModule(moduleId);
 
     return NextResponse.json({

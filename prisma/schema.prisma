@@ -201,6 +201,7 @@ model User {
   pathProgress     UserPathProgress[]
   moduleProgress   UserModuleProgress[]
   testSchedules    TestSchedule[]
+  createdPaths     LearningPath[]       @relation("CreatedPaths")
 
   // Gamification relations
   badges         UserBadge[]
@@ -1467,6 +1468,8 @@ model LearningPath {
   badgeName      String?            // Name of the skill badge earned (optional)
   badgeImageUrl  String?            // Image URL for the skill badge (optional)
   hasCertificate Boolean            @default(false)
+  creatorId      String?            @db.ObjectId
+  creator        User?              @relation("CreatedPaths", fields: [creatorId], references: [id], onDelete: Cascade)
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
@@ -1474,6 +1477,7 @@ model LearningPath {
   userProgress  UserPathProgress[]
   testSchedules TestSchedule[]
 
+  @@index([creatorId])
   @@map("learning_paths")
 }
 

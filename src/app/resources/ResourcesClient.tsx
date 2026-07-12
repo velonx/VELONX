@@ -18,6 +18,7 @@ import { ResourceCategory, ResourceType } from '@/lib/types/resources.types';
 import { ScreenReaderAnnouncer } from '@/components/screen-reader-announcer';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import { getCSRFToken } from '@/lib/utils/csrf';
 
 function ResourcesPage() {
   const { data: session } = useSession();
@@ -40,6 +41,46 @@ function ResourcesPage() {
   const [loadingPaths, setLoadingPaths] = React.useState(false);
   const [selectedPath, setSelectedPath] = React.useState<any | null>(null);
   const [loadingPathDetails, setLoadingPathDetails] = React.useState(false);
+  const [showCreateModal, setShowCreateModal] = React.useState(false);
+  const [creatingPath, setCreatingPath] = React.useState(false);
+
+  const handleCreatePath = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setCreatingPath(true);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const csrfToken = await getCSRFToken();
+      const response = await fetch('/api/learning-paths', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        body: JSON.stringify({
+          title: formData.get('title'),
+          description: formData.get('description'),
+          level: formData.get('level'),
+          duration: formData.get('duration'),
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Custom roadmap created successfully! 🎉");
+        setShowCreateModal(false);
+        form.reset();
+        fetchPaths();
+      } else {
+        throw new Error(data.error?.message || "Failed to create roadmap");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to create roadmap");
+    } finally {
+      setCreatingPath(false);
+    }
+  };
 
   // Screen reader announcements
   const [announcement, setAnnouncement] = React.useState('');
@@ -331,36 +372,134 @@ function ResourcesPage() {
                     onBack={() => setActivePathId(null)}
                     onRefresh={() => fetchPathDetails(activePathId)}
                     studentName={session?.user?.name || "A Velonx Student"}
+                    currentUserId={session?.user?.id}
+                    isAdmin={session?.user?.role === 'ADMIN'}
                   />
                 )
               ) : (
                 // Top-level Roadmaps Listing Grid
-                loadingPaths ? (
-                  <div className="text-center py-20">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#226CE0] mx-auto mb-4"></div>
-                    <p className="text-muted-foreground text-sm">Loading roadmaps...</p>
-                  </div>
-                ) : learningPaths.length === 0 ? (
-                  <div className="text-center py-20 max-w-sm mx-auto space-y-3">
-                    <Compass className="w-16 h-16 text-zinc-300 mx-auto animate-pulse" />
-                    <h3 className="text-lg font-bold text-[#1A234A] dark:text-white">No roadmaps configured yet</h3>
-                    <p className="text-xs text-muted-foreground">
-                      Our mentors are designing structured career roadmaps. Check back soon!
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {learningPaths.map((path) => (
-                      <PathCard
-                        key={path.id}
-                        path={path}
-                        onSelect={(id) => setActivePathId(id)}
-                      />
-                    ))}
-                  </div>
-                )
+                <>
+                  {session?.user && (
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 bg-card border border-border p-6 rounded-3xl">
+                      <div>
+                        <h2 className="text-xl font-black text-[#1A234A] dark:text-white">Structured Roadmaps</h2>
+                        <p className="text-xs text-muted-foreground mt-0.5">Explore academy paths or build your own custom roadmap.</p>
+                      </div>
+                      <button
+                        onClick={() => setShowCreateModal(true)}
+                        className="h-10 px-4 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-md text-xs"
+                      >
+                        <Compass className="w-4 h-4" />
+                        Create Custom Roadmap
+                      </button>
+                    </div>
+                  )}
+
+                  {loadingPaths ? (
+                    <div className="text-center py-20">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#226CE0] mx-auto mb-4"></div>
+                      <p className="text-muted-foreground text-sm">Loading roadmaps...</p>
+                    </div>
+                  ) : learningPaths.length === 0 ? (
+                    <div className="text-center py-20 max-w-sm mx-auto space-y-3">
+                      <Compass className="w-16 h-16 text-zinc-300 mx-auto animate-pulse" />
+                      <h3 className="text-lg font-bold text-[#1A234A] dark:text-white">No roadmaps configured yet</h3>
+                      <p className="text-xs text-muted-foreground">
+                        Our mentors are designing structured career roadmaps. Check back soon!
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {learningPaths.map((path) => (
+                        <PathCard
+                          key={path.id}
+                          path={path}
+                          onSelect={(id) => setActivePathId(id)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </>
+          )}
+
+          {/* CREATE CUSTOM ROADMAP MODAL */}
+          {showCreateModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="bg-card w-full max-w-lg rounded-3xl border border-border shadow-2xl p-8 space-y-6">
+                <div>
+                  <h3 className="text-xl font-black text-[#1A234A] dark:text-white">Create Custom Roadmap</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Design your own learning path. This path will be private and only visible to you.</p>
+                </div>
+                
+                <form onSubmit={handleCreatePath} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Roadmap Title *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. My Backend Engineering Path"
+                      name="title"
+                      className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Description *</label>
+                    <textarea
+                      required
+                      rows={3}
+                      placeholder="What is your goal for this custom path?"
+                      name="description"
+                      className="w-full p-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0] resize-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Difficulty Level</label>
+                      <select
+                        name="level"
+                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                      >
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                      </select>
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Duration</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. 4 Weeks"
+                        name="duration"
+                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/40">
+                    <button
+                      type="button"
+                      onClick={() => setShowCreateModal(false)}
+                      className="h-10 px-4 rounded-xl border border-border text-foreground hover:bg-muted font-bold text-xs cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={creatingPath}
+                      className="h-10 px-5 bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl text-xs cursor-pointer disabled:opacity-50"
+                    >
+                      {creatingPath ? "Creating..." : "Create Roadmap"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
           )}
 
         </div>

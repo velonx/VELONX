@@ -132,7 +132,7 @@ export const PathCard: React.FC<PathCardProps> = ({ path, onSelect }) => {
             }`}
           >
             {path.certificateEarned ? (
-              <>🎓 Credential Unlocked</>
+              <>🎓 Roadmap Certified</>
             ) : path.isCompleted ? (
               <>⚡ Schedule Certificate Exam</>
             ) : path.isStarted ? (

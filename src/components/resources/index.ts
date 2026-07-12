@@ -21,4 +21,3 @@ export { FilterDrawer } from './FilterDrawer';
 export { FilterPanel } from './FilterPanel';
 export { PathCard } from './PathCard';
 export { PathDetailHub } from './PathDetailHub';
-export { CertificateModal } from './CertificateModal';

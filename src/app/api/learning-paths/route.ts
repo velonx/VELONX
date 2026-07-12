@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { learningPathService } from "@/lib/services/learning-path.service";
 import { auth } from "@/auth";
-import { requireAdmin } from "@/lib/middleware/auth.middleware";
+import { requireAdmin, requireAuth } from "@/lib/middleware/auth.middleware";
 import { handleError } from "@/lib/utils/errors";
 import { z } from "zod";
 
@@ -40,11 +40,13 @@ export async function GET() {
  */
 export async function POST(request: NextRequest) {
   try {
-    const session = await requireAdmin();
+    const session = await requireAuth();
     if (session instanceof NextResponse) return session;
 
     const body = await request.json();
     const validatedData = createPathSchema.parse(body);
+    const isAdmin = session.user.role === "ADMIN";
+    const userId = session.user.id;
 
     const path = await learningPathService.createLearningPath({
       title: validatedData.title,
@@ -53,7 +55,8 @@ export async function POST(request: NextRequest) {
       duration: validatedData.duration,
       badgeName: validatedData.badgeName || undefined,
       badgeImageUrl: validatedData.badgeImageUrl || undefined,
-      hasCertificate: validatedData.hasCertificate,
+      hasCertificate: isAdmin ? (validatedData.hasCertificate ?? false) : true,
+      creatorId: isAdmin ? null : userId,
     });
 
     return NextResponse.json(
