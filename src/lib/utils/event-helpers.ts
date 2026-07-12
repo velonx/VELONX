@@ -102,8 +102,8 @@ export function getRegistrationButtonText(
   if (!statusInfo.isOpen) {
     switch (statusInfo.reason) {
       case 'capacity': return 'Event Full';
-      case 'deadline': return 'Closed';
-      case 'manual': return 'Closed';
+      case 'deadline': return 'Deadline Passed';
+      case 'manual': return 'Registration Closed';
       default: return 'Closed';
     }
   }

@@ -196,7 +196,7 @@ describe('Event Helpers - Registration Status', () => {
       expect(result).toBe('Event Full');
     });
 
-    it('should return "Closed" when closed due to deadline', () => {
+    it('should return "Deadline Passed" when closed due to deadline', () => {
       const statusInfo = { 
         isOpen: false, 
         reason: 'deadline' as const, 
@@ -205,10 +205,10 @@ describe('Event Helpers - Registration Status', () => {
       };
       const result = getRegistrationButtonText(false, statusInfo);
       
-      expect(result).toBe('Closed');
+      expect(result).toBe('Deadline Passed');
     });
 
-    it('should return "Closed" when manually closed', () => {
+    it('should return "Registration Closed" when manually closed', () => {
       const statusInfo = { 
         isOpen: false, 
         reason: 'manual' as const, 
@@ -217,7 +217,7 @@ describe('Event Helpers - Registration Status', () => {
       };
       const result = getRegistrationButtonText(false, statusInfo);
       
-      expect(result).toBe('Closed');
+      expect(result).toBe('Registration Closed');
     });
 
     it('should return "Closed" when closed with no reason', () => {
@@ -243,7 +243,7 @@ describe('Event Helpers - Registration Status', () => {
       expect(result).toBe('Registered');
     });
 
-    it('should return "Closed" instead of "Registered" when closed due to deadline', () => {
+    it('should return "Deadline Passed" instead of "Registered" when closed due to deadline', () => {
       const statusInfo = { 
         isOpen: false, 
         reason: 'deadline' as const, 
@@ -252,7 +252,19 @@ describe('Event Helpers - Registration Status', () => {
       };
       const result = getRegistrationButtonText(true, statusInfo);
       
-      expect(result).toBe('Closed');
+      expect(result).toBe('Deadline Passed');
+    });
+
+    it('should return "Registration Closed" instead of "Registered" when manually closed', () => {
+      const statusInfo = { 
+        isOpen: false, 
+        reason: 'manual' as const, 
+        message: 'Registration is currently closed', 
+        canReopen: true 
+      };
+      const result = getRegistrationButtonText(true, statusInfo);
+      
+      expect(result).toBe('Registration Closed');
     });
   });
 });
