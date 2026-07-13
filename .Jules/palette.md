@@ -34,3 +34,6 @@
 ## 2024-07-09 - [Dynamic Button States Accessibility]
  **Learning:** When a button undergoes momentary text changes (e.g., from 'Check In' to 'Checking in...' to 'Checked In Today'), screen readers may miss the state change unless they have focus. Adding `aria-live="polite"` to the button ensures the state change is announced without requiring a focus shift. Additionally, decorative emojis in buttons should be hidden from screen readers using `aria-hidden="true"`.
  **Action:** Always add `aria-live="polite"` to buttons with dynamic text content, and ensure decorative elements are hidden from screen readers.
+## 2026-07-13 - [Added ARIA Labels to Icon-Only Buttons in EventFAQManager]
+**Learning:** Screen readers cannot interpret icon-only buttons unless an `aria-label` is explicitly provided. Adding concise `aria-label` attributes (like 'Close FAQ form', 'Edit FAQ', 'Delete FAQ') makes interactive elements accessible for visually impaired users without cluttering the visual UI.
+**Action:** Always ensure that icon-only buttons include an `aria-label` describing their function.
