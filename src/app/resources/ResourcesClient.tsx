@@ -248,8 +248,8 @@ function ResourcesPage() {
           <h1 id="page-title" className="p-display-1">
             Tech <span className="gradient-text font-black">Academy & Guides</span>
           </h1>
-          <p className="text-muted-foreground max-w-3xl mt-4 text-sm sm:text-base leading-relaxed">
-            Accelerate your engineering journey. Navigate structured <strong className="text-[#226CE0] dark:text-blue-400">Learning Paths</strong> to complete interactive checkpoints, design your own custom learning roadmap, and coordinate offline test evaluations to earn your verified certificate. Use our <strong className="text-[#8B5CF6] dark:text-purple-400">Quick References</strong> library to access downloadable PDF guides, developer cheat sheets, and code templates for your daily coding.
+          <p className="text-muted-foreground max-w-2xl mt-4 text-sm sm:text-base leading-relaxed">
+            Accelerate your engineering journey. Follow structured <strong className="text-[#226CE0] dark:text-blue-400">Learning Paths</strong> to earn certified credentials, or access developer <strong className="text-[#8B5CF6] dark:text-purple-400">Quick References</strong>.
           </p>
         </div>
       </header>
@@ -381,68 +381,49 @@ function ResourcesPage() {
                 // Top-level Roadmaps Listing Grid
                 <>
                   {session?.user && (
-                    <div className="relative overflow-hidden mb-8 bg-linear-to-r from-[#1A234A]/5 to-[#8B5CF6]/5 dark:from-[#1A234A]/30 dark:to-[#8B5CF6]/10 border border-border/80 p-6 sm:p-8 rounded-3xl backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-xs">
-                      {/* Decorative gradient glow orb */}
-                      <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-linear-to-br from-[#226CE0]/10 to-[#8B5CF6]/20 rounded-full blur-2xl pointer-events-none" />
-                      <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-32 h-32 bg-[#226CE0]/5 rounded-full blur-xl pointer-events-none" />
-
-                      <div className="space-y-1.5 z-10">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#226CE0]/10 text-[#226CE0] dark:bg-[#226CE0]/20 dark:text-blue-300 font-extrabold text-[10px] uppercase tracking-wider mb-1">
-                          <Compass className="w-3.5 h-3.5 animate-pulse" />
-                          <span>Velonx Roadmap Creator</span>
-                        </div>
-                        <h2 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-linear-to-r from-[#1A234A] to-[#8B5CF6] dark:from-white dark:to-purple-300 leading-tight">
-                          Structured Roadmaps
-                        </h2>
-                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-xl">
-                          Follow vetted industry blueprints designed by top mentors or bootstrap your own private custom path to certified mastery.
-                        </p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-card border border-border/40 p-4 sm:p-5 rounded-3xl shadow-xs">
+                      <div className="flex gap-1.5 bg-muted/40 p-1 rounded-xl w-full sm:w-auto border border-border/40">
+                        <button
+                          onClick={() => setPathFilter('all')}
+                          className={cn(
+                            "flex-1 sm:flex-initial py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer border",
+                            pathFilter === 'all'
+                              ? "bg-card text-foreground shadow-xs border-border/30"
+                              : "text-muted-foreground hover:text-foreground border-transparent"
+                          )}
+                        >
+                          All ({learningPaths.length})
+                        </button>
+                        <button
+                          onClick={() => setPathFilter('official')}
+                          className={cn(
+                            "flex-1 sm:flex-initial py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer border",
+                            pathFilter === 'official'
+                              ? "bg-card text-foreground shadow-xs border-border/30"
+                              : "text-muted-foreground hover:text-foreground border-transparent"
+                          )}
+                        >
+                          Official ({learningPaths.filter(p => !p.creatorId).length})
+                        </button>
+                        <button
+                          onClick={() => setPathFilter('custom')}
+                          className={cn(
+                            "flex-1 sm:flex-initial py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer border",
+                            pathFilter === 'custom'
+                              ? "bg-card text-foreground shadow-xs border-border/30"
+                              : "text-muted-foreground hover:text-foreground border-transparent"
+                          )}
+                        >
+                          Custom ({learningPaths.filter(p => !!p.creatorId).length})
+                        </button>
                       </div>
 
                       <button
                         onClick={() => setShowCreateModal(true)}
-                        className="group shrink-0 h-11 px-5 bg-linear-to-r from-[#226CE0] to-[#8B5CF6] hover:from-[#334DAF] hover:to-[#7C3AED] text-white font-bold rounded-xl transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-md hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0 text-xs z-10"
+                        className="group shrink-0 h-10 px-4 bg-linear-to-r from-[#226CE0] to-[#8B5CF6] hover:from-[#334DAF] hover:to-[#7C3AED] text-white font-bold rounded-xl transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-md hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0 text-xs w-full sm:w-auto justify-center"
                       >
                         <Compass className="w-4 h-4 group-hover:rotate-45 transition-transform duration-500" />
                         <span>Create Custom Roadmap</span>
-                      </button>
-                    </div>
-                  )}
-
-                  {session?.user && (
-                    <div className="flex gap-2 mb-6 bg-muted/40 p-1 rounded-xl max-w-sm border border-border/40">
-                      <button
-                        onClick={() => setPathFilter('all')}
-                        className={cn(
-                          "flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer border",
-                          pathFilter === 'all'
-                            ? "bg-card text-foreground shadow-xs border-border/30"
-                            : "text-muted-foreground hover:text-foreground border-transparent"
-                        )}
-                      >
-                        All ({learningPaths.length})
-                      </button>
-                      <button
-                        onClick={() => setPathFilter('official')}
-                        className={cn(
-                          "flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer border",
-                          pathFilter === 'official'
-                            ? "bg-card text-foreground shadow-xs border-border/30"
-                            : "text-muted-foreground hover:text-foreground border-transparent"
-                        )}
-                      >
-                        Official ({learningPaths.filter(p => !p.creatorId).length})
-                      </button>
-                      <button
-                        onClick={() => setPathFilter('custom')}
-                        className={cn(
-                          "flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer border",
-                          pathFilter === 'custom'
-                            ? "bg-card text-foreground shadow-xs border-border/30"
-                            : "text-muted-foreground hover:text-foreground border-transparent"
-                        )}
-                      >
-                        Custom ({learningPaths.filter(p => !!p.creatorId).length})
                       </button>
                     </div>
                   )}
