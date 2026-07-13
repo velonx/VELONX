@@ -240,9 +240,20 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
         <div className="space-y-6">
           <div className="card-glass-redesign bg-card border border-border rounded-3xl p-8 space-y-6">
             <div>
-              <Badge className="bg-[#226CE0]/10 text-[#226CE0] font-black border-0 rounded-full mb-3 px-3 py-1">
-                {path.level} Roadmap
-              </Badge>
+              <div className="flex items-center gap-1.5 mb-3">
+                <Badge className="bg-[#226CE0]/10 text-[#226CE0] font-black border-0 rounded-full px-3 py-1">
+                  {path.level} Roadmap
+                </Badge>
+                {path.creatorId ? (
+                  <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-950/20 dark:text-purple-400 font-extrabold border-0 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-wider">
+                    Custom
+                  </Badge>
+                ) : (
+                  <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 font-extrabold border-0 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-wider">
+                    Official
+                  </Badge>
+                )}
+              </div>
               <h2 className="text-2xl font-black text-[#1A234A] dark:text-white leading-tight">
                 {path.title}
               </h2>

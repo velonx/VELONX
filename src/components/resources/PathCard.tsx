@@ -21,6 +21,7 @@ interface PathCardProps {
     isStarted: boolean;
     isCompleted: boolean;
     certificateEarned: boolean;
+    creatorId?: string | null;
   };
   onSelect: (id: string) => void;
 }
@@ -50,11 +51,22 @@ export const PathCard: React.FC<PathCardProps> = ({ path, onSelect }) => {
       }}
     >
       <div className="p-6 space-y-4">
-        {/* Level and Duration */}
+        {/* Level, Creator Badge and Duration */}
         <div className="flex justify-between items-center">
-          <Badge className={`${currentLevelColor} font-black border-0 rounded-full px-3 py-1`}>
-            {path.level}
-          </Badge>
+          <div className="flex items-center gap-1.5">
+            <Badge className={`${currentLevelColor} font-black border-0 rounded-full px-3 py-1 text-[10px]`}>
+              {path.level}
+            </Badge>
+            {path.creatorId ? (
+              <Badge className="bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400 font-extrabold border-0 rounded-full px-2.5 py-0.5 text-[9px] uppercase tracking-wider">
+                Custom
+              </Badge>
+            ) : (
+              <Badge className="bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400 font-extrabold border-0 rounded-full px-2.5 py-0.5 text-[9px] uppercase tracking-wider">
+                Official
+              </Badge>
+            )}
+          </div>
           <span className="text-xs font-bold text-muted-foreground flex items-center gap-1">
             ⏱️ {path.duration}
           </span>
