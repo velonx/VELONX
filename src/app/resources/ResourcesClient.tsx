@@ -4,13 +4,14 @@ import * as React from 'react';
 import { Suspense } from 'react';
 import { Search, X, Compass, FileText } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
   ResourcesGrid,
   Pagination,
   FilterPanel,
   PathCard,
-  PathDetailHub
+  PathDetailHub,
+  ResourceCard
 } from '@/components/resources';
 import { useResources } from '@/lib/hooks/useResources';
 import { useResourceFilters } from '@/lib/hooks/useResourceFilters';
@@ -19,21 +20,55 @@ import { ScreenReaderAnnouncer } from '@/components/screen-reader-announcer';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { getCSRFToken } from '@/lib/utils/csrf';
+import { resourcesApi } from '@/lib/api/client';
+import type { Resource } from '@/lib/api/types';
 
 function ResourcesPage() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Tab State
   const [activeTab, setActiveTab] = React.useState<'paths' | 'references'>('paths');
 
-  // Sync tab from URL if present
+  // Shared Resource Deep-linking State
+  const [sharedResource, setSharedResource] = React.useState<Resource | null>(null);
+  const [loadingSharedResource, setLoadingSharedResource] = React.useState(false);
+
+  // Sync tab and deep-linked resource from URL if present
   React.useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam === 'references' || tabParam === 'paths') {
-      setActiveTab(tabParam);
+    const idParam = searchParams.get('id');
+
+    if (idParam) {
+      setActiveTab('references');
+      // Fetch the specific shared resource if not already fetched or different
+      if (!sharedResource || sharedResource.id !== idParam) {
+        setLoadingSharedResource(true);
+        resourcesApi.getById(idParam)
+          .then((res) => {
+            if (res.success && res.data) {
+              setSharedResource(res.data);
+            } else {
+              toast.error("Shared resource not found.");
+            }
+          })
+          .catch((err) => {
+            console.error("Failed to load shared resource:", err);
+            toast.error("Failed to load shared resource.");
+          })
+          .finally(() => {
+            setLoadingSharedResource(false);
+          });
+      }
+    } else {
+      setSharedResource(null);
+      if (tabParam === 'references' || tabParam === 'paths') {
+        setActiveTab(tabParam);
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, sharedResource]);
 
   // Drilldown Learning Path State
   const [activePathId, setActivePathId] = React.useState<string | null>(null);
@@ -300,62 +335,100 @@ function ResourcesPage() {
             // ==========================================
             // QUICK REFERENCES VIEW (CHEAT SHEETS / DOWNLOADS)
             // ==========================================
-            <>
-              {/* Search & Filters */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div className="relative flex-1 md:max-w-md">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Search resources, cheat sheets, PDF guides..."
-                    value={filters.search || ''}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                    className="w-full pl-11 pr-10 py-2.5 rounded-full bg-card border border-border focus:border-[#226CE0] focus:outline-none text-sm text-foreground placeholder:text-muted-foreground transition-all shadow-sm"
-                  />
-                  {filters.search && (
-                    <button
-                      onClick={() => handleSearchChange('')}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <FilterPanel
-                    selectedCategories={filters.categories}
-                    selectedTypes={filters.types}
-                    onCategoryToggle={handleCategoryToggle}
-                    onTypeToggle={handleTypeToggle}
-                    onClearAll={clearAllFilters}
-                    resourceCount={pagination?.totalCount}
-                  />
-                </div>
+            loadingSharedResource ? (
+              <div className="text-center py-24">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#8B5CF6] mx-auto mb-4"></div>
+                <p className="text-muted-foreground text-sm">Loading shared reference...</p>
               </div>
+            ) : sharedResource ? (
+              <div className="flex flex-col items-center justify-center py-12 max-w-xl mx-auto text-center animate-fade-in">
+                <div className="mb-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8B5CF6]/10 text-[#8B5CF6] dark:bg-[#8B5CF6]/20 dark:text-purple-300 font-extrabold text-[10px] uppercase tracking-wider">
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Shared Reference Guide</span>
+                </div>
+                <h2 className="text-xl font-bold text-foreground mb-2">
+                  {sharedResource.title}
+                </h2>
+                <p className="text-muted-foreground text-sm mb-8 max-w-md leading-relaxed">
+                  You are viewing a shared reference guide. Check out its details below or browse our full index.
+                </p>
 
-              {/* Grid Section */}
-              <ResourcesGrid
-                resources={resources || []}
-                isLoading={isLoading}
-                error={error}
-                hasActiveFilters={hasActiveFilters}
-                onRetry={handleRetry}
-                onClearFilters={clearAllFilters}
-                isRetrying={isRetrying}
-              />
+                <div className="w-full max-w-sm text-left mb-10">
+                  <ResourceCard resource={sharedResource} />
+                </div>
 
-              {/* Pagination Section */}
-              {pagination && pagination.totalPages > 1 && (
-                <section className="py-8 bg-background border-t border-border/30 mt-8">
-                  <Pagination
-                    currentPage={filters.page}
-                    totalPages={pagination.totalPages}
-                    onPageChange={handlePageChange}
-                  />
-                </section>
-              )}
-            </>
+                <button
+                  onClick={() => {
+                    setSharedResource(null);
+                    // Clear the query parameter from URL
+                    const params = new URLSearchParams(window.location.search);
+                    params.delete('id');
+                    const queryString = params.toString();
+                    router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+                  }}
+                  className="px-6 py-2.5 bg-[#1A234A] hover:bg-[#226CE0] text-white font-bold rounded-xl transition-all text-xs cursor-pointer shadow-sm"
+                >
+                  Explore All Guides & Roadmaps
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Search & Filters */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                  <div className="relative flex-1 md:max-w-md">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Search resources, cheat sheets, PDF guides..."
+                      value={filters.search || ''}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      className="w-full pl-11 pr-10 py-2.5 rounded-full bg-card border border-border focus:border-[#226CE0] focus:outline-none text-sm text-foreground placeholder:text-muted-foreground transition-all shadow-sm"
+                    />
+                    {filters.search && (
+                      <button
+                        onClick={() => handleSearchChange('')}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <FilterPanel
+                      selectedCategories={filters.categories}
+                      selectedTypes={filters.types}
+                      onCategoryToggle={handleCategoryToggle}
+                      onTypeToggle={handleTypeToggle}
+                      onClearAll={clearAllFilters}
+                      resourceCount={pagination?.totalCount}
+                    />
+                  </div>
+                </div>
+
+                {/* Grid Section */}
+                <ResourcesGrid
+                  resources={resources || []}
+                  isLoading={isLoading}
+                  error={error}
+                  hasActiveFilters={hasActiveFilters}
+                  onRetry={handleRetry}
+                  onClearFilters={clearAllFilters}
+                  isRetrying={isRetrying}
+                />
+
+                {/* Pagination Section */}
+                {pagination && pagination.totalPages > 1 && (
+                  <section className="py-8 bg-background border-t border-border/30 mt-8">
+                    <Pagination
+                      currentPage={filters.page}
+                      totalPages={pagination.totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </section>
+                )}
+              </>
+            )
           ) : (
             // ==========================================
             // LEARNING PATHS ROADMAPS & CHECKPOINTS VIEW
@@ -381,15 +454,16 @@ function ResourcesPage() {
                 // Top-level Roadmaps Listing Grid
                 <>
                   {session?.user && (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-card border border-border/40 p-4 sm:p-5 rounded-3xl shadow-xs">
-                      <div className="flex gap-1.5 bg-muted/40 p-1 rounded-xl w-full sm:w-auto border border-border/40">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                      {/* Left: Filter Switcher Card */}
+                      <div className="flex gap-1.5 bg-card border border-border/40 p-1 rounded-xl w-full sm:w-auto shadow-xs">
                         <button
                           onClick={() => setPathFilter('all')}
                           className={cn(
                             "flex-1 sm:flex-initial py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer border",
                             pathFilter === 'all'
-                              ? "bg-card text-foreground shadow-xs border-border/30"
-                              : "text-muted-foreground hover:text-foreground border-transparent"
+                              ? "bg-muted text-foreground border-border/30 shadow-xs"
+                              : "text-muted-foreground hover:text-foreground border-transparent hover:bg-muted/30"
                           )}
                         >
                           All ({learningPaths.length})
@@ -399,8 +473,8 @@ function ResourcesPage() {
                           className={cn(
                             "flex-1 sm:flex-initial py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer border",
                             pathFilter === 'official'
-                              ? "bg-card text-foreground shadow-xs border-border/30"
-                              : "text-muted-foreground hover:text-foreground border-transparent"
+                              ? "bg-muted text-foreground border-border/30 shadow-xs"
+                              : "text-muted-foreground hover:text-foreground border-transparent hover:bg-muted/30"
                           )}
                         >
                           Official ({learningPaths.filter(p => !p.creatorId).length})
@@ -410,21 +484,24 @@ function ResourcesPage() {
                           className={cn(
                             "flex-1 sm:flex-initial py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer border",
                             pathFilter === 'custom'
-                              ? "bg-card text-foreground shadow-xs border-border/30"
-                              : "text-muted-foreground hover:text-foreground border-transparent"
+                              ? "bg-muted text-foreground border-border/30 shadow-xs"
+                              : "text-muted-foreground hover:text-foreground border-transparent hover:bg-muted/30"
                           )}
                         >
                           Custom ({learningPaths.filter(p => !!p.creatorId).length})
                         </button>
                       </div>
 
-                      <button
-                        onClick={() => setShowCreateModal(true)}
-                        className="group shrink-0 h-10 px-4 bg-linear-to-r from-[#226CE0] to-[#8B5CF6] hover:from-[#334DAF] hover:to-[#7C3AED] text-white font-bold rounded-xl transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-md hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0 text-xs w-full sm:w-auto justify-center"
-                      >
-                        <Compass className="w-4 h-4 group-hover:rotate-45 transition-transform duration-500" />
-                        <span>Create Custom Roadmap</span>
-                      </button>
+                      {/* Right: Create Custom Roadmap Button Card */}
+                      <div className="flex items-center bg-card border border-border/40 p-1 rounded-xl w-full sm:w-auto shadow-xs">
+                        <button
+                          onClick={() => setShowCreateModal(true)}
+                          className="group shrink-0 h-9 px-4 bg-linear-to-r from-[#226CE0] to-[#8B5CF6] hover:from-[#334DAF] hover:to-[#7C3AED] text-white font-bold rounded-lg transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-sm hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0 text-xs w-full sm:w-auto justify-center"
+                        >
+                          <Compass className="w-4 h-4 group-hover:rotate-45 transition-transform duration-500" />
+                          <span>Create Custom Roadmap</span>
+                        </button>
+                      </div>
                     </div>
                   )}
 

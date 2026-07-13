@@ -184,6 +184,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[Sitemap Generation] Failed to fetch community threads:", err);
   }
 
+  // Fetch Quick Reference resources dynamically to index them
+  let dynamicResourceEntries: MetadataRoute.Sitemap = [];
+  try {
+    const resources = await prisma.resource.findMany({
+      select: {
+        id: true,
+        updatedAt: true,
+      },
+    });
+
+    dynamicResourceEntries = resources.map((res) => ({
+      url: `${baseUrl}/resources?id=${res.id}`,
+      lastModified: res.updatedAt || currentDate,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+  } catch (err) {
+    console.error("[Sitemap Generation] Failed to fetch resources:", err);
+  }
+
   return [
     ...siteMapEntries,
     ...dynamicBlogEntries,
@@ -191,5 +211,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...dynamicEventEntries,
     ...dynamicGroupEntries,
     ...dynamicThreadEntries,
+    ...dynamicResourceEntries,
   ];
 }

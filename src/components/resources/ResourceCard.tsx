@@ -92,7 +92,7 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
   const [imageError, setImageError] = React.useState(false);
 
   const handleShare = async () => {
-    const url = resource.url || `${window.location.origin}/resources?id=${resource.id}`;
+    const url = `${window.location.origin}/resources?id=${resource.id}`;
     const shareData = {
       title: resource.title,
       text: `Check out this resource: ${resource.title}`,
