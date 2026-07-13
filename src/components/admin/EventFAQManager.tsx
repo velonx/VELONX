@@ -159,7 +159,7 @@ export default function EventFAQManager({ eventId }: Props) {
             <h5 className="font-bold text-xs uppercase tracking-wider text-muted-foreground">
               {editingId ? "Edit FAQ" : "New FAQ"}
             </h5>
-            <Button type="button" variant="ghost" size="icon" onClick={closeForm} className="h-6 w-6">
+            <Button type="button" variant="ghost" size="icon" onClick={closeForm} className="h-6 w-6" aria-label="Close FAQ form">
               <X className="w-4 h-4" />
             </Button>
           </div>
@@ -224,10 +224,10 @@ export default function EventFAQManager({ eventId }: Props) {
                 <p className="text-xs text-muted-foreground line-clamp-2">{faq.answer}</p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                <Button variant="ghost" size="icon" onClick={() => openEdit(faq)} className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" size="icon" onClick={() => openEdit(faq)} className="h-7 w-7 text-muted-foreground hover:text-foreground" aria-label="Edit FAQ">
                   <Pencil className="w-3.5 h-3.5" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(faq.id)} className="h-7 w-7 text-destructive hover:text-destructive">
+                <Button variant="ghost" size="icon" onClick={() => handleDelete(faq.id)} className="h-7 w-7 text-destructive hover:text-destructive" aria-label="Delete FAQ">
                   <Trash2 className="w-3.5 h-3.5" />
                 </Button>
               </div>
