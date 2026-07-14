@@ -225,6 +225,9 @@ export default async function BlogPostPage({ params }: Props) {
     // Non-critical — fail silently
   }
 
+  // Mutate post to ensure it is clean before sending to Client Component
+  post.tags = safeTags;
+
   const serializedPost = JSON.parse(JSON.stringify(post));
   const serializedRelatedPosts = JSON.parse(JSON.stringify(relatedPosts));
 
