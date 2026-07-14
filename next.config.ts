@@ -39,7 +39,9 @@ const nextConfig: NextConfig = {
   // Compiler optimizations
   compiler: {
     // Remove console logs in production
-    removeConsole: process.env.NODE_ENV === 'production',
+    // TEMPORARILY DISABLED: Keeping console in production to debug 500 errors on blog pages
+    // removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: false,
   },
 
   // Experimental features for optimization
