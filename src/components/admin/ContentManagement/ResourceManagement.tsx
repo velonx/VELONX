@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { BookOpen, Edit, Trash2, XCircle, Download, Eye, Plus, FileText, ArrowLeft, Link as LinkIcon, Compass, Award } from "lucide-react";
+import { BookOpen, Edit, Trash2, XCircle, Download, Eye, Plus, FileText, ArrowLeft, Link as LinkIcon, Compass, Award, Upload, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { getCSRFToken } from "@/lib/utils/csrf";
 import PDFUploadField, { PDFMetadata } from "@/components/admin/PDFUploadField";
@@ -771,6 +771,102 @@ export default function ResourceManagement() {
                     existingPDF={pdfMetadata}
                     disabled={loadingResources}
                   />
+
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Thumbnail Image</label>
+                    {resourceImagePreview && (
+                      <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center">
+                        <Image
+                          src={resourceImagePreview}
+                          alt="Resource Preview"
+                          fill
+                          className="object-contain"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setResourceImagePreview(null);
+                            const imageUrlInput = document.querySelector('input[name="imageUrl"]') as HTMLInputElement;
+                            if (imageUrlInput) imageUrlInput.value = '';
+                          }}
+                          className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all cursor-pointer shadow-md z-10"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        id="resourceImageUpload"
+                        disabled={uploadingResourceImage}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setUploadingResourceImage(true);
+                            try {
+                              const reader = new FileReader();
+                              reader.onloadend = async () => {
+                                try {
+                                  const base64Image = reader.result as string;
+
+                                  const response = await fetch('/api/upload', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      image: base64Image,
+                                      folder: 'velonx/resources'
+                                    }),
+                                  });
+
+                                  const data = await response.json();
+
+                                  if (data.success) {
+                                    const uploadedUrl = data.data?.url || data.url;
+                                    setResourceImagePreview(uploadedUrl);
+                                    const imageUrlInput = document.querySelector('input[name="imageUrl"]') as HTMLInputElement;
+                                    if (imageUrlInput) {
+                                      imageUrlInput.value = uploadedUrl;
+                                    }
+                                    toast.success("Image uploaded successfully!");
+                                  } else {
+                                    toast.error(data.error?.message || "Failed to upload image");
+                                  }
+                                } catch (error) {
+                                  toast.error("Failed to upload image");
+                                } finally {
+                                  setUploadingResourceImage(false);
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            } catch (error) {
+                              toast.error("Failed to process image");
+                              setUploadingResourceImage(false);
+                            }
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor="resourceImageUpload"
+                        {...dragHandlers}
+                        className={`flex items-center justify-center gap-2 h-12 bg-white border-2 border-dashed border-gray-300 hover:border-[#226CE0] rounded-xl cursor-pointer transition-all text-gray-600 hover:text-[#226CE0] font-medium ${uploadingResourceImage ? 'opacity-50 cursor-not-allowed' : ''} ${isDragging ? 'border-[#226CE0] bg-[#226CE0]/10' : ''}`}
+                      >
+                        {uploadingResourceImage ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4" />
+                            {isDragging ? "Drop image here" : "Or click/drag to upload from computer"}
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  </div>
 
                   <div className="space-y-3">
                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Thumbnail Image URL</label>
