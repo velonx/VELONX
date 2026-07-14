@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import BlogPostClient from "./BlogPostClient";
 import { blogService } from "@/lib/services/blog.service";
 import { NotFoundError } from "@/lib/utils/errors";
+import { getSafeExcerpt } from "@/lib/utils/blog";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,9 @@ function toSafeISOString(date: any): string | undefined {
   return d.toISOString();
 }
 
+
+
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const decodedId = decodeURIComponent(id);
@@ -37,16 +41,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: "Read the latest tech articles and community stories on Velonx Insights.",
       };
     }
-    const excerpt =
-      post.excerpt ||
-      (post.content
-        ? post.content.replace(/<[^>]*>/g, "").substring(0, 150) + "..."
-        : "Read this article on Velonx Insights.");
+    const excerpt = getSafeExcerpt(post);
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
     const postSlugOrId = post.slug || decodedId;
     const postUrl = `${siteUrl}/blog/${postSlugOrId}`;
     const authorName = post.author?.name || "Velonx Team";
-    const tags = post.tags || [];
+    const safeTags = Array.isArray(post.tags) ? post.tags : (typeof post.tags === "string" ? [post.tags] : []);
+    const tags = safeTags;
 
     // Ensure image URL is absolute (relative URLs are not parsed by social media crawlers)
     const contentImage = extractFirstImageUrl(post.content || "");
@@ -154,29 +155,46 @@ export default async function BlogPostPage({ params }: Props) {
     }
   }
 
-  // Build JSON-LD structured data
-  jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description:
-      post.excerpt ||
-      post.content?.replace(/<[^>]*>/g, "").substring(0, 150),
-    url: `${siteUrl}/blog/${postSlugOrId}`,
-    datePublished: toSafeISOString(post.publishedAt) || toSafeISOString(post.createdAt) || new Date().toISOString(),
-    dateModified: toSafeISOString(post.updatedAt) || new Date().toISOString(),
-    author: {
-      "@type": "Person",
-      name: post.author?.name || "Velonx Team",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Velonx",
-      url: siteUrl,
-    },
-    image: finalImageUrl,
-    keywords: post.tags?.join(", "),
-  };
+  // Ensure tags is an array before calling join
+  const safeTags = Array.isArray(post.tags) ? post.tags : [];
+  const keywords = safeTags.length ? safeTags.join(", ") : undefined;
+
+  // Build JSON-LD structured data safely
+  try {
+    jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: post.title,
+      description: getSafeExcerpt(post),
+      image: finalImageUrl,
+      datePublished: toSafeISOString(post.publishedAt) || toSafeISOString(post.createdAt) || new Date().toISOString(),
+      dateModified: toSafeISOString(post.updatedAt) || new Date().toISOString(),
+      author: {
+        "@type": "Person",
+        name: post.author?.name || "Velonx Team",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "Velonx Insights",
+        logo: {
+          "@type": "ImageObject",
+          url: `${siteUrl}/logo.png`,
+        },
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `${siteUrl}/blog/${postSlugOrId}`,
+      },
+    };
+
+    if (keywords) {
+      (jsonLd as any).keywords = keywords;
+    }
+  } catch (err) {
+    console.error("[BlogPostPage] Failed to generate JSON-LD", err);
+    // Continue without jsonLd instead of crashing the page
+    jsonLd = null;
+  }
 
   // Fetch trending posts by views, excluding the current post
   try {
@@ -192,7 +210,7 @@ export default async function BlogPostPage({ params }: Props) {
         id: p.id,
         slug: p.slug,
         title: p.title,
-        excerpt: p.excerpt,
+        excerpt: getSafeExcerpt(p),
         imageUrl: p.imageUrl,
         tags: p.tags,
         publishedAt: toSafeISOString(p.publishedAt) || null,
@@ -207,12 +225,8 @@ export default async function BlogPostPage({ params }: Props) {
     // Non-critical — fail silently
   }
 
-  const serializedPost = {
-    ...post,
-    publishedAt: toSafeISOString(post.publishedAt) || null,
-    createdAt: toSafeISOString(post.createdAt) || new Date().toISOString(),
-    updatedAt: toSafeISOString(post.updatedAt) || new Date().toISOString(),
-  };
+  const serializedPost = JSON.parse(JSON.stringify(post));
+  const serializedRelatedPosts = JSON.parse(JSON.stringify(relatedPosts));
 
   return (
     <>
@@ -222,7 +236,7 @@ export default async function BlogPostPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
       )}
-      <BlogPostClient id={decodedId} initialPost={serializedPost} relatedPosts={relatedPosts} />
+      <BlogPostClient id={decodedId} initialPost={serializedPost} relatedPosts={serializedRelatedPosts} />
     </>
   );
 }

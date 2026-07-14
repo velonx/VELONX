@@ -26,3 +26,38 @@ export function deriveCategories(
   posts.forEach((p) => p.tags.forEach((t) => tagSet.add(t)));
   return [...prefix, ...Array.from(tagSet).sort()];
 }
+
+/**
+ * Generate a clean excerpt from post content or existing excerpt, 
+ * truncating at the last full word before the limit.
+ */
+export function getSafeExcerpt(post: any, length: number = 150): string {
+  let sourceText = post.excerpt || "";
+  
+  if (!sourceText && post.content) {
+    sourceText = post.content;
+  }
+  
+  if (!sourceText) {
+    return "Read this article on Velonx Insights.";
+  }
+
+  // Ensure sourceText is a string (legacy DB records might have malformed object excerpts)
+  if (typeof sourceText !== "string") {
+    try {
+      sourceText = JSON.stringify(sourceText);
+    } catch {
+      sourceText = "Read this article on Velonx Insights.";
+    }
+  }
+
+  // Clean HTML if present
+  sourceText = sourceText.replace(/<[^>]*>/g, "").trim();
+  
+  if (sourceText.length <= length) return sourceText;
+  
+  const truncated = sourceText.substring(0, length);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return (lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated) + "...";
+}
+

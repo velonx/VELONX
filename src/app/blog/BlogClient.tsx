@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
 import { useBlogPosts } from "@/lib/api/hooks";
-import { calculateReadTime, deriveCategories } from "@/lib/utils/blog";
+import { calculateReadTime, deriveCategories, getSafeExcerpt } from "@/lib/utils/blog";
 import type { BlogPost } from "@/lib/api/types";
 import { BlogHeroSkeleton, BlogCardSkeleton, BoneyardLoader } from "@/components/boneyard";
 import { analytics } from "@/components/analytics";
@@ -227,7 +227,7 @@ export default function BlogClient({ initialPosts = [], initialPagination = null
                                         {featuredPost.title}
                                     </h2>
                                     <p className="p-blog-desc">
-                                        {featuredPost.excerpt || featuredPost.content.replace(/<[^>]*>/g, "").substring(0, 180) + '...'}
+                                        {getSafeExcerpt(featuredPost, 180)}
                                     </p>
                                 </div>
                                 <div className="flex items-center justify-between border-t border-border pt-4 mt-auto">
@@ -287,7 +287,7 @@ export default function BlogClient({ initialPosts = [], initialPagination = null
                                                 </h3>
                                                 
                                                 <p className="p-blog-desc">
-                                                    {post.excerpt || post.content.replace(/<[^>]*>/g, "").substring(0, 120) + '...'}
+                                                    {getSafeExcerpt(post, 120)}
                                                 </p>
                                                 
                                                 {/* Author profile block */}

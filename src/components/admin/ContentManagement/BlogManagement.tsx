@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { secureFetch, fetchCSRFToken } from "@/lib/utils/csrf";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { blogService } from '@/lib/services/blog.service';
+import { getSafeExcerpt } from '@/lib/utils/blog';
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { PenTool, Edit, Trash2, XCircle, Download, Send } from "lucide-react";
@@ -167,7 +169,7 @@ export default function BlogManagement() {
                         <div>
                           <h4 className="text-lg font-bold text-[#1A234A] mb-1">{blog.title}</h4>
                           <p className="text-sm text-gray-500">
-                            {blog.excerpt || blog.content?.replace(/<[^>]*>/g, '').substring(0, 100) + '...'}
+                            {getSafeExcerpt(blog, 100)}
                           </p>
                         </div>
                         <Badge className={`${blog.status === 'PUBLISHED' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'} border-0 font-bold`}>
@@ -234,9 +236,8 @@ export default function BlogManagement() {
                   .map(tag => tag.trim())
                   .filter(tag => tag.length > 0);
 
-                // Strip HTML tags for excerpt
-                const plainText = blogContent.replace(/<[^>]*>/g, '');
-                const excerpt = plainText.substring(0, 150) + (plainText.length > 150 ? '...' : '');
+                // Ensure clean excerpt generation
+                const excerpt = getSafeExcerpt({ content: blogContent }, 150);
 
                 const blogData = {
                   title: formData.get('title') as string,
