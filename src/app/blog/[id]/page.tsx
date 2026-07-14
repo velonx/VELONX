@@ -222,7 +222,7 @@ export default async function BlogPostPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
       )}
-      <BlogPostClient params={params} initialPost={serializedPost} relatedPosts={relatedPosts} />
+      <BlogPostClient id={decodedId} initialPost={serializedPost} relatedPosts={relatedPosts} />
     </>
   );
 }

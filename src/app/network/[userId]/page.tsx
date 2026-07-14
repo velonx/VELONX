@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import {
   MapPin, GraduationCap, Calendar, ExternalLink, MessageSquare,
@@ -77,7 +77,8 @@ const rarityColors: Record<string, string> = {
 };
 
 export default function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
-  const { userId } = use(params);
+  const routeParams = useParams();
+  const userId = (routeParams?.userId || "") as string;
   const { data: session, status: authStatus } = useSession();
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { blogApi } from "@/lib/api/client";
 import { motion, useScroll, useSpring } from "framer-motion";
 import DOMPurify from "isomorphic-dompurify";
@@ -28,13 +28,12 @@ interface RelatedPost {
 }
 
 interface Props {
-  params: Promise<{ id: string }>;
+  id: string;
   initialPost?: any;
   relatedPosts?: RelatedPost[];
 }
 
-export default function BlogPostClient({ params, initialPost, relatedPosts = [] }: Props) {
-    const { id } = use(params);
+export default function BlogPostClient({ id, initialPost, relatedPosts = [] }: Props) {
     
     const post = initialPost;
     const loading = false; // Server always provides data or triggers 404/error boundary

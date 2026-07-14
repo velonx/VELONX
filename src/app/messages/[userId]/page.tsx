@@ -1,7 +1,6 @@
 "use client";
 
-import { use } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useEffect } from "react";
 
 /**
@@ -10,7 +9,8 @@ import { useEffect } from "react";
  * For desktop, this just loads the messages page which handles the userId
  */
 export default function DirectMessagePage({ params }: { params: Promise<{ userId: string }> }) {
-  const { userId } = use(params);
+  const routeParams = useParams();
+  const userId = (routeParams?.userId || "") as string;
   const router = useRouter();
 
   useEffect(() => {
