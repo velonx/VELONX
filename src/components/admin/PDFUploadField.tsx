@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FileText, Upload, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { getCSRFToken } from "@/lib/utils/csrf";
 import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
@@ -19,7 +19,7 @@ export interface PDFMetadata {
  * PDFUploadField Component Props
  */
 interface PDFUploadFieldProps {
-  onUploadComplete: (metadata: PDFMetadata) => void;
+  onUploadComplete: (metadata: PDFMetadata | undefined) => void;
   onUploadError: (error: string) => void;
   existingPDF?: PDFMetadata;
   disabled?: boolean;
@@ -49,6 +49,10 @@ export default function PDFUploadField({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setUploadedPDF(existingPDF);
+  }, [existingPDF]);
 
   const { isDragging, dragHandlers } = useDragAndDrop((files) => {
     if (disabled || isUploading) return;
@@ -207,6 +211,7 @@ export default function PDFUploadField({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    onUploadComplete(undefined);
   };
 
   /**

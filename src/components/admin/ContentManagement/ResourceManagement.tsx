@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { BookOpen, Edit, Trash2, XCircle, Download, Eye, Plus, FileText, ArrowLeft, Link as LinkIcon, Compass, Award, Upload, X } from "lucide-react";
 import toast from "react-hot-toast";
-import { getCSRFToken } from "@/lib/utils/csrf";
+import { getCSRFToken, secureFetch } from "@/lib/utils/csrf";
 import PDFUploadField, { PDFMetadata } from "@/components/admin/PDFUploadField";
 import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 import Image from "next/image";
@@ -87,6 +87,7 @@ export default function ResourceManagement() {
   const [uploadingResourceImage, setUploadingResourceImage] = useState(false);
   const [deletingResourceId, setDeletingResourceId] = useState<string | null>(null);
   const [pdfMetadata, setPdfMetadata] = useState<PDFMetadata | undefined>(undefined);
+  const [formKey, setFormKey] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPDF, setFilterPDF] = useState<"all" | "with-pdf" | "without-pdf">("all");
   const resourceFormRef = useRef<HTMLDivElement>(null);
@@ -180,6 +181,7 @@ export default function ResourceManagement() {
     } else {
       setPdfMetadata(undefined);
     }
+    setFormKey(prev => prev + 1);
     setTimeout(() => {
       resourceFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
@@ -189,6 +191,7 @@ export default function ResourceManagement() {
     setEditingResource(null);
     setResourceImagePreview(null);
     setPdfMetadata(undefined);
+    setFormKey(prev => prev + 1);
     if (resourceFormElementRef.current) {
       resourceFormElementRef.current.reset();
     }
@@ -658,6 +661,7 @@ export default function ResourceManagement() {
                       setResourceImagePreview(null);
                       setPdfMetadata(undefined);
                       setEditingResource(null);
+                      setFormKey(prev => prev + 1);
                       fetchResources();
                     } else {
                       throw new Error(data.error?.message || 'Failed to save resource');
@@ -761,9 +765,12 @@ export default function ResourceManagement() {
                   </div>
 
                   <PDFUploadField
+                    key={editingResource ? `edit-${editingResource.id}` : `create-${formKey}`}
                     onUploadComplete={(metadata) => {
                       setPdfMetadata(metadata);
-                      toast.success("PDF uploaded successfully!");
+                      if (metadata) {
+                        toast.success("PDF uploaded successfully!");
+                      }
                     }}
                     onUploadError={(error) => {
                       toast.error(error);
@@ -812,7 +819,7 @@ export default function ResourceManagement() {
                                 try {
                                   const base64Image = reader.result as string;
 
-                                  const response = await fetch('/api/upload', {
+                                  const response = await secureFetch('/api/upload', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
