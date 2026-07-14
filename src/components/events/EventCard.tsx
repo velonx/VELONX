@@ -189,21 +189,21 @@ export default function EventCard({
       {/* Event Meta */}
       <div className="event-meta flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground mt-2">
         <span className="flex items-center gap-1">
-          <span>📅</span>
+          <span aria-hidden="true">📅</span>
           <span>{dateString}</span>
         </span>
         <span className="flex items-center gap-1">
-          <span>🕒</span>
+          <span aria-hidden="true">🕒</span>
           <span>{timeString}</span>
         </span>
         {duration && (
           <span className="flex items-center gap-1">
-            <span>⏱️</span>
+            <span aria-hidden="true">⏱️</span>
             <span>{duration}h</span>
           </span>
         )}
         <span className="flex items-center gap-1">
-          <span>📍</span>
+          <span aria-hidden="true">📍</span>
           <span>{displayLocation}</span>
         </span>
       </div>

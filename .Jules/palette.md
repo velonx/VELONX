@@ -34,3 +34,6 @@
 ## 2024-07-09 - [Dynamic Button States Accessibility]
  **Learning:** When a button undergoes momentary text changes (e.g., from 'Check In' to 'Checking in...' to 'Checked In Today'), screen readers may miss the state change unless they have focus. Adding `aria-live="polite"` to the button ensures the state change is announced without requiring a focus shift. Additionally, decorative emojis in buttons should be hidden from screen readers using `aria-hidden="true"`.
  **Action:** Always add `aria-live="polite"` to buttons with dynamic text content, and ensure decorative elements are hidden from screen readers.
+## 2024-07-25 - [Hide Decorative Emojis from Screen Readers]
+**Learning:** Purely decorative emojis (like 📅 for date or 📍 for location) are read out loud by screen readers (e.g., "calendar, June 15"), which can clutter the auditory experience and make content harder to consume.
+**Action:** Always wrap decorative emojis or purely visual indicators in elements (like `<span>`) with `aria-hidden="true"` to hide them from assistive technologies. Ensure the adjacent text provides all necessary context.
