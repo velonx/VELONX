@@ -382,7 +382,7 @@ function ResourcesPage() {
                       placeholder="Search resources, cheat sheets, PDF guides..."
                       value={filters.search || ''}
                       onChange={(e) => handleSearchChange(e.target.value)}
-                      className="w-full pl-11 pr-10 py-2.5 rounded-full bg-card border border-border focus:border-[#226CE0] focus:outline-none text-sm text-foreground placeholder:text-muted-foreground transition-all shadow-sm"
+                      className="w-full pl-11 pr-10 py-2.5 rounded-full bg-card border border-border outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-sm text-foreground placeholder:text-muted-foreground transition-all shadow-sm"
                     />
                     {filters.search && (
                       <button
@@ -565,7 +565,7 @@ function ResourcesPage() {
                       required
                       placeholder="e.g. My Backend Engineering Path"
                       name="title"
-                      className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                      className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow]"
                     />
                   </div>
 
@@ -576,7 +576,7 @@ function ResourcesPage() {
                       rows={3}
                       placeholder="What is your goal for this custom path?"
                       name="description"
-                      className="w-full p-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0] resize-none"
+                      className="w-full p-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow] resize-none"
                     />
                   </div>
 
@@ -585,7 +585,7 @@ function ResourcesPage() {
                       <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Difficulty Level</label>
                       <select
                         name="level"
-                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow]"
                       >
                         <option value="Beginner">Beginner</option>
                         <option value="Intermediate">Intermediate</option>
@@ -600,7 +600,7 @@ function ResourcesPage() {
                         required
                         placeholder="e.g. 4 Weeks"
                         name="duration"
-                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow]"
                       />
                     </div>
                   </div>

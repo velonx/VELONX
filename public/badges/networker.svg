@@ -1,34 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200">
-  <defs>
-    <linearGradient id="grad-Networker" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fbbf24" />
-      <stop offset="50%" stop-color="#f97316" />
-      <stop offset="100%" stop-color="#dc2626" />
-    </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="black" flood-opacity="0.5"/>
-    </filter>
-  </defs>
-
-  <!-- Outer Glow Glow Layer -->
-  <polygon points="50,3 92,20 92,80 50,97 8,80 8,20" fill="#fbbf24" opacity="0.15" filter="url(#shadow)" />
-
-  <!-- Outer Shield border -->
-  <polygon points="50,3 92,20 92,80 50,97 8,80 8,20" fill="none" stroke="#fde047" stroke-width="3.5" />
-
-  <!-- Shield Body -->
-  <polygon points="50,3 92,20 92,80 50,97 8,80 8,20" fill="url(#grad-Networker)" transform="scale(0.9) translate(5.5, 5.5)" />
-
-  <!-- Centered Icon (Standardized bounds) -->
-  <g transform="translate(38, 32) scale(1)" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    <circle cx="7" cy="10" r="1" fill="white"/>
-                    <circle cx="12" cy="10" r="1" fill="white"/>
-                    <circle cx="17" cy="10" r="1" fill="white"/>
+  <!-- Outer Shape Base -->
+  <path d="M 50 5 L 90 15 L 90 85 L 50 95 L 10 85 L 10 15 Z" fill="#ffedd5" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" />
+  
+  <!-- Inner Shape Filled -->
+  <g transform="scale(0.8) translate(12.5, 12.5)">
+      <path d="M 50 5 L 90 15 L 90 85 L 50 95 L 10 85 L 10 15 Z" fill="#f97316" stroke="#0f172a" stroke-width="3.5" stroke-linejoin="round" />
   </g>
 
-  <!-- Badge Name Label -->
-  <text x="50%" y="82%" text-anchor="middle" fill="white" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="6px" letter-spacing="0.5" opacity="0.95" text-transform="uppercase">
-    Networker
-  </text>
+  <!-- Centered Icon (Standardized bounds) -->
+  <g transform="translate(38, 30) scale(1.0)" fill="white" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    <circle cx="7" cy="10" r="1.5" fill="#0f172a" stroke="none" />
+                    <circle cx="12" cy="10" r="1.5" fill="#0f172a" stroke="none" />
+                    <circle cx="17" cy="10" r="1.5" fill="#0f172a" stroke="none" />
+  </g>
+
+  <!-- Title Ribbon -->
+  <g transform="translate(50, 92)">
+    <rect x="-45" y="-8" width="90" height="16" rx="3" fill="white" stroke="#0f172a" stroke-width="2.5" />
+    <text x="0" y="3" text-anchor="middle" fill="#0f172a" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="6.5px" letter-spacing="0.5" text-transform="uppercase">
+      Networker
+    </text>
+  </g>
 </svg>

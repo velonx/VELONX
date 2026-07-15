@@ -143,7 +143,7 @@ export default function SwagOrderTable() {
                         value={order.status}
                         onChange={e => updateStatus(order.id, e.target.value)}
                         disabled={updatingId === order.id || order.status === "CANCELLED" || order.status === "DELIVERED"}
-                        className={`text-xs font-bold px-3 py-1.5 rounded-lg border cursor-pointer focus:outline-none ${STATUS_COLORS[order.status] || ""} ${updatingId === order.id ? "opacity-50" : ""}`}
+                        className={`text-xs font-bold px-3 py-1.5 rounded-lg border cursor-pointer outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px] ${STATUS_COLORS[order.status] || ""} ${updatingId === order.id ? "opacity-50" : ""}`}
                       >
                         {["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"].map(s => (
                           <option key={s} value={s}>{s}</option>

@@ -159,8 +159,8 @@ export default function EventFAQManager({ eventId }: Props) {
             <h5 className="font-bold text-xs uppercase tracking-wider text-muted-foreground">
               {editingId ? "Edit FAQ" : "New FAQ"}
             </h5>
-            <Button type="button" variant="ghost" size="icon" onClick={closeForm} className="h-6 w-6">
-              <X className="w-4 h-4" />
+            <Button type="button" variant="ghost" size="icon" onClick={closeForm} className="min-h-[44px] min-w-[44px] touch-manipulation" aria-label={editingId ? "Cancel editing FAQ" : "Cancel new FAQ"}>
+              <X className="w-4 h-4" aria-hidden="true" />
             </Button>
           </div>
 
@@ -224,11 +224,11 @@ export default function EventFAQManager({ eventId }: Props) {
                 <p className="text-xs text-muted-foreground line-clamp-2">{faq.answer}</p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                <Button variant="ghost" size="icon" onClick={() => openEdit(faq)} className="h-7 w-7 text-muted-foreground hover:text-foreground">
-                  <Pencil className="w-3.5 h-3.5" />
+                <Button variant="ghost" size="icon" onClick={() => openEdit(faq)} className="min-h-[44px] min-w-[44px] touch-manipulation text-muted-foreground hover:text-foreground" aria-label={`Edit FAQ: ${faq.question}`}>
+                  <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(faq.id)} className="h-7 w-7 text-destructive hover:text-destructive">
-                  <Trash2 className="w-3.5 h-3.5" />
+                <Button variant="ghost" size="icon" onClick={() => handleDelete(faq.id)} className="min-h-[44px] min-w-[44px] touch-manipulation text-destructive hover:text-destructive" aria-label={`Delete FAQ: ${faq.question}`}>
+                  <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                 </Button>
               </div>
             </div>

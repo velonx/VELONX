@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, CheckCircle, Clock, Search, X } from "lucide-react";
+import { PlusCircle, CheckCircle, Clock, Search, X, Rocket } from "lucide-react";
 import toast from "react-hot-toast";
 import { useProjects } from "@/lib/api/hooks";
 import { FilterPanel } from "@/components/projects/FilterPanel";
@@ -378,10 +378,10 @@ function ProjectsPageContent() {
     return (
         <div className="min-h-screen pt-24 bg-background">
             {/* Page Hero */}
-            <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center">
+            <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center" aria-labelledby="page-title">
                 <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
                     <span className="p-section-label">PORTFOLIO ENGINE</span>
-                    <h1 className="p-display-1">
+                    <h1 id="page-title" className="p-display-1">
                         Student <span className="gradient-text font-black">Projects</span>
                     </h1>
                     <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
@@ -402,9 +402,10 @@ function ProjectsPageContent() {
                         </div>
                         <button
                             onClick={handleSubmitClick}
-                            className="btn-redesign btn-redesign-primary px-6 py-3 font-semibold rounded-full shrink-0 cursor-pointer"
+                            className="btn-redesign btn-redesign-primary inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-full shrink-0 cursor-pointer"
                         >
-                            Submit Project 🚀
+                            Submit Project
+                            <Rocket className="w-4 h-4" aria-hidden="true" />
                         </button>
                     </div>
                 </div>
@@ -424,7 +425,7 @@ function ProjectsPageContent() {
                                 placeholder="Search projects..."
                                 value={searchTerm}
                                 onChange={(e) => handleSearchChange(e.target.value)}
-                                className="w-full pl-9 pr-8 py-2.5 rounded-full bg-card border border-border focus:border-primary focus:outline-none text-sm text-foreground placeholder:text-muted-foreground transition-all"
+                                className="w-full pl-9 pr-8 py-2.5 rounded-full bg-card border border-border outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-sm text-foreground placeholder:text-muted-foreground transition-all"
                             />
                             {searchTerm && (
                                 <button

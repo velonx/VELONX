@@ -102,7 +102,7 @@ function SearchPageContent() {
                   placeholder="Search for anything..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 md:py-4 rounded-full bg-card border-2 border-border focus:border-primary outline-none text-foreground placeholder:text-muted-foreground transition-all shadow-sm hover:shadow-md focus:shadow-lg"
+                  className="w-full pl-12 pr-12 py-3 md:py-4 rounded-full bg-card border-2 border-border outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-foreground placeholder:text-muted-foreground transition-all shadow-sm hover:shadow-md focus:shadow-lg"
                   aria-label="Search community"
                   autoFocus
                 />

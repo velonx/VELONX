@@ -521,7 +521,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                         min={getMinDate()}
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
-                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow]"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -529,7 +529,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                       <select
                         value={selectedTime}
                         onChange={(e) => setSelectedTime(e.target.value)}
-                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                        className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow]"
                       >
                         <option value="09:00">09:00 AM</option>
                         <option value="10:00">10:00 AM</option>
@@ -607,7 +607,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                   placeholder="e.g. 1. Intro to Rust Memory Management"
                   name="title"
                   defaultValue={editingModule?.title || ""}
-                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow]"
                 />
               </div>
 
@@ -619,7 +619,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                   placeholder="e.g. Learn about ownership, borrowing, and lifetimes."
                   name="description"
                   defaultValue={editingModule?.description || ""}
-                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow]"
                 />
               </div>
 
@@ -632,7 +632,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                     placeholder="e.g. https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
                     name="link"
                     defaultValue={editingModule?.link || ""}
-                    className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                    className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow]"
                   />
                 </div>
 
@@ -644,7 +644,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                     placeholder="e.g. 2 hours"
                     name="duration"
                     defaultValue={editingModule?.duration || ""}
-                    className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus:border-[#226CE0]"
+                    className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-xs text-foreground font-medium outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow]"
                   />
                 </div>
               </div>
