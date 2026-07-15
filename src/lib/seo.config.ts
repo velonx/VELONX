@@ -116,10 +116,11 @@ export const generatePageMetadata = (
     ogImage?: string
 ): Metadata => {
     const url = `${siteConfig.url}${path}`;
-    const image = ogImage || siteConfig.ogImage;
+    const rawImage = ogImage || siteConfig.ogImage;
+    const image = rawImage.startsWith('http') ? rawImage : `${siteConfig.url}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`;
 
     return {
-        title,
+        title: { absolute: title },
         description,
         openGraph: {
             title,
