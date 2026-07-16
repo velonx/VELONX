@@ -322,7 +322,6 @@ function StudentDashboardContent() {
         { key: "tracking", emoji: "⚡", label: "Activity Tracking", shortLabel: "Activity" },
         { key: "swag", emoji: "🛍️", label: "My Redemptions", shortLabel: "Redemptions" },
         { key: "report", emoji: "🚩", label: "Reports", shortLabel: "Reports" },
-        { key: "settings", emoji: "⚙️", label: "Workspace Settings", shortLabel: "Settings" },
     ];
 
     // Map real projects to display format
@@ -1172,91 +1171,7 @@ function StudentDashboardContent() {
                     </section>
                 </div>
 
-                {/* ====== Panel: Settings ====== */}
-                <div className={`dashboard-content-panel ${activeTab === 'settings' ? 'active' : ''}`}>
-                    <h1 className="text-3xl font-black mb-2 text-foreground">
-                        Workspace Settings
-                    </h1>
-                    <p className="text-muted-foreground mb-8 text-sm max-w-xl">
-                        Customize your profile. Updating these parameters will help other community members discover and connect with you.
-                    </p>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
-                        {/* Left Column: Avatar & Account Info */}
-                        <div className="bg-card border border-border rounded-3xl p-6 flex flex-col items-center text-center gap-6 h-fit">
-                            <div className="relative group">
-                                {session.user?.image ? (
-                                    <div className="w-24 h-24 rounded-full border-4 border-primary/20 overflow-hidden relative shadow-lg">
-                                        <Image src={session.user.image} alt="User" width={96} height={96} className="w-full h-full object-cover" />
-                                    </div>
-                                ) : (
-                                    <div className="w-24 h-24 rounded-full bg-linear-to-tr from-[#7C3AED] to-[#226CE0] flex items-center justify-center text-3xl font-black text-white border-4 border-primary/20 shadow-lg">
-                                        {userInitials}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="w-full space-y-4">
-                                <div>
-                                    <h3 className="font-bold text-lg text-foreground">{session.user?.name || 'Student'}</h3>
-                                    <p className="text-xs text-muted-foreground">{session.user?.email}</p>
-                                </div>
-                                <div className="p-3 bg-muted rounded-2xl">
-                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Developer Tier</p>
-                                    <p className="text-sm font-bold text-primary">{getTierLabel(getTier(activeXP))}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Right Column: Detailed Profiles & Settings */}
-                        <div className="bg-card border border-border rounded-3xl p-8 space-y-6">
-                            <div>
-                                <h3 className="text-lg font-bold text-foreground mb-1">Profile Details</h3>
-                                <p className="text-sm text-muted-foreground">Manage your developer profile and social linkages.</p>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="dashboard-form-group">
-                                    <label className="dashboard-form-label">Full Name</label>
-                                    <input type="text" className="dashboard-form-input bg-muted/50 cursor-not-allowed" placeholder={session.user?.name || 'Your Name'} defaultValue={session.user?.name || ''} readOnly />
-                                </div>
-                                <div className="dashboard-form-group">
-                                    <label className="dashboard-form-label">Email</label>
-                                    <input type="email" className="dashboard-form-input bg-muted/50 cursor-not-allowed" placeholder={session.user?.email || 'your@email.com'} defaultValue={session.user?.email || ''} readOnly />
-                                </div>
-                                <div className="dashboard-form-group">
-                                    <label className="dashboard-form-label">GitHub Profile URL</label>
-                                    <input type="url" className="dashboard-form-input" placeholder="https://github.com/username" />
-                                </div>
-                                <div className="dashboard-form-group">
-                                    <label className="dashboard-form-label">LinkedIn Profile URL</label>
-                                    <input type="url" className="dashboard-form-input" placeholder="https://linkedin.com/in/username" />
-                                </div>
-                            </div>
-
-                            <div className="dashboard-form-group">
-                                <div className="flex justify-between items-center">
-                                    <label className="dashboard-form-label">Technical Stack & Skills</label>
-                                    <span className="text-[10px] text-muted-foreground uppercase font-bold">(Comma separated)</span>
-                                </div>
-                                <input type="text" className="dashboard-form-input" placeholder="React, Node, Python, Figma, etc." />
-                            </div>
-
-                            <div className="dashboard-form-group">
-                                <label className="dashboard-form-label">Developer Biography</label>
-                                <textarea className="dashboard-form-input" rows={4} placeholder="Briefly describe what you like to build..." style={{ resize: 'none' }}></textarea>
-                            </div>
-
-                            <button
-                                className="w-full flex items-center justify-center gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold py-3.5 px-6 rounded-2xl transition-all hover:shadow-lg hover:shadow-purple-500/20 active:scale-[0.99]"
-                                onClick={() => {
-                                    alert('Profile settings saved! ✨');
-                                }}
-                            >
-                                Update Workspace Profile Info 🚀
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </main>
 
             {/* Review Dialog */}
