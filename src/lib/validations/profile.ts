@@ -188,9 +188,15 @@ export const connectionStatusUpdateSchema = z.object({
 export const directMessageSchema = z.object({
   content: z
     .string()
-    .min(1, "Message cannot be empty")
     .max(5000, "Message must be less than 5000 characters")
-    .trim(),
+    .trim()
+    .default(""),
+  attachmentUrl: z.string().url().optional().nullable(),
+  attachmentType: z.string().optional().nullable(),
+  attachmentName: z.string().optional().nullable(),
+  attachmentSize: z.number().int().optional().nullable(),
+}).refine(data => data.content.length > 0 || !!data.attachmentUrl, {
+  message: "Message must have text or an attachment",
 });
 
 /**

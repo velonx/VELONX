@@ -68,6 +68,10 @@ export async function GET(
       select: {
         id: true,
         content: true,
+        attachmentUrl: true,
+        attachmentType: true,
+        attachmentName: true,
+        attachmentSize: true,
         senderId: true,
         receiverId: true,
         isRead: true,
@@ -172,7 +176,7 @@ export async function POST(
     const validated = directMessageSchema.parse(body);
     const sanitizedContent = sanitizeContent(validated.content);
 
-    if (!sanitizedContent) {
+    if (!sanitizedContent && !validated.attachmentUrl) {
       return NextResponse.json(
         { success: false, error: { code: "INVALID_CONTENT", message: "Message cannot be empty" } },
         { status: 400 }
@@ -186,10 +190,18 @@ export async function POST(
           senderId: currentUserId,
           receiverId,
           content: sanitizedContent,
+          attachmentUrl: validated.attachmentUrl ?? null,
+          attachmentType: validated.attachmentType ?? null,
+          attachmentName: validated.attachmentName ?? null,
+          attachmentSize: validated.attachmentSize ?? null,
         },
         select: {
           id: true,
           content: true,
+          attachmentUrl: true,
+          attachmentType: true,
+          attachmentName: true,
+          attachmentSize: true,
           senderId: true,
           receiverId: true,
           isRead: true,

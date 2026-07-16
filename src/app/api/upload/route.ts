@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { uploadImageToCloudinary, uploadVideoToCloudinary } from '@/lib/cloudinary';
+import { uploadImageToCloudinary, uploadVideoToCloudinary, uploadRawFileToCloudinary } from '@/lib/cloudinary';
 import { auth } from '@/auth';
 import { validateCSRFToken } from '@/lib/middleware/csrf.middleware';
 
 const IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
 const VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm', 'video/x-msvideo'];
+const DOCUMENT_TYPES = [
+  'application/pdf', 
+  'application/msword', 
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/zip',
+  'application/x-zip-compressed'
+];
 const IMAGE_SIZE_LIMIT = 5 * 1024 * 1024;   // 5 MB
 const VIDEO_SIZE_LIMIT = 50 * 1024 * 1024;  // 50 MB
+const DOCUMENT_SIZE_LIMIT = 20 * 1024 * 1024; // 20 MB
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     if (contentType.includes('application/json')) {
       const body = await request.json();
-      const raw: string = body.image || body.video || '';
+      const raw: string = body.image || body.video || body.file || '';
       if (!raw) {
         return NextResponse.json(
           { success: false, error: { code: 'MISSING_FILE', message: 'File data is required' } },
@@ -73,7 +81,10 @@ export async function POST(request: NextRequest) {
       }
 
       const approxBytes = ((raw.split(',')[1] || '').length * 3) / 4;
-      const limit = VIDEO_TYPES.includes(mimeType) ? VIDEO_SIZE_LIMIT : IMAGE_SIZE_LIMIT;
+      let limit = IMAGE_SIZE_LIMIT;
+      if (VIDEO_TYPES.includes(mimeType)) limit = VIDEO_SIZE_LIMIT;
+      if (DOCUMENT_TYPES.includes(mimeType)) limit = DOCUMENT_SIZE_LIMIT;
+
       if (approxBytes > limit) {
         const limitMb = limit / (1024 * 1024);
         return NextResponse.json(
@@ -107,15 +118,19 @@ export async function POST(request: NextRequest) {
       mimeType = file.type;
       const isImage = IMAGE_TYPES.includes(mimeType);
       const isVideo = VIDEO_TYPES.includes(mimeType);
+      const isDocument = DOCUMENT_TYPES.includes(mimeType);
 
-      if (!isImage && !isVideo) {
+      if (!isImage && !isVideo && !isDocument) {
         return NextResponse.json(
-          { success: false, error: { code: 'INVALID_FILE_TYPE', message: 'Only image (JPEG, PNG, WebP, GIF) or video (MP4, MOV, WebM) files are allowed' } },
+          { success: false, error: { code: 'INVALID_FILE_TYPE', message: 'Only image, video, or document files are allowed' } },
           { status: 400 }
         );
       }
 
-      const limit = isVideo ? VIDEO_SIZE_LIMIT : IMAGE_SIZE_LIMIT;
+      let limit = IMAGE_SIZE_LIMIT;
+      if (isVideo) limit = VIDEO_SIZE_LIMIT;
+      if (isDocument) limit = DOCUMENT_SIZE_LIMIT;
+
       if (file.size > limit) {
         const limitMb = limit / (1024 * 1024);
         return NextResponse.json(
@@ -131,15 +146,38 @@ export async function POST(request: NextRequest) {
 
     const isVideo = VIDEO_TYPES.includes(mimeType);
     const isImage = IMAGE_TYPES.includes(mimeType);
+    const isDocument = DOCUMENT_TYPES.includes(mimeType);
 
-    if (!isVideo && !isImage) {
+    if (!isVideo && !isImage && !isDocument) {
       return NextResponse.json(
-        { success: false, error: { code: 'INVALID_FILE_TYPE', message: 'Only image or video files are allowed' } },
+        { success: false, error: { code: 'INVALID_FILE_TYPE', message: 'Invalid file format' } },
         { status: 400 }
       );
     }
 
-    if (isVideo) {
+    if (isDocument) {
+      const docFolder = folder === 'velonx/general' ? 'velonx/messages/files' : folder;
+      // Get filename if possible from request or generate one
+      let fileName = 'document';
+      if (!contentType.includes('application/json')) {
+        const formData = await request.formData().catch(() => null);
+        const file = formData?.get('file') as File | null;
+        if (file?.name) fileName = file.name;
+      } else {
+        const body = await request.json().catch(() => ({}));
+        if (body.fileName) fileName = body.fileName;
+      }
+      const result = await uploadRawFileToCloudinary(base64Data, fileName, docFolder);
+      return NextResponse.json({
+        success: true,
+        url: result.url,
+        publicId: result.publicId,
+        data: { url: result.url },
+        message: 'File uploaded successfully',
+        type: 'document',
+        fileName: fileName,
+      });
+    } else if (isVideo) {
       const videoFolder = folder === 'velonx/general' ? 'velonx/reports/videos' : folder;
       const result = await uploadVideoToCloudinary(base64Data, videoFolder);
       return NextResponse.json({

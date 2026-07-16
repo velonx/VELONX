@@ -18,6 +18,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Menu, LogOut, LayoutDashboard, Settings, Users, Rss, ChevronDown, Share2, MessageSquare } from 'lucide-react';
 import toast from "react-hot-toast";
 import { UnreadCountBadge } from "@/components/unread-count-badge";
+import { UnreadMessagesBadge } from "@/components/unread-messages-badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const primaryNavLinks = [
@@ -117,7 +118,7 @@ export function Navbar() {
                                 className="p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted"
                                 aria-label="View messages"
                             >
-                                <MessageSquare className="w-5 h-5" />
+                                <UnreadMessagesBadge showLabel={true} />
                             </Link>
                             <Link
                                 href="/notifications"
@@ -210,6 +211,13 @@ export function Navbar() {
                     {session?.user && (
                         <>
                             <Link
+                                href="/messages"
+                                className="p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted"
+                                aria-label="View messages"
+                            >
+                                <UnreadMessagesBadge showLabel={true} />
+                            </Link>
+                            <Link
                                 href="/notifications"
                                 className="p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted"
                                 aria-label="View notifications"
@@ -257,6 +265,14 @@ export function Navbar() {
                                             >
                                                 <LayoutDashboard className="w-6 h-6" />
                                                 My Dashboard
+                                            </Link>
+                                            <Link
+                                                href="/messages"
+                                                onClick={() => setOpen(false)}
+                                                className="px-6 py-3 text-lg font-black text-muted-foreground hover:text-accent hover:bg-muted rounded-2xl transition-all uppercase tracking-wide flex items-center gap-3 mb-2"
+                                            >
+                                                <UnreadMessagesBadge />
+                                                Messages
                                             </Link>
                                             <Link
                                                 href="/notifications"

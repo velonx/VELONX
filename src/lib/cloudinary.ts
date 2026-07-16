@@ -79,6 +79,31 @@ export async function uploadPDFToCloudinary(
   }
 }
 
+// Helper function to upload raw files (docs, zip, etc)
+export async function uploadRawFileToCloudinary(
+  base64File: string,
+  fileName: string,
+  folder: string = 'velonx/messages/files'
+): Promise<{ url: string; publicId: string }> {
+  try {
+    const result = await cloudinary.uploader.upload(base64File, {
+      folder,
+      resource_type: 'raw',
+      use_filename: true,
+      unique_filename: true,
+      filename_override: fileName,
+    });
+    
+    return {
+      url: result.secure_url,
+      publicId: result.public_id,
+    };
+  } catch (error) {
+    console.error('[Cloudinary] Raw file upload error:', error);
+    throw new Error('Failed to upload file to Cloudinary');
+  }
+}
+
 // Helper function to delete PDF from Cloudinary
 export async function deletePDFFromCloudinary(
   publicId: string

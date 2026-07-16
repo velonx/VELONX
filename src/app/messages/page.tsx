@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
-  MessageSquare, Send, ArrowLeft, Search, X, ChevronDown,
+  MessageSquare, Send, ArrowLeft, Search, X, ChevronDown, Paperclip, FileIcon, ImageIcon, XCircle, Loader2
 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,10 @@ interface ConversationItem {
 interface Message {
   id: string;
   content: string;
+  attachmentUrl?: string | null;
+  attachmentType?: string | null;
+  attachmentName?: string | null;
+  attachmentSize?: number | null;
   senderId: string;
   receiverId: string;
   isRead: boolean;
@@ -39,6 +43,33 @@ interface Message {
     name: string | null;
     image: string | null;
   };
+}
+
+// Helper to render text with clickable links
+function renderTextWithLinks(text: string) {
+  if (!text) return null;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.match(urlRegex)) {
+          return (
+            <a 
+              key={i} 
+              href={part} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary-foreground underline hover:opacity-80 break-all"
+            >
+              {part}
+            </a>
+          );
+        }
+        return <span key={i} className="whitespace-pre-wrap wrap-break-word">{part}</span>;
+      })}
+    </>
+  );
 }
 
 function formatTime(dateStr: string): string {
@@ -338,10 +369,13 @@ function ChatThread({
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [input, setInput] = useState("");
+  const [attachment, setAttachment] = useState<{ url: string, type: string, name: string, size?: number } | null>(null);
   const [otherUser, setOtherUser] = useState<{ name: string | null; image: string | null; headline: string | null; isOnline?: boolean } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = useCallback(() => {
     if (containerRef.current) {
@@ -420,19 +454,26 @@ function ChatThread({
 
   const handleSend = async () => {
     const text = input.trim();
-    if (!text || sending) return;
+    if ((!text && !attachment) || sending || uploading) return;
 
     setSending(true);
     try {
       const res = await secureFetch(`/api/messages/${userId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: text }),
+        body: JSON.stringify({ 
+          content: text,
+          attachmentUrl: attachment?.url,
+          attachmentType: attachment?.type,
+          attachmentName: attachment?.name,
+          attachmentSize: attachment?.size,
+        }),
       });
       const data = await res.json();
       if (data.success) {
         setMessages((prev) => [...prev, data.data]);
         setInput("");
+        setAttachment(null);
         inputRef.current?.focus();
         if (onMessageSent) onMessageSent();
         setTimeout(scrollToBottom, 50);
@@ -443,6 +484,43 @@ function ChatThread({
       toast.error("Failed to send message");
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "velonx/messages");
+
+      const res = await secureFetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        let attType = "document";
+        if (file.type.startsWith("image/")) attType = "image";
+        else if (file.type.startsWith("video/")) attType = "video";
+
+        setAttachment({
+          url: data.url,
+          type: attType,
+          name: file.name,
+          size: file.size,
+        });
+      } else {
+        toast.error(data.error?.message || "Failed to upload file");
+      }
+    } catch (err) {
+      toast.error("Failed to upload file");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -523,13 +601,47 @@ function ChatThread({
                   )}
                   <div className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-1`}>
                     <div
-                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${
+                      className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm ${
                         isOwn
                           ? "bg-primary text-primary-foreground rounded-br-md"
                           : "bg-muted text-foreground rounded-bl-md"
                       }`}
                     >
-                      <p className="whitespace-pre-wrap wrap-break-word">{msg.content}</p>
+                      {msg.attachmentUrl && (
+                        <div className="mb-2 max-w-sm">
+                          {msg.attachmentType === 'image' ? (
+                            <img src={msg.attachmentUrl} alt={msg.attachmentName || "Attachment"} className="rounded-xl max-h-64 object-cover" />
+                          ) : msg.attachmentType === 'video' ? (
+                            <video src={msg.attachmentUrl} controls className="rounded-xl max-h-64" />
+                          ) : (
+                            <a href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 p-3 rounded-lg ${isOwn ? "bg-white/20 hover:bg-white/30" : "bg-background hover:bg-background/80"} transition-colors`}>
+                              <FileIcon className="w-8 h-8 opacity-80" />
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-xs truncate">{msg.attachmentName || "Document"}</p>
+                                {msg.attachmentSize && <p className="text-[10px] opacity-70">{(msg.attachmentSize / 1024 / 1024).toFixed(2)} MB</p>}
+                              </div>
+                            </a>
+                          )}
+                        </div>
+                      )}
+                      {msg.content && (
+                        <div>
+                          {isOwn ? (
+                            // Render links properly
+                            renderTextWithLinks(msg.content)
+                          ) : (
+                            // Same styling, slightly different classes if needed but helper uses primary-foreground
+                            <span className="whitespace-pre-wrap wrap-break-word">
+                              {msg.content.split(/(https?:\/\/[^\s]+)/g).map((part, i) => {
+                                if (part.match(/(https?:\/\/[^\s]+)/g)) {
+                                  return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 break-all">{part}</a>;
+                                }
+                                return part;
+                              })}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <div className={`flex items-center gap-1 mt-1 ${isOwn ? "justify-end" : "justify-start"}`}>
                         <span className={`text-[10px] ${isOwn ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
                           {formatMessageTime(msg.createdAt)}
@@ -551,7 +663,33 @@ function ChatThread({
 
       {/* Input */}
       <div className="p-4 border-t border-border bg-card/50 backdrop-blur-sm">
+        {attachment && (
+          <div className="mb-3 flex items-center justify-between bg-muted/50 p-2 rounded-lg border border-border">
+            <div className="flex items-center gap-2 truncate">
+              {attachment.type === 'image' ? <ImageIcon className="w-4 h-4 text-primary" /> : <FileIcon className="w-4 h-4 text-primary" />}
+              <span className="text-xs font-medium truncate max-w-50">{attachment.name}</span>
+            </div>
+            <button onClick={() => setAttachment(null)} className="text-muted-foreground hover:text-destructive p-1">
+              <XCircle className="w-4 h-4" />
+            </button>
+          </div>
+        )}
         <div className="flex items-end gap-2">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            className="hidden"
+            accept="image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip"
+          />
+          <Button
+            variant="ghost"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading || sending}
+            className="rounded-xl h-11 w-11 p-0 shrink-0 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+          >
+            {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Paperclip className="w-5 h-5" />}
+          </Button>
           <textarea
             ref={inputRef}
             id="message-input"
@@ -565,7 +703,7 @@ function ChatThread({
           />
           <Button
             onClick={handleSend}
-            disabled={!input.trim() || sending}
+            disabled={(!input.trim() && !attachment) || sending || uploading}
             className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-11 w-11 p-0 shrink-0"
           >
             <Send className="w-4.5 h-4.5" />

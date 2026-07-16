@@ -1623,6 +1623,10 @@ model DirectMessage {
   senderId    String   @db.ObjectId
   receiverId  String   @db.ObjectId
   content     String
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
+  attachmentSize Int?
   isRead      Boolean  @default(false)
   isEdited    Boolean  @default(false)
   isDeleted   Boolean  @default(false)
