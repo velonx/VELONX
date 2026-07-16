@@ -212,36 +212,40 @@ export function Navbar() {
                         <>
                             <Link
                                 href="/messages"
-                                className="p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted"
+                                className="flex items-center justify-center p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted"
                                 aria-label="View messages"
                             >
                                 <UnreadMessagesBadge showLabel={true} />
                             </Link>
                             <Link
                                 href="/notifications"
-                                className="p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted"
+                                className="flex items-center justify-center p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted"
                                 aria-label="View notifications"
                             >
-                                <UnreadCountBadge />
+                                <UnreadCountBadge showLabel={true} />
                             </Link>
-                            <Link href={dashboardLink} aria-label="Go to dashboard">
-                                <Avatar className="w-8 h-8 border-2 border-[#226CE0]">
+                            <Link href={dashboardLink} aria-label="Go to dashboard" className="flex flex-col items-center justify-center gap-1 p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted">
+                                <Avatar className="w-6 h-6 border-2 border-[#226CE0]">
                                     <AvatarImage src={displayAvatar} />
-                                    <AvatarFallback className="bg-[#226CE0] text-white text-xs">{session.user.name?.[0]}</AvatarFallback>
+                                    <AvatarFallback className="bg-[#226CE0] text-white text-[10px]">{session.user.name?.[0]}</AvatarFallback>
                                 </Avatar>
+                                <span className="text-[10px] font-medium leading-none">Profile</span>
                             </Link>
                         </>
                     )}
-                    <ThemeToggle />
+                    <div className="flex flex-col items-center justify-center">
+                        <ThemeToggle showLabel={true} />
+                    </div>
                     <Sheet open={open} onOpenChange={setOpen}>
                         <SheetTrigger asChild>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="text-muted-foreground hover:bg-muted rounded-full w-8 h-8"
+                                className="text-muted-foreground hover:bg-muted rounded-full w-auto h-auto p-2 flex flex-col gap-1 items-center justify-center"
                                 aria-label="Open navigation menu"
                             >
-                                <Menu className="w-5 h-5" />
+                                <Menu className="w-6 h-6" strokeWidth={2} />
+                                <span className="text-[10px] font-medium leading-none">Menu</span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="right" className="bg-card border-l border-border w-75 p-0">

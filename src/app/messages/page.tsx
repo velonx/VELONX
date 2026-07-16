@@ -9,8 +9,51 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@/components/ui/sheet"; // Assuming this is available, or we use standard hidden
 import toast from "react-hot-toast";
 import { secureFetch } from "@/lib/utils/csrf";
+
+const compressImage = (file: File, maxWidth = 1280, quality = 0.7): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      resolve(file);
+      return;
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(new File([blob], file.name, { type: "image/jpeg", lastModified: Date.now() }));
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = () => resolve(file); // Fallback to original on error
+    };
+    reader.onerror = () => resolve(file);
+  });
+};
 
 interface ConversationItem {
   conversationId: string;
@@ -370,6 +413,8 @@ function ChatThread({
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [attachment, setAttachment] = useState<{ url: string, type: string, name: string, size?: number } | null>(null);
   const [otherUser, setOtherUser] = useState<{ name: string | null; image: string | null; headline: string | null; isOnline?: boolean } | null>(null);
@@ -487,14 +532,17 @@ function ChatThread({
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement> | File) => {
+    const file = e instanceof File ? e : e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
     try {
+      // Compress image if it's an image
+      const processedFile = file.type.startsWith("image/") ? await compressImage(file) : file;
+      
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", processedFile);
       formData.append("folder", "velonx/messages");
 
       const res = await secureFetch("/api/upload", {
@@ -504,8 +552,8 @@ function ChatThread({
       const data = await res.json();
       if (data.success) {
         let attType = "document";
-        if (file.type.startsWith("image/")) attType = "image";
-        else if (file.type.startsWith("video/")) attType = "video";
+        if (processedFile.type.startsWith("image/")) attType = "image";
+        else if (processedFile.type.startsWith("video/")) attType = "video";
 
         setAttachment({
           url: data.url,
@@ -524,6 +572,25 @@ function ChatThread({
     }
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+  
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+  
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -532,7 +599,32 @@ function ChatThread({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div 
+      className={`flex flex-col h-full relative ${isDragging ? "bg-primary/5" : ""}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {isDragging && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm border-2 border-dashed border-primary m-4 rounded-xl">
+          <div className="flex flex-col items-center gap-4 text-primary">
+            <Paperclip className="w-12 h-12 animate-bounce" />
+            <p className="text-xl font-bold">Drop file here to send</p>
+          </div>
+        </div>
+      )}
+
+      {/* Image Viewer Modal */}
+      <Dialog open={!!viewingImage} onOpenChange={(open) => !open && setViewingImage(null)}>
+        <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 overflow-hidden border-none bg-black/90 sm:max-w-7xl">
+          <VisuallyHidden>
+            <DialogTitle>Image Viewer</DialogTitle>
+          </VisuallyHidden>
+          {viewingImage && (
+            <img src={viewingImage} alt="Full view" className="w-full h-full object-contain max-h-[85vh]" />
+          )}
+        </DialogContent>
+      </Dialog>
       {/* Chat Header */}
       <div className="flex items-center gap-3 p-4 border-b border-border bg-card/50 backdrop-blur-sm">
         <button aria-label="Go back" onClick={onBack} className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
@@ -610,7 +702,12 @@ function ChatThread({
                       {msg.attachmentUrl && (
                         <div className="mb-2 max-w-sm">
                           {msg.attachmentType === 'image' ? (
-                            <img src={msg.attachmentUrl} alt={msg.attachmentName || "Attachment"} className="rounded-xl max-h-64 object-cover" />
+                            <img 
+                              src={msg.attachmentUrl} 
+                              alt={msg.attachmentName || "Attachment"} 
+                              className="rounded-xl max-h-64 object-cover cursor-pointer hover:opacity-90 transition-opacity" 
+                              onClick={() => setViewingImage(msg.attachmentUrl || null)}
+                            />
                           ) : msg.attachmentType === 'video' ? (
                             <video src={msg.attachmentUrl} controls className="rounded-xl max-h-64" />
                           ) : (

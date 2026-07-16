@@ -7,9 +7,10 @@ import { Bell } from "lucide-react";
 interface UnreadCountBadgeProps {
   className?: string;
   onCountChange?: (count: number) => void;
+  showLabel?: boolean;
 }
 
-export function UnreadCountBadge({ className = "", onCountChange }: UnreadCountBadgeProps) {
+export function UnreadCountBadge({ className = "", onCountChange, showLabel = false }: UnreadCountBadgeProps) {
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -48,20 +49,24 @@ export function UnreadCountBadge({ className = "", onCountChange }: UnreadCountB
   const displayCount = unreadCount > 99 ? "99+" : unreadCount.toString();
 
   return (
-    <div className={`relative ${className}`}>
-      <Bell className="w-5 h-5" aria-hidden="true" />
-      {!isLoading && unreadCount > 0 && (
-        <>
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-            {displayCount}
-          </span>
-          <span className="sr-only">
-            {unreadCount === 1 ? '1 unread notification' : `${unreadCount} unread notifications`}
-          </span>
-        </>
-      )}
-      {!isLoading && unreadCount === 0 && (
-        <span className="sr-only">No unread notifications</span>
+    <div className={`flex flex-col items-center justify-center gap-1 ${className}`}>
+      <div className="relative flex items-center justify-center">
+        <Bell className="w-6 h-6" aria-hidden="true" strokeWidth={2} />
+        {!isLoading && unreadCount > 0 && (
+          <>
+            <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-red-500 shadow-sm ring-2 ring-background">
+            </span>
+            <span className="sr-only">
+              {unreadCount === 1 ? '1 unread notification' : `${unreadCount} unread notifications`}
+            </span>
+          </>
+        )}
+        {!isLoading && unreadCount === 0 && (
+          <span className="sr-only">No unread notifications</span>
+        )}
+      </div>
+      {showLabel && (
+        <span className="text-[10px] font-medium leading-none">Alerts</span>
       )}
     </div>
   );
