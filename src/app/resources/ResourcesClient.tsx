@@ -290,10 +290,14 @@ function ResourcesPage() {
       </header>
 
       {/* Tab Switcher Navigation */}
-      <section className="bg-background border-b border-border/40 pb-6 mb-8" aria-label="Ecosystem View Tabs">
+      <nav className="bg-background border-b border-border/40 pb-6 mb-8" aria-label="Resource view tabs">
         <div className="container mx-auto px-4 flex justify-center">
-          <div className="bg-muted/40 p-1.5 rounded-2xl border border-border/60 flex gap-2">
+          <div className="bg-muted/40 p-1.5 rounded-2xl border border-border/60 flex gap-2" role="tablist" aria-label="Resource sections">
             <button
+              role="tab"
+              id="tab-paths"
+              aria-selected={activeTab === 'paths'}
+              aria-controls="tabpanel-paths"
               onClick={() => {
                 setActiveTab('paths');
                 setActivePathId(null);
@@ -309,6 +313,10 @@ function ResourcesPage() {
               Learning Paths
             </button>
             <button
+              role="tab"
+              id="tab-references"
+              aria-selected={activeTab === 'references'}
+              aria-controls="tabpanel-references"
               onClick={() => {
                 setActiveTab('references');
                 setActivePathId(null);
@@ -325,13 +333,14 @@ function ResourcesPage() {
             </button>
           </div>
         </div>
-      </section>
+      </nav>
 
       {/* Interactive Main Body Content */}
       <main className="pb-20 bg-background">
         <div className="container mx-auto px-4">
           
           {activeTab === 'references' ? (
+            <div role="tabpanel" id="tabpanel-references" aria-labelledby="tab-references">
             // ==========================================
             // QUICK REFERENCES VIEW (CHEAT SHEETS / DOWNLOADS)
             // ==========================================
@@ -373,11 +382,18 @@ function ResourcesPage() {
               </div>
             ) : (
               <>
+                {/* Section Heading for SEO — visible h2 for Quick References */}
+                <h2 className="text-lg font-bold text-foreground mb-6">
+                  Quick Reference Guides
+                </h2>
+
                 {/* Search & Filters */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                   <div className="relative flex-1 md:max-w-md">
+                    <label htmlFor="resource-search" className="sr-only">Search resources</label>
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
+                      id="resource-search"
                       type="text"
                       placeholder="Search resources, cheat sheets, PDF guides..."
                       value={filters.search || ''}
@@ -429,10 +445,12 @@ function ResourcesPage() {
                 )}
               </>
             )
+            </div>
           ) : (
             // ==========================================
             // LEARNING PATHS ROADMAPS & CHECKPOINTS VIEW
             // ==========================================
+            <div role="tabpanel" id="tabpanel-paths" aria-labelledby="tab-paths">
             <>
               {activePathId ? (
                 // Drilldown Roadmap Hub
@@ -546,6 +564,7 @@ function ResourcesPage() {
                 </>
               )}
             </>
+            </div>
           )}
 
           {/* CREATE CUSTOM ROADMAP MODAL */}

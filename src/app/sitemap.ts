@@ -40,6 +40,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "" ? 1.0 : 0.8, // Prioritize homepage
   }));
 
+  // Add dedicated entry for Quick References tab (client-side tab not crawlable otherwise)
+  siteMapEntries.push({
+    url: `${baseUrl}/resources?tab=references`,
+    lastModified: currentDate,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  });
+
   // Fetch published blog posts dynamically to index them
   let dynamicBlogEntries: MetadataRoute.Sitemap = [];
   try {
