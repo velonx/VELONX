@@ -187,7 +187,7 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
       aria-label={`Resource: ${resource.title}`}
     >
       {/* Card Image Banner */}
-      <div className="relative w-full h-40 mb-4 rounded-xl overflow-hidden bg-muted border border-border/50">
+      <Link href={`/resources/${resource.id}`} className="relative block w-full h-40 mb-4 rounded-xl overflow-hidden bg-muted border border-border/50">
         <Image
           src={imageError ? getCategoryPlaceholder(category) : (resource.imageUrl || getCategoryPlaceholder(category))}
           alt={resource.title}
@@ -201,7 +201,7 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
         <span className={cn('absolute top-2 right-2 badge-event text-xs font-semibold px-2.5 py-1 border bg-background/80 backdrop-blur-md', getTypeBadgeClass(type))}>
           {type}
         </span>
-      </div>
+      </Link>
 
       {/* Title & Description */}
       <div className="flex flex-col gap-1 mb-2">
@@ -233,36 +233,15 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
           </div>
         )}
 
-        {/* Access buttons */}
+        {/* Access button pointing to dedicated slug page */}
         <div className="flex gap-2 w-full">
-          {hasURL && (
-            <button
-              onClick={handleURLClick}
-              disabled={isVisiting}
-              className="flex-1 btn-redesign btn-redesign-primary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer"
-              aria-label="Visit resource URL"
-            >
-              {isVisiting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Visit Resource"}
-            </button>
-          )}
-
-          {hasPDF && (
-            <>
-              <button
-                onClick={handlePDFView}
-                disabled={isVisiting}
-                className="flex-1 btn-redesign btn-redesign-secondary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer"
-              >
-                {isVisiting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "View PDF"}
-              </button>
-              <button
-                onClick={handlePDFDownload}
-                className="flex-1 btn-redesign btn-redesign-primary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer"
-              >
-                Download
-              </button>
-            </>
-          )}
+          <Link
+            href={`/resources/${resource.id}`}
+            className="flex-1 btn-redesign btn-redesign-primary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer inline-flex items-center gap-1.5"
+            aria-label={`Access ${resource.title}`}
+          >
+            <span>Access Resource</span>
+          </Link>
         </div>
       </div>
 

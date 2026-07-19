@@ -30,7 +30,9 @@ function ResourcesPage() {
   const pathname = usePathname();
 
   // Tab State
-  const [activeTab, setActiveTab] = React.useState<'paths' | 'references'>('paths');
+  const [activeTab, setActiveTab] = React.useState<'paths' | 'references'>(() => {
+    return searchParams.get('tab') === 'paths' ? 'paths' : 'references';
+  });
 
   // Shared Resource Deep-linking State
   const [sharedResource, setSharedResource] = React.useState<Resource | null>(null);
@@ -301,6 +303,7 @@ function ResourcesPage() {
               onClick={() => {
                 setActiveTab('paths');
                 setActivePathId(null);
+                router.push(`${pathname}?tab=paths`, { scroll: false });
               }}
               className={cn(
                 "px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 cursor-pointer",
@@ -320,6 +323,7 @@ function ResourcesPage() {
               onClick={() => {
                 setActiveTab('references');
                 setActivePathId(null);
+                router.push(`${pathname}?tab=references`, { scroll: false });
               }}
               className={cn(
                 "px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 cursor-pointer",
