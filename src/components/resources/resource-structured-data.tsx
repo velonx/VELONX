@@ -9,6 +9,7 @@
  */
 
 import { siteConfig } from '@/lib/seo.config';
+import { slugifyResource } from '@/lib/utils';
 
 interface ResourceData {
   id: string;
@@ -66,6 +67,7 @@ function getSchemaType(type: string): string {
 
 export function ResourceStructuredData({ resource, totalResources }: ResourceStructuredDataProps) {
   const baseUrl = siteConfig.url;
+  const resourceSlug = resource ? slugifyResource(resource.id, resource.title) : '';
 
   // Breadcrumb schema — always present
   const breadcrumbList = {
@@ -90,7 +92,7 @@ export function ResourceStructuredData({ resource, totalResources }: ResourceStr
               '@type': 'ListItem',
               'position': 3,
               'name': resource.title,
-              'item': `${baseUrl}/resources/${resource.id}`,
+              'item': `${baseUrl}/resources/${resourceSlug}`,
             },
           ]
         : []),
@@ -107,10 +109,10 @@ export function ResourceStructuredData({ resource, totalResources }: ResourceStr
       'headline': resource.title,
       'name': resource.title,
       'description': resource.description,
-      'url': `${baseUrl}/resources/${resource.id}`,
+      'url': `${baseUrl}/resources/${resourceSlug}`,
       'mainEntityOfPage': {
         '@type': 'WebPage',
-        '@id': `${baseUrl}/resources/${resource.id}`,
+        '@id': `${baseUrl}/resources/${resourceSlug}`,
       },
       'image': resource.imageUrl ? [resource.imageUrl] : [`${baseUrl}/og/default.png`],
       'datePublished': resource.createdAt,

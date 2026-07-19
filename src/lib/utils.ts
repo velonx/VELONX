@@ -77,4 +77,26 @@ export function slugifyPost(postId: string, content: string): string {
   return cleaned ? `${postId}-${cleaned}` : postId;
 }
 
+export function slugifyResource(id: string, title: string): string {
+  const normalized = normalizeStylizedText(title);
+  let cleaned = normalized
+    .replace(/[^\w\s-]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/[-\s]+/g, "-");
+
+  if (cleaned.length > 60) {
+    cleaned = cleaned.slice(0, 60).replace(/-$/, "");
+  }
+  return cleaned ? `${cleaned}-${id}` : id;
+}
+
+export function extractIdFromSlug(slugOrId: string): string {
+  if (!slugOrId) return "";
+  if (slugOrId.match(/^[0-9a-fA-F]{24}$/)) return slugOrId;
+  const match = slugOrId.match(/([0-9a-fA-F]{24})$/);
+  if (match) return match[1];
+  return slugOrId;
+}
+
 

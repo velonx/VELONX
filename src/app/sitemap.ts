@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
-import { normalizeStylizedText, slugifyPost } from "@/lib/utils";
+import { normalizeStylizedText, slugifyPost, slugifyResource } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
 
@@ -192,12 +192,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const resources = await prisma.resource.findMany({
       select: {
         id: true,
+        title: true,
         updatedAt: true,
       },
     });
 
     dynamicResourceEntries = resources.map((res) => ({
-      url: `${baseUrl}/resources/${res.id}`,
+      url: `${baseUrl}/resources/${slugifyResource(res.id, res.title)}`,
       lastModified: res.updatedAt || currentDate,
       changeFrequency: "weekly" as const,
       priority: 0.7,

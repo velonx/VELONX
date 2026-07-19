@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { generatePageMetadata } from '@/lib/seo.config';
 import { ResourceStructuredData } from '@/components/resources/resource-structured-data';
 import { ResourceDetailClient } from './ResourceDetailClient';
+import { extractIdFromSlug, slugifyResource } from '@/lib/utils';
 import type { Resource } from '@/lib/api/types';
 
 export const dynamic = 'force-dynamic';
@@ -13,7 +14,8 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
+  const { id: rawSlugOrId } = await params;
+  const id = extractIdFromSlug(rawSlugOrId);
 
   if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
     return generatePageMetadata(
@@ -36,10 +38,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       );
     }
 
+    const canonicalSlug = slugifyResource(resource.id, resource.title);
+
     const metadata = generatePageMetadata(
       `${resource.title} - Quick Reference | Velonx`,
       resource.description,
-      `/resources/${id}`,
+      `/resources/${canonicalSlug}`,
       resource.imageUrl ?? undefined
     );
 
@@ -68,7 +72,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ResourceDetailPage({ params }: Props) {
-  const { id } = await params;
+  const { id: rawSlugOrId } = await params;
+  const id = extractIdFromSlug(rawSlugOrId);
 
   if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
     notFound();
@@ -80,6 +85,13 @@ export default async function ResourceDetailPage({ params }: Props) {
 
   if (!resource) {
     notFound();
+  }
+
+  const canonicalSlug = slugifyResource(resource.id, resource.title);
+
+  // Auto-redirect if accessed via raw ObjectId to canonical title slug URL
+  if (rawSlugOrId !== canonicalSlug) {
+    redirect(`/resources/${canonicalSlug}`);
   }
 
   // Serialize resource model for client component safely

@@ -20,7 +20,7 @@ import { ResourceCard } from '@/components/resources/ResourceCard';
 import { ResourceCategory, ResourceType } from '@/lib/types/resources.types';
 import { trackResourceVisit } from '@/lib/utils/resource-visit-tracking';
 import { getCategoryPlaceholder } from '@/lib/utils/resource-placeholders';
-import { cn } from '@/lib/utils';
+import { cn, slugifyResource } from '@/lib/utils';
 import type { Resource } from '@/lib/api/types';
 
 export interface ResourceDetailClientProps {
@@ -77,9 +77,10 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
   const hasPDF = Boolean(resource.pdfUrl || resource.pdfPublicId);
   const formattedFileSize = resource.pdfFileSize ? formatFileSize(resource.pdfFileSize) : null;
   const formattedAccessCount = formatAccessCount(resource.accessCount);
+  const resourceSlug = slugifyResource(resource.id, resource.title);
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/resources/${resource.id}`;
+    const url = `${window.location.origin}/resources/${resourceSlug}`;
     const shareData = {
       title: `${resource.title} - Quick Reference | Velonx`,
       text: resource.description,
@@ -188,15 +189,15 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* Left Column: Image Banner */}
-            <div className="lg:col-span-5 relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden bg-muted border border-border/50 shadow-md">
+            {/* Left Column: Image Banner — object-contain prevents cover truncation */}
+            <div className="lg:col-span-5 relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden bg-slate-900/90 border border-border/50 p-3 shadow-md">
               <Image
                 src={imageError ? getCategoryPlaceholder(category) : (resource.imageUrl || getCategoryPlaceholder(category))}
                 alt={resource.title}
                 fill
                 unoptimized
                 sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover"
+                className="object-contain"
                 onError={() => setImageError(true)}
                 priority
               />

@@ -7,12 +7,12 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/lib/utils';
+import { cn, slugifyResource } from '@/lib/utils';
 import { Resource } from '@/lib/api/types';
 import { ResourceCategory, ResourceType } from '@/lib/types/resources.types';
 import { trackResourceVisit } from '@/lib/utils/resource-visit-tracking';
 import { getCategoryPlaceholder } from '@/lib/utils/resource-placeholders';
-import { FileText, Share2, Check, Loader2 } from 'lucide-react';
+import { FileText, Share2, Check } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -88,12 +88,13 @@ function formatFileSize(bytes: number): string {
 }
 
 const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
-  const [isVisiting, setIsVisiting] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
 
+  const resourceSlug = slugifyResource(resource.id, resource.title);
+
   const handleShare = async () => {
-    const url = `${window.location.origin}/resources/${resource.id}`;
+    const url = `${window.location.origin}/resources/${resourceSlug}`;
     const shareData = {
       title: resource.title,
       text: `Check out this resource: ${resource.title}`,
@@ -113,70 +114,8 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
   const truncatedDescription = truncateDescription(resource.description);
   const formattedAccessCount = formatAccessCount(resource.accessCount);
 
-  const hasURL = Boolean(resource.url);
   const hasPDF = Boolean(resource.pdfUrl);
   const formattedFileSize = resource.pdfFileSize ? formatFileSize(resource.pdfFileSize) : null;
-
-  const handleURLClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isVisiting || !resource.url) return;
-    setIsVisiting(true);
-    try {
-      await trackResourceVisit(resource.id);
-    } catch (error) {
-      console.error('Failed to track resource visit:', error);
-    } finally {
-      window.open(resource.url, '_blank', 'noopener,noreferrer');
-      setIsVisiting(false);
-    }
-  };
-
-  const handlePDFView = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isVisiting || !resource.pdfPublicId) return;
-    setIsVisiting(true);
-    try {
-      await trackResourceVisit(resource.id);
-      const response = await fetch(`/api/resources/pdf/${encodeURIComponent(resource.pdfPublicId)}`);
-      if (!response.ok) throw new Error('Failed to access PDF');
-      const data = await response.json();
-      if (data.success && data.data?.url) {
-        window.open(data.data.url, '_blank', 'noopener,noreferrer');
-      } else {
-        throw new Error('Invalid response from server');
-      }
-    } catch (error) {
-      console.error('Failed to access PDF:', error);
-      alert('Failed to access PDF. Please try again.');
-    } finally {
-      setIsVisiting(false);
-    }
-  };
-
-  const handlePDFDownload = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!resource.pdfPublicId || !resource.pdfFileName) return;
-    try {
-      await trackResourceVisit(resource.id);
-      const response = await fetch(`/api/resources/pdf/${encodeURIComponent(resource.pdfPublicId)}`);
-      if (!response.ok) throw new Error('Failed to access PDF');
-      const data = await response.json();
-      if (data.success && data.data?.url) {
-        const link = document.createElement('a');
-        link.href = data.data.url;
-        link.download = resource.pdfFileName;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        throw new Error('Invalid response from server');
-      }
-    } catch (error) {
-      console.error('Failed to download PDF:', error);
-      alert('Failed to download PDF. Please try again.');
-    }
-  };
 
   const stop = (e: React.MouseEvent) => e.stopPropagation();
 
@@ -186,19 +125,19 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
       role="article"
       aria-label={`Resource: ${resource.title}`}
     >
-      {/* Card Image Banner */}
-      <Link href={`/resources/${resource.id}`} className="relative block w-full h-40 mb-4 rounded-xl overflow-hidden bg-muted border border-border/50">
+      {/* Card Image Banner — object-contain prevents cover cropping */}
+      <Link href={`/resources/${resourceSlug}`} className="relative block w-full h-44 mb-4 rounded-xl overflow-hidden bg-slate-900/90 border border-border/50 p-2">
         <Image
           src={imageError ? getCategoryPlaceholder(category) : (resource.imageUrl || getCategoryPlaceholder(category))}
           alt={resource.title}
           fill
           unoptimized
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-contain transition-transform duration-300 group-hover:scale-105"
           onError={() => setImageError(true)}
         />
         {/* Overlay type badge */}
-        <span className={cn('absolute top-2 right-2 badge-event text-xs font-semibold px-2.5 py-1 border bg-background/80 backdrop-blur-md', getTypeBadgeClass(type))}>
+        <span className={cn('absolute top-2 right-2 badge-event text-xs font-semibold px-2.5 py-1 border bg-background/90 backdrop-blur-md', getTypeBadgeClass(type))}>
           {type}
         </span>
       </Link>
@@ -209,7 +148,7 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
           {getCategoryLabel(category)}
         </span>
         <h3 className="p-resource-title group-hover:text-primary dark:group-hover:text-cyan-light transition-colors m-0">
-          <Link href={`/resources/${resource.id}`} className="hover:underline">
+          <Link href={`/resources/${resourceSlug}`} className="hover:underline">
             {resource.title}
           </Link>
         </h3>
@@ -236,7 +175,7 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
         {/* Access button pointing to dedicated slug page */}
         <div className="flex gap-2 w-full">
           <Link
-            href={`/resources/${resource.id}`}
+            href={`/resources/${resourceSlug}`}
             className="flex-1 btn-redesign btn-redesign-primary btn-redesign-sm rounded-full text-center justify-center font-semibold cursor-pointer inline-flex items-center gap-1.5"
             aria-label={`Access ${resource.title}`}
           >
