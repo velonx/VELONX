@@ -272,7 +272,11 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
         ? clientClosedJobs
         : serverClosedJobs.filter(matchesSearch);
 
-    const renderOpportunityCard = (item: any, type: 'internship' | 'job') => {
+    const renderOpportunityCard = (
+        item: any, 
+        type: 'internship' | 'job', 
+        options?: { score?: number; verdict?: string }
+    ) => {
         const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
         
         const logoColors = [
@@ -285,46 +289,86 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
         const charCode = item.company ? item.company.charCodeAt(0) : 0;
         const logoColor = logoColors[charCode % logoColors.length];
 
+        const score = options?.score;
+        const verdict = options?.verdict;
+        const scoreColor = score !== undefined ? (score >= 80 ? '#4ade80' : score >= 60 ? '#22d3ee' : score >= 40 ? '#facc15' : '#f87171') : null;
+        const scoreBg = score !== undefined ? (score >= 80 ? 'rgba(74,222,128,0.1)' : score >= 60 ? 'rgba(34,211,238,0.1)' : score >= 40 ? 'rgba(250,204,21,0.1)' : 'rgba(248,113,113,0.1)') : null;
+
+        const isOpen = item.status === 'ACTIVE' && (!item.deadline || new Date(item.deadline) >= new Date());
+
         return (
-            <article className="p-job-card" key={item.id}>
-                {/* Logo wrapper */}
-                {item.imageUrl ? (
-                    <div className="shrink-0 w-14 h-14 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center relative">
-                        <Image 
-                            src={item.imageUrl} 
-                            alt={item.company} 
-                            width={56} 
-                            height={56} 
-                            className="object-contain" 
-                        />
-                    </div>
-                ) : (
-                    <div className="p-job-logo shrink-0" style={{ color: logoColor }}>
-                        {initials}
-                    </div>
-                )}
+            <article 
+                className="p-job-card" 
+                key={item.id}
+                style={scoreColor ? { borderLeft: `4px solid ${scoreColor}` } : undefined}
+            >
+                {/* Left Side: Optional AI score + Logo */}
+                <div className="flex items-center gap-3.5 shrink-0">
+                    {score !== undefined && (
+                        <div className="flex flex-col items-center justify-center shrink-0 w-14 gap-0.5">
+                            <div 
+                                className="w-12 h-12 rounded-xl flex flex-col items-center justify-center font-black text-sm leading-none" 
+                                style={{ background: scoreBg!, color: scoreColor!, border: `1.5px solid ${scoreColor}40` }}
+                            >
+                                {score}%
+                            </div>
+                            {verdict && (
+                                <span className="text-[9px] font-bold text-center leading-tight truncate max-w-14" style={{ color: scoreColor! }}>
+                                    {verdict.split(' ')[0]}
+                                </span>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Logo wrapper */}
+                    {item.imageUrl ? (
+                        <div className="p-job-logo-wrapper">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img 
+                                src={item.imageUrl} 
+                                alt={item.company} 
+                                className="max-w-full max-h-full w-auto h-auto object-contain" 
+                                loading="lazy"
+                            />
+                        </div>
+                    ) : (
+                        <div className="p-job-logo" style={{ color: logoColor }}>
+                            {initials}
+                        </div>
+                    )}
+                </div>
 
                 {/* Main info */}
                 <div className="p-job-info-main">
-                    <h2 className="p-job-title">
-                        <Link href={`/career/${item.slug || item.id}`} className="hover:underline hover:text-primary transition-colors">
-                            {item.title}
-                        </Link>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <h2 className="p-job-title">
+                            <Link href={`/career/${item.slug || item.id}`} className="hover:underline hover:text-primary transition-colors">
+                                {item.title}
+                            </Link>
+                        </h2>
                         {item.salary && (item.salary.includes('45,000') || item.salary.includes('LPA') || item.salary.includes('80,000')) && (
-                            <span className="badge badge-cyan text-[10px] py-0.5 px-2 rounded-full font-bold ml-2">HOT</span>
+                            <span className="badge badge-cyan text-[10px] py-0.5 px-2 rounded-full font-bold">HOT</span>
                         )}
-                    </h2>
-                    <div className="p-job-details-meta">
-                        <span className="font-semibold text-foreground">🏢 {item.company}</span>
-                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
-                        {item.duration && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {item.duration}</span>}
-                        {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary}</span>}
+                        {verdict && score === undefined && (
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">{verdict}</span>
+                        )}
                     </div>
+
+                    <div className="p-job-details-meta">
+                        <span className="font-semibold text-foreground flex items-center gap-1">
+                            🏢 {item.company}
+                            <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 fill-blue-500/10 inline-block shrink-0" />
+                        </span>
+                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 shrink-0" /> {item.location}</span>
+                        {item.duration && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 shrink-0" /> {item.duration}</span>}
+                        {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5 shrink-0" /> {item.salary}</span>}
+                    </div>
+
                     {/* Deadline display */}
                     {item.deadline && (
-                        <div className="flex items-center gap-1.5 mt-1.5">
-                            <CalendarClock className="w-3.5 h-3.5 text-muted-foreground" />
-                            <span className={`text-xs font-semibold ${
+                        <div className="flex items-center gap-1.5 mt-0.5 text-xs">
+                            <CalendarClock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                            <span className={`font-semibold ${
                                 new Date(item.deadline) < new Date() 
                                     ? 'text-red-500' 
                                     : 'text-muted-foreground'
@@ -336,11 +380,12 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                             </span>
                         </div>
                     )}
+
                     {item.requirements && item.requirements.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
+                        <div className="flex flex-wrap gap-1.5 mt-1">
                             {item.requirements.slice(0, 3).map((req: string, idx: number) => (
-                                <span key={idx} className="tag text-[10px] py-1 px-2.5 rounded-md font-medium">
-                                    {req}
+                                <span key={idx} className="tag text-[10px] py-0.5 px-2 rounded-md font-medium bg-muted/60 text-muted-foreground border border-border/40 truncate max-w-65">
+                                    • {req}
                                 </span>
                             ))}
                         </div>
@@ -349,26 +394,23 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
 
                 {/* Actions Block */}
                 <div className="p-job-action">
-                    {(() => {
-                        const isOpen = item.status === 'ACTIVE' && (!item.deadline || new Date(item.deadline) >= new Date());
-                        return isOpen ? (
-                            <span className="badge badge-green badge-live font-bold py-1 px-3.5 rounded-full text-[10px] tracking-wide">ACTIVE</span>
-                        ) : (
-                            <span className="badge font-bold py-1 px-3.5 rounded-full text-[10px] tracking-wide" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>CLOSED</span>
-                        );
-                    })()}
+                    {isOpen ? (
+                        <span className="badge badge-green badge-live font-bold py-1 px-3.5 rounded-full text-[10px] tracking-wide shrink-0">ACTIVE</span>
+                    ) : (
+                        <span className="badge font-bold py-1 px-3.5 rounded-full text-[10px] tracking-wide shrink-0" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>CLOSED</span>
+                    )}
                     
                     <Link
                         href={`/career/${item.slug || item.id}`}
-                        className="btn-redesign btn-redesign-primary btn-redesign-sm font-bold text-xs inline-flex items-center gap-1"
+                        className="btn-redesign btn-redesign-primary font-bold text-xs inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-xl shadow-xs shrink-0"
                     >
-                        View Details <ExternalLink className="w-4 h-4" />
+                        View Details <ExternalLink className="w-3.5 h-3.5" />
                     </Link>
 
                     <button
                         onClick={() => handleShare(item.slug || item.id, item.id, item.title, type)}
                         title={copiedId === item.id ? 'Link copied!' : 'Share'}
-                        className="btn-redesign btn-redesign-secondary btn-redesign-sm p-2 rounded-lg flex items-center justify-center hover:bg-muted"
+                        className="btn-redesign btn-redesign-secondary h-9 w-9 p-0 rounded-xl flex items-center justify-center hover:bg-muted shrink-0 cursor-pointer"
                         type="button"
                     >
                         {copiedId === item.id ? (
@@ -849,68 +891,8 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                             {aiJobs.map((item: any) => {
                                                 const score = item.aiScore ?? 0;
                                                 const verdict = item.verdict ?? "";
-                                                const scoreColor = score >= 80 ? '#4ade80' : score >= 60 ? '#22d3ee' : score >= 40 ? '#facc15' : '#f87171';
-                                                const scoreBg = score >= 80 ? 'rgba(74,222,128,0.1)' : score >= 60 ? 'rgba(34,211,238,0.1)' : score >= 40 ? 'rgba(250,204,21,0.1)' : 'rgba(248,113,113,0.1)';
                                                 const type = item.type === 'INTERNSHIP' ? 'internship' : 'job';
-                                                const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
-                                                const logoColor = ['#A78BFA','#22D3EE','#34D399','#FCD34D','#F9A8D4'][(item.company?.charCodeAt(0) ?? 0) % 5];
-                                                return (
-                                                    <article className="p-job-card" key={item.id} style={{ borderLeft: `3px solid ${scoreColor}` }}>
-                                                        {/* Left Side: Score + Logo */}
-                                                        <div className="flex items-center gap-4 shrink-0">
-                                                            {/* AI Score Badge */}
-                                                            <div className="flex flex-col items-center justify-center shrink-0 w-16 gap-1">
-                                                                <div className="w-14 h-14 rounded-xl flex flex-col items-center justify-center font-black text-lg leading-none" style={{ background: scoreBg, color: scoreColor, border: `1.5px solid ${scoreColor}40` }}>
-                                                                    {score}%
-                                                                </div>
-                                                                <span className="text-[9px] font-bold text-center leading-tight" style={{ color: scoreColor }}>
-                                                                    {verdict.split(' ')[0]}
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Company Logo */}
-                                                            {item.imageUrl ? (
-                                                                <div className="shrink-0 w-14 h-14 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-md border border-border flex items-center justify-center relative">
-                                                                    <Image 
-                                                                        src={item.imageUrl} 
-                                                                        alt={item.company} 
-                                                                        width={56} 
-                                                                        height={56} 
-                                                                        className="object-contain" 
-                                                                    />
-                                                                </div>
-                                                            ) : (
-                                                                <div className="p-job-logo shrink-0" style={{ color: logoColor }}>
-                                                                    {initials}
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Middle: Main Info */}
-                                                        <div className="p-job-info-main">
-                                                            <div className="flex items-center gap-2 flex-wrap">
-                                                                <h2 className="p-job-title">
-                                                                    <Link href={`/career/${item.slug || item.id}`} className="hover:underline hover:text-primary transition-colors">
-                                                                        {item.title}
-                                                                    </Link>
-                                                                </h2>
-                                                                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: scoreBg, color: scoreColor }}>{verdict}</span>
-                                                            </div>
-                                                            <div className="p-job-details-meta">
-                                                                <span className="font-semibold text-foreground">🏢 {item.company}</span>
-                                                                <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
-                                                                {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary}</span>}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Right Side: Action Button */}
-                                                        <div className="p-job-action">
-                                                            <Link href={`/career/${item.slug || item.id}`} className="btn-redesign btn-redesign-primary btn-redesign-sm font-bold text-xs inline-flex items-center gap-1">
-                                                                View Details <ExternalLink className="w-4 h-4" />
-                                                            </Link>
-                                                        </div>
-                                                    </article>
-                                                );
+                                                return renderOpportunityCard(item, type, { score, verdict });
                                             })}
                                         </div>
                                     )}
@@ -1070,51 +1052,8 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                                 {displayJobs.map((item: any) => {
                                                     const score = item.aiScore ?? 0;
                                                     const verdict = item.verdict ?? "";
-                                                    const scoreColor = score >= 80 ? '#4ade80' : score >= 60 ? '#22d3ee' : score >= 40 ? '#facc15' : '#f87171';
-                                                    const scoreBg = score >= 80 ? 'rgba(74,222,128,0.1)' : score >= 60 ? 'rgba(34,211,238,0.1)' : score >= 40 ? 'rgba(250,204,21,0.1)' : 'rgba(248,113,113,0.1)';
                                                     const type = item.type === 'INTERNSHIP' ? 'internship' : 'job';
-                                                    const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
-                                                    const logoColor = ['#A78BFA','#22D3EE','#34D399','#FCD34D','#F9A8D4'][(item.company?.charCodeAt(0) ?? 0) % 5];
-
-                                                    return (
-                                                        <article className="p-job-card" key={item.id} style={{ borderLeft: `3px solid ${scoreColor}` }}>
-                                                            <div className="flex flex-col items-center justify-center shrink-0 w-16 gap-1">
-                                                                <div className="w-14 h-14 rounded-xl flex flex-col items-center justify-center font-black text-lg leading-none" style={{ background: scoreBg, color: scoreColor, border: `1.5px solid ${scoreColor}40` }}>
-                                                                    {score}%
-                                                                </div>
-                                                                <span className="text-[9px] font-bold text-center leading-tight" style={{ color: scoreColor }}>
-                                                                    {verdict.split(' ')[0]}
-                                                                </span>
-                                                            </div>
-                                                            {item.imageUrl ? (
-                                                                <div className="shrink-0 w-12 h-12 rounded-xl bg-white dark:bg-gray-800 p-1.5 shadow-md border border-border flex items-center justify-center">
-                                                                    <Image src={item.imageUrl} alt={item.company} width={48} height={48} className="object-contain" />
-                                                                </div>
-                                                            ) : (
-                                                                <div className="p-job-logo shrink-0 w-12 h-12 text-sm" style={{ color: logoColor }}>{initials}</div>
-                                                            )}
-                                                            <div className="p-job-info-main">
-                                                                <div className="flex items-center gap-2 flex-wrap">
-                                                                    <h2 className="p-job-title">
-                                                                        <Link href={`/career/${item.slug || item.id}`} className="hover:underline hover:text-primary transition-colors">
-                                                                            {item.title}
-                                                                        </Link>
-                                                                    </h2>
-                                                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: scoreBg, color: scoreColor }}>{verdict}</span>
-                                                                </div>
-                                                                <div className="p-job-details-meta">
-                                                                    <span className="font-semibold text-foreground">🏢 {item.company}</span>
-                                                                    <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.location}</span>
-                                                                    {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /> {item.salary}</span>}
-                                                                </div>
-                                                            </div>
-                                                            <div className="p-job-action">
-                                                                <Link href={`/career/${item.slug || item.id}`} className="btn-redesign btn-redesign-primary btn-redesign-sm font-bold text-xs inline-flex items-center gap-1">
-                                                                    View Details <ExternalLink className="w-4 h-4" />
-                                                                </Link>
-                                                            </div>
-                                                        </article>
-                                                    );
+                                                    return renderOpportunityCard(item, type, { score, verdict });
                                                 })}
                                             </div>
                                         );
