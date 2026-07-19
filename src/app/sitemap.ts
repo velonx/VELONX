@@ -203,10 +203,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     dynamicResourceEntries = resources.map((res) => ({
-      url: `${baseUrl}/resources?id=${res.id}`,
+      url: `${baseUrl}/resources/${res.id}`,
       lastModified: res.updatedAt || currentDate,
       changeFrequency: "weekly" as const,
-      priority: 0.6,
+      priority: 0.7,
     }));
   } catch (err) {
     console.error("[Sitemap Generation] Failed to fetch resources:", err);

@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import ResourcesClient from "./ResourcesClient";
 import { generatePageMetadata } from "@/lib/seo.config";
 import { prisma } from "@/lib/prisma";
@@ -40,7 +41,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
         const metadata = generatePageMetadata(
           `${resource.title} - Quick Reference | Velonx`,
           resource.description,
-          `/resources?id=${resourceId}`
+          `/resources/${resourceId}`
         );
         return {
           ...metadata,
@@ -72,49 +73,22 @@ export default async function ResourcesPage({ searchParams }: Props) {
   const params = await searchParams;
   const resourceId = typeof params.id === "string" ? params.id : undefined;
 
-  // Fetch resource data for structured data if deep-linked
-  let resourceData = null;
-  let totalResources: number | undefined;
-
+  // Handle legacy query params by redirecting to canonical dynamic route
   if (resourceId && resourceId.match(/^[0-9a-fA-F]{24}$/)) {
-    try {
-      const resource = await prisma.resource.findUnique({
-        where: { id: resourceId },
-      });
-      if (resource) {
-        resourceData = {
-          id: resource.id,
-          title: resource.title,
-          description: resource.description,
-          category: resource.category,
-          type: resource.type,
-          url: resource.url ?? undefined,
-          imageUrl: resource.imageUrl,
-          accessCount: resource.accessCount,
-          pdfUrl: resource.pdfUrl ?? undefined,
-          pdfFileName: resource.pdfFileName ?? undefined,
-          createdAt: resource.createdAt.toISOString(),
-          updatedAt: resource.updatedAt.toISOString(),
-        };
-      }
-    } catch (err) {
-      console.error("[SEO Structured Data] Failed to fetch resource:", err);
-    }
-  } else {
-    // Fetch total count for CollectionPage schema
-    try {
-      totalResources = await prisma.resource.count();
-    } catch (err) {
-      console.error("[SEO Structured Data] Failed to count resources:", err);
-    }
+    redirect(`/resources/${resourceId}`);
+  }
+
+  // Fetch total count for CollectionPage schema
+  let totalResources: number | undefined;
+  try {
+    totalResources = await prisma.resource.count();
+  } catch (err) {
+    console.error("[SEO Structured Data] Failed to count resources:", err);
   }
 
   return (
     <>
-      <ResourceStructuredData
-        resource={resourceData}
-        totalResources={totalResources}
-      />
+      <ResourceStructuredData totalResources={totalResources} />
       <ResourcesClient />
     </>
   );

@@ -13,6 +13,7 @@ import { ResourceCategory, ResourceType } from '@/lib/types/resources.types';
 import { trackResourceVisit } from '@/lib/utils/resource-visit-tracking';
 import { getCategoryPlaceholder } from '@/lib/utils/resource-placeholders';
 import { FileText, Share2, Check, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import Image from 'next/image';
 
 export interface ResourceCardProps {
@@ -92,7 +93,7 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
   const [imageError, setImageError] = React.useState(false);
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/resources?id=${resource.id}`;
+    const url = `${window.location.origin}/resources/${resource.id}`;
     const shareData = {
       title: resource.title,
       text: `Check out this resource: ${resource.title}`,
@@ -208,7 +209,9 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
           {getCategoryLabel(category)}
         </span>
         <h3 className="p-resource-title group-hover:text-primary dark:group-hover:text-cyan-light transition-colors m-0">
-          {resource.title}
+          <Link href={`/resources/${resource.id}`} className="hover:underline">
+            {resource.title}
+          </Link>
         </h3>
       </div>
       <p className="p-resource-desc line-clamp-3">
