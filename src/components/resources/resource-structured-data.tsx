@@ -90,7 +90,7 @@ export function ResourceStructuredData({ resource, totalResources }: ResourceStr
               '@type': 'ListItem',
               'position': 3,
               'name': resource.title,
-              'item': `${baseUrl}/resources?id=${resource.id}`,
+              'item': `${baseUrl}/resources/${resource.id}`,
             },
           ]
         : []),
@@ -99,15 +99,36 @@ export function ResourceStructuredData({ resource, totalResources }: ResourceStr
 
   // Individual resource schema
   if (resource) {
-    const resourceSchema = {
+    const schemaType = getSchemaType(resource.type);
+
+    const resourceSchema: Record<string, any> = {
       '@context': 'https://schema.org',
-      '@type': getSchemaType(resource.type),
+      '@type': schemaType,
+      'headline': resource.title,
       'name': resource.title,
       'description': resource.description,
-      'url': resource.url || `${baseUrl}/resources?id=${resource.id}`,
-      ...(resource.imageUrl && { 'image': resource.imageUrl }),
+      'url': `${baseUrl}/resources/${resource.id}`,
+      'mainEntityOfPage': {
+        '@type': 'WebPage',
+        '@id': `${baseUrl}/resources/${resource.id}`,
+      },
+      'image': resource.imageUrl ? [resource.imageUrl] : [`${baseUrl}/og/default.png`],
       'datePublished': resource.createdAt,
       'dateModified': resource.updatedAt,
+      'author': {
+        '@type': 'Organization',
+        'name': 'Velonx',
+        'url': baseUrl,
+      },
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'Velonx',
+        'url': baseUrl,
+        'logo': {
+          '@type': 'ImageObject',
+          'url': `${baseUrl}/favicon.png`,
+        },
+      },
       'provider': {
         '@type': 'Organization',
         'name': 'Velonx',
@@ -129,6 +150,14 @@ export function ResourceStructuredData({ resource, totalResources }: ResourceStr
           'encodingFormat': 'application/pdf',
           ...(resource.pdfFileName && { 'name': resource.pdfFileName }),
         },
+      }),
+      ...(resource.type === 'TOOL' && {
+        'operatingSystem': 'Web / Cross-Platform',
+        'applicationCategory': 'DeveloperApplication',
+      }),
+      ...(resource.type === 'VIDEO' && {
+        'uploadDate': resource.createdAt,
+        'thumbnailUrl': resource.imageUrl ? [resource.imageUrl] : [`${baseUrl}/og/default.png`],
       }),
     };
 
