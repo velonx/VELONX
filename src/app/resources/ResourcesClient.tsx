@@ -341,10 +341,10 @@ function ResourcesPage() {
           
           {activeTab === 'references' ? (
             <div role="tabpanel" id="tabpanel-references" aria-labelledby="tab-references">
-            // ==========================================
-            // QUICK REFERENCES VIEW (CHEAT SHEETS / DOWNLOADS)
-            // ==========================================
-            loadingSharedResource ? (
+              {/* ========================================== */}
+              {/* QUICK REFERENCES VIEW (CHEAT SHEETS / DOWNLOADS) */}
+              {/* ========================================== */}
+              {loadingSharedResource ? (
               <div className="text-center py-24">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#8B5CF6] mx-auto mb-4"></div>
                 <p className="text-muted-foreground text-sm">Loading shared reference...</p>
@@ -444,7 +444,7 @@ function ResourcesPage() {
                   </section>
                 )}
               </>
-            )
+            )}
             </div>
           ) : (
             // ==========================================
