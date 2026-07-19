@@ -4898,7 +4898,11 @@ body {
 .p-job-salary {
   font-family: var(--font-mono);
   font-weight: 600;
-  color: var(--cyan-light, #06b6d4);
+  color: #10b981;
+}
+
+.dark .p-job-salary {
+  color: #34d399;
 }
 
 .p-job-action {

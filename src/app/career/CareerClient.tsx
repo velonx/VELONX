@@ -361,7 +361,12 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                         </span>
                         <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 shrink-0" /> {item.location}</span>
                         {item.duration && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 shrink-0" /> {item.duration}</span>}
-                        {item.salary && <span className="p-job-salary flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5 shrink-0" /> {item.salary}</span>}
+                        {item.salary && (
+                            <span className="p-job-salary flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
+                                <IndianRupee className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" /> 
+                                <span className="text-emerald-600 dark:text-emerald-400">{item.salary}</span>
+                            </span>
+                        )}
                     </div>
 
                     {/* Deadline display */}
@@ -409,14 +414,15 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
 
                     <button
                         onClick={() => handleShare(item.slug || item.id, item.id, item.title, type)}
-                        title={copiedId === item.id ? 'Link copied!' : 'Share'}
-                        className="btn-redesign btn-redesign-secondary h-9 w-9 p-0 rounded-xl flex items-center justify-center hover:bg-muted shrink-0 cursor-pointer"
+                        title={copiedId === item.id ? 'Link copied!' : 'Share opportunity'}
+                        aria-label="Share opportunity"
+                        className="h-9 w-9 p-0 rounded-xl bg-card border border-border/80 shadow-xs flex items-center justify-center text-foreground hover:text-primary hover:border-primary/50 hover:bg-muted/80 transition-all shrink-0 cursor-pointer"
                         type="button"
                     >
                         {copiedId === item.id ? (
-                            <Check className="w-4 h-4 text-green-500" />
+                            <Check className="w-4 h-4 text-emerald-500" />
                         ) : (
-                            <Share2 className="w-4 h-4 text-muted-foreground" />
+                            <Share2 className="w-4 h-4 text-foreground/80" />
                         )}
                     </button>
                 </div>
