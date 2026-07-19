@@ -189,8 +189,8 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* Left Column: Image Banner — object-contain prevents cover truncation */}
-            <div className="lg:col-span-5 relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden bg-slate-900/90 border border-border/50 p-3 shadow-md">
+            {/* Left Column: Image Banner (16:9 ratio) */}
+            <div className="lg:col-span-5 relative w-full aspect-video rounded-2xl overflow-hidden bg-[#1E2330] border border-border/40 p-2 shadow-md">
               <Image
                 src={imageError ? getCategoryPlaceholder(category) : (resource.imageUrl || getCategoryPlaceholder(category))}
                 alt={resource.title}
@@ -201,7 +201,7 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
                 onError={() => setImageError(true)}
                 priority
               />
-              <span className={cn('absolute top-3 right-3 badge-event text-xs font-bold px-3 py-1 border bg-background/90 backdrop-blur-md shadow-xs', getTypeBadgeClass(type))}>
+              <span className={cn('absolute top-3 right-3 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 border rounded-full backdrop-blur-md shadow-xs', getTypeBadgeClass(type))}>
                 {type}
               </span>
             </div>
