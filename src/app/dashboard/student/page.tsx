@@ -332,12 +332,16 @@ function StudentDashboardContent() {
         progress: project.status === 'COMPLETED' ? 100 : project.status === 'IN_PROGRESS' ? 50 : 25,
         color: i % 3 === 0 ? "bg-[#5E239D]" : i % 3 === 1 ? "bg-[#7FD8D8]" : "bg-[#FF7F5C]",
         textColor: i % 3 === 1 ? "text-[#00443D]" : "text-white",
-        users: ["/avatars/1.png", "/avatars/2.png", "/avatars/3.png"],
         status: project.status,
         completedAt: project.completedAt || null,
         ownerId: project.ownerId,
         githubUrl: project.githubUrl || null,
         liveUrl: project.liveUrl || null,
+        logoUrl: project.logoUrl || null,
+        category: project.category || null,
+        techStack: project.techStack || [],
+        owner: project.owner || null,
+        members: project.members || [],
     })) || [];
 
     // Generate user initials
