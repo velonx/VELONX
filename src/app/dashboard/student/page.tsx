@@ -33,7 +33,7 @@ import { useProjects, useMeetings, useUserStats } from "@/lib/api/hooks";
 import { DailyCheckIn } from "@/components/daily-check-in";
 import { ProfileCompletionWizard } from "@/components/dashboard/ProfileCompletionWizard";
 import { getTier, getTierLabel } from "@/lib/utils/tiers";
-import { XP_THRESHOLDS } from "@/lib/utils/xp-constants";
+import { XP_THRESHOLDS, calculateLevel } from "@/lib/utils/xp-constants";
 import ReviewDialog from "@/components/dashboard/ReviewDialog";
 import { FollowersList } from "@/components/community/FollowersList";
 import { FollowingList } from "@/components/community/FollowingList";
@@ -167,7 +167,11 @@ function StudentDashboardContent() {
     const { data: userStats, loading: statsLoading } = useUserStats(session?.user?.id || 'skip');
 
     const activeXP = userStats?.user?.xp !== undefined ? userStats.user.xp : (user?.xp || 0);
-    const activeLevel = userStats?.user?.level !== undefined ? userStats.user.level : (user?.level || 1);
+    const activeLevel = (userStats?.user?.level && userStats.user.level > 0)
+        ? userStats.user.level
+        : (user?.level && user.level > 0)
+            ? user.level
+            : calculateLevel(activeXP);
 
     // Mentor sessions state with proper TypeScript types
     const [mentorSessions, setMentorSessions] = useState<MentorSession[]>([]);
@@ -391,30 +395,63 @@ function StudentDashboardContent() {
     return (
         <div className="container dashboard-layout px-4 md:px-8 pb-24 md:pb-16">
             {/* ====== Sidebar ====== */}
-            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:block rounded-2xl w-full">
+            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:block rounded-3xl w-full p-5 bg-white dark:bg-card border border-border/60 shadow-xs">
                 <div className="sr-only">Dashboard Setting</div>
-                <div className="dashboard-user-profile">
+                <div className="dashboard-user-profile flex flex-col items-center text-center pb-4 border-b border-border/60 gap-2">
                     {session.user?.image ? (
-                        <div className="w-18 h-18 rounded-full border-2 border-[#A78BFA] overflow-hidden" style={{ boxShadow: '0 0 20px rgba(124,58,237,0.15)' }}>
+                        <div className="w-18 h-18 rounded-full border-2 border-[#FF5D17] overflow-hidden shadow-md">
                             <Image src={session.user.image} alt="User" width={72} height={72} className="w-full h-full object-cover" />
                         </div>
                     ) : (
                         <div className="dashboard-user-avatar">{userInitials}</div>
                     )}
-                    <div className="dashboard-user-name">{session.user?.name || 'Student'}</div>
-                    <div className="dashboard-user-tag">{getLevelLabel(activeLevel)}</div>
+                    <div className="dashboard-user-name font-extrabold text-lg text-foreground">{session.user?.name || 'Student'}</div>
+                    <div className="dashboard-user-tag text-xs font-semibold text-muted-foreground uppercase tracking-wider">{getLevelLabel(activeLevel)}</div>
+                    <div className="mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF4ED] text-[#FF5D17] dark:bg-amber-500/10 dark:text-amber-400 font-extrabold text-xs">
+                        <span>⚡</span> Lvl {activeLevel}
+                    </div>
                 </div>
 
-                <div className="dashboard-menu">
+                <div className="dashboard-menu mt-4 flex flex-col gap-1.5">
                     {menuItems.map(item => (
                         <button
                             key={item.key}
-                            className={`dashboard-menu-item ${activeTab === item.key ? 'active' : ''}`}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer text-left w-full ${
+                                activeTab === item.key
+                                    ? 'bg-[#FFF4ED] text-[#FF5D17] dark:bg-amber-500/10 dark:text-amber-400'
+                                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                            }`}
                             onClick={() => setActiveTab(item.key)}
                         >
-                            <span>{item.emoji}</span> {item.label}
+                            <span className="text-base">{item.emoji}</span> {item.label}
                         </button>
                     ))}
+                </div>
+
+                {/* Sidebar Bottom XP Balance Box */}
+                <div className="bg-muted/20 dark:bg-card border border-border/60 rounded-3xl p-5 shadow-xs mt-6 space-y-3">
+                    <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block">XP Balance</span>
+                    <span className="text-2xl font-black text-foreground block tracking-tight">{activeXP} XP</span>
+                    <div className="relative py-1">
+                        <svg className="w-full h-12 overflow-visible" viewBox="0 0 160 45">
+                            <defs>
+                                <linearGradient id="sidebarXpGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#FF5D17" stopOpacity="0.35" />
+                                    <stop offset="100%" stopColor="#FF5D17" stopOpacity="0" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M 0 35 Q 30 30, 50 20 T 100 15 T 130 8 T 160 3 L 160 45 L 0 45 Z" fill="url(#sidebarXpGrad)" />
+                            <path d="M 0 35 Q 30 30, 50 20 T 100 15 T 130 8 T 160 3" fill="none" stroke="#FF5D17" strokeWidth="3" strokeLinecap="round" />
+                            <circle cx="160" cy="3" r="4" fill="#FF5D17" />
+                        </svg>
+                    </div>
+                    <div className="text-xs font-semibold text-muted-foreground space-y-0.5">
+                        <div className="text-foreground font-bold">Level {activeLevel}</div>
+                        <div>Keep going, {session.user?.name?.split(' ')[0] || 'Builder'}! 🚀</div>
+                    </div>
+                    <button className="w-full py-2.5 px-4 rounded-xl bg-muted/60 hover:bg-muted text-xs font-bold text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer">
+                        View XP Progress →
+                    </button>
                 </div>
             </aside>
 
@@ -427,7 +464,7 @@ function StudentDashboardContent() {
                             onClick={() => setActiveTab(item.key)}
                             className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all text-xs font-bold ${
                                 activeTab === item.key
-                                    ? 'text-[#7C3AED] bg-purple-50 dark:bg-purple-900/20'
+                                    ? 'text-[#FF5D17] bg-[#FFF4ED] dark:bg-amber-500/10'
                                     : 'text-muted-foreground'
                             }`}
                         >
@@ -453,26 +490,46 @@ function StudentDashboardContent() {
                     {statsLoading || projectsLoading ? (
                         <BentoStatsSkeleton />
                     ) : (
-                        <section className="dashboard-bento">
-                            <div className="dashboard-widget-card">
-                                <span className="dashboard-widget-label">XP Balance</span>
-                                <span className="dashboard-widget-value">{activeXP} XP</span>
-                                <span className="dashboard-widget-footer text-[#22C55E]">⚡ Level {activeLevel}</span>
+                        <section className="dashboard-bento grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                            <div className="bg-white dark:bg-card border border-border/60 rounded-3xl p-5 shadow-xs flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl font-bold shrink-0">
+                                    ⚡
+                                </div>
+                                <div>
+                                    <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block">XP BALANCE</span>
+                                    <span className="text-xl font-black text-foreground block tracking-tight">{activeXP} XP</span>
+                                    <span className="text-xs font-bold text-amber-500">⚡ Level {activeLevel}</span>
+                                </div>
                             </div>
-                            <div className="dashboard-widget-card">
-                                <span className="dashboard-widget-label">Enrolled Events</span>
-                                <span className="dashboard-widget-value">{userStats?.stats?.eventsAttending || 0} Active</span>
-                                <span className="dashboard-widget-footer text-muted-foreground">Events registered</span>
+                            <div className="bg-white dark:bg-card border border-border/60 rounded-3xl p-5 shadow-xs flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl font-bold shrink-0">
+                                    📅
+                                </div>
+                                <div>
+                                    <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block">ENROLLED EVENTS</span>
+                                    <span className="text-xl font-black text-foreground block tracking-tight">{userStats?.stats?.eventsAttending || 0} Active</span>
+                                    <span className="text-xs font-semibold text-muted-foreground">Events registered</span>
+                                </div>
                             </div>
-                            <div className="dashboard-widget-card">
-                                <span className="dashboard-widget-label">My Projects</span>
-                                <span className="dashboard-widget-value">{projectCounts.all} Total</span>
-                                <span className="dashboard-widget-footer text-[#7C3AED]">{projectCounts.inProgress} In Progress</span>
+                            <div className="bg-white dark:bg-card border border-border/60 rounded-3xl p-5 shadow-xs flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-500/10 text-purple-500 flex items-center justify-center text-xl font-bold shrink-0">
+                                    📁
+                                </div>
+                                <div>
+                                    <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block">MY PROJECTS</span>
+                                    <span className="text-xl font-black text-foreground block tracking-tight">{projectCounts.all} Total</span>
+                                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{projectCounts.inProgress} In Progress</span>
+                                </div>
                             </div>
-                            <div className="dashboard-widget-card">
-                                <span className="dashboard-widget-label">Builder Level</span>
-                                <span className="dashboard-widget-value">Lvl {activeLevel}</span>
-                                <span className="dashboard-widget-footer text-[#226CE0]">{getLevelLabel(activeLevel)}</span>
+                            <div className="bg-white dark:bg-card border border-border/60 rounded-3xl p-5 shadow-xs flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-500/10 text-orange-500 flex items-center justify-center text-xl font-bold shrink-0">
+                                    🏅
+                                </div>
+                                <div>
+                                    <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block">BUILDER LEVEL</span>
+                                    <span className="text-xl font-black text-foreground block tracking-tight">Lvl {activeLevel}</span>
+                                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{getLevelLabel(activeLevel)}</span>
+                                </div>
                             </div>
                         </section>
                     )}
@@ -483,24 +540,24 @@ function StudentDashboardContent() {
                             {/* Projects Section */}
                             <div>
                                 <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-2xl font-bold text-foreground">My Projects</h2>
+                                    <h2 className="text-2xl font-black text-foreground tracking-tight">My Projects</h2>
                                 </div>
 
                                 {/* Status Tabs */}
                                 <div className="flex flex-wrap gap-3 mb-6">
                                     <button
                                         onClick={() => handleProjectStatusChange('ALL')}
-                                        className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'ALL'
-                                            ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
-                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                        className={`px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm transition-all cursor-pointer ${projectStatusFilter === 'ALL'
+                                            ? 'bg-[#FF5D17] text-white shadow-md shadow-[#FF5D17]/25'
+                                            : 'bg-white dark:bg-card border border-border/60 text-muted-foreground hover:bg-muted/50'
                                             }`}
                                     >
                                         <div className="flex items-center gap-2">
                                             <FolderOpen className="w-4 h-4" />
                                             <span>All Projects</span>
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'ALL'
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-extrabold ${projectStatusFilter === 'ALL'
                                                 ? 'bg-white/20 text-white'
-                                                : 'bg-background text-foreground'
+                                                : 'bg-muted text-foreground'
                                                 }`}>
                                                 {projectCounts.all}
                                             </span>
@@ -509,17 +566,17 @@ function StudentDashboardContent() {
 
                                     <button
                                         onClick={() => handleProjectStatusChange('IN_PROGRESS')}
-                                        className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'IN_PROGRESS'
-                                            ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
-                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                        className={`px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm transition-all cursor-pointer ${projectStatusFilter === 'IN_PROGRESS'
+                                            ? 'bg-[#FF5D17] text-white shadow-md shadow-[#FF5D17]/25'
+                                            : 'bg-white dark:bg-card border border-border/60 text-muted-foreground hover:bg-muted/50'
                                             }`}
                                     >
                                         <div className="flex items-center gap-2">
                                             <Loader2 className="w-4 h-4" />
                                             <span>In Progress</span>
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'IN_PROGRESS'
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-extrabold ${projectStatusFilter === 'IN_PROGRESS'
                                                 ? 'bg-white/20 text-white'
-                                                : 'bg-background text-foreground'
+                                                : 'bg-muted text-foreground'
                                                 }`}>
                                                 {projectCounts.inProgress}
                                             </span>
@@ -528,17 +585,17 @@ function StudentDashboardContent() {
 
                                     <button
                                         onClick={() => handleProjectStatusChange('COMPLETED')}
-                                        className={`px-6 py-3 rounded-2xl font-bold transition-all ${projectStatusFilter === 'COMPLETED'
-                                            ? 'bg-[#226CE0] text-white shadow-lg shadow-[#226CE0]/30'
-                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                        className={`px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm transition-all cursor-pointer ${projectStatusFilter === 'COMPLETED'
+                                            ? 'bg-[#FF5D17] text-white shadow-md shadow-[#FF5D17]/25'
+                                            : 'bg-white dark:bg-card border border-border/60 text-muted-foreground hover:bg-muted/50'
                                             }`}
                                     >
                                         <div className="flex items-center gap-2">
                                             <CheckCircle2 className="w-4 h-4" />
                                             <span>Completed</span>
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${projectStatusFilter === 'COMPLETED'
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-extrabold ${projectStatusFilter === 'COMPLETED'
                                                 ? 'bg-white/20 text-white'
-                                                : 'bg-background text-foreground'
+                                                : 'bg-muted text-foreground'
                                                 }`}>
                                                 {projectCounts.completed}
                                             </span>
@@ -584,13 +641,12 @@ function StudentDashboardContent() {
                             <DailyCheckIn />
 
                             {/* Dynamic Badges System Widget */}
-                            <div className="bg-card border border-border rounded-2xl p-6 shadow-xl relative overflow-hidden">
-                                <div className="absolute -top-12 -right-12 w-24 h-24 bg-primary/5 rounded-full blur-2xl" />
+                            <div className="bg-white dark:bg-card border border-border/60 rounded-4xl p-6 shadow-xs relative overflow-hidden">
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-sm font-bold text-foreground">Badges</h3>
                                     {!loadingBadges && (
-                                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                                            {badges.filter(b => b.earned).length} / {badges.length} Earned
+                                        <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                            {badges.filter(b => b.earned).length} / {badges.length || 44} Earned
                                         </span>
                                     )}
                                 </div>
@@ -603,22 +659,15 @@ function StudentDashboardContent() {
                                     </div>
                                 ) : (
                                     <>
-                                        <div className="grid grid-cols-3 gap-3">
+                                        <div className="grid grid-cols-3 gap-3 my-2">
                                             {badges
                                                 .sort((a, b) => {
-                                                    // Earned first
                                                     if (a.earned && !b.earned) return -1;
                                                     if (!a.earned && b.earned) return 1;
-                                                    
-                                                    // Rarity weight
                                                     const rarityWeight = { LEGENDARY: 4, EPIC: 3, RARE: 2, COMMON: 1 };
                                                     const aWeight = rarityWeight[a.rarity as keyof typeof rarityWeight] || 0;
                                                     const bWeight = rarityWeight[b.rarity as keyof typeof rarityWeight] || 0;
-                                                    if (a.earned && b.earned && aWeight !== bWeight) {
-                                                        return bWeight - aWeight;
-                                                    }
-                                                    
-                                                    return 0;
+                                                    return bWeight - aWeight;
                                                 })
                                                 .slice(0, showAllBadges ? undefined : 6)
                                                 .map(badge => (
@@ -628,7 +677,7 @@ function StudentDashboardContent() {
                                                             setSelectedBadge(badge);
                                                             setShowBadgeModal(true);
                                                         }}
-                                                        className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-zinc-900/10 border border-transparent hover:border-border hover:bg-zinc-900/40 transition-all duration-200 cursor-pointer group text-center"
+                                                        className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-muted/30 border border-transparent hover:border-border hover:bg-muted/70 transition-all duration-200 cursor-pointer group text-center"
                                                         title={`${badge.name} (${badge.rarity})`}
                                                     >
                                                         <BadgeIcon 
@@ -638,21 +687,19 @@ function StudentDashboardContent() {
                                                             earned={badge.earned} 
                                                             size="md" 
                                                         />
-                                                        <span className="text-[10px] font-bold mt-2 text-muted-foreground group-hover:text-foreground truncate w-full px-1">
+                                                        <span className="text-[11px] font-bold text-foreground mt-2 truncate w-full">
                                                             {badge.name}
                                                         </span>
                                                     </div>
-                                                ))
-                                            }
+                                                ))}
                                         </div>
-                                        {badges.length > 6 && (
-                                            <button
-                                                onClick={() => setShowAllBadges(!showAllBadges)}
-                                                className="w-full mt-4 py-2 bg-secondary border border-border text-foreground hover:bg-zinc-800 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
-                                            >
-                                                {showAllBadges ? "Show Less" : "View All Badges"}
-                                            </button>
-                                        )}
+
+                                        <button
+                                            onClick={() => setShowAllBadges(!showAllBadges)}
+                                            className="w-full text-center py-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1.5 mt-2 border-t border-border/40 cursor-pointer"
+                                        >
+                                            {showAllBadges ? "Show Less" : "View All Badges →"}
+                                        </button>
                                     </>
                                 )}
                             </div>
