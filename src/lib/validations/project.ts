@@ -10,10 +10,11 @@ export const createProjectSchema = z.object({
   status: z.enum(["PLANNING", "IN_PROGRESS", "COMPLETED", "ARCHIVED"]).default("PLANNING"),
   category: z.enum(["WEB_DEV", "MOBILE", "AI_ML", "DATA_SCIENCE", "DEVOPS", "DESIGN", "OTHER"]).default("OTHER"),
   difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).default("BEGINNER"),
-  imageUrl: z.string().url("Invalid image URL").optional(),
-  githubUrl: z.string().url("Invalid GitHub URL").optional(),
-  liveUrl: z.string().url("Invalid live URL").optional(),
-  outcomes: z.string().optional(),
+  imageUrl: z.string().url("Invalid image URL").optional().nullable().or(z.literal('')),
+  logoUrl: z.string().url("Invalid logo URL").optional().nullable().or(z.literal('')),
+  githubUrl: z.string().url("Invalid GitHub URL").optional().nullable().or(z.literal('')),
+  liveUrl: z.string().url("Invalid live URL").optional().nullable().or(z.literal('')),
+  outcomes: z.string().optional().nullable(),
 });
 
 /**
@@ -26,10 +27,11 @@ export const updateProjectSchema = z.object({
   status: z.enum(["PLANNING", "IN_PROGRESS", "COMPLETED", "ARCHIVED"]).optional(),
   category: z.enum(["WEB_DEV", "MOBILE", "AI_ML", "DATA_SCIENCE", "DEVOPS", "DESIGN", "OTHER"]).optional(),
   difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
-  imageUrl: z.string().url("Invalid image URL").optional(),
-  githubUrl: z.string().url("Invalid GitHub URL").optional(),
-  liveUrl: z.string().url("Invalid live URL").optional(),
-  outcomes: z.string().optional(),
+  imageUrl: z.string().url("Invalid image URL").optional().nullable().or(z.literal('')),
+  logoUrl: z.string().url("Invalid logo URL").optional().nullable().or(z.literal('')),
+  githubUrl: z.string().url("Invalid GitHub URL").optional().nullable().or(z.literal('')),
+  liveUrl: z.string().url("Invalid live URL").optional().nullable().or(z.literal('')),
+  outcomes: z.string().optional().nullable(),
 }).refine(
   (data) => {
     // If status is COMPLETED, outcomes should be provided

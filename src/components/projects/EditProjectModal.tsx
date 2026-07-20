@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Github, ExternalLink, Image as ImageIcon, X, Pencil } from 'lucide-react';
+import { Loader2, Github, ExternalLink, Image as ImageIcon, X, Pencil, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { ExtendedProject } from '../../lib/types/project-page.types';
 import { cn } from '@/lib/utils';
@@ -51,6 +51,7 @@ const DIFFICULTIES: { value: Difficulty; label: string; color: string }[] = [
 
 export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProjectModalProps) {
     const [saving, setSaving] = useState(false);
+    const [uploadingLogo, setUploadingLogo] = useState(false);
     const [techInput, setTechInput] = useState('');
 
     const [form, setForm] = useState({
@@ -62,6 +63,7 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
         githubUrl: '',
         liveUrl: '',
         imageUrl: '',
+        logoUrl: '',
     });
 
     // Sync form whenever the project changes (or modal opens)
@@ -76,6 +78,7 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
                 githubUrl: project.githubUrl || '',
                 liveUrl: project.liveUrl || '',
                 imageUrl: project.imageUrl || '',
+                logoUrl: project.logoUrl || '',
             });
         }
     }, [project, isOpen]);
@@ -107,6 +110,41 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
         try { new URL(val); return true; } catch { return false; }
     };
 
+    const handleLogoFileUpload = async (file: File) => {
+        if (!file.type.startsWith('image/')) {
+            toast.error('Please select an image file (PNG, JPG, WebP, SVG)');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('Logo image size must be less than 5MB');
+            return;
+        }
+
+        setUploadingLogo(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('folder', 'velonx/projects/logos');
+
+            const res = await secureFetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success && data.url) {
+                setForm(prev => ({ ...prev, logoUrl: data.url }));
+                toast.success('Project logo uploaded!');
+            } else {
+                toast.error(data.error?.message || 'Failed to upload logo image');
+            }
+        } catch {
+            toast.error('Failed to upload logo image');
+        } finally {
+            setUploadingLogo(false);
+        }
+    };
+
     const validate = () => {
         if (!form.title.trim() || form.title.trim().length < 3) {
             toast.error('Title must be at least 3 characters');
@@ -132,6 +170,10 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
             toast.error('Please enter a valid Image URL');
             return false;
         }
+        if (form.logoUrl && !isValidUrl(form.logoUrl)) {
+            toast.error('Please enter a valid Logo URL');
+            return false;
+        }
         return true;
     };
 
@@ -147,11 +189,11 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
                 techStack: form.techStack,
                 category: form.category,
                 difficulty: form.difficulty,
+                githubUrl: form.githubUrl.trim() || null,
+                liveUrl: form.liveUrl.trim() || null,
+                imageUrl: form.imageUrl.trim() || null,
+                logoUrl: form.logoUrl.trim() || null,
             };
-
-            if (form.githubUrl.trim()) body.githubUrl = form.githubUrl.trim();
-            if (form.liveUrl.trim()) body.liveUrl = form.liveUrl.trim();
-            if (form.imageUrl.trim()) body.imageUrl = form.imageUrl.trim();
 
             const res = await secureFetch(`/api/projects/${project.id}`, {
                 method: 'PATCH',
@@ -321,7 +363,69 @@ export function EditProjectModal({ project, isOpen, onClose, onSaved }: EditProj
 
                     {/* Links section */}
                     <div className="space-y-4 p-4 bg-muted/30 rounded-xl border border-border">
-                        <p className="text-sm font-bold text-foreground">Project Links</p>
+                        <p className="text-sm font-bold text-foreground">Project Links & Assets</p>
+
+                        {/* Project Logo Upload */}
+                        <div className="space-y-1.5">
+                            <Label htmlFor="ep-logo-file" className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                                <Upload className="h-3.5 w-3.5" aria-hidden="true" />
+                                Project Logo (Optional)
+                            </Label>
+
+                            {form.logoUrl ? (
+                                <div className="flex items-center gap-3 p-2.5 bg-background rounded-xl border border-border">
+                                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center shrink-0">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={form.logoUrl} alt="Project logo preview" className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-medium text-foreground truncate">{form.logoUrl}</p>
+                                        <p className="text-[10px] text-muted-foreground">Uploaded logo</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setForm(prev => ({ ...prev, logoUrl: '' }))}
+                                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-muted rounded-md transition-colors"
+                                        title="Remove logo"
+                                        aria-label="Remove uploaded logo"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <label
+                                    htmlFor="ep-logo-file"
+                                    className={cn(
+                                        "flex flex-col items-center justify-center p-4 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 hover:bg-muted/50 transition-all text-center",
+                                        uploadingLogo && "opacity-50 pointer-events-none"
+                                    )}
+                                >
+                                    {uploadingLogo ? (
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                            <span>Uploading logo...</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                                            <Upload className="h-5 w-5 text-primary mb-0.5" />
+                                            <span className="text-xs font-semibold text-foreground">Click to upload project logo</span>
+                                            <span className="text-[11px]">PNG, JPG, WebP or SVG (Max 5MB)</span>
+                                        </div>
+                                    )}
+                                    <input
+                                        id="ep-logo-file"
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handleLogoFileUpload(file);
+                                        }}
+                                        disabled={uploadingLogo}
+                                    />
+                                </label>
+                            )}
+                        </div>
 
                         {/* GitHub URL */}
                         <div className="space-y-1.5">

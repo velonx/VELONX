@@ -110,6 +110,7 @@ export interface Project {
   category: ProjectCategory;
   difficulty: ProjectDifficulty;
   imageUrl: string | null;
+  logoUrl?: string | null;
   githubUrl: string | null;
   liveUrl: string | null;
   outcomes: string | null;

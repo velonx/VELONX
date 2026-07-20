@@ -152,9 +152,24 @@ export function ProjectModal({
         />
 
         <DialogHeader className="pt-2">
-          <DialogTitle id={titleId} className="text-2xl font-bold">
-            {project.title}
-          </DialogTitle>
+          <div className="flex items-center gap-3 mb-1">
+            {project.logoUrl ? (
+              <div className="w-12 h-12 rounded-xl overflow-hidden border border-border bg-background shadow-xs shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={project.logoUrl}
+                  alt={`${project.title} logo`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
+              </div>
+            ) : null}
+            <DialogTitle id={titleId} className="text-2xl font-bold">
+              {project.title}
+            </DialogTitle>
+          </div>
           <DialogDescription id={descriptionId}>
             <span className="sr-only">Full project details for {project.title}</span>
           </DialogDescription>
@@ -215,7 +230,7 @@ export function ProjectModal({
                   >
                     <Avatar className="size-10">
                       {userImage && <AvatarImage src={userImage} alt={userName} />}
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+                      <AvatarFallback className="bg-linear-to-br from-blue-500 to-purple-600 text-white font-semibold">
                         {initials}
                       </AvatarFallback>
                     </Avatar>

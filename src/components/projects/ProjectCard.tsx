@@ -140,10 +140,33 @@ const ProjectCardComponent = ({
                 <div className="p-project-stars">⭐ {starCount}</div>
             </div>
 
-            {/* Title & Description */}
-            <h2 className="p-project-title group-hover:text-primary dark:group-hover:text-cyan-light transition-colors">
-                {project.title}
-            </h2>
+            {/* Title with Project Logo */}
+            <div className="flex items-start gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl overflow-hidden border border-border/80 bg-background/80 flex items-center justify-center shrink-0 shadow-xs group-hover:border-primary/40 transition-colors mt-0.5">
+                    {project.logoUrl ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                            src={project.logoUrl}
+                            alt={`${project.title} logo`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                                (e.target as HTMLElement).style.display = 'none';
+                            }}
+                        />
+                    ) : (
+                        <span className="text-base font-extrabold text-primary dark:text-cyan-light select-none">
+                            {project.title.charAt(0).toUpperCase()}
+                        </span>
+                    )}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <h2 className="p-project-title group-hover:text-primary dark:group-hover:text-cyan-light transition-colors">
+                        {project.title}
+                    </h2>
+                </div>
+            </div>
+
+            {/* Description */}
             <p className="p-project-desc line-clamp-3">
                 {project.description}
             </p>
@@ -252,6 +275,7 @@ const ProjectCardComponent = ({
 export const ProjectCard = React.memo(ProjectCardComponent, (prev, next) =>
     prev.project.id === next.project.id &&
     prev.project.updatedAt === next.project.updatedAt &&
+    prev.project.logoUrl === next.project.logoUrl &&
     prev.joinRequestStatus === next.joinRequestStatus &&
     prev.isJoining === next.isJoining &&
     prev.currentUserId === next.currentUserId &&

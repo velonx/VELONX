@@ -560,6 +560,7 @@ model Project {
   category    ProjectCategory   @default(OTHER)
   difficulty  ProjectDifficulty @default(BEGINNER)
   imageUrl    String?
+  logoUrl     String?
   githubUrl   String?
   liveUrl     String?
   outcomes    String?

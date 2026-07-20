@@ -85,6 +85,7 @@ export class ProjectService {
           category: true,
           difficulty: true,
           imageUrl: true,
+          logoUrl: true,
           githubUrl: true,
           liveUrl: true,
           outcomes: true,
@@ -159,6 +160,7 @@ export class ProjectService {
         category: true,
         difficulty: true,
         imageUrl: true,
+        logoUrl: true,
         githubUrl: true,
         liveUrl: true,
         outcomes: true,
@@ -218,10 +220,11 @@ export class ProjectService {
     status?: string;
     category?: string;
     difficulty?: string;
-    imageUrl?: string;
-    githubUrl?: string;
-    liveUrl?: string;
-    outcomes?: string;
+    imageUrl?: string | null;
+    logoUrl?: string | null;
+    githubUrl?: string | null;
+    liveUrl?: string | null;
+    outcomes?: string | null;
     ownerId: string;
   }) {
     const project = await prisma.project.create({
@@ -233,6 +236,7 @@ export class ProjectService {
         category: (data.category as any) || "OTHER",
         difficulty: (data.difficulty as any) || "BEGINNER",
         imageUrl: data.imageUrl,
+        logoUrl: data.logoUrl,
         githubUrl: data.githubUrl,
         liveUrl: data.liveUrl,
         outcomes: data.outcomes,
@@ -248,6 +252,7 @@ export class ProjectService {
         category: true,
         difficulty: true,
         imageUrl: true,
+        logoUrl: true,
         githubUrl: true,
         liveUrl: true,
         outcomes: true,
@@ -299,10 +304,11 @@ export class ProjectService {
       status?: string;
       category?: string;
       difficulty?: string;
-      imageUrl?: string;
-      githubUrl?: string;
-      liveUrl?: string;
-      outcomes?: string;
+      imageUrl?: string | null;
+      logoUrl?: string | null;
+      githubUrl?: string | null;
+      liveUrl?: string | null;
+      outcomes?: string | null;
     }
   ) {
     // Check if project exists
@@ -318,6 +324,7 @@ export class ProjectService {
         ...(data.category && { category: data.category as any }),
         ...(data.difficulty && { difficulty: data.difficulty as any }),
         ...(data.imageUrl !== undefined && { imageUrl: data.imageUrl }),
+        ...(data.logoUrl !== undefined && { logoUrl: data.logoUrl }),
         ...(data.githubUrl !== undefined && { githubUrl: data.githubUrl }),
         ...(data.liveUrl !== undefined && { liveUrl: data.liveUrl }),
         ...(data.outcomes !== undefined && { outcomes: data.outcomes }),
@@ -332,6 +339,7 @@ export class ProjectService {
         category: true,
         difficulty: true,
         imageUrl: true,
+        logoUrl: true,
         githubUrl: true,
         liveUrl: true,
         outcomes: true,

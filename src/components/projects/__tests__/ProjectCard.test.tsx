@@ -11,6 +11,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom/vitest';
 import { ProjectCard } from '../ProjectCard';
 import { useSession } from 'next-auth/react';
 
@@ -83,6 +84,32 @@ describe('ProjectCard - Rendering', () => {
     );
     expect(screen.getByText('React')).toBeInTheDocument();
     expect(screen.getByText('Next.js')).toBeInTheDocument();
+  });
+
+  it('renders fallback initial when logoUrl is missing', () => {
+    render(
+      <ProjectCard 
+        project={{ ...mockProject, logoUrl: null } as any} 
+        joinRequestStatus="none"
+        onJoinRequest={vi.fn()}
+        onClick={vi.fn()}
+      />
+    );
+    expect(screen.getByText('T')).toBeInTheDocument();
+  });
+
+  it('renders logo image when logoUrl is provided', () => {
+    render(
+      <ProjectCard 
+        project={{ ...mockProject, logoUrl: 'https://example.com/logo.png' } as any} 
+        joinRequestStatus="none"
+        onJoinRequest={vi.fn()}
+        onClick={vi.fn()}
+      />
+    );
+    const logoImg = screen.getByAltText('Test Project logo');
+    expect(logoImg).toBeInTheDocument();
+    expect(logoImg).toHaveAttribute('src', 'https://example.com/logo.png');
   });
 });
 
