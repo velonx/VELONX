@@ -161,15 +161,15 @@ export function Navbar() {
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-blue-50 focus:text-[#226CE0]">
-                                        <Link href="/referrals" className="flex items-center gap-3 font-bold">
-                                            <Share2 className="w-4 h-4" />
-                                            Referrals
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-blue-50 focus:text-[#226CE0]">
                                         <Link href="/settings" className="flex items-center gap-3 font-bold">
                                             <Settings className="w-4 h-4" />
                                             Profile
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-blue-50 focus:text-[#226CE0]">
+                                        <Link href="/referrals" className="flex items-center gap-3 font-bold">
+                                            <Share2 className="w-4 h-4" />
+                                            Referrals
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator className="bg-gray-50 mx-2" />
