@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id: rawSlugOrId } = await params;
   const id = extractIdFromSlug(rawSlugOrId);
 
-  if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
+  if (!id || !id.match(/^[0-9a-fA-F]{24}$/i)) {
     return generatePageMetadata(
       'Resource Not Found | Velonx',
       'The requested learning resource could not be found.',
@@ -75,7 +75,7 @@ export default async function ResourceDetailPage({ params }: Props) {
   const { id: rawSlugOrId } = await params;
   const id = extractIdFromSlug(rawSlugOrId);
 
-  if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
+  if (!id || !id.match(/^[0-9a-fA-F]{24}$/i)) {
     notFound();
   }
 
@@ -89,8 +89,8 @@ export default async function ResourceDetailPage({ params }: Props) {
 
   const canonicalSlug = slugifyResource(resource.id, resource.title);
 
-  // Auto-redirect if accessed via raw ObjectId to canonical title slug URL
-  if (rawSlugOrId !== canonicalSlug) {
+  // Auto-redirect if accessed via raw ObjectId or outdated slug casing to canonical title slug URL
+  if (decodeURIComponent(rawSlugOrId).toLowerCase() !== canonicalSlug.toLowerCase()) {
     redirect(`/resources/${canonicalSlug}`);
   }
 

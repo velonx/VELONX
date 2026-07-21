@@ -4,6 +4,7 @@ import ResourcesClient from "./ResourcesClient";
 import { generatePageMetadata } from "@/lib/seo.config";
 import { prisma } from "@/lib/prisma";
 import { ResourceStructuredData } from "@/components/resources/resource-structured-data";
+import { extractIdFromSlug } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -29,9 +30,10 @@ interface Props {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const params = await searchParams;
-  const resourceId = typeof params.id === "string" ? params.id : undefined;
+  const rawId = typeof params.id === "string" ? params.id : undefined;
+  const resourceId = rawId ? extractIdFromSlug(rawId) : undefined;
 
-  if (resourceId && resourceId.match(/^[0-9a-fA-F]{24}$/)) {
+  if (resourceId && resourceId.match(/^[0-9a-fA-F]{24}$/i)) {
     try {
       const resource = await prisma.resource.findUnique({
         where: { id: resourceId },
@@ -71,11 +73,14 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function ResourcesPage({ searchParams }: Props) {
   const params = await searchParams;
-  const resourceId = typeof params.id === "string" ? params.id : undefined;
+  const rawId = typeof params.id === "string" ? params.id : undefined;
 
   // Handle legacy query params by redirecting to canonical dynamic route
-  if (resourceId && resourceId.match(/^[0-9a-fA-F]{24}$/)) {
-    redirect(`/resources/${resourceId}`);
+  if (rawId) {
+    const resourceId = extractIdFromSlug(rawId);
+    if (resourceId && resourceId.match(/^[0-9a-fA-F]{24}$/i)) {
+      redirect(`/resources/${rawId}`);
+    }
   }
 
   // Fetch total count for CollectionPage schema

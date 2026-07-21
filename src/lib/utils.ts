@@ -78,7 +78,7 @@ export function slugifyPost(postId: string, content: string): string {
 }
 
 export function slugifyResource(id: string, title: string): string {
-  const normalized = normalizeStylizedText(title);
+  const normalized = normalizeStylizedText(title || "");
   let cleaned = normalized
     .replace(/[^\w\s-]/g, "")
     .trim()
@@ -93,10 +93,12 @@ export function slugifyResource(id: string, title: string): string {
 
 export function extractIdFromSlug(slugOrId: string): string {
   if (!slugOrId) return "";
-  if (slugOrId.match(/^[0-9a-fA-F]{24}$/)) return slugOrId;
-  const match = slugOrId.match(/([0-9a-fA-F]{24})$/);
+  const trimmed = slugOrId.trim();
+  if (trimmed.match(/^[0-9a-fA-F]{24}$/)) return trimmed;
+  const match = trimmed.match(/(?:^|-)([0-9a-fA-F]{24})$/i);
   if (match) return match[1];
-  return slugOrId;
+  return trimmed;
 }
+
 
 

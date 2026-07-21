@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NotFoundError } from "@/lib/utils/errors";
+import { extractIdFromSlug } from "@/lib/utils";
 import { cacheService, CacheKeys, CacheTTL } from "./cache.service";
 
 /**
@@ -84,7 +85,8 @@ export class ResourceService {
   /**
    * Get resource by ID with full details
    */
-  async getResourceById(id: string) {
+  async getResourceById(idOrSlug: string) {
+    const id = extractIdFromSlug(idOrSlug);
     // Try to get from cache first
     const cacheKey = CacheKeys.resource.details(id);
     
