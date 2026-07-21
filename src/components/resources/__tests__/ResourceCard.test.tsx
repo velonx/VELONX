@@ -11,13 +11,14 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
 import { ResourceCard } from '../ResourceCard';
-import { Resource } from '@/lib/api/types';
-import { ResourceCategory, ResourceType } from '@/lib/types/resources.types';
-import * as visitTracking from '@/lib/utils/resource-visit-tracking';
+import { Resource } from '../../../lib/api/types';
+import { ResourceCategory, ResourceType } from '../../../lib/types/resources.types';
+import * as visitTracking from '../../../lib/utils/resource-visit-tracking';
 
 // Mock the visit tracking utility
-vi.mock('@/lib/utils/resource-visit-tracking', () => ({
+vi.mock('../../../lib/utils/resource-visit-tracking', () => ({
   trackResourceVisit: vi.fn(),
 }));
 
@@ -78,44 +79,33 @@ describe('ResourceCard', () => {
     expect(description.textContent?.length).toBeLessThanOrEqual(153); // 150 + '...'
   });
 
-  it('calls trackResourceVisit and opens URL when clicked', async () => {
+  it('renders access resource link pointing to resource detail page', () => {
     render(<ResourceCard resource={mockResource} />);
 
-    // Click the URL visit button inside the card
-    const urlButton = screen.getByLabelText('Visit resource URL');
-    fireEvent.click(urlButton);
-
-    await waitFor(() => {
-      expect(visitTracking.trackResourceVisit).toHaveBeenCalledWith('resource-1');
-      expect(global.open).toHaveBeenCalledWith(
-        'https://example.com/resource',
-        '_blank',
-        'noopener,noreferrer'
-      );
-    });
+    const accessButton = screen.getByLabelText('Access Test Resource');
+    expect(accessButton).toBeInTheDocument();
+    expect(accessButton.getAttribute('href')).toContain('/resources/test-resource-resource-1');
   });
 
-  it('opens URL even if visit tracking fails', async () => {
-    vi.mocked(visitTracking.trackResourceVisit).mockRejectedValue(new Error('Tracking failed'));
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+  it('renders share button and handles click', async () => {
+    // Mock navigator.clipboard
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: vi.fn().mockResolvedValue(undefined),
+      },
+    });
 
     render(<ResourceCard resource={mockResource} />);
 
-    // Click the URL visit button inside the card
-    const urlButton = screen.getByLabelText('Visit resource URL');
-    fireEvent.click(urlButton);
+    const shareButton = screen.getByLabelText('Share Test Resource');
+    expect(shareButton).toBeInTheDocument();
+    fireEvent.click(shareButton);
 
     await waitFor(() => {
-      expect(visitTracking.trackResourceVisit).toHaveBeenCalledWith('resource-1');
-      expect(global.open).toHaveBeenCalledWith(
-        'https://example.com/resource',
-        '_blank',
-        'noopener,noreferrer'
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        expect.stringContaining('/resources/test-resource-resource-1')
       );
-      expect(consoleSpy).toHaveBeenCalled();
     });
-
-    consoleSpy.mockRestore();
   });
 
   it('formats access count correctly', () => {
@@ -158,24 +148,19 @@ describe('ResourceCard', () => {
   });
 
   it('is keyboard accessible', async () => {
-    render(<ResourceCard resource={mockResource} />);
-
-    // The 'Visit resource URL' button is keyboard accessible via Tab/Enter
-    // We click the button directly to simulate keyboard interaction
-    const urlButton = screen.getByLabelText('Visit resource URL');
-    fireEvent.click(urlButton);
-
-    await waitFor(() => {
-      expect(visitTracking.trackResourceVisit).toHaveBeenCalledWith('resource-1');
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: vi.fn().mockResolvedValue(undefined),
+      },
     });
 
-    vi.clearAllMocks();
+    render(<ResourceCard resource={mockResource} />);
 
-    // Verify the button can also be triggered via Space key (fireEvent.click simulates this)
-    fireEvent.click(urlButton);
+    const shareButton = screen.getByLabelText('Share Test Resource');
+    fireEvent.click(shareButton);
 
     await waitFor(() => {
-      expect(visitTracking.trackResourceVisit).toHaveBeenCalledWith('resource-1');
+      expect(navigator.clipboard.writeText).toHaveBeenCalled();
     });
   });
 
