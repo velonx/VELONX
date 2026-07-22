@@ -171,26 +171,22 @@ export class CacheService {
     fetcher: () => Promise<T>,
     ttl?: number
   ): Promise<T> {
-    try {
-      // Try to get from cache first
-      const cachedValue = await this.get<T>(key)
+    // Try to get from cache first
+    const cachedValue = await this.get<T>(key).catch(() => null);
 
-      if (cachedValue !== null) {
-        return cachedValue
-      }
-
-      // Cache miss - fetch data
-      const value = await fetcher()
-
-      // Store in cache
-      await this.set(key, value, ttl)
-
-      return value
-    } catch (error) {
-      console.error(`[Cache] Error in getOrSet for key ${key}:`, error)
-      // On error, just fetch the data without caching
-      return await fetcher()
+    if (cachedValue !== null) {
+      return cachedValue;
     }
+
+    // Cache miss - fetch data (let errors propagate naturally)
+    const value = await fetcher();
+
+    // Store in cache asynchronously (don't let cache errors block the response)
+    this.set(key, value, ttl).catch((err) => {
+      console.error(`[Cache] Error storing key ${key}:`, err);
+    });
+
+    return value;
   }
 
   /**
