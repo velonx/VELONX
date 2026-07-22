@@ -77,10 +77,7 @@ export default async function ResourcesPage({ searchParams }: Props) {
 
   // Handle legacy query params by redirecting to canonical dynamic route
   if (rawId) {
-    const resourceId = extractIdFromSlug(rawId);
-    if (resourceId && resourceId.match(/^[0-9a-fA-F]{24}$/i)) {
-      redirect(`/resources/${rawId}`);
-    }
+    redirect(`/resources/${rawId}`);
   }
 
   // Fetch total count for CollectionPage schema

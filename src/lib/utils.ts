@@ -94,11 +94,17 @@ export function slugifyResource(id: string, title: string): string {
 export function extractIdFromSlug(slugOrId: string): string {
   if (!slugOrId) return "";
   const trimmed = slugOrId.trim();
-  if (trimmed.match(/^[0-9a-fA-F]{24}$/)) return trimmed;
-  const match = trimmed.match(/(?:^|-)([0-9a-fA-F]{24})$/i);
-  if (match) return match[1];
+
+  // If it's already a 24-character hex ObjectId
+  if (trimmed.match(/^[0-9a-fA-F]{24}$/i)) return trimmed;
+
+  // Match 24-character hex ObjectId preceded by hyphen or start
+  const matchHex = trimmed.match(/(?:^|-)([0-9a-fA-F]{24})$/i);
+  if (matchHex) return matchHex[1];
+
   return trimmed;
 }
+
 
 
 

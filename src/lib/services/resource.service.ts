@@ -87,15 +87,31 @@ export class ResourceService {
    */
   async getResourceById(idOrSlug: string) {
     const id = extractIdFromSlug(idOrSlug);
-    // Try to get from cache first
+    // Try to get from cache first using normalized id or idOrSlug
     const cacheKey = CacheKeys.resource.details(id);
     
     return await cacheService.getOrSet(
       cacheKey,
       async () => {
-        const resource = await prisma.resource.findUnique({
-          where: { id },
-        });
+        let resource = null;
+        try {
+          resource = await prisma.resource.findUnique({
+            where: { id },
+          });
+        } catch {
+          resource = null;
+        }
+
+        // If not found with extracted ID and idOrSlug differs, try idOrSlug as direct lookup
+        if (!resource && idOrSlug !== id) {
+          try {
+            resource = await prisma.resource.findUnique({
+              where: { id: idOrSlug },
+            });
+          } catch {
+            resource = null;
+          }
+        }
         
         if (!resource) {
           throw new NotFoundError("Resource");

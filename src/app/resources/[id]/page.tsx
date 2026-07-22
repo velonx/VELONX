@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { resourceService } from '@/lib/services/resource.service';
 import { generatePageMetadata } from '@/lib/seo.config';
 import { ResourceStructuredData } from '@/components/resources/resource-structured-data';
 import { ResourceDetailClient } from './ResourceDetailClient';
@@ -15,9 +16,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id: rawSlugOrId } = await params;
-  const id = extractIdFromSlug(rawSlugOrId);
 
-  if (!id || !id.match(/^[0-9a-fA-F]{24}$/i)) {
+  if (!rawSlugOrId) {
     return generatePageMetadata(
       'Resource Not Found | Velonx',
       'The requested learning resource could not be found.',
@@ -26,18 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   try {
-    const resource = await prisma.resource.findUnique({
-      where: { id },
-    });
-
-    if (!resource) {
-      return generatePageMetadata(
-        'Resource Not Found | Velonx',
-        'The requested learning resource could not be found.',
-        '/resources'
-      );
-    }
-
+    const resource = await resourceService.getResourceById(rawSlugOrId);
     const canonicalSlug = slugifyResource(resource.id, resource.title);
 
     const metadata = generatePageMetadata(
@@ -64,8 +53,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   } catch (err) {
     console.error('[SEO Metadata] Error fetching resource detail:', err);
     return generatePageMetadata(
-      'Learning Resources & Student Guides | Velonx',
-      'Access curated tutorials, courses, templates, and tools with Velonx.',
+      'Resource Not Found | Velonx',
+      'The requested learning resource could not be found.',
       '/resources'
     );
   }
@@ -73,15 +62,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ResourceDetailPage({ params }: Props) {
   const { id: rawSlugOrId } = await params;
-  const id = extractIdFromSlug(rawSlugOrId);
 
-  if (!id || !id.match(/^[0-9a-fA-F]{24}$/i)) {
+  if (!rawSlugOrId) {
     notFound();
   }
 
-  const resource = await prisma.resource.findUnique({
-    where: { id },
-  });
+  let resource = null;
+  try {
+    resource = await resourceService.getResourceById(rawSlugOrId);
+  } catch (err) {
+    notFound();
+  }
 
   if (!resource) {
     notFound();
@@ -89,7 +80,7 @@ export default async function ResourceDetailPage({ params }: Props) {
 
   const canonicalSlug = slugifyResource(resource.id, resource.title);
 
-  // Auto-redirect if accessed via raw ObjectId or outdated slug casing to canonical title slug URL
+  // Auto-redirect if accessed via raw ObjectId or outdated slug casing/format to canonical title slug URL
   if (decodeURIComponent(rawSlugOrId).toLowerCase() !== canonicalSlug.toLowerCase()) {
     redirect(`/resources/${canonicalSlug}`);
   }
