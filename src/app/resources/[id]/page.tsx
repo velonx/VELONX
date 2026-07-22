@@ -2,10 +2,11 @@ import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { resourceService } from '@/lib/services/resource.service';
+import { NotFoundError } from '@/lib/utils/errors';
 import { generatePageMetadata } from '@/lib/seo.config';
 import { ResourceStructuredData } from '@/components/resources/resource-structured-data';
 import { ResourceDetailClient } from './ResourceDetailClient';
-import { extractIdFromSlug, slugifyResource } from '@/lib/utils';
+import { slugifyResource } from '@/lib/utils';
 import type { Resource } from '@/lib/api/types';
 
 export const dynamic = 'force-dynamic';
@@ -51,7 +52,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
     };
   } catch (err) {
-    console.error('[SEO Metadata] Error fetching resource detail:', err);
+    // Note: do NOT call notFound() here — it throws internally and would be
+    // swallowed by this catch block, producing an unhandled error instead.
+    if (!(err instanceof NotFoundError)) {
+      console.error('[SEO Metadata] Error fetching resource detail:', err);
+    }
     return generatePageMetadata(
       'Resource Not Found | Velonx',
       'The requested learning resource could not be found.',
@@ -89,15 +94,18 @@ export default async function ResourceDetailPage({ params }: Props) {
     notFound();
   }
 
-  let resource = null;
+  // IMPORTANT: Do NOT call notFound() inside a catch block.
+  // notFound() throws a special NEXT_NOT_FOUND error internally; if thrown inside
+  // a catch block it gets treated as an unhandled error by the RSC runtime.
+  // Instead, re-throw non-NotFound errors and let them surface naturally.
+  let resource;
   try {
     resource = await resourceService.getResourceById(rawSlugOrId);
   } catch (err) {
-    notFound();
-  }
-
-  if (!resource) {
-    notFound();
+    if (err instanceof NotFoundError) {
+      notFound();
+    }
+    throw err; // re-throw unexpected errors (DB down, etc.) for proper 500 handling
   }
 
   const canonicalSlug = slugifyResource(resource.id, resource.title);
