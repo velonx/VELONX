@@ -255,7 +255,11 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
                   )}
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-4 h-4 text-emerald-500" />
-                    <span>Added {new Date(resource.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
+                    <span>Added {(() => {
+                      if (!resource.createdAt) return '';
+                      const d = new Date(resource.createdAt);
+                      return isNaN(d.getTime()) ? '' : d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+                    })()}</span>
                   </div>
                 </div>
               </div>

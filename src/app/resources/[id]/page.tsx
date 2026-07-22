@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const metadata = generatePageMetadata(
       `${resource.title} - Quick Reference | Velonx`,
-      resource.description,
+      resource.description || '',
       `/resources/${canonicalSlug}`,
       resource.imageUrl ?? undefined
     );
@@ -39,9 +39,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       ...metadata,
       keywords: [
-        resource.title.toLowerCase(),
-        resource.category.toLowerCase().replace('_', ' '),
-        resource.type.toLowerCase(),
+        (resource.title || '').toLowerCase(),
+        (resource.category || '').toLowerCase().replace('_', ' '),
+        (resource.type || '').toLowerCase(),
         'developer cheat sheet',
         'quick reference guide',
         'programming PDF guide',
@@ -57,6 +57,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'The requested learning resource could not be found.',
       '/resources'
     );
+  }
+}
+
+function formatIsoDate(dateVal: Date | string | null | undefined): string {
+  if (!dateVal) return new Date().toISOString();
+  if (typeof dateVal === 'string') return dateVal;
+  if (dateVal instanceof Date) return dateVal.toISOString();
+  try {
+    return new Date(dateVal).toISOString();
+  } catch {
+    return new Date().toISOString();
+  }
+}
+
+function formatIsoDateOptional(dateVal: Date | string | null | undefined): string | undefined {
+  if (!dateVal) return undefined;
+  if (typeof dateVal === 'string') return dateVal;
+  if (dateVal instanceof Date) return dateVal.toISOString();
+  try {
+    return new Date(dateVal).toISOString();
+  } catch {
+    return undefined;
   }
 }
 
@@ -80,8 +102,8 @@ export default async function ResourceDetailPage({ params }: Props) {
 
   const canonicalSlug = slugifyResource(resource.id, resource.title);
 
-  // Auto-redirect if accessed via raw ObjectId or outdated slug casing/format to canonical title slug URL
-  if (decodeURIComponent(rawSlugOrId).toLowerCase() !== canonicalSlug.toLowerCase()) {
+  // Auto-redirect ONLY if accessed via raw ObjectId (e.g. /resources/6a5921c54251ba16ca77e56a) to full canonical title slug URL
+  if (rawSlugOrId === resource.id && rawSlugOrId !== canonicalSlug) {
     redirect(`/resources/${canonicalSlug}`);
   }
 
@@ -99,9 +121,9 @@ export default async function ResourceDetailPage({ params }: Props) {
     pdfPublicId: resource.pdfPublicId ?? undefined,
     pdfFileName: resource.pdfFileName ?? undefined,
     pdfFileSize: resource.pdfFileSize ?? undefined,
-    pdfUploadedAt: resource.pdfUploadedAt?.toISOString(),
-    createdAt: resource.createdAt.toISOString(),
-    updatedAt: resource.updatedAt.toISOString(),
+    pdfUploadedAt: formatIsoDateOptional(resource.pdfUploadedAt),
+    createdAt: formatIsoDate(resource.createdAt),
+    updatedAt: formatIsoDate(resource.updatedAt),
   };
 
   // Fetch related resources in same category
@@ -129,9 +151,9 @@ export default async function ResourceDetailPage({ params }: Props) {
       pdfPublicId: r.pdfPublicId ?? undefined,
       pdfFileName: r.pdfFileName ?? undefined,
       pdfFileSize: r.pdfFileSize ?? undefined,
-      pdfUploadedAt: r.pdfUploadedAt?.toISOString(),
-      createdAt: r.createdAt.toISOString(),
-      updatedAt: r.updatedAt.toISOString(),
+      pdfUploadedAt: formatIsoDateOptional(r.pdfUploadedAt),
+      createdAt: formatIsoDate(r.createdAt),
+      updatedAt: formatIsoDate(r.updatedAt),
     }));
   } catch (err) {
     console.error('[Resource Detail Page] Failed to fetch related resources:', err);
@@ -149,8 +171,8 @@ export default async function ResourceDetailPage({ params }: Props) {
     accessCount: resource.accessCount,
     pdfUrl: resource.pdfUrl ?? undefined,
     pdfFileName: resource.pdfFileName ?? undefined,
-    createdAt: resource.createdAt.toISOString(),
-    updatedAt: resource.updatedAt.toISOString(),
+    createdAt: formatIsoDate(resource.createdAt),
+    updatedAt: formatIsoDate(resource.updatedAt),
   };
 
   return (
@@ -163,3 +185,4 @@ export default async function ResourceDetailPage({ params }: Props) {
     </>
   );
 }
+
