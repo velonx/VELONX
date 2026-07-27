@@ -241,7 +241,7 @@ export default function HomePage() {
   const { data: resources, loading: resourcesLoading } = useResources({ pageSize: 8 });
 
   return (
-    <div className="max-w-[1360px] mx-auto px-4 md:px-8 pb-16">
+    <div className="max-w-7xl mx-auto px-4 md:px-8 pb-16">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-foreground tracking-tight">
           Welcome back, {session?.user?.name?.split(" ")[0] || "Builder"}
