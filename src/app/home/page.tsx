@@ -241,7 +241,7 @@ export default function HomePage() {
   const { data: resources, loading: resourcesLoading } = useResources({ pageSize: 8 });
 
   return (
-    <div className="container px-4 md:px-8 pb-16">
+    <div className="max-w-[1360px] mx-auto px-4 md:px-8 pb-16">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-foreground tracking-tight">
           Welcome back, {session?.user?.name?.split(" ")[0] || "Builder"}
@@ -261,7 +261,7 @@ export default function HomePage() {
               <Link
                 key={tile.href + tile.label}
                 href={tile.href}
-                className="relative shrink-0 w-40 h-48 rounded-3xl bg-primary/10 p-4 overflow-hidden flex flex-col items-center hover:-translate-y-0.5 hover:shadow-md transition-all"
+                className="relative shrink-0 w-44 h-52 rounded-3xl bg-gradient-to-br from-[#FF7A00]/20 to-[#FFA800]/10 dark:from-[#FF8A00]/25 dark:to-[#FF3C00]/10 p-4 overflow-hidden flex flex-col items-center hover:-translate-y-0.5 hover:shadow-md transition-all"
               >
                 <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/50 dark:bg-white/10 blur-2xl pointer-events-none" />
                 <p className="relative shrink-0 text-sm font-extrabold text-foreground text-center leading-tight mb-3">
@@ -272,8 +272,8 @@ export default function HomePage() {
                     <Image
                       src={imageUrl}
                       alt={tile.label}
-                      width={104}
-                      height={104}
+                      width={140}
+                      height={140}
                       className="max-w-full max-h-full w-auto h-auto object-contain"
                     />
                   ) : (
