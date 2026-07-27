@@ -7,7 +7,6 @@ import { useSession } from "next-auth/react";
 import { useEvents, useResources, useProjects } from "@/lib/api/hooks";
 import type { Resource, Project } from "@/lib/api/types";
 import {
-  Calendar,
   MapPin,
   Briefcase,
   Code2,
@@ -16,18 +15,13 @@ import {
   BookOpen,
   UsersRound,
   Share2,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 
 // Structural pass only — visual design to be revisited later.
 // Only tiles with a real image are shown; add more once you have art for them.
 const HOME_TILES: { label: string; href: string; icon: LucideIcon; imageUrl: string }[] = [
-  {
-    label: "Mentorship",
-    href: "/mentors",
-    icon: GraduationCap,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785154972/mentor_cs1wky.png",
-  },
   {
     label: "Internships",
     href: "/career?tab=internships",
@@ -47,16 +41,16 @@ const HOME_TILES: { label: string; href: string; icon: LucideIcon; imageUrl: str
     imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153982/projects_q6vbrz.png",
   },
   {
+    label: "Mentorship",
+    href: "/mentors",
+    icon: GraduationCap,
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785154972/mentor_cs1wky.png",
+  },
+  {
     label: "Hackathons",
     href: "/events",
     icon: Trophy,
     imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153930/events_Background_Removed_mldvpl.png",
-  },
-  {
-    label: "Resources",
-    href: "/resources",
-    icon: BookOpen,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153989/resources_zxqiqs.png",
   },
   {
     label: "Community",
@@ -69,6 +63,12 @@ const HOME_TILES: { label: string; href: string; icon: LucideIcon; imageUrl: str
     href: "/network",
     icon: Share2,
     imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153965/networking_Background_Removed_mxmdaj.png",
+  },
+  {
+    label: "Resources",
+    href: "/resources",
+    icon: BookOpen,
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153989/resources_zxqiqs.png",
   },
 ];
 
@@ -152,22 +152,27 @@ function OpportunityCard({ item }: { item: Opportunity }) {
       href={`/career/${item.slug || item.id}`}
       className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card p-4 hover:shadow-md transition-shadow"
     >
-      <div className="flex items-center justify-between mb-3">
-        <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center overflow-hidden shrink-0">
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex flex-col gap-1.5 min-w-0">
+          {item.salary && (
+            <p className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+              <Wallet className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{item.salary}</span>
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <MapPin className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">{item.location}</span>
+          </p>
+        </div>
+        <span className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center overflow-hidden shrink-0">
           {item.imageUrl ? (
-            <Image src={item.imageUrl} alt={item.company} width={40} height={40} className="object-contain w-full h-full" />
+            <Image src={item.imageUrl} alt={item.company} width={64} height={64} className="object-contain w-full h-full p-1.5" />
           ) : (
-            <Briefcase className="w-5 h-5 text-muted-foreground" />
+            <Briefcase className="w-6 h-6 text-muted-foreground" />
           )}
         </span>
-        {item.salary && (
-          <span className="text-[10px] font-extrabold text-emerald-600">{item.salary}</span>
-        )}
       </div>
-      <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
-        <MapPin className="w-3 h-3" />
-        {item.location}
-      </p>
       <p className="text-sm font-bold text-foreground line-clamp-2 mb-1">{item.title}</p>
       <p className="text-xs text-muted-foreground truncate">{item.company}</p>
     </Link>
@@ -205,25 +210,23 @@ function ProjectCard({ project }: { project: Project }) {
       href="/projects"
       className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card p-4 hover:shadow-md transition-shadow"
     >
-      <div className="flex items-center gap-3 mb-3">
-        <span className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center overflow-hidden shrink-0">
-          {project.logoUrl ? (
-            <Image src={project.logoUrl} alt={project.title} width={40} height={40} className="object-cover w-full h-full" />
-          ) : (
-            <Code2 className="w-5 h-5" />
-          )}
-        </span>
-        <p className="text-sm font-bold text-foreground line-clamp-2">{project.title}</p>
-      </div>
-      {project.techStack && project.techStack.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {project.techStack.slice(0, 3).map((tech) => (
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex flex-wrap gap-1.5 min-w-0">
+          {project.techStack?.slice(0, 3).map((tech) => (
             <span key={tech} className="px-2 py-0.5 rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
               {tech}
             </span>
           ))}
         </div>
-      )}
+        <span className="w-16 h-16 rounded-xl bg-primary/10 text-primary flex items-center justify-center overflow-hidden shrink-0">
+          {project.logoUrl ? (
+            <Image src={project.logoUrl} alt={project.title} width={64} height={64} className="object-cover w-full h-full" />
+          ) : (
+            <Code2 className="w-6 h-6" />
+          )}
+        </span>
+      </div>
+      <p className="text-sm font-bold text-foreground line-clamp-2">{project.title}</p>
     </Link>
   );
 }
@@ -250,7 +253,7 @@ export default function HomePage() {
 
       {/* Action Tiles */}
       <section className="mb-10">
-        <div className="flex gap-3 overflow-x-auto pb-2">
+        <div className="flex gap-4 overflow-x-auto pb-2">
           {HOME_TILES.map((tile) => {
             const Icon = tile.icon;
             const imageUrl = tile.imageUrl;
@@ -258,20 +261,23 @@ export default function HomePage() {
               <Link
                 key={tile.href + tile.label}
                 href={tile.href}
-                className="shrink-0 w-32 rounded-2xl border border-border/60 bg-card p-3 text-center hover:-translate-y-0.5 hover:shadow-md transition-all"
+                className="relative shrink-0 w-40 h-44 rounded-3xl bg-primary/10 p-4 overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all"
               >
-                <p className="text-xs font-bold text-foreground mb-2">{tile.label}</p>
-                <div className="w-full h-16 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden">
+                <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/50 dark:bg-white/10 blur-2xl pointer-events-none" />
+                <p className="relative text-sm font-extrabold text-foreground text-center leading-tight mb-2">
+                  {tile.label}
+                </p>
+                <div className="relative w-full h-24 flex items-end justify-center">
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
                       alt={tile.label}
-                      width={98}
-                      height={60}
-                      className="w-full h-full object-contain"
+                      width={110}
+                      height={96}
+                      className="w-auto h-full object-contain"
                     />
                   ) : (
-                    <Icon className="w-6 h-6 text-primary" />
+                    <Icon className="w-10 h-10 text-primary" />
                   )}
                 </div>
               </Link>
@@ -295,37 +301,28 @@ export default function HomePage() {
         }
       >
         {events?.map((event) => {
-          const date = new Date(event.date);
+          const posterSrc = event.posterUrl || event.imageUrl;
           return (
-            <Link
-              key={event.id}
-              href={`/events/${event.slug || event.id}`}
-              className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card overflow-hidden hover:shadow-md transition-shadow"
-            >
-              <div className="relative w-full h-32 bg-muted">
-                {event.imageUrl ? (
-                  <Image src={event.imageUrl} alt={event.title} fill className="object-cover" sizes="256px" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">
-                    {event.type}
-                  </div>
-                )}
-                <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-background/90 text-[10px] font-extrabold uppercase text-foreground">
-                  {event.type}
-                </span>
+          <Link
+            key={event.id}
+            href={`/events/${event.slug || event.id}`}
+            className="relative shrink-0 w-56 h-80 snap-start rounded-2xl overflow-hidden bg-muted hover:shadow-md transition-shadow"
+          >
+            {posterSrc ? (
+              <Image src={posterSrc} alt={event.title} fill className="object-cover" sizes="224px" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">
+                {event.type}
               </div>
-              <div className="p-4">
-                <p className="text-sm font-bold text-foreground line-clamp-2 mb-2">{event.title}</p>
-                <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
-                  <Calendar className="w-3 h-3" />
-                  {date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                </p>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  {event.location || "Online"}
-                </p>
-              </div>
-            </Link>
+            )}
+            <div className="absolute inset-x-0 bottom-0 p-4 pt-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent">
+              <p className="text-[11px] font-bold text-white/90 flex items-center gap-1 mb-1">
+                <MapPin className="w-3 h-3" />
+                {event.location || "Online"}
+              </p>
+              <h3 className="text-sm font-bold text-white line-clamp-2">{event.title}</h3>
+            </div>
+          </Link>
           );
         })}
       </Row>

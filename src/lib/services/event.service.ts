@@ -132,6 +132,7 @@ export class EventService {
           endDate: true,
           location: true,
           imageUrl: true,
+          posterUrl: true,
           maxSeats: true,
           whoCanParticipate: true,
           howItWorks: true,
@@ -284,6 +285,7 @@ export class EventService {
     endDate?: string;
     location?: string;
     imageUrl?: string;
+    posterUrl?: string;
     maxSeats?: number | null;
     whoCanParticipate?: string | null;
     howItWorks?: string | null;
@@ -301,6 +303,7 @@ export class EventService {
         endDate: data.endDate ? new Date(data.endDate) : null,
         location: data.location,
         imageUrl: data.imageUrl,
+        posterUrl: data.posterUrl,
         maxSeats: data.maxSeats as any,
         whoCanParticipate: data.whoCanParticipate as any,
         howItWorks: data.howItWorks as any,
@@ -348,6 +351,7 @@ export class EventService {
       endDate?: string;
       location?: string;
       imageUrl?: string;
+      posterUrl?: string;
       maxSeats?: number | null;
       status?: string;
       whoCanParticipate?: string | null;
@@ -402,6 +406,7 @@ export class EventService {
       updateData.endDate = data.endDate ? new Date(data.endDate) : null;
     if (data.location !== undefined) updateData.location = data.location;
     if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
+    if (data.posterUrl !== undefined) updateData.posterUrl = data.posterUrl;
     if (data.maxSeats !== undefined)
       (updateData as any).maxSeats = data.maxSeats;
     if (data.whoCanParticipate !== undefined)

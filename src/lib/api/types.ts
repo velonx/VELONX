@@ -58,6 +58,7 @@ export interface Event {
   location: string | null;
   meetingLink: string | null;
   imageUrl: string | null;
+  posterUrl?: string | null;
   maxSeats: number | null;
   whoCanParticipate?: string | null;
   howItWorks?: string | null;

@@ -32,6 +32,8 @@ export default function EventManagement() {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [posterPreview, setPosterPreview] = useState<string | null>(null);
+  const [uploadingPoster, setUploadingPoster] = useState(false);
   const [expandedRewardEventId, setExpandedRewardEventId] = useState<string | null>(null);
   const [expandedFAQEventId, setExpandedFAQEventId] = useState<string | null>(null);
   const [viewingAttendeesEvent, setViewingAttendeesEvent] = useState<Event | null>(null);
@@ -51,6 +53,7 @@ export default function EventManagement() {
     howItWorks: '',
     meetingLink: '',
     imageUrl: '',
+    posterUrl: '',
   });
 
   const { isDragging, dragHandlers } = useDragAndDrop((files) => {
@@ -58,6 +61,20 @@ export default function EventManagement() {
     const file = files[0];
     if (file) {
       const input = document.getElementById("eventImageUpload") as HTMLInputElement;
+      if (input) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        input.files = dataTransfer.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+  });
+
+  const { isDragging: isDraggingPoster, dragHandlers: posterDragHandlers } = useDragAndDrop((files) => {
+    if (uploadingPoster) return;
+    const file = files[0];
+    if (file) {
+      const input = document.getElementById("eventPosterUpload") as HTMLInputElement;
       if (input) {
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
@@ -106,6 +123,7 @@ export default function EventManagement() {
         howItWorks: formData.howItWorks || null,
         meetingLink: formData.meetingLink || null,
         imageUrl: formData.imageUrl || null,
+        posterUrl: formData.posterUrl || null,
       };
 
       if (editingEvent) {
@@ -134,6 +152,7 @@ export default function EventManagement() {
     const eventDate = new Date(event.date);
     setEditingEvent(event);
     setImagePreview(event.imageUrl || null);
+    setPosterPreview(event.posterUrl || null);
     setFormData({
       title: event.title,
       description: event.description,
@@ -146,6 +165,7 @@ export default function EventManagement() {
       howItWorks: event.howItWorks || '',
       meetingLink: event.meetingLink || '',
       imageUrl: event.imageUrl || '',
+      posterUrl: event.posterUrl || '',
     });
     setShowForm(true);
   };
@@ -303,9 +323,11 @@ export default function EventManagement() {
       howItWorks: '',
       meetingLink: '',
       imageUrl: '',
+      posterUrl: '',
     });
     setEditingEvent(null);
     setImagePreview(null);
+    setPosterPreview(null);
     setShowForm(false);
   };
 
@@ -610,6 +632,124 @@ export default function EventManagement() {
                           <>
                             <Download className="w-4 h-4" />
                             {isDragging ? "Drop image here" : "Or click/drag to upload from computer"}
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-span-2">
+                  <Label className="text-sm font-bold text-foreground">Featured Poster (optional)</Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Max size: 5MB. Recommended aspect ratio: 2:3 portrait (e.g. 450x676px) — shown on the Home page &quot;Featured&quot; carousel. Falls back to the Event Image above when not set.
+                  </p>
+                  <div className="bg-muted/30 rounded-2xl p-6 space-y-4 mt-2">
+                    {posterPreview && (
+                      <div className="relative w-40 h-60 rounded-xl overflow-hidden bg-muted">
+                        <Image
+                          src={posterPreview}
+                          alt="Poster preview"
+                          width={160}
+                          height={240}
+                          className="w-full h-full object-cover"
+                          onError={() => {
+                            setPosterPreview(null);
+                            toast.error("Invalid image URL");
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPosterPreview(null);
+                            setFormData({ ...formData, posterUrl: '' });
+                          }}
+                          className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all"
+                        >
+                          <XCircle className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Paste poster image URL here..."
+                        className="h-12 bg-background border-border rounded-xl"
+                        value={formData.posterUrl}
+                        onChange={(e) => {
+                          const url = e.target.value;
+                          setFormData({ ...formData, posterUrl: url });
+                          if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                            setPosterPreview(url);
+                          }
+                        }}
+                      />
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        id="eventPosterUpload"
+                        disabled={uploadingPoster}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setUploadingPoster(true);
+                            try {
+                              const reader = new FileReader();
+                              reader.onloadend = async () => {
+                                try {
+                                  const base64Image = reader.result as string;
+
+                                  const response = await secureFetch('/api/upload', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      image: base64Image,
+                                      folder: 'velonx/events/posters'
+                                    }),
+                                  });
+
+                                  const data = await response.json();
+
+                                  if (data.success) {
+                                    const uploadedUrl = data.data?.url || data.url;
+                                    setPosterPreview(uploadedUrl);
+                                    setFormData(prev => ({ ...prev, posterUrl: uploadedUrl }));
+                                    toast.success("Poster uploaded successfully!");
+                                  } else {
+                                    toast.error(data.error?.message || "Failed to upload poster");
+                                  }
+                                } catch (error) {
+                                  toast.error("Failed to upload poster");
+                                } finally {
+                                  setUploadingPoster(false);
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            } catch (error) {
+                              toast.error("Failed to process poster");
+                              setUploadingPoster(false);
+                            }
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor="eventPosterUpload"
+                        {...posterDragHandlers}
+                        className={`flex items-center justify-center gap-2 h-12 bg-background border-2 border-dashed border-border hover:border-primary rounded-xl cursor-pointer transition-all text-muted-foreground hover:text-primary font-medium ${uploadingPoster ? 'opacity-50 cursor-not-allowed' : ''} ${isDraggingPoster ? 'border-primary bg-primary/10' : ''}`}
+                      >
+                        {uploadingPoster ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Download className="w-4 h-4" />
+                            {isDraggingPoster ? "Drop image here" : "Or click/drag to upload from computer"}
                           </>
                         )}
                       </label>

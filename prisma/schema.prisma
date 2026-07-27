@@ -409,6 +409,9 @@ model Event {
   location    String?
   meetingLink String?
   imageUrl    String?
+  // Portrait poster (~2:3, e.g. 450x676) shown in the Home "Featured" carousel.
+  // Falls back to imageUrl when not set.
+  posterUrl   String?
   maxSeats    Int?
   whoCanParticipate String?
   howItWorks        String?
