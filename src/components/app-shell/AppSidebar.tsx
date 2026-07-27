@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { ChevronsLeft, ChevronsRight, Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AppSidebarNav } from "./AppSidebarNav";
@@ -9,21 +10,28 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 export function AppSidebar() {
   const { collapsed, toggleCollapsed } = useSidebarState();
+  const [hovering, setHovering] = useState(false);
+
+  // Pinned-collapsed sidebars auto-expand on hover and snap back on mouse leave.
+  // A pinned-open sidebar is unaffected by hover either way.
+  const effectiveCollapsed = collapsed && !hovering;
 
   return (
     <TooltipProvider delayDuration={200}>
       <aside
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
         className={cn(
           "hidden md:flex flex-col shrink-0 h-full border-r border-border bg-card/60 backdrop-blur-xl transition-[width] duration-200 ease-in-out overflow-hidden",
-          collapsed ? "w-20" : "w-64"
+          effectiveCollapsed ? "w-20" : "w-64"
         )}
       >
         <div className="flex-1 overflow-y-auto px-3 py-4">
-          <AppSidebarNav collapsed={collapsed} />
+          <AppSidebarNav collapsed={effectiveCollapsed} />
         </div>
 
         <div className="p-3 border-t border-border">
-          {!collapsed ? (
+          {!effectiveCollapsed ? (
             <Link
               href="/referrals"
               className="block rounded-2xl bg-accent/10 border border-accent/20 p-4 hover:bg-accent/15 transition-colors"
