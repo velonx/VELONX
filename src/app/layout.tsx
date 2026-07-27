@@ -1,10 +1,9 @@
 import type {} from "next";
 import "./globals.css";
-import { Footer } from "@/components/footer";
 import Providers from "@/components/providers";
 import { ScrollAnimationProvider } from "@/components/scroll-animation-provider";
 import { Toaster } from "react-hot-toast";
-import { ConditionalNavbar } from "@/components/conditional-navbar";
+import { AppShellSwitcher } from "@/components/app-shell/AppShellSwitcher";
 import { GoogleAnalytics } from "@/components/analytics";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -55,13 +54,11 @@ export default function RootLayout({
                 },
               }}
             />
-            <ConditionalNavbar />
-            <main id="main-content" className="flex-1">
+            <AppShellSwitcher>
               <ScrollAnimationProvider>
                 {children}
               </ScrollAnimationProvider>
-            </main>
-            <Footer />
+            </AppShellSwitcher>
           </ThemeProvider>
         </Providers>
       </body>

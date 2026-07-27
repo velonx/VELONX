@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import {
     LayoutDashboard,
     Timer,
@@ -63,6 +62,9 @@ import { GroupCardSkeletonLoader } from "@/components/community/GroupCardSkeleto
 // Overview Components
 import WelcomeSection from "@/components/dashboard/student/Overview/WelcomeSection";
 import ProgressSummary from "@/components/dashboard/student/Overview/ProgressSummary";
+import DashboardHero from "@/components/dashboard/student/Overview/DashboardHero";
+import PopularCategoriesWidget from "@/components/dashboard/student/Overview/PopularCategoriesWidget";
+import UpcomingEventsWidget from "@/components/dashboard/student/Overview/UpcomingEventsWidget";
 
 // Mentorship Components
 import StudentConfirmedSessions from "@/components/dashboard/student/StudentConfirmedSessions";
@@ -348,11 +350,6 @@ function StudentDashboardContent() {
         members: project.members || [],
     })) || [];
 
-    // Generate user initials
-    const userInitials = session.user?.name
-        ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase()
-        : 'U';
-
     // Level label
     const getLevelLabel = (level: number) => {
         if (level >= 8) return 'Elite Builder';
@@ -393,93 +390,31 @@ function StudentDashboardContent() {
     activityItems.sort((a, b) => b.time.localeCompare(a.time));
 
     return (
-        <div className="container dashboard-layout px-4 md:px-8 pb-24 md:pb-16">
-            {/* ====== Sidebar ====== */}
-            <aside className="card-glass-redesign dashboard-sidebar-card hidden md:block rounded-3xl w-full p-5 bg-white dark:bg-card border border-border/60 shadow-xs">
-                <div className="sr-only">Dashboard Setting</div>
-                <div className="dashboard-user-profile flex flex-col items-center text-center pb-4 border-b border-border/60 gap-2">
-                    {session.user?.image ? (
-                        <div className="w-18 h-18 rounded-full border-2 border-[#FF5D17] overflow-hidden shadow-md">
-                            <Image src={session.user.image} alt="User" width={72} height={72} className="w-full h-full object-cover" />
-                        </div>
-                    ) : (
-                        <div className="dashboard-user-avatar">{userInitials}</div>
-                    )}
-                    <div className="dashboard-user-name font-extrabold text-lg text-foreground">{session.user?.name || 'Student'}</div>
-                    <div className="dashboard-user-tag text-xs font-semibold text-muted-foreground uppercase tracking-wider">{getLevelLabel(activeLevel)}</div>
-                    <div className="mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF4ED] text-[#FF5D17] dark:bg-amber-500/10 dark:text-amber-400 font-extrabold text-xs">
-                        <span>⚡</span> Lvl {activeLevel}
-                    </div>
-                </div>
-
-                <div className="dashboard-menu mt-4 flex flex-col gap-1.5">
-                    {menuItems.map(item => (
-                        <button
-                            key={item.key}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer text-left w-full ${
-                                activeTab === item.key
-                                    ? 'bg-[#FFF4ED] text-[#FF5D17] dark:bg-amber-500/10 dark:text-amber-400'
-                                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                            }`}
-                            onClick={() => setActiveTab(item.key)}
-                        >
-                            <span className="text-base">{item.emoji}</span> {item.label}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Sidebar Bottom XP Balance Box */}
-                <div className="bg-muted/20 dark:bg-card border border-border/60 rounded-3xl p-5 shadow-xs mt-6 space-y-3">
-                    <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block">XP Balance</span>
-                    <span className="text-2xl font-black text-foreground block tracking-tight">{activeXP} XP</span>
-                    <div className="relative py-1">
-                        <svg className="w-full h-12 overflow-visible" viewBox="0 0 160 45">
-                            <defs>
-                                <linearGradient id="sidebarXpGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#FF5D17" stopOpacity="0.35" />
-                                    <stop offset="100%" stopColor="#FF5D17" stopOpacity="0" />
-                                </linearGradient>
-                            </defs>
-                            <path d="M 0 35 Q 30 30, 50 20 T 100 15 T 130 8 T 160 3 L 160 45 L 0 45 Z" fill="url(#sidebarXpGrad)" />
-                            <path d="M 0 35 Q 30 30, 50 20 T 100 15 T 130 8 T 160 3" fill="none" stroke="#FF5D17" strokeWidth="3" strokeLinecap="round" />
-                            <circle cx="160" cy="3" r="4" fill="#FF5D17" />
-                        </svg>
-                    </div>
-                    <div className="text-xs font-semibold text-muted-foreground space-y-0.5">
-                        <div className="text-foreground font-bold">Level {activeLevel}</div>
-                        <div>Keep going, {session.user?.name?.split(' ')[0] || 'Builder'}! 🚀</div>
-                    </div>
-                    <button className="w-full py-2.5 px-4 rounded-xl bg-muted/60 hover:bg-muted text-xs font-bold text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer">
-                        View XP Progress →
+        <div className="container px-4 md:px-8 pb-16">
+            {/* ====== Tab Navigation (replaces the old per-page sidebar; site nav now lives in the global app sidebar) ====== */}
+            <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0">
+                {menuItems.map(item => (
+                    <button
+                        key={item.key}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all cursor-pointer ${
+                            activeTab === item.key
+                                ? 'bg-accent text-accent-foreground shadow-md shadow-accent/25'
+                                : 'bg-card border border-border/60 text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                        }`}
+                        onClick={() => setActiveTab(item.key)}
+                    >
+                        <span className="text-base">{item.emoji}</span> {item.shortLabel || item.label}
                     </button>
-                </div>
-            </aside>
-
-            {/* ====== Mobile Bottom Nav ====== */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border z-30 safe-area-pb shadow-lg">
-                <nav className="flex items-center justify-around p-2">
-                    {menuItems.map(item => (
-                        <button
-                            key={item.key}
-                            onClick={() => setActiveTab(item.key)}
-                            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all text-xs font-bold ${
-                                activeTab === item.key
-                                    ? 'text-[#FF5D17] bg-[#FFF4ED] dark:bg-amber-500/10'
-                                    : 'text-muted-foreground'
-                            }`}
-                        >
-                            <span className="text-base">{item.emoji}</span>
-                            <span className="truncate max-w-14">{item.shortLabel || item.label}</span>
-                        </button>
-                    ))}
-                </nav>
+                ))}
             </div>
 
             {/* ====== Main Content Panel Area ====== */}
-            <main className="w-full min-w-0 md:ml-20 md:mr-96">
+            <main className="w-full min-w-0">
 
                 {/* ====== Panel: Overview ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'overview' ? 'active' : ''}`}>
+                    <DashboardHero firstName={session.user?.name?.split(' ')[0] || 'Builder'} />
+
                     <WelcomeSection
                         userName={session.user?.name || 'Student'}
                         searchQuery={searchQuery}
@@ -533,6 +468,8 @@ function StudentDashboardContent() {
                             </div>
                         </section>
                     )}
+
+                    <PopularCategoriesWidget />
 
                     <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8">
                         {/* Left Column: Projects, Mentorship, Requests */}
@@ -637,6 +574,9 @@ function StudentDashboardContent() {
 
                         {/* Right Column: Widgets */}
                         <div className="space-y-6">
+                            {/* Upcoming Events */}
+                            <UpcomingEventsWidget />
+
                             {/* Daily Check-in */}
                             <DailyCheckIn />
 

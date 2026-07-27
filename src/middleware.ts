@@ -201,7 +201,19 @@ export async function middleware(request: NextRequest) {
       // Add CSRF token to response (for GET requests)
       response = addCSRFTokenToResponse(response, request)
     } else {
-      // Non-API routes: Just continue with modified headers
+      // Non-API routes: send logged-in users straight to their dashboard home
+      if (pathname === '/') {
+        token = await getToken({
+          req: request,
+          secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
+        })
+
+        if (token) {
+          const dashboardPath = token.role === 'ADMIN' ? '/dashboard/admin' : '/dashboard/student'
+          return addSecurityHeaders(NextResponse.redirect(new URL(dashboardPath, request.url)))
+        }
+      }
+
       response = NextResponse.next()
     }
     
