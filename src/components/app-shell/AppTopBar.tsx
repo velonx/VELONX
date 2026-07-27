@@ -66,7 +66,7 @@ export function AppTopBar() {
 
       {/* Logo */}
       <Link href="/" className="hidden md:flex items-center shrink-0" aria-label="Velonx home page">
-        <span className="font-outfit font-extrabold text-xl tracking-[-0.04em]">
+        <span className="font-outfit font-extrabold text-3xl tracking-[-0.04em]">
           <span className="text-black dark:text-[#FFFBDB]">velon</span>
           <span className="text-transparent bg-clip-text bg-linear-to-r from-[#FF7A00] to-[#FFA800] dark:from-[#FF8A00] dark:to-[#FF3C00]">x</span>
         </span>

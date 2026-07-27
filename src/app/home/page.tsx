@@ -26,25 +26,25 @@ const HOME_TILES: { label: string; href: string; icon: LucideIcon; imageUrl: str
     label: "Internships",
     href: "/career?tab=internships",
     icon: Briefcase,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153700/internship_uqdpnx.png",
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168814/int_drabyv.png",
   },
   {
     label: "Jobs",
     href: "/career",
     icon: Briefcase,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153950/jobs_Background_Removed_jaqxzp.png",
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168669/jo_tgwrub.png",
   },
   {
     label: "Projects",
     href: "/projects",
     icon: Code2,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153982/projects_q6vbrz.png",
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168824/pro_gdtdwl.png",
   },
   {
     label: "Mentorship",
     href: "/mentors",
     icon: GraduationCap,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785154972/mentor_cs1wky.png",
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168731/men_p71ego.png",
   },
   {
     label: "Hackathons",
@@ -56,19 +56,19 @@ const HOME_TILES: { label: string; href: string; icon: LucideIcon; imageUrl: str
     label: "Community",
     href: "/community",
     icon: UsersRound,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785155132/community_j6lxu0.png",
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168855/com_gkgqbh.png",
   },
   {
     label: "Network",
     href: "/network",
     icon: Share2,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153965/networking_Background_Removed_mxmdaj.png",
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785169158/netw_knb2sv.png",
   },
   {
     label: "Resources",
     href: "/resources",
     icon: BookOpen,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153989/resources_zxqiqs.png",
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168881/res_jcbypd.png",
   },
 ];
 
@@ -130,7 +130,7 @@ function Row({
       </div>
 
       {loading ? (
-        <div className="flex gap-4 overflow-x-auto pb-2">
+        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
           {[0, 1, 2, 3].map((i) => (
             <div key={i} className="shrink-0 w-64 h-40 rounded-2xl bg-muted/50 animate-pulse" />
           ))}
@@ -140,7 +140,7 @@ function Row({
           <p className="text-muted-foreground text-sm">{emptyContent}</p>
         </div>
       ) : (
-        <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">{children}</div>
+        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 snap-x snap-mandatory">{children}</div>
       )}
     </section>
   );
@@ -150,30 +150,30 @@ function OpportunityCard({ item }: { item: Opportunity }) {
   return (
     <Link
       href={`/career/${item.slug || item.id}`}
-      className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card p-4 hover:shadow-md transition-shadow"
+      className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card p-5 hover:shadow-md transition-shadow"
     >
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="flex flex-col gap-1.5 min-w-0">
+      <div className="flex items-start justify-between gap-4 mb-5">
+        <div className="flex flex-col gap-2 min-w-0">
           {item.salary && (
-            <p className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+            <p className="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
               <Wallet className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate">{item.salary}</span>
             </p>
           )}
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 shrink-0" />
             <span className="truncate">{item.location}</span>
           </p>
         </div>
         <span className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center overflow-hidden shrink-0">
           {item.imageUrl ? (
-            <Image src={item.imageUrl} alt={item.company} width={64} height={64} className="object-contain w-full h-full p-1.5" />
+            <Image src={item.imageUrl} alt={item.company} width={64} height={64} className="object-contain w-full h-full p-2" />
           ) : (
             <Briefcase className="w-6 h-6 text-muted-foreground" />
           )}
         </span>
       </div>
-      <p className="text-sm font-bold text-foreground line-clamp-2 mb-1">{item.title}</p>
+      <p className="text-sm font-bold text-foreground line-clamp-2 mb-1.5">{item.title}</p>
       <p className="text-xs text-muted-foreground truncate">{item.company}</p>
     </Link>
   );
@@ -194,8 +194,8 @@ function ResourceCard({ resource }: { resource: Resource }) {
           </div>
         )}
       </div>
-      <div className="p-4">
-        <p className="text-[10px] font-extrabold uppercase text-primary mb-1">
+      <div className="p-5">
+        <p className="text-[10px] font-extrabold uppercase text-primary mb-1.5">
           {resource.category.replace(/_/g, " ")}
         </p>
         <p className="text-sm font-bold text-foreground line-clamp-2">{resource.title}</p>
@@ -208,9 +208,9 @@ function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href="/projects"
-      className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card p-4 hover:shadow-md transition-shadow"
+      className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card p-5 hover:shadow-md transition-shadow"
     >
-      <div className="flex items-start justify-between gap-3 mb-4">
+      <div className="flex items-start justify-between gap-4 mb-5">
         <div className="flex flex-wrap gap-1.5 min-w-0">
           {project.techStack?.slice(0, 3).map((tech) => (
             <span key={tech} className="px-2 py-0.5 rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
@@ -253,7 +253,7 @@ export default function HomePage() {
 
       {/* Action Tiles */}
       <section className="mb-10">
-        <div className="flex gap-4 overflow-x-auto pb-2">
+        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
           {HOME_TILES.map((tile) => {
             const Icon = tile.icon;
             const imageUrl = tile.imageUrl;
@@ -261,20 +261,20 @@ export default function HomePage() {
               <Link
                 key={tile.href + tile.label}
                 href={tile.href}
-                className="relative shrink-0 w-40 h-44 rounded-3xl bg-primary/10 p-4 overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all"
+                className="relative shrink-0 w-40 h-48 rounded-3xl bg-primary/10 p-4 overflow-hidden flex flex-col items-center hover:-translate-y-0.5 hover:shadow-md transition-all"
               >
                 <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/50 dark:bg-white/10 blur-2xl pointer-events-none" />
-                <p className="relative text-sm font-extrabold text-foreground text-center leading-tight mb-2">
+                <p className="relative shrink-0 text-sm font-extrabold text-foreground text-center leading-tight mb-3">
                   {tile.label}
                 </p>
-                <div className="relative w-full h-24 flex items-end justify-center">
+                <div className="relative flex-1 w-full min-h-0 flex items-center justify-center">
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
                       alt={tile.label}
-                      width={110}
-                      height={96}
-                      className="w-auto h-full object-contain"
+                      width={104}
+                      height={104}
+                      className="max-w-full max-h-full w-auto h-auto object-contain"
                     />
                   ) : (
                     <Icon className="w-10 h-10 text-primary" />

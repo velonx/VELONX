@@ -4450,6 +4450,17 @@ body {
   display: none; /* Safari and Chrome */
 }
 
+/* Reusable utility: hide the scrollbar on a horizontally-scrolling container
+   while keeping it scrollable (drag/swipe/wheel still work). */
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
 .p-resource-tab {
   padding: 10px 20px;
   font-size: 0.9375rem;
