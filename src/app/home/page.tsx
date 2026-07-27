@@ -50,7 +50,7 @@ const HOME_TILES: { label: string; href: string; icon: LucideIcon; imageUrl: str
     label: "Hackathons",
     href: "/events",
     icon: Trophy,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785153930/events_Background_Removed_mldvpl.png",
+    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168648/ev_qby0no.png",
   },
   {
     label: "Community",
@@ -253,7 +253,7 @@ export default function HomePage() {
 
       {/* Action Tiles */}
       <section className="mb-10">
-        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+        <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-2">
           {HOME_TILES.map((tile) => {
             const Icon = tile.icon;
             const imageUrl = tile.imageUrl;
@@ -261,10 +261,10 @@ export default function HomePage() {
               <Link
                 key={tile.href + tile.label}
                 href={tile.href}
-                className="relative shrink-0 w-44 h-52 rounded-3xl bg-gradient-to-br from-[#FF7A00]/20 to-[#FFA800]/10 dark:from-[#FF8A00]/25 dark:to-[#FF3C00]/10 p-4 overflow-hidden flex flex-col items-center hover:-translate-y-0.5 hover:shadow-md transition-all"
+                className="relative shrink-0 w-[122px] h-[130px] rounded-[26px] bg-gradient-to-b from-[#FF7A00]/20 to-[#FFA800]/10 dark:from-[#FF8A00]/25 dark:to-[#FF3C00]/10 pt-4 px-3.5 pb-3.5 overflow-hidden flex flex-col items-center hover:-translate-y-0.5 hover:shadow-md transition-all"
               >
-                <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/50 dark:bg-white/10 blur-2xl pointer-events-none" />
-                <p className="relative shrink-0 text-sm font-extrabold text-foreground text-center leading-tight mb-3">
+                <div className="absolute -top-[45px] -right-[35px] w-[140px] h-[140px] rounded-full bg-white/[0.18] pointer-events-none" />
+                <p className="relative shrink-0 text-[15px] font-bold text-foreground text-center leading-tight mb-2">
                   {tile.label}
                 </p>
                 <div className="relative flex-1 w-full min-h-0 flex items-center justify-center">
@@ -272,12 +272,12 @@ export default function HomePage() {
                     <Image
                       src={imageUrl}
                       alt={tile.label}
-                      width={140}
-                      height={140}
+                      width={72}
+                      height={72}
                       className="max-w-full max-h-full w-auto h-auto object-contain"
                     />
                   ) : (
-                    <Icon className="w-10 h-10 text-primary" />
+                    <Icon className="w-8 h-8 text-primary" />
                   )}
                 </div>
               </Link>
