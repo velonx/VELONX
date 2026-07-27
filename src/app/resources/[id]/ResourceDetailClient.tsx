@@ -81,9 +81,11 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
 
   const handleShare = async () => {
     const url = `${window.location.origin}/resources/${resourceSlug}`;
+    // Deliberately omit `text` — Chrome on Android (and some share targets)
+    // merges `text` and `url` into one string for actions like "Copy to
+    // clipboard", producing a broken URL with the text appended after it.
     const shareData = {
       title: `${resource.title} - Quick Reference | Velonx`,
-      text: resource.description,
       url,
     };
     if (navigator.share) {

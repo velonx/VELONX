@@ -72,9 +72,11 @@ const ResourceCardComponent = ({ resource }: ResourceCardProps) => {
 
   const handleShare = async () => {
     const url = `${window.location.origin}/resources/${resourceSlug}`;
+    // Deliberately omit `text` — Chrome on Android (and some share targets)
+    // merges `text` and `url` into one string for actions like "Copy to
+    // clipboard", producing a broken URL with the text appended after it.
     const shareData = {
       title: resource.title,
-      text: `Check out this resource: ${resource.title}`,
       url,
     };
     if (navigator.share) {
