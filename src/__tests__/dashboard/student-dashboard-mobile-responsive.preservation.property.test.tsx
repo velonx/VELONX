@@ -1,16 +1,17 @@
 /**
  * Preservation Property Test
- * Student Dashboard Mobile Responsiveness Bugfix
- * 
- * **Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 3.6**
- * 
- * CRITICAL: This test MUST PASS on unfixed code
- * - Passing confirms the baseline desktop behavior to preserve
- * - After fix, test should still pass (desktop layout unchanged)
- * 
+ * Student Dashboard Layout
+ *
+ * The dashboard's own per-page sidebar and mobile bottom nav were removed
+ * in favor of a persistent, collapsible app-wide sidebar (see
+ * src/components/app-shell/), which is rendered by the root layout, not by
+ * this page. So this page should render no local `<aside>` and no
+ * responsive margin classes on `<main>` at any viewport width — that
+ * concern now lives entirely in the app shell.
+ *
  * This test uses property-based testing to generate many viewport widths
- * in the desktop range (768px - 2560px) to ensure the three-column layout
- * is preserved across all desktop viewport sizes.
+ * in the desktop range (768px - 2560px) to confirm that invariant holds
+ * across all desktop viewport sizes.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
@@ -69,16 +70,17 @@ vi.mock('@/lib/api/hooks', () => ({
   }),
   useMeetings: () => ({ data: [], loading: false }),
   useUserStats: () => ({ data: {}, loading: false }),
-  useCheckIn: () => ({ 
-    checkIn: vi.fn(), 
-    loading: false, 
-    data: null 
+  useCheckIn: () => ({
+    checkIn: vi.fn(),
+    loading: false,
+    data: null
   }),
-  useUserStreak: () => ({ 
-    data: { currentStreak: 0, longestStreak: 0 }, 
-    loading: false, 
-    refetch: vi.fn() 
+  useUserStreak: () => ({
+    data: { currentStreak: 0, longestStreak: 0 },
+    loading: false,
+    refetch: vi.fn()
   }),
+  useEvents: () => ({ data: [], loading: false }),
 }))
 
 vi.mock('@/lib/hooks/useCommunityPosts', () => ({
@@ -101,15 +103,7 @@ vi.mock('@/components/projects/EditProjectModal', () => ({
   EditProjectModal: () => null,
 }))
 
-// Helper to find sidebar by class substring since Tailwind responsive classes (e.g. md:w-80)
-// don't match CSS class selectors like .w-80
-function findSidebarByClass(container: HTMLElement, classSubstring: string) {
-  return Array.from(container.querySelectorAll('aside')).find(el =>
-    el.className.includes(classSubstring)
-  ) || null;
-}
-
-describe('Student Dashboard Mobile Responsiveness - Preservation Property', () => {
+describe('Student Dashboard Layout - Preservation Property', () => {
   let originalInnerWidth: number
 
   beforeEach(() => {
@@ -126,34 +120,20 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
   })
 
   /**
-   * Property 2: Preservation - Desktop Layout Unchanged
-   * 
-   * **Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 3.6**
-   * 
-   * EXPECTED BEHAVIOR ON UNFIXED CODE:
-   * - Test will PASS because desktop layout works correctly
-   * - This establishes the baseline behavior to preserve
-   * 
-   * EXPECTED BEHAVIOR AFTER FIX:
-   * - Test will still PASS
-   * - Desktop layout (viewport >= 768px) remains unchanged
-   * - Three-column layout with fixed sidebars preserved
-   * - All functionality remains identical
+   * Property: No local sidebar/margin classes at any desktop width
+   *
+   * The page must not reintroduce a local `<aside>` or fixed margin
+   * classes on `<main>` — that layout concern belongs to the app-wide
+   * shell (src/components/app-shell/AppShell.tsx), not this page.
    */
-  describe('Property 2: Preservation - Desktop Layout Unchanged', () => {
-    /**
-     * Generator for desktop viewport widths
-     * Generates random widths in the range [768, 2560]
-     * This provides strong guarantees across all desktop sizes
-     */
+  describe('Property: No Local Sidebar on Desktop Viewports', () => {
     const arbDesktopViewportWidth = (): fc.Arbitrary<number> => {
       return fc.integer({ min: 768, max: 2560 })
     }
 
-    it('should preserve three-column layout on desktop viewports (EXPECTED TO PASS ON UNFIXED CODE)', async () => {
+    it('should render no local aside or fixed margin classes on desktop viewports', async () => {
       await fc.assert(
         fc.asyncProperty(arbDesktopViewportWidth(), async (viewportWidth) => {
-          // Set viewport width
           Object.defineProperty(window, 'innerWidth', {
             writable: true,
             configurable: true,
@@ -162,54 +142,27 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
           const { container } = render(<StudentDashboard />)
 
-          // Log observation information
-          console.log(`\n=== Observing viewport width: ${viewportWidth}px ===`)
+          // The page itself should render no <aside> at all — the sidebar
+          // now lives in the app shell, outside this component's tree.
+          expect(container.querySelectorAll('aside').length).toBe(0)
 
-          // Check left sidebar - should be visible and part of grid flow
-          const leftSidebar = findSidebarByClass(container, 'dashboard-sidebar-card')
-          expect(leftSidebar).toBeTruthy()
-          
-          const leftSidebarClasses = leftSidebar?.className || ''
-          console.log(`Left sidebar classes: ${leftSidebarClasses}`)
-          
-          // Verify left sidebar does not have w-20 or fixed/left-0 positioning overrides
-          expect(leftSidebarClasses).not.toContain('w-20')
-          expect(leftSidebarClasses).not.toContain('fixed')
-          expect(leftSidebarClasses).not.toContain('left-0')
-
-          // Check right sidebar - should not exist
-          const rightSidebar = findSidebarByClass(container, 'w-96')
-          expect(rightSidebar).toBeNull()
-
-          // Check main content - should have left margin but no right margin
           const mainContent = container.querySelector('main')
           expect(mainContent).toBeTruthy()
-          
-          const mainContentClasses = mainContent?.className || ''
-          console.log(`Main content classes: ${mainContentClasses}`)
-          
-          // Verify main content does not have left margin (no longer needed in grid layout)
-          const hasLeftMargin = mainContentClasses.split(' ').includes('ml-20')
-          expect(hasLeftMargin).toBe(false)
-          
-          // Verify main content has no right margin (mr-96)
-          const hasRightMargin = mainContentClasses.split(' ').includes('mr-96')
-          expect(hasRightMargin).toBe(false)
 
-          console.log(`✓ Desktop layout preserved at ${viewportWidth}px`)
+          const mainContentClasses = (mainContent?.className || '').split(' ')
+          expect(mainContentClasses).not.toContain('ml-20')
+          expect(mainContentClasses).not.toContain('mr-96')
+          expect(mainContentClasses).not.toContain('md:ml-20')
+          expect(mainContentClasses).not.toContain('md:mr-96')
         }),
         {
           ...PROPERTY_TEST_CONFIG,
-          numRuns: 50, // Generate 50 random desktop viewport widths
+          numRuns: 50,
         }
       )
     })
 
-    /**
-     * Concrete test cases for specific desktop viewport widths
-     * These provide clear documentation of expected behavior
-     */
-    it('should preserve layout at 768px (desktop breakpoint)', () => {
+    it('should have no aside/margins at 768px (desktop breakpoint)', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
@@ -218,36 +171,14 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       const { container } = render(<StudentDashboard />)
 
-      console.log(`\n=== Observation: Desktop Breakpoint (768px) ===`)
-
-      // Check layout exists (no right sidebar)
-      const leftSidebar = findSidebarByClass(container, 'dashboard-sidebar-card')
-      const rightSidebar = findSidebarByClass(container, 'w-96')
+      expect(container.querySelectorAll('aside').length).toBe(0)
       const mainContent = container.querySelector('main')
-
-      expect(leftSidebar).toBeTruthy()
-      expect(rightSidebar).toBeNull()
       expect(mainContent).toBeTruthy()
-
-      const leftSidebarClasses = leftSidebar?.className || ''
-      const mainContentClasses = mainContent?.className || ''
-
-      console.log(`Left sidebar: ${leftSidebarClasses}`)
-      console.log(`Main content: ${mainContentClasses}`)
-
-      // Verify sidebar width & fixed positioning are removed
-      expect(leftSidebarClasses).not.toContain('w-20')
-      expect(leftSidebarClasses).not.toContain('fixed')
-      expect(leftSidebarClasses).not.toContain('left-0')
-
-      // Verify main content margins
-      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
-      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
-
-      console.log(`✓ Three-column layout preserved at 768px`)
+      expect((mainContent?.className || '').split(' ')).not.toContain('ml-20')
+      expect((mainContent?.className || '').split(' ')).not.toContain('mr-96')
     })
 
-    it('should preserve layout at 1024px (standard laptop)', () => {
+    it('should have no aside/margins at 1024px (standard laptop)', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
@@ -256,34 +187,14 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       const { container } = render(<StudentDashboard />)
 
-      console.log(`\n=== Observation: Standard Laptop (1024px) ===`)
-
-      const leftSidebar = findSidebarByClass(container, 'dashboard-sidebar-card')
-      const rightSidebar = findSidebarByClass(container, 'w-96')
+      expect(container.querySelectorAll('aside').length).toBe(0)
       const mainContent = container.querySelector('main')
-
-      expect(leftSidebar).toBeTruthy()
-      expect(rightSidebar).toBeNull()
       expect(mainContent).toBeTruthy()
-
-      const leftSidebarClasses = leftSidebar?.className || ''
-      const mainContentClasses = mainContent?.className || ''
-
-      console.log(`Left sidebar: ${leftSidebarClasses}`)
-      console.log(`Main content: ${mainContentClasses}`)
-
-      // Verify sidebar width & fixed positioning are removed
-      expect(leftSidebarClasses).not.toContain('w-20')
-      expect(leftSidebarClasses).not.toContain('fixed')
-
-      // Verify main content margins
-      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
-      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
-
-      console.log(`✓ Three-column layout preserved at 1024px`)
+      expect((mainContent?.className || '').split(' ')).not.toContain('ml-20')
+      expect((mainContent?.className || '').split(' ')).not.toContain('mr-96')
     })
 
-    it('should preserve layout at 1440px (large desktop)', () => {
+    it('should have no aside/margins at 1440px (large desktop)', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
@@ -292,32 +203,14 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       const { container } = render(<StudentDashboard />)
 
-      console.log(`\n=== Observation: Large Desktop (1440px) ===`)
-
-      const leftSidebar = findSidebarByClass(container, 'dashboard-sidebar-card')
-      const rightSidebar = findSidebarByClass(container, 'w-96')
+      expect(container.querySelectorAll('aside').length).toBe(0)
       const mainContent = container.querySelector('main')
-
-      expect(leftSidebar).toBeTruthy()
-      expect(rightSidebar).toBeNull()
       expect(mainContent).toBeTruthy()
-
-      const leftSidebarClasses = leftSidebar?.className || ''
-      const mainContentClasses = mainContent?.className || ''
-
-      console.log(`Left sidebar: ${leftSidebarClasses}`)
-      console.log(`Main content: ${mainContentClasses}`)
-
-      // Verify full layout structure
-      expect(leftSidebarClasses).not.toContain('w-20')
-      expect(leftSidebarClasses).not.toContain('fixed')
-      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
-      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
-
-      console.log(`✓ Three-column layout preserved at 1440px`)
+      expect((mainContent?.className || '').split(' ')).not.toContain('ml-20')
+      expect((mainContent?.className || '').split(' ')).not.toContain('mr-96')
     })
 
-    it('should preserve layout at 1920px+ (ultra-wide)', () => {
+    it('should have no aside/margins at 1920px+ (ultra-wide)', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
@@ -326,38 +219,21 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       const { container } = render(<StudentDashboard />)
 
-      console.log(`\n=== Observation: Ultra-wide (1920px) ===`)
-
-      const leftSidebar = findSidebarByClass(container, 'dashboard-sidebar-card')
-      const rightSidebar = findSidebarByClass(container, 'w-96')
+      expect(container.querySelectorAll('aside').length).toBe(0)
       const mainContent = container.querySelector('main')
-
-      expect(leftSidebar).toBeTruthy()
-      expect(rightSidebar).toBeNull()
       expect(mainContent).toBeTruthy()
-
-      const leftSidebarClasses = leftSidebar?.className || ''
-      const mainContentClasses = mainContent?.className || ''
-
-      console.log(`Left sidebar: ${leftSidebarClasses}`)
-      console.log(`Main content: ${mainContentClasses}`)
-
-      // Verify ultra-wide layout behavior
-      expect(leftSidebarClasses).not.toContain('w-20')
-      expect(leftSidebarClasses).not.toContain('fixed')
-      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
-      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
-
-      console.log(`✓ Three-column layout preserved at 1920px`)
+      expect((mainContent?.className || '').split(' ')).not.toContain('ml-20')
+      expect((mainContent?.className || '').split(' ')).not.toContain('mr-96')
     })
   })
 
   /**
-   * Additional preservation checks
-   * Verify that all dashboard sections and functionality remain accessible
+   * Functional preservation: the tab navigation and content sections that
+   * used to live inside the old sidebar are still reachable, just as a
+   * pill row at the top of the content area instead of a left column.
    */
   describe('Functional Preservation', () => {
-    it('should preserve all dashboard sections on desktop', () => {
+    it('should preserve tab navigation and content sections', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
@@ -366,29 +242,18 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       const { container } = render(<StudentDashboard />)
 
-      console.log(`\n=== Functional Preservation Check ===`)
+      // Tab pill row should expose the same sections the old sidebar menu did
+      expect(container.textContent).toContain('Overview')
+      expect(container.textContent).toContain('Community')
+      expect(container.textContent).toContain('Activity')
+      expect(container.textContent).toContain('Redemptions')
+      expect(container.textContent).toContain('Reports')
 
-      // Verify left sidebar content (user profile and navigation)
-      const leftSidebar = findSidebarByClass(container, 'dashboard-sidebar-card')
-      expect(leftSidebar).toBeTruthy()
-      expect(leftSidebar?.textContent).toContain('Test Student')
-      expect(leftSidebar?.textContent).toContain('Dashboard')
-      expect(leftSidebar?.textContent).toContain('Community')
-      expect(leftSidebar?.textContent).toContain('Tracking')
-      expect(leftSidebar?.textContent).toContain('Setting')
-
-      // Verify main content area exists
       const mainContent = container.querySelector('main')
       expect(mainContent).toBeTruthy()
-
-      // Verify right sidebar does not exist
-      const rightSidebar = findSidebarByClass(container, 'w-96')
-      expect(rightSidebar).toBeNull()
-
-      console.log(`✓ All dashboard sections preserved`)
     })
 
-    it('should preserve navigation functionality on desktop', () => {
+    it('should preserve tab navigation buttons', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
@@ -397,76 +262,8 @@ describe('Student Dashboard Mobile Responsiveness - Preservation Property', () =
 
       const { container } = render(<StudentDashboard />)
 
-      console.log(`\n=== Navigation Preservation Check ===`)
-
-      // Verify navigation buttons exist
-      const leftSidebar = findSidebarByClass(container, 'dashboard-sidebar-card')
-      const navButtons = leftSidebar?.querySelectorAll('button')
-      
-      expect(navButtons).toBeTruthy()
-      expect(navButtons!.length).toBeGreaterThan(0)
-
-      console.log(`✓ Navigation functionality preserved`)
-    })
-  })
-
-  /**
-   * Edge case: Verify behavior at breakpoint boundary
-   */
-  describe('Breakpoint Boundary Behavior', () => {
-    it('should show desktop layout at exactly 768px', () => {
-      Object.defineProperty(window, 'innerWidth', {
-        writable: true,
-        configurable: true,
-        value: 768,
-      })
-
-      const { container } = render(<StudentDashboard />)
-
-      console.log(`\n=== Breakpoint Boundary: 768px ===`)
-
-      const leftSidebar = findSidebarByClass(container, 'dashboard-sidebar-card')
-      const rightSidebar = findSidebarByClass(container, 'w-96')
-      const mainContent = container.querySelector('main')
-
-      // At 768px, desktop layout should be active
-      expect(leftSidebar).toBeTruthy()
-      expect(rightSidebar).toBeNull()
-      expect(mainContent).toBeTruthy()
-
-      const leftSidebarClasses = leftSidebar?.className || ''
-      const mainContentClasses = mainContent?.className || ''
-
-      // Verify layout is present
-      expect(leftSidebarClasses).not.toContain('w-20')
-      expect(mainContentClasses.split(' ')).not.toContain('ml-20')
-      expect(mainContentClasses.split(' ')).not.toContain('mr-96')
-
-      console.log(`✓ Desktop layout active at 768px breakpoint`)
-    })
-
-    it('should show mobile layout at 767px (just below breakpoint)', () => {
-      Object.defineProperty(window, 'innerWidth', {
-        writable: true,
-        configurable: true,
-        value: 767,
-      })
-
-      const { container } = render(<StudentDashboard />)
-
-      console.log(`\n=== Breakpoint Boundary: 767px ===`)
-
-      const leftSidebar = findSidebarByClass(container, 'dashboard-sidebar-card')
-      const rightSidebar = findSidebarByClass(container, 'w-96')
-
-      // At 767px (below md:768px), mobile layout should be active
-
-      console.log(`Note: At 767px, this is below the md:768px breakpoint`)
-      console.log(`Expected: Sidebars hidden, mobile layout active`)
-
-      // These elements exist in the DOM but should be hidden after fix
-      expect(leftSidebar).toBeTruthy()
-      expect(rightSidebar).toBeNull()
+      const tabButtons = container.querySelectorAll('button')
+      expect(tabButtons.length).toBeGreaterThan(0)
     })
   })
 })
