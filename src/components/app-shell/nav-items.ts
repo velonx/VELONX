@@ -1,4 +1,5 @@
 import {
+  Home,
   LayoutDashboard,
   Compass,
   GraduationCap,
@@ -22,7 +23,7 @@ export interface AppNavItem {
 }
 
 export const APP_NAV_ITEMS: AppNavItem[] = [
-  { label: "Dashboard", href: "/dashboard/student", icon: LayoutDashboard },
+  { label: "Home", href: "/home", icon: Home },
   { label: "Explore Opportunities", href: "/career", matchPrefix: "/career", icon: Compass },
   { label: "Mentorship", href: "/mentors", icon: GraduationCap },
   { label: "Internships", href: "/career?tab=internships", matchPrefix: "/career", icon: Briefcase },
@@ -33,10 +34,12 @@ export const APP_NAV_ITEMS: AppNavItem[] = [
   { label: "Network", href: "/network", icon: Share2 },
   { label: "Leaderboard", href: "/leaderboard", icon: BarChart3 },
   { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Dashboard", href: "/dashboard/student", icon: LayoutDashboard },
 ];
 
 /** Route prefixes that render the persistent app shell (sidebar + top bar) for authenticated users. */
 export const APP_SHELL_ROUTE_PREFIXES = [
+  "/home",
   "/dashboard/student",
   "/career",
   "/events",

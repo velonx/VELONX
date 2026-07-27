@@ -166,25 +166,10 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
 
   const projectsWithRequests = projects.filter(p => joinRequests[p.id]?.length > 0);
 
+  // No owned projects means no join requests are possible — nothing to show,
+  // rather than a dead "you don't own any projects" card on every load.
   if (projects.length === 0) {
-    return (
-      <Card className="bg-white border-0 shadow-lg rounded-3xl overflow-hidden">
-        <CardHeader className="p-8 border-b border-gray-100">
-          <h3 className="text-2xl font-black text-[#1A234A] flex items-center gap-2">
-            <FolderKanban className="w-6 h-6 text-[#226CE0]" />
-            My Projects - Join Requests
-          </h3>
-          <p className="text-gray-400 text-sm mt-1">Manage who joins your projects</p>
-        </CardHeader>
-        <CardContent className="p-8">
-          <div className="text-center py-8">
-            <FolderKanban className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-400 font-bold">You don't own any projects yet</p>
-            <p className="text-gray-400 text-sm mt-1">Submit a project idea to get started!</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   if (projectsWithRequests.length === 0) {

@@ -63,7 +63,6 @@ import { GroupCardSkeletonLoader } from "@/components/community/GroupCardSkeleto
 import WelcomeSection from "@/components/dashboard/student/Overview/WelcomeSection";
 import ProgressSummary from "@/components/dashboard/student/Overview/ProgressSummary";
 import DashboardHero from "@/components/dashboard/student/Overview/DashboardHero";
-import PopularCategoriesWidget from "@/components/dashboard/student/Overview/PopularCategoriesWidget";
 import UpcomingEventsWidget from "@/components/dashboard/student/Overview/UpcomingEventsWidget";
 
 // Mentorship Components
@@ -468,8 +467,6 @@ function StudentDashboardContent() {
                             </div>
                         </section>
                     )}
-
-                    <PopularCategoriesWidget />
 
                     <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8">
                         {/* Left Column: Projects, Mentorship, Requests */}
