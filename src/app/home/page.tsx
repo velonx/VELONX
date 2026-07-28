@@ -242,12 +242,15 @@ export default function HomePage() {
 
   // 847 = 815px content column + 16px gutter each side (border-box)
   return (
-    <div className="max-w-[847px] mx-auto px-4 pb-16">
+    <div className="max-w-[847px] mx-auto px-4 pt-8 pb-16">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-foreground tracking-tight">
-          Welcome back, {session?.user?.name?.split(" ")[0] || "Builder"}
+        <h1 className="text-[30px] md:text-[36px] xl:text-[46px] font-extrabold leading-[1.2] text-foreground">
+          Welcome back,{" "}
+          <strong className="font-extrabold text-accent">
+            {session?.user?.name?.split(" ")[0] || "Builder"}
+          </strong>
         </h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <p className="text-base font-normal leading-[1.4] text-muted-foreground mt-2">
           Jump into projects, mentorship, events, and more.
         </p>
       </div>

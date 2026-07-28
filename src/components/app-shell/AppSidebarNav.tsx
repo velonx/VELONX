@@ -47,7 +47,7 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
               "flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition-all",
               collapsed && "justify-center px-0",
               active
-                ? "bg-primary/10 text-primary"
+                ? "bg-accent/10 text-accent"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
