@@ -130,9 +130,9 @@ function Row({
       </div>
 
       {loading ? (
-        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="shrink-0 w-64 h-40 rounded-2xl bg-muted/50 animate-pulse" />
+            <div key={i} className="shrink-0 w-[263.67px] h-40 rounded-2xl bg-muted/50 animate-pulse" />
           ))}
         </div>
       ) : isEmpty ? (
@@ -140,7 +140,7 @@ function Row({
           <p className="text-muted-foreground text-sm">{emptyContent}</p>
         </div>
       ) : (
-        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 snap-x snap-mandatory">{children}</div>
+        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 snap-x snap-mandatory">{children}</div>
       )}
     </section>
   );
@@ -150,7 +150,7 @@ function OpportunityCard({ item }: { item: Opportunity }) {
   return (
     <Link
       href={`/career/${item.slug || item.id}`}
-      className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card p-5 hover:shadow-md transition-shadow"
+      className="shrink-0 w-[263.67px] snap-start rounded-2xl border border-border/60 bg-card p-5 hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between gap-4 mb-5">
         <div className="flex flex-col gap-2 min-w-0">
@@ -183,11 +183,11 @@ function ResourceCard({ resource }: { resource: Resource }) {
   return (
     <Link
       href={`/resources/${resource.id}`}
-      className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card overflow-hidden hover:shadow-md transition-shadow"
+      className="shrink-0 w-[263.67px] snap-start rounded-2xl border border-border/60 bg-card overflow-hidden hover:shadow-md transition-shadow"
     >
       <div className="relative w-full h-28 bg-muted">
         {resource.imageUrl ? (
-          <Image src={resource.imageUrl} alt={resource.title} fill className="object-cover" sizes="256px" />
+          <Image src={resource.imageUrl} alt={resource.title} fill className="object-cover" sizes="264px" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">
             {resource.type}
@@ -208,7 +208,7 @@ function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href="/projects"
-      className="shrink-0 w-64 snap-start rounded-2xl border border-border/60 bg-card p-5 hover:shadow-md transition-shadow"
+      className="shrink-0 w-[263.67px] snap-start rounded-2xl border border-border/60 bg-card p-5 hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between gap-4 mb-5">
         <div className="flex flex-wrap gap-1.5 min-w-0">
@@ -240,8 +240,9 @@ export default function HomePage() {
   const { data: projects, loading: projectsLoading } = useProjects({ pageSize: 8 });
   const { data: resources, loading: resourcesLoading } = useResources({ pageSize: 8 });
 
+  // 847 = 815px content column + 16px gutter each side (border-box)
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 pb-16">
+    <div className="max-w-[847px] mx-auto px-4 pb-16">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-foreground tracking-tight">
           Welcome back, {session?.user?.name?.split(" ")[0] || "Builder"}
@@ -253,7 +254,7 @@ export default function HomePage() {
 
       {/* Action Tiles */}
       <section className="mb-10">
-        <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-2">
+        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
           {HOME_TILES.map((tile) => {
             const Icon = tile.icon;
             const imageUrl = tile.imageUrl;
@@ -261,7 +262,7 @@ export default function HomePage() {
               <Link
                 key={tile.href + tile.label}
                 href={tile.href}
-                className="relative shrink-0 w-[122px] h-[130px] rounded-[26px] bg-gradient-to-b from-[#FF7A00]/20 to-[#FFA800]/10 dark:from-[#FF8A00]/25 dark:to-[#FF3C00]/10 pt-4 px-3.5 pb-3.5 overflow-hidden flex flex-col items-center hover:-translate-y-0.5 hover:shadow-md transition-all"
+                className="relative shrink-0 w-[125.83px] h-[130px] rounded-[26px] bg-gradient-to-b from-[#FF7A00]/20 to-[#FFA800]/10 dark:from-[#FF8A00]/25 dark:to-[#FF3C00]/10 pt-4 px-3.5 pb-3.5 overflow-hidden flex flex-col items-center hover:-translate-y-0.5 hover:shadow-md transition-all"
               >
                 <div className="absolute -top-[45px] -right-[35px] w-[140px] h-[140px] rounded-full bg-white/[0.18] pointer-events-none" />
                 <p className="relative shrink-0 text-[15px] font-bold text-foreground text-center leading-tight mb-2">
@@ -306,10 +307,10 @@ export default function HomePage() {
           <Link
             key={event.id}
             href={`/events/${event.slug || event.id}`}
-            className="relative shrink-0 w-56 h-80 snap-start rounded-2xl overflow-hidden bg-muted hover:shadow-md transition-shadow"
+            className="relative shrink-0 w-[263.67px] aspect-[7/10] snap-start rounded-2xl overflow-hidden bg-muted hover:shadow-md transition-shadow"
           >
             {posterSrc ? (
-              <Image src={posterSrc} alt={event.title} fill className="object-cover" sizes="224px" />
+              <Image src={posterSrc} alt={event.title} fill className="object-cover" sizes="264px" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">
                 {event.type}
