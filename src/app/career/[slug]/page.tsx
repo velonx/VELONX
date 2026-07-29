@@ -320,7 +320,7 @@ export default async function CareerDetailPage({ params }: Props) {
 
   // Logo initials and color for SSR
   const initials = job?.logoText || (job?.company ? job.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO');
-  const logoColors = ['#A78BFA', '#22D3EE', '#34D399', '#FCD34D', '#F9A8D4'];
+  const logoColors = ['#F0771A', '#F59E0B', '#FB923C', '#FCD34D', '#e0650d'];
   const charCode = job?.company ? job.company.charCodeAt(0) : 0;
   const determinedLogoColor = job?.logoColor || logoColors[charCode % logoColors.length];
 
@@ -426,8 +426,8 @@ export default async function CareerDetailPage({ params }: Props) {
                         fontWeight: 700,
                         padding: '0.25rem 0.75rem',
                         borderRadius: '9999px',
-                        background: 'rgba(6,182,212,0.1)',
-                        color: '#06b6d4',
+                        background: 'rgba(240,119,26,0.1)',
+                        color: '#F0771A',
                         letterSpacing: '0.05em',
                         textTransform: 'uppercase',
                       }}>

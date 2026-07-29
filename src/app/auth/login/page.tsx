@@ -87,15 +87,15 @@ export default function LoginPage() {
         <div className="h-screen overflow-hidden flex items-center justify-center bg-background font-outfit transition-colors duration-300 pt-20 pb-4 px-4">
 
             {/* Card */}
-            <div className="w-full max-w-5xl h-full max-h-[calc(100vh-6rem)] flex rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-[#1e2d45]">
+            <div className="w-full max-w-5xl h-full max-h-[calc(100vh-6rem)] flex rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-[#211F1B]">
 
                 {/* ───── LEFT — Form ───── */}
-                <div className="flex-1 flex flex-col justify-center px-8 py-6 bg-white dark:bg-[#131c2e] transition-colors duration-300 overflow-y-auto">
+                <div className="flex-1 flex flex-col justify-center px-8 py-6 bg-white dark:bg-[#1A1916] transition-colors duration-300 overflow-y-auto">
                     <div className="w-full max-w-xs mx-auto">
 
                         {/* Brand */}
                         <div className="mb-5">
-                            <span className="text-2xl font-black tracking-tight bg-linear-to-r from-[#226CE0] via-[#4FC3F7] to-[#E9C46A] bg-clip-text text-transparent">
+                            <span className="text-2xl font-black tracking-tight bg-linear-to-r from-[#F0771A] via-[#FFA800] to-[#E9C46A] bg-clip-text text-transparent">
                                 Velonx
                             </span>
                             <h1 className="mt-1 text-2xl font-bold text-slate-800 dark:text-white leading-tight">
@@ -118,17 +118,17 @@ export default function LoginPage() {
 
                         {/* Tabs — Student / Admin */}
                         <Tabs defaultValue="student" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2 mb-5 bg-slate-100 dark:bg-[#1e2d45] p-1 rounded-xl border border-slate-200 dark:border-[#2a3e5c]">
+                            <TabsList className="grid w-full grid-cols-2 mb-5 bg-slate-100 dark:bg-[#211F1B] p-1 rounded-xl border border-slate-200 dark:border-[#3A3833]">
                                 <TabsTrigger
                                     value="student"
-                                    className="rounded-lg py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#226CE0] data-[state=active]:text-slate-800 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all gap-1.5"
+                                    className="rounded-lg py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#F0771A] data-[state=active]:text-slate-800 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all gap-1.5"
                                 >
                                     <User className="w-3.5 h-3.5" />
                                     Student
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="admin"
-                                    className="rounded-lg py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#226CE0] data-[state=active]:text-slate-800 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all gap-1.5"
+                                    className="rounded-lg py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#F0771A] data-[state=active]:text-slate-800 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all gap-1.5"
                                 >
                                     <Shield className="w-3.5 h-3.5" />
                                     Admin
@@ -154,7 +154,7 @@ export default function LoginPage() {
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     required
-                                                    className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#226CE0]/40 focus:border-[#226CE0] transition-all"
+                                                    className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#3A3833] bg-slate-50 dark:bg-[#211F1B] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#F0771A]/40 focus:border-[#F0771A] transition-all"
                                                 />
                                             </div>
                                         </div>
@@ -174,7 +174,7 @@ export default function LoginPage() {
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
                                                     required
-                                                    className="w-full pl-9 pr-10 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#226CE0]/40 focus:border-[#226CE0] transition-all"
+                                                    className="w-full pl-9 pr-10 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-[#3A3833] bg-slate-50 dark:bg-[#211F1B] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#F0771A]/40 focus:border-[#F0771A] transition-all"
                                                 />
                                                 <button
                                                     type="button"
@@ -186,7 +186,7 @@ export default function LoginPage() {
                                                 </button>
                                             </div>
                                             <div className="flex justify-end mt-1.5 pt-1">
-                                                <Link href="/auth/forgot-password" className="text-xs font-semibold text-[#226CE0] hover:text-[#334DAF] transition-colors">
+                                                <Link href="/auth/forgot-password" className="text-xs font-semibold text-[#F0771A] hover:text-[#e0650d] transition-colors">
                                                     Forgot password?
                                                 </Link>
                                             </div>
@@ -197,7 +197,7 @@ export default function LoginPage() {
                                             <input
                                                 type="checkbox"
                                                 id="remember-me"
-                                                className="w-3.5 h-3.5 rounded accent-[#226CE0] cursor-pointer"
+                                                className="w-3.5 h-3.5 rounded accent-[#F0771A] cursor-pointer"
                                             />
                                             <label htmlFor="remember-me" className="text-xs text-slate-500 dark:text-slate-400 cursor-pointer select-none">
                                                 Keep me signed in
@@ -208,7 +208,7 @@ export default function LoginPage() {
                                         <button
                                             type="submit"
                                             disabled={loading}
-                                            className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#226CE0] to-[#334DAF] hover:from-[#334DAF] hover:to-[#156880] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl py-2.5 transition-all duration-200 shadow-md shadow-[#226CE0]/20 mt-1 group"
+                                            className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#F0771A] to-[#e0650d] hover:from-[#e0650d] hover:to-[#c85a0a] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl py-2.5 transition-all duration-200 shadow-md shadow-[#F0771A]/20 mt-1 group"
                                         >
                                             {loading ? (
                                                 <span className="flex items-center gap-2">
@@ -232,9 +232,9 @@ export default function LoginPage() {
 
                         {/* Divider */}
                         <div className="flex items-center gap-3 my-4">
-                            <div className="flex-1 h-px bg-slate-200 dark:bg-[#2a3e5c]" />
+                            <div className="flex-1 h-px bg-slate-200 dark:bg-[#3A3833]" />
                             <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">or continue with</span>
-                            <div className="flex-1 h-px bg-slate-200 dark:bg-[#2a3e5c]" />
+                            <div className="flex-1 h-px bg-slate-200 dark:bg-[#3A3833]" />
                         </div>
 
                         {/* Social Logins */}
@@ -243,7 +243,7 @@ export default function LoginPage() {
                             <button
                                 onClick={handleGoogleLogin}
                                 disabled={loading}
-                                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-white dark:bg-[#1e2d45] hover:bg-slate-50 dark:hover:bg-[#243349] transition-all text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm"
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-[#3A3833] bg-white dark:bg-[#211F1B] hover:bg-slate-50 dark:hover:bg-[#2A2824] transition-all text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm"
                                 aria-label="Sign in with Google"
                             >
                                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -259,7 +259,7 @@ export default function LoginPage() {
                             <button
                                 onClick={handleGitHubLogin}
                                 disabled={loading}
-                                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-white dark:bg-[#1e2d45] hover:bg-slate-50 dark:hover:bg-[#243349] transition-all text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm"
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-[#3A3833] bg-white dark:bg-[#211F1B] hover:bg-slate-50 dark:hover:bg-[#2A2824] transition-all text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm"
                                 aria-label="Sign in with GitHub"
                             >
                                 <Github className="w-4 h-4 shrink-0" />
@@ -270,7 +270,7 @@ export default function LoginPage() {
                         {/* Join link */}
                         <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">
                             Don&apos;t have an account?{" "}
-                            <Link href="/auth/signup" className="text-[#226CE0] hover:text-[#334DAF] font-semibold transition-colors">
+                            <Link href="/auth/signup" className="text-[#F0771A] hover:text-[#e0650d] font-semibold transition-colors">
                                 Create one free
                             </Link>
                         </p>
@@ -279,11 +279,11 @@ export default function LoginPage() {
                 </div>
 
                 {/* ───── RIGHT — Illustration ───── */}
-                <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-linear-to-br from-[#e8f4f8] via-[#d6eef5] to-[#c8e8f2] dark:from-[#0d1e35] dark:via-[#0f2440] dark:to-[#112a4a] transition-colors duration-300 p-6 relative overflow-hidden">
+                <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-linear-to-br from-[#faf3ea] via-[#f5e9d8] to-[#f0e0cc] dark:from-[#1A1916] dark:via-[#211F1B] dark:to-[#2A2824] transition-colors duration-300 p-6 relative overflow-hidden">
 
                     {/* Decorative circles */}
-                    <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-[#226CE0]/10 dark:bg-[#226CE0]/5 -translate-y-16 translate-x-16" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-[#226CE0]/10 dark:bg-[#226CE0]/5 translate-y-12 -translate-x-12" />
+                    <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-[#F0771A]/10 dark:bg-[#F0771A]/5 -translate-y-16 translate-x-16" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-[#F0771A]/10 dark:bg-[#F0771A]/5 translate-y-12 -translate-x-12" />
 
                     {/* Illustration */}
                     <div className="relative z-10 w-full max-w-sm">
@@ -299,7 +299,7 @@ export default function LoginPage() {
 
                     {/* Caption */}
                     <div className="relative z-10 text-center mt-2">
-                        <p className="text-sm font-bold text-[#226CE0] dark:text-[#4FC3F7]">
+                        <p className="text-sm font-bold text-[#F0771A] dark:text-[#FFA800]">
                             Secure & Encrypted
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">

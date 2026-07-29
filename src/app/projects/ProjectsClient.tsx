@@ -394,10 +394,10 @@ function ProjectsPageContent() {
                         </div>
 
                         {/* Illustration */}
-                        <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[360px] xl:w-[420px] 2xl:w-[460px]">
+                        <div className="relative shrink-0 hidden lg:block lg:ml-auto w-90 xl:w-105 2xl:w-115">
                             <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
-                                <div className="absolute -top-6 -right-6 w-28 h-28 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
-                                <span className="absolute top-4 -left-6 w-3 h-3 rotate-45 rounded-[2px] bg-[#226CE0]/50" />
+                                <div className="absolute -top-6 -right-6 w-28 h-28 opacity-25 bg-[radial-gradient(#F0771A_1.5px,transparent_1.5px)] bg-size-[14px_14px]" />
+                                <span className="absolute top-4 -left-6 w-3 h-3 rotate-45 rounded-[2px] bg-[#F0771A]/50" />
                                 <span className="absolute bottom-10 -left-9 w-2.5 h-2.5 rotate-45 rounded-[2px] bg-[#7C3AED]/45" />
                             </div>
 
@@ -421,15 +421,22 @@ function ProjectsPageContent() {
             <section className="pb-8">
                 <div className="container mx-auto">
                     <div className="p-submit-project-banner">
-                        <div className="text-left">
-                            <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">Showcase Your Creative Creation</h2>
-                            <p className="text-muted-foreground max-w-145 text-sm md:text-base leading-relaxed">
-                                Have you built an application, open-source script, or machine learning model recently? Submit it today, gain stars, collect feedback, and earn 150 Velonx Coins.
-                            </p>
+                        <div className="p-submit-banner-content">
+                            <div className="p-submit-banner-icon" aria-hidden="true">
+                                <Rocket className="w-6 h-6" />
+                            </div>
+                            <div className="p-submit-banner-text">
+                                <span className="p-submit-banner-eyebrow">Submit &amp; Earn</span>
+                                <h2 className="text-xl md:text-2xl font-bold text-foreground mt-1.5 mb-2">Showcase Your Creative Creation</h2>
+                                <p className="text-muted-foreground max-w-145 text-sm md:text-base leading-relaxed">
+                                    Have you built an application, open-source script, or machine learning model recently? Submit it today, gain stars, collect feedback, and earn{" "}
+                                    <span className="p-submit-banner-reward">+150 Velonx Coins</span>.
+                                </p>
+                            </div>
                         </div>
                         <button
                             onClick={handleSubmitClick}
-                            className="btn-redesign btn-redesign-primary inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-full shrink-0 cursor-pointer"
+                            className="btn-redesign btn-redesign-primary relative z-1 inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-full shrink-0 cursor-pointer"
                         >
                             Submit Project
                             <Rocket className="w-4 h-4" aria-hidden="true" />
@@ -493,7 +500,7 @@ function ProjectsPageContent() {
                             <TabsList className="bg-muted/50 backdrop-blur-sm border border-border p-1 rounded-2xl shadow-lg">
                                 <TabsTrigger
                                     value="running"
-                                    className="px-6 py-2.5 rounded-xl data-[state=active]:bg-linear-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/80 font-semibold gap-2 transition-all duration-300 ease-out"
+                                    className="px-6 py-2.5 rounded-xl data-[state=active]:bg-linear-to-r data-[state=active]:from-[#F0771A] data-[state=active]:to-[#e0650d] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-[#F0771A]/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/80 font-semibold gap-2 transition-all duration-300 ease-out"
                                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                                 >
                                     <Clock className="w-4 h-4" />

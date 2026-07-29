@@ -247,7 +247,7 @@ export default function AdminBookingApprovalPanel({
           <TabsList className="mb-8 bg-muted p-1 rounded-2xl">
             <TabsTrigger 
               value="mentor-sessions" 
-              className="px-6 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm flex items-center gap-2"
+              className="px-6 py-3 rounded-xl data-[state=active]:bg-[#F0771A] data-[state=active]:text-white font-bold text-sm flex items-center gap-2"
             >
               <Calendar className="w-4 h-4" />
               Mentor Sessions
@@ -259,7 +259,7 @@ export default function AdminBookingApprovalPanel({
             </TabsTrigger>
             <TabsTrigger 
               value="mock-interviews" 
-              className="px-6 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm flex items-center gap-2"
+              className="px-6 py-3 rounded-xl data-[state=active]:bg-[#F0771A] data-[state=active]:text-white font-bold text-sm flex items-center gap-2"
             >
               <Briefcase className="w-4 h-4" />
               Mock Interviews

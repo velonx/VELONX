@@ -56,7 +56,7 @@ function getStatusConfig(status: string) {
         case 'IN_PROGRESS':
             return { label: 'Active', className: 'bg-emerald-500/15 text-emerald-500 border-emerald-500/25', pulse: true };
         case 'COMPLETED':
-            return { label: 'Completed', className: 'bg-blue-500/15 text-blue-400 border-blue-500/25', pulse: false };
+            return { label: 'Completed', className: 'bg-foreground/10 text-foreground border-foreground/20', pulse: false };
         case 'PLANNING':
             return { label: 'Planning', className: 'bg-amber-500/15 text-amber-500 border-amber-500/25', pulse: false };
         case 'ARCHIVED':
@@ -154,13 +154,13 @@ const ProjectCardComponent = ({
                             }}
                         />
                     ) : (
-                        <span className="text-base font-extrabold text-primary dark:text-cyan-light select-none">
+                        <span className="text-base font-extrabold text-[#F0771A] select-none">
                             {project.title.charAt(0).toUpperCase()}
                         </span>
                     )}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <h2 className="p-project-title group-hover:text-primary dark:group-hover:text-cyan-light transition-colors">
+                    <h2 className="p-project-title group-hover:text-[#F0771A] transition-colors">
                         {project.title}
                     </h2>
                 </div>

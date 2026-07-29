@@ -86,7 +86,7 @@ const CanvasParticles = () => {
             x: Math.random() * W, y: Math.random() * H,
             size: Math.random() * 2 + 0.5,
             sx: Math.random() * 0.3 - 0.15, sy: Math.random() * 0.3 - 0.15,
-            color: Math.random() > 0.5 ? "rgba(34,108,224,0.20)" : "rgba(240,119,26,0.10)",
+            color: Math.random() > 0.5 ? "rgba(22,20,15,0.12)" : "rgba(240,119,26,0.10)",
         }));
         let animId: number;
         let paused = false;
@@ -144,8 +144,8 @@ const SectionReveal = ({ children, className = "", delay = 0 }: { children: Reac
 const SectionHeader = ({ label, title, subtitle }: { label?: string; title: React.ReactNode; subtitle?: string }) => (
     <div className="text-center max-w-2xl mx-auto mb-16">
         {label && <span className="section-label-redesign">{label}</span>}
-        <h2 className="text-3xl md:text-4xl font-black tracking-tight mt-3 text-[#1A234A] dark:text-white">{title}</h2>
-        {subtitle && <p className="text-muted-foreground mt-4 text-base leading-relaxed">{subtitle}</p>}
+        <h2 className="heading-section text-3xl md:text-4xl lg:text-5xl mt-3">{title}</h2>
+        {subtitle && <p className="text-muted-foreground mt-4 text-base leading-relaxed font-light">{subtitle}</p>}
     </div>
 );
 
@@ -208,32 +208,32 @@ export default function Home() {
 
 
             {/* ==================== 1. HERO SECTION ==================== */}
-            <header className="relative pt-28 pb-16 md:pt-36 md:pb-24 flex items-center justify-center z-10 overflow-hidden">
+            <header className="relative pt-32 pb-20 md:pt-44 md:pb-32 flex items-center justify-center z-10 overflow-hidden">
                 <MeshGradientHero />
-                <div className="container mx-auto px-6 max-w-7xl grid grid-cols-1 lg:grid-cols-[1fr_1.7fr] gap-10 items-center relative z-10">
-                    {/* Left: Content */}
+                <div className="container mx-auto px-6 max-w-4xl relative z-10">
+                    {/* Centered Content */}
                     <motion.div
                         initial={{ opacity: 0, y: 36 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                        className="flex flex-col text-left space-y-6"
+                        className="flex flex-col items-center text-center space-y-8"
                     >
                         {/* Badge */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.85 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.6, delay: 0.1, type: "spring", stiffness: 200 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#226ce0]/25 bg-[#226ce0]/5 text-xs font-semibold text-[#226ce0] w-fit backdrop-blur-sm"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-background/60 text-xs font-medium text-muted-foreground w-fit"
                         >
                             <span className="w-2 h-2 rounded-full bg-[#f0771a] animate-pulse" />
                             India&apos;s #1 Student Tech Career Platform
                         </motion.div>
 
-                        <h1 className="text-4xl sm:text-5xl md:text-[54px] lg:text-[64px] font-black tracking-tight leading-[1.1] text-[#29292B] dark:text-[#FFFBDB]">
+                        <h1 className="heading-display text-5xl sm:text-7xl md:text-[88px] lg:text-[110px] text-foreground">
                             Your Future<br />
                             Has No Limits.<br />
                             <motion.span
-                                className="text-[#226ce0] inline-block"
+                                className="text-accent inline-block"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.7, delay: 0.3 }}
@@ -246,7 +246,7 @@ export default function Home() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.45 }}
-                            className="text-muted-foreground text-base leading-relaxed max-w-lg"
+                            className="text-muted-foreground text-lg leading-relaxed max-w-xl font-light"
                         >
                             Velonx empowers Tier-2 &amp; Tier-3 college students with opportunities, mentorship, hackathons, projects, and a community that helps you grow.
                         </motion.p>
@@ -255,13 +255,13 @@ export default function Home() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.55 }}
-                            className="flex flex-wrap gap-4 pt-2"
+                            className="flex flex-wrap justify-center gap-4 pt-2"
                         >
                             <Link href="/auth/signup" onClick={handleJoinClick} data-cursor="link">
                                 <Magnetic>
                                     <motion.button
-                                        className="btn-redesign btn-redesign-primary text-base font-bold shadow-lg"
-                                        whileHover={{ scale: 1.05, boxShadow: "0 8px 30px rgba(240,119,26,0.5)" }}
+                                        className="btn-redesign btn-redesign-primary text-base font-medium"
+                                        whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
                                         transition={{ type: "spring", stiffness: 400, damping: 15 }}
                                     >
@@ -272,8 +272,8 @@ export default function Home() {
                             <Link href="/career" data-cursor="link">
                                 <Magnetic>
                                     <motion.button
-                                        className="btn-redesign btn-redesign-secondary text-base font-semibold"
-                                        whileHover={{ scale: 1.04 }}
+                                        className="btn-redesign btn-redesign-secondary text-base font-medium"
+                                        whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
                                         transition={{ type: "spring", stiffness: 400, damping: 15 }}
                                     >
@@ -288,19 +288,19 @@ export default function Home() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.65 }}
-                            className="flex items-center gap-4 pt-1"
+                            className="flex items-center gap-4 pt-4"
                         >
                             <div className="flex items-center -space-x-2.5">
                                 {[
-                                    { initials: "KS", bg: "bg-blue-500" },
-                                    { initials: "AR", bg: "bg-orange-500" },
-                                    { initials: "RI", bg: "bg-emerald-600" },
-                                    { initials: "PI", bg: "bg-purple-500" },
-                                    { initials: "+", bg: "bg-amber-400" },
+                                    { initials: "KS", bg: "bg-[#16140F]" },
+                                    { initials: "AR", bg: "bg-[#F0771A]" },
+                                    { initials: "RI", bg: "bg-[#5E5B56]" },
+                                    { initials: "PI", bg: "bg-[#8A8780]" },
+                                    { initials: "+", bg: "bg-[#F0771A]" },
                                 ].map((avatar, i) => (
                                     <div
                                         key={i}
-                                        className={`w-9 h-9 rounded-full ${avatar.bg} border-2 border-background flex items-center justify-center text-white text-[10px] font-black shadow-sm select-none`}
+                                        className={`w-9 h-9 rounded-full ${avatar.bg} border-2 border-background flex items-center justify-center text-white text-[10px] font-medium shadow-sm select-none`}
                                         style={{ zIndex: 5 - i }}
                                     >
                                         {avatar.initials}
@@ -308,164 +308,17 @@ export default function Home() {
                                 ))}
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <span className="text-sm font-bold text-[#1A234A] dark:text-white leading-tight">Trusted by students</span>
+                                <span className="text-sm font-medium text-foreground leading-tight">Trusted by students</span>
                                 <div className="flex items-center gap-0.5" aria-label="4.9 out of 5 stars">
                                     {[1, 2, 3, 4, 5].map((s) => (
                                         <svg key={s} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                         </svg>
                                     ))}
-                                    <span className="text-xs text-muted-foreground ml-1 font-semibold">4.9</span>
+                                    <span className="text-xs text-muted-foreground ml-1 font-medium">4.9</span>
                                 </div>
                             </div>
                         </motion.div>
-                    </motion.div>
-
-                    {/* Right: Hero Illustration */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative w-full flex items-center justify-center select-none"
-                    >
-
-
-                        {/* Decorative blur orbs */}
-                        <motion.div
-                            className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#226ce0]/10 blur-3xl pointer-events-none"
-                            animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
-                            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                        />
-                        <motion.div
-                            className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-[#f0771a]/10 blur-3xl pointer-events-none"
-                            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                        />
-
-                        <Image
-                            src="/hero.png"
-                            alt="Students building projects and growing their careers with Velonx"
-                            width={900}
-                            height={675}
-                            priority
-                            className="w-full h-auto object-contain rounded-2xl relative z-1 drop-shadow-[0_8px_30px_rgba(34,108,224,0.12)]"
-                        />
-
-
-                        {/* Floating Cards with SVG icons */}
-                        {[
-                            {
-                                icon: (
-                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#226ce0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                                        <path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5" />
-                                    </svg>
-                                ),
-                                iconBg: "bg-blue-100 dark:bg-blue-900/40",
-                                title: "Mentorship",
-                                desc: "Learn from industry mentors",
-                                position: "top-[3%] left-[-2%]",
-                                delay: 0.3,
-                                float: "animate-[floatY_4s_ease-in-out_infinite]",
-                            },
-                            {
-                                icon: (
-                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7" />
-                                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7" />
-                                        <path d="M4 22h16" />
-                                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                                    </svg>
-                                ),
-                                iconBg: "bg-amber-100 dark:bg-amber-900/40",
-                                title: "Hackathons",
-                                desc: "Compete. Build. Win.",
-                                position: "top-[-4%] left-[30%]",
-                                delay: 0.5,
-                                float: "animate-[floatY_5s_ease-in-out_0.5s_infinite]",
-                            },
-                            {
-                                icon: (
-                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
-                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                    </svg>
-                                ),
-                                iconBg: "bg-purple-100 dark:bg-purple-900/40",
-                                title: "Community",
-                                desc: "Connect. Share. Grow.",
-                                position: "bottom-[28%] left-[-3%]",
-                                delay: 0.7,
-                                float: "animate-[floatY_4.5s_ease-in-out_1s_infinite]",
-                            },
-                            {
-                                icon: (
-                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <polyline points="16 18 22 12 16 6" />
-                                        <polyline points="8 6 2 12 8 18" />
-                                        <line x1="14" y1="4" x2="10" y2="20" />
-                                    </svg>
-                                ),
-                                iconBg: "bg-emerald-100 dark:bg-emerald-900/40",
-                                title: "Projects",
-                                desc: "Build real-world projects",
-                                position: "top-[25%] right-[-8%]",
-                                delay: 0.9,
-                                float: "animate-[floatY_5.5s_ease-in-out_0.3s_infinite]",
-                            },
-                            {
-                                icon: (
-                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                                    </svg>
-                                ),
-                                iconBg: "bg-sky-100 dark:bg-sky-900/40",
-                                title: "Internships",
-                                desc: "Find the right opportunities",
-                                position: "bottom-[8%] right-[-3%]",
-                                delay: 1.1,
-                                float: "animate-[floatY_4.8s_ease-in-out_0.7s_infinite]",
-                            },
-                            {
-                                icon: (
-                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#f0771a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
-                                        <path d="M9 10l2 2 4-4" />
-                                    </svg>
-                                ),
-                                iconBg: "bg-orange-100 dark:bg-orange-900/40",
-                                title: "Resources",
-                                desc: "Learn & get certified",
-                                position: "top-[-4%] right-[-3%]",
-                                delay: 1.3,
-                                float: "animate-[floatY_5.2s_ease-in-out_0.4s_infinite]",
-                            },
-                        ].map((card) => (
-                            <motion.div
-                                key={card.title}
-                                initial={{ opacity: 0, scale: 0.7, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                transition={{
-                                    duration: 0.6,
-                                    delay: card.delay,
-                                    type: "spring",
-                                    stiffness: 180,
-                                    damping: 14,
-                                }}
-                                className={`absolute ${card.position} ${card.float} z-20 hidden lg:flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl bg-white/90 dark:bg-[#1a1a2e]/90 backdrop-blur-md border border-white/60 dark:border-white/10 shadow-md shadow-black/5 text-center`}
-                            >
-                                <div className={`w-7 h-7 rounded-md ${card.iconBg} flex items-center justify-center shrink-0`}>
-                                    {card.icon}
-                                </div>
-                                <p className="text-[11px] font-bold text-[#1A234A] dark:text-white leading-tight">{card.title}</p>
-                                <p className="text-[9px] text-muted-foreground leading-tight max-w-22.5">{card.desc}</p>
-                            </motion.div>
-                        ))}
                     </motion.div>
                 </div>
             </header>
@@ -477,7 +330,7 @@ export default function Home() {
             <SectionReveal className="py-20 border-t border-border/30 relative z-10">
                 <div className="container mx-auto px-6 max-w-6xl">
                     <SectionHeader
-                        title={<>How <span className="text-[#226ce0]">Velonx</span> Works</>}
+                        title={<>How <span className="text-accent">Velonx</span> Works</>}
                         subtitle="From joining the platform to landing your first placement — here is exactly what happens."
                     />
 
@@ -487,7 +340,7 @@ export default function Home() {
                                 number: "01", title: "Create Profile",
                                 description: "Sign up free, specify your college and career goals. Your builder profile displays proof-of-work.",
                                 image: "/profile.jpeg",
-                                color: { circleBg: "bg-[#e6effe] dark:bg-blue-950/40", text: "text-[#226ce0] dark:text-blue-400", border: "border-[#226ce0]/20 dark:border-blue-900/40", borderLine: "border-blue-400/50 dark:border-blue-500/30", hover: "hover:shadow-[0_20px_40px_rgba(34,108,224,0.12)] hover:border-[#226ce0]/30" }
+                                color: { circleBg: "bg-accent/10 dark:bg-amber-950/40", text: "text-accent dark:text-amber-400", border: "border-accent/20 dark:border-amber-900/40", borderLine: "border-accent/50 dark:border-amber-500/30", hover: "hover:shadow-[0_8px_20px_rgba(240,119,26,0.08)] hover:border-accent/30" }
                             },
                             {
                                 number: "02", title: "Build & Ship",
@@ -548,7 +401,7 @@ export default function Home() {
 
                                 {/* Illustration card */}
                                 <motion.div
-                                    className={`w-full bg-white dark:bg-[#101626] border border-slate-100 dark:border-slate-800/60 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 aspect-[4/3.2] flex items-center justify-center cursor-pointer ${step.color.hover}`}
+                                    className={`w-full bg-white dark:bg-[#211F1B] border border-slate-100 dark:border-white/10 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 aspect-[4/3.2] flex items-center justify-center cursor-pointer ${step.color.hover}`}
                                     whileHover={{ scale: 1.03, y: -4 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 20 }}
                                 >
@@ -569,7 +422,7 @@ export default function Home() {
 
                                 {/* Text */}
                                 <div className="space-y-2 px-2">
-                                    <h3 className="text-lg font-black leading-tight text-[#1A234A] dark:text-white">{step.title}</h3>
+                                    <h3 className="text-lg font-medium leading-tight text-foreground">{step.title}</h3>
                                     <p className="text-xs text-muted-foreground leading-relaxed">{step.description}</p>
                                 </div>
                             </motion.div>
@@ -589,7 +442,7 @@ export default function Home() {
                                 <circle cx="12" cy="12" r="10" />
                                 <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                             </svg>
-                            <span className="font-black tracking-wider text-xs text-[#1A234A] dark:text-amber-500 uppercase">Proof of Work</span>
+                            <span className="font-medium tracking-wider text-xs text-foreground dark:text-amber-500 uppercase">Proof of Work</span>
                         </div>
                         <div className="hidden md:block w-px h-5 bg-[#f0771a]/15 dark:bg-amber-900/30" />
                         <p className="text-xs md:text-sm text-gray-600 dark:text-slate-300 font-medium text-center md:text-left leading-relaxed">
@@ -611,10 +464,10 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                tag: "Social Impact", tagColor: "bg-[#226CE0]/10 text-[#226CE0] dark:bg-[#226CE0]/20 dark:text-[#7096D1]",
+                                tag: "Social Impact", tagColor: "bg-accent/10 text-accent dark:bg-accent/20 dark:text-accent",
                                 stars: "⭐ 64", title: "UnityDrive",
                                 desc: "An NGO Connect Platform bridging the gap between nonprofits and volunteers. Enables real-time coordination, campaign management, and meaningful community-driven change.",
-                                author: "Velonx Community", liveUrl: "https://unitydrive.netlify.app", hoverShadow: "hover:shadow-[0_20px_40px_rgba(34,108,224,0.1)] hover:border-[#226ce0]/30"
+                                author: "Velonx Community", liveUrl: "https://unitydrive.netlify.app", hoverShadow: "hover:shadow-[0_4px_12px_rgba(22,20,15,0.06)] hover:border-foreground/10"
                             },
                             {
                                 tag: "Web App", tagColor: "bg-[#F0771A]/10 text-[#F0771A] dark:bg-[#F0771A]/20 dark:text-orange-400",
@@ -656,7 +509,7 @@ export default function Home() {
                         <Link href="/projects">
                             <motion.button
                                 className="btn-redesign btn-redesign-secondary font-bold text-sm"
-                                whileHover={{ scale: 1.04, borderColor: "rgba(34,108,224,0.5)" }}
+                                whileHover={{ scale: 1.04, borderColor: "rgba(22,20,15,0.25)" }}
                                 whileTap={{ scale: 0.97 }}
                             >
                                 Explore Student Projects Hub
@@ -794,7 +647,7 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                icon: "🌳", iconBg: "bg-primary/10", badge: "PDF Sheet", badgeColor: "bg-[#226CE0]/10 text-[#226CE0]",
+                                icon: "🌳", iconBg: "bg-accent/10", badge: "PDF Sheet", badgeColor: "bg-accent/10 text-accent",
                                 title: "Ultimate 75 DSA Interview Sheet",
                                 desc: "A highly curated set of 75 essential DSA problems covering arrays, trees, graphs, dynamic programming, and greedy algorithms. Includes solutions in C++, Java, and Python.",
                                 downloads: "", resourceName: "DSA Interview Sheet"
@@ -819,7 +672,7 @@ export default function Home() {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: idx * 0.12 }}
                                 className="card-redesign flex flex-col h-full justify-between"
-                                whileHover={{ y: -5, boxShadow: "0 16px 40px rgba(34,108,224,0.07)" }}
+                                whileHover={{ y: -5, boxShadow: "0 2px 8px rgba(22,20,15,0.06)" }}
                             >
                                 <div>
                                     <div className="flex justify-between items-start mb-6">
@@ -856,7 +709,7 @@ export default function Home() {
                         {/* Left explanation */}
                         <div className="lg:col-span-7 space-y-6">
                             <span className="section-label-redesign">A Platform That Doesn&apos;t Sleep</span>
-                            <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight text-[#1A234A] dark:text-white">Post, Chat, Connect &amp; Build Groups</h2>
+                            <h2 className="heading-section text-3xl md:text-4xl lg:text-5xl leading-tight">Post, Chat, Connect &amp; Build Groups</h2>
                             <p className="text-muted-foreground text-lg">
                                 Find study partners, organize localized chapters, share project updates, and discuss development issues with 15,000+ peers in active channels.
                             </p>
@@ -975,7 +828,7 @@ export default function Home() {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: idx * 0.12 }}
                                 className="card-redesign bg-card p-8 flex flex-col justify-between h-full shadow-md relative overflow-hidden"
-                                whileHover={{ y: -5, boxShadow: "0 20px 50px rgba(34,108,224,0.07)" }}
+                                whileHover={{ y: -5, boxShadow: "0 2px 8px rgba(22,20,15,0.06)" }}
                             >
                                 <div className="absolute top-4 right-6 text-7xl font-serif text-muted/10 font-bold select-none">&quot;</div>
                                 <div className={`flex items-center gap-2 text-[10px] font-bold py-1 px-3.5 rounded-full w-fit mb-6 ${t.badgeColor}`}>
@@ -1001,7 +854,7 @@ export default function Home() {
                     {/* Left Copy */}
                     <div className="space-y-6">
                         <span className="section-label-redesign">Gamified Progress</span>
-                        <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight text-[#1A234A] dark:text-white">Compete. Climb. Get Recognized.</h2>
+                        <h2 className="heading-section text-3xl md:text-4xl lg:text-5xl leading-tight">Compete. Climb. Get Recognized.</h2>
                         <p className="text-muted-foreground text-lg">
                             Every project you ship, every hackathon you win, and every review you complete counts toward your VX Coin balance and leaderboard rank. Recruiting partners scan this leaderboard regularly.
                         </p>
@@ -1166,7 +1019,7 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                tag: "Interview Prep", tagColor: "bg-[#226CE0]/10 text-[#226CE0]",
+                                tag: "Interview Prep", tagColor: "bg-accent/10 text-accent",
                                 title: "How to Crack Off-Campus Roles in India",
                                 desc: "A complete roadmap for Tier-3 college students to bypass standard campus hiring limitations and apply directly.",
                                 meta: "June 1, 2026 · 5 min"
@@ -1191,7 +1044,7 @@ export default function Home() {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: idx * 0.12 }}
                                 className="card-redesign bg-card flex flex-col h-full justify-between shadow-md"
-                                whileHover={{ y: -5, boxShadow: "0 16px 40px rgba(34,108,224,0.07)" }}
+                                whileHover={{ y: -5, boxShadow: "0 2px 8px rgba(22,20,15,0.06)" }}
                             >
                                 <div>
                                     <div className="mb-4">
@@ -1250,7 +1103,7 @@ export default function Home() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.4, delay: idx * 0.08 }}
-                                    className={`border rounded-2xl bg-card transition-all duration-200 ${isOpen ? "border-[#226ce0]/40 shadow-[0_8px_24px_rgba(34,108,224,0.08)]" : "border-border/50 hover:border-[#226ce0]/20"}`}
+                                    className={`border rounded-2xl bg-card transition-all duration-200 ${isOpen ? "border-accent/40 shadow-[0_4px_16px_rgba(240,119,26,0.06)]" : "border-border/50 hover:border-accent/20"}`}
                                 >
                                     <button
                                         onClick={() => setOpenFaq(isOpen ? null : idx)}
@@ -1258,7 +1111,7 @@ export default function Home() {
                                         aria-controls={`faq-answer-${idx}`}
                                         className="w-full flex items-center justify-between cursor-pointer p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl"
                                     >
-                                        <h3 className="text-base font-black text-foreground pr-4">{faq.q}</h3>
+                                        <h3 className="text-base font-medium text-foreground pr-4">{faq.q}</h3>
                                         <motion.span
                                             animate={{ rotate: isOpen ? 180 : 0 }}
                                             transition={{ duration: 0.25 }}
@@ -1291,15 +1144,14 @@ export default function Home() {
             {/* ==================== 16. FINAL CTA ==================== */}
             <SectionReveal className="py-20 border-t border-border/30 relative z-10 text-center">
                 <div className="container mx-auto px-6 max-w-4xl">
-                    <motion.div
-                        className="card-redesign card-glass-redesign p-12 md:p-16 rounded-3xl relative overflow-hidden shadow-2xl"
-                        whileHover={{ boxShadow: "0 32px 80px rgba(34,108,224,0.12)" }}
-                        transition={{ duration: 0.4 }}
-                    >
+                        <motion.div
+                            className="card-redesign card-glass-redesign p-12 md:p-16 rounded-3xl relative overflow-hidden"
+                            transition={{ duration: 0.4 }}
+                        >
                         {/* Background ellipses */}
                         <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-                            <ellipse cx="180" cy="150" rx="220" ry="150" fill="#226CE0" opacity="0.08" />
-                            <ellipse cx="720" cy="150" rx="220" ry="150" fill="#226CE0" opacity="0.06" />
+                            <ellipse cx="180" cy="150" rx="220" ry="150" fill="#F0771A" opacity="0.04" />
+                            <ellipse cx="720" cy="150" rx="220" ry="150" fill="#16140F" opacity="0.02" />
                         </svg>
 
 
@@ -1313,12 +1165,12 @@ export default function Home() {
                                 viewport={{ once: true }}
                                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
                             >
-                                <rect width="56" height="56" rx="18" fill="rgba(34,108,224,0.12)" stroke="rgba(34,108,224,0.25)" strokeWidth="1.5" />
-                                <path d="M28 12C28 12 40 18 40 30L28 42L16 30C16 18 28 12 28 12Z" stroke="#226CE0" strokeWidth="2" strokeLinejoin="round" fill="rgba(34,108,224,0.1)" />
-                                <circle cx="28" cy="30" r="4.5" fill="#226CE0" opacity="0.5" />
+                                <rect width="56" height="56" rx="18" fill="rgba(240,119,26,0.10)" stroke="rgba(240,119,26,0.25)" strokeWidth="1.5" />
+                                <path d="M28 12C28 12 40 18 40 30L28 42L16 30C16 18 28 12 28 12Z" stroke="#F0771A" strokeWidth="2" strokeLinejoin="round" fill="rgba(240,119,26,0.08)" />
+                                <circle cx="28" cy="30" r="4.5" fill="#F0771A" opacity="0.5" />
                             </motion.svg>
 
-                            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-[#1A234A] dark:text-white">Your College is Not Your Limit.</h2>
+                            <h2 className="heading-section text-3xl md:text-4xl lg:text-5xl">Your College is Not Your Limit.</h2>
                             <p className="text-muted-foreground text-base max-w-xl mx-auto leading-relaxed">
                                 Join students from across India who are building, competing, and landing their dream careers — regardless of where they study.
                             </p>
@@ -1326,8 +1178,8 @@ export default function Home() {
                                 <Link href="/auth/signup">
                                     <motion.button
                                         onClick={handleJoinClick}
-                                        className="btn-redesign btn-redesign-primary text-base font-bold shadow-md"
-                                        whileHover={{ scale: 1.06, boxShadow: "0 10px 40px rgba(240,119,26,0.5)" }}
+                                        className="btn-redesign btn-redesign-primary text-base font-medium"
+                                        whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
                                     >
                                         Join Free Today
@@ -1335,8 +1187,8 @@ export default function Home() {
                                 </Link>
                                 <Link href="/leaderboard">
                                     <motion.button
-                                        className="btn-redesign btn-redesign-secondary text-base font-semibold"
-                                        whileHover={{ scale: 1.04 }}
+                                        className="btn-redesign btn-redesign-secondary text-base font-medium"
+                                        whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
                                     >
                                         See the Leaderboard

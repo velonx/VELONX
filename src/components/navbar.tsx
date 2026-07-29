@@ -71,7 +71,7 @@ export function Navbar() {
                     aria-label="Velonx home page"
                 >
                     <span className="font-outfit font-extrabold text-xl tracking-[-0.04em] transition-colors duration-200">
-                        <span className="text-black dark:text-[#FFFBDB]">velon</span>
+                        <span className="text-[#16140F] dark:text-[#EDECE6]">velon</span>
                         <span className="text-transparent bg-clip-text bg-linear-to-r from-[#FF7A00] to-[#FFA800] dark:from-[#FF8A00] dark:to-[#FF3C00]">x</span>
                     </span>
                 </Link>
@@ -134,9 +134,9 @@ export function Navbar() {
                                         className="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-muted transition-all"
                                         aria-label="User menu"
                                     >
-                                        <Avatar className="w-8 h-8 border-2 border-[#226CE0]">
+                                        <Avatar className="w-8 h-8 border-2 border-accent">
                                             <AvatarImage src={session.user.image || ""} />
-                                            <AvatarFallback className="bg-linear-to-br from-[#226CE0] to-[#E9C46A] text-white text-xs font-bold">
+                                            <AvatarFallback className="bg-linear-to-br from-[#F0771A] to-[#FFA800] text-white text-xs font-bold">
                                                 {session.user.name?.charAt(0) || "U"}
                                             </AvatarFallback>
                                         </Avatar>
@@ -149,24 +149,24 @@ export function Navbar() {
                                     <div className="px-4 py-3 border-b border-border mb-1">
                                         <p className="text-foreground font-black">{session.user.name}</p>
                                         <p className="text-muted-foreground text-xs truncate">{session.user.email}</p>
-                                        <Badge className={`mt-2 font-black uppercase text-[10px] tracking-widest ${session.user.role === "ADMIN" ? "bg-orange-50 text-orange-600" : "bg-blue-50 text-[#226CE0]"
+                                        <Badge className={`mt-2 font-black uppercase text-[10px] tracking-widest ${session.user.role === "ADMIN" ? "bg-orange-50 text-orange-600" : "bg-accent/10 text-accent"
                                             }`}>
                                             {session.user.role === "ADMIN" ? "Admin Access" : "Student Member"}
                                         </Badge>
                                     </div>
-                                    <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-blue-50 focus:text-[#226CE0]">
+                                    <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-muted focus:text-accent">
                                         <Link href={dashboardLink} className="flex items-center gap-3 font-bold">
                                             <LayoutDashboard className="w-4 h-4" />
                                             My Dashboard
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-blue-50 focus:text-[#226CE0]">
+                                    <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-muted focus:text-accent">
                                         <Link href="/settings" className="flex items-center gap-3 font-bold">
                                             <Settings className="w-4 h-4" />
                                             Profile
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-blue-50 focus:text-[#226CE0]">
+                                    <DropdownMenuItem asChild className="cursor-pointer rounded-xl py-3 focus:bg-muted focus:text-accent">
                                         <Link href="/referrals" className="flex items-center gap-3 font-bold">
                                             <Share2 className="w-4 h-4" />
                                             Referrals
@@ -188,7 +188,7 @@ export function Navbar() {
                             <ThemeToggle />
                             <Link href="/auth/login">
                                 <button
-                                    className="text-[#1A234A] border border-[#1A234A] hover:bg-[#1A234A]/5 font-semibold text-xs rounded-full px-4 py-2 transition-all"
+                                    className="text-[#16140F] dark:text-[#EDECE6] border border-border hover:bg-muted font-semibold text-xs rounded-full px-4 py-2 transition-all"
                                     aria-label="Log in to your account"
                                 >
                                     Log In
@@ -196,7 +196,7 @@ export function Navbar() {
                             </Link>
                             <Link href="/auth/signup">
                                 <button
-                                    className="bg-linear-to-r from-[#FF6B6B] to-[#FF8E53] hover:brightness-110 text-white font-semibold text-xs rounded-full px-4 py-2 transition-all shadow-md"
+                                    className="bg-[#F0771A] hover:brightness-110 text-white font-semibold text-xs rounded-full px-4 py-2 transition-all shadow-md"
                                     aria-label="Join Velonx community"
                                 >
                                     Join Now
@@ -225,9 +225,9 @@ export function Navbar() {
                                 <UnreadCountBadge showLabel={true} />
                             </Link>
                             <Link href={dashboardLink} aria-label="Go to dashboard" className="flex flex-col items-center justify-center gap-1 p-2 text-muted-foreground hover:text-accent transition-colors rounded-full hover:bg-muted">
-                                <Avatar className="w-6 h-6 border-2 border-[#226CE0]">
+                                <Avatar className="w-6 h-6 border-2 border-accent">
                                     <AvatarImage src={displayAvatar} />
-                                    <AvatarFallback className="bg-[#226CE0] text-white text-[10px]">{session.user.name?.[0]}</AvatarFallback>
+                                    <AvatarFallback className="bg-accent text-white text-[10px]">{session.user.name?.[0]}</AvatarFallback>
                                 </Avatar>
                                 <span className="text-[10px] font-medium leading-none">Profile</span>
                             </Link>
@@ -255,7 +255,7 @@ export function Navbar() {
                             <div className="flex flex-col h-full overflow-y-auto custom-scrollbar p-6">
                                 <Link href="/" onClick={() => setOpen(false)} className="mb-8">
                                     <span className="font-outfit font-extrabold text-3xl tracking-[-0.04em] transition-colors duration-200">
-                                        <span className="text-black dark:text-[#FFFBDB]">velon</span>
+                                        <span className="text-[#16140F] dark:text-[#EDECE6]">velon</span>
                                         <span className="text-transparent bg-clip-text bg-linear-to-r from-[#FF7A00] to-[#FFA800] dark:from-[#FF8A00] dark:to-[#FF3C00]">x</span>
                                     </span>
                                 </Link>
@@ -265,7 +265,7 @@ export function Navbar() {
                                             <Link
                                                 href={dashboardLink}
                                                 onClick={() => setOpen(false)}
-                                                className="px-6 py-4 text-lg font-black text-[#226CE0] bg-[#226CE0]/5 hover:bg-[#226CE0]/10 rounded-2xl transition-all uppercase tracking-wide flex items-center gap-3 mb-2"
+                                                className="px-6 py-4 text-lg font-black text-accent bg-accent/5 hover:bg-accent/10 rounded-2xl transition-all uppercase tracking-wide flex items-center gap-3 mb-2"
                                             >
                                                 <LayoutDashboard className="w-6 h-6" />
                                                 My Dashboard
@@ -305,14 +305,14 @@ export function Navbar() {
                                             <Button className="w-full bg-gray-900 hover:bg-black text-white rounded-2xl py-6 font-bold uppercase tracking-widest text-xs">Login</Button>
                                         </Link>
                                         <Link href="/auth/signup" onClick={() => setOpen(false)}>
-                                            <Button className="w-full bg-[#226CE0] hover:bg-[#334DAF] text-white rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#226CE0]/20">Join Community</Button>
+                                            <Button className="w-full bg-[#16140F] hover:bg-[#2A2824] text-[#F5F5EE] rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#16140F]/20">Join Community</Button>
                                         </Link>
                                     </div>
                                 )}
                                 {session && (
                                     <div className="mt-auto p-4 space-y-3">
                                         <Link href={dashboardLink} onClick={() => setOpen(false)} className="w-full">
-                                            <Button className="w-full bg-[#226CE0] hover:bg-[#334DAF] text-white rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#226CE0]/20">
+                                            <Button className="w-full bg-[#16140F] hover:bg-[#2A2824] text-[#F5F5EE] rounded-2xl py-6 font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#16140F]/20">
                                                 My Dashboard
                                             </Button>
                                         </Link>

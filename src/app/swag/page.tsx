@@ -142,9 +142,9 @@ export default function SwagPage() {
             </div>
 
             {/* Illustration */}
-            <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[260px] xl:w-[300px]">
+            <div className="relative shrink-0 hidden lg:block lg:ml-auto w-65 xl:w-75">
               <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
-                <div className="absolute -top-4 -right-6 w-24 h-24 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+                <div className="absolute -top-4 -right-6 w-24 h-24 opacity-25 bg-[radial-gradient(#F0771A_1.5px,transparent_1.5px)] bg-size-[14px_14px]" />
                 <span className="absolute top-2 -left-6 w-2.5 h-2.5 rotate-45 rounded-[2px] bg-[#226CE0]/50" />
                 <span className="absolute bottom-6 -left-8 w-3 h-3 rotate-45 rounded-[2px] bg-[#7C3AED]/45" />
               </div>

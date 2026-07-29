@@ -407,7 +407,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
 
   // Deduce logo details
   const initials = job.logoText || (job.company ? job.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO');
-  const logoColors = ['#A78BFA', '#22D3EE', '#34D399', '#FCD34D', '#F9A8D4'];
+  const logoColors = ['#F0771A', '#F59E0B', '#FB923C', '#FCD34D', '#e0650d'];
   const charCode = job.company ? job.company.charCodeAt(0) : 0;
   const determinedLogoColor = job.logoColor || logoColors[charCode % logoColors.length];
 
@@ -441,7 +441,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
             className="relative w-full max-w-md bg-card border border-border rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="h-1.5 w-full bg-[#f97316]" />
+            <div className="h-1.5 w-full bg-[#F0771A]" />
 
             <button
               onClick={() => setShowLoginModal(false)}
@@ -599,7 +599,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
                             {selectedFile ? selectedFile.name : "resume.pdf"}
                           </span>
                           <span 
-                            className={`upload-percentage font-bold ${uploadStatus === "completed" ? "text-teal-600" : "text-primary"}`}
+                            className={`upload-percentage font-bold ${uploadStatus === "completed" ? "text-emerald-600" : "text-primary"}`}
                           >
                             {uploadStatus === "completed" ? "Completed ✓" : `${uploadProgress}%`}
                           </span>
@@ -631,7 +631,7 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
               </div>
             ) : (
               <div className="dialog-success-wrapper flex flex-col items-center text-center py-6">
-                <div className="success-checkmark-wrapper w-20 h-20 mb-4 text-teal-600">
+                <div className="success-checkmark-wrapper w-20 h-20 mb-4 text-emerald-600">
                   <svg className="success-checkmark w-20 h-20" viewBox="0 0 52 52">
                     <circle className="success-checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
                     <path className="success-checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>

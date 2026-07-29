@@ -24,14 +24,14 @@ export function ThemeToggle({ showLabel = false }: { showLabel?: boolean }) {
             {/* Moon Icon */}
             <Moon
                 className={`absolute w-5 h-5 transition-all duration-300 ${theme === 'dark'
-                        ? 'rotate-0 scale-100 opacity-100 text-blue-400'
+                        ? 'rotate-0 scale-100 opacity-100 text-amber-300'
                         : '-rotate-90 scale-0 opacity-0'
                     }`}
             />
 
             {/* Glow effect */}
             <div
-                className={`absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300 ${theme === 'light' ? 'bg-amber-300' : 'bg-blue-400'
+                className={`absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300 ${theme === 'light' ? 'bg-amber-300' : 'bg-amber-400'
                     }`}
             />
             </button>

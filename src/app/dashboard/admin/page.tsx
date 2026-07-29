@@ -270,14 +270,14 @@ export default function AdminDashboard() {
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <div className="flex justify-between items-center mb-8">
                         <TabsList className="bg-background p-1 rounded-2xl border border-border shadow-sm">
-                            <TabsTrigger value="management" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Review Center</TabsTrigger>
+                            <TabsTrigger value="management" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#F0771A] data-[state=active]:text-white font-bold text-sm">Review Center</TabsTrigger>
                             <TabsTrigger value="reports" className="px-8 py-3 rounded-xl data-[state=active]:bg-red-500 data-[state=active]:text-white font-bold text-sm flex items-center gap-2">
                                 <Flag className="w-4 h-4" />Reports
                             </TabsTrigger>
-                            <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Post Blog</TabsTrigger>
-                            <TabsTrigger value="career" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Career</TabsTrigger>
-                            <TabsTrigger value="resources" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Resources</TabsTrigger>
-                            <TabsTrigger value="verifications" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#1A234A] data-[state=active]:text-white font-bold text-sm">Verifications</TabsTrigger>
+                            <TabsTrigger value="blog" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#F0771A] data-[state=active]:text-white font-bold text-sm">Post Blog</TabsTrigger>
+                            <TabsTrigger value="career" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#F0771A] data-[state=active]:text-white font-bold text-sm">Career</TabsTrigger>
+                            <TabsTrigger value="resources" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#F0771A] data-[state=active]:text-white font-bold text-sm">Resources</TabsTrigger>
+                            <TabsTrigger value="verifications" className="px-8 py-3 rounded-xl data-[state=active]:bg-[#F0771A] data-[state=active]:text-white font-bold text-sm">Verifications</TabsTrigger>
                         </TabsList>
                     </div>
 

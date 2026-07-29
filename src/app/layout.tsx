@@ -30,6 +30,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400;1,8..60,500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${outfit.variable} ${greatVibes.variable} ${dancingScript.variable} ${amaticSC.variable} ${indieFlower.variable} ${sniglet.variable} ${girassol.variable} ${spaceGrotesk.variable} antialiased min-h-screen flex flex-col`}
       >
@@ -42,13 +50,13 @@ export default function RootLayout({
               toastOptions={{
                 duration: 3000,
                 style: {
-                  background: '#333',
-                  color: '#fff',
+                  background: '#1A1916',
+                  color: '#F5F5EE',
                   borderRadius: '10px',
                 },
                 success: {
                   iconTheme: {
-                    primary: '#226CE0',
+                    primary: '#F0771A',
                     secondary: '#fff',
                   },
                 },

@@ -295,9 +295,9 @@ function ResourcesPage() {
             </div>
 
             {/* Illustration */}
-            <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[380px] xl:w-[440px] 2xl:w-[480px]">
+            <div className="relative shrink-0 hidden lg:block lg:ml-auto w-95 xl:w-110 2xl:w-120">
               <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
-                <div className="absolute -top-6 right-0 w-28 h-28 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+                <div className="absolute -top-6 right-0 w-28 h-28 opacity-25 bg-[radial-gradient(#F0771A_1.5px,transparent_1.5px)] bg-size-[14px_14px]" />
                 <span className="absolute top-4 -left-4 w-3 h-3 rotate-45 rounded-[2px] bg-[#226CE0]/50" />
                 <span className="absolute bottom-8 -left-8 w-2.5 h-2.5 rotate-45 rounded-[2px] bg-[#7C3AED]/45" />
               </div>

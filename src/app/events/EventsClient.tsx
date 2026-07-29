@@ -42,7 +42,7 @@ const CanvasParticles = () => {
             size: Math.random() * 2.5 + 0.5,
             sx: Math.random() * 0.4 - 0.2,
             sy: Math.random() * 0.4 - 0.2,
-            color: Math.random() > 0.5 ? "rgba(34, 108, 224, 0.25)" : "rgba(240, 119, 26, 0.23)",
+            color: Math.random() > 0.5 ? "rgba(22, 20, 15, 0.12)" : "rgba(240, 119, 26, 0.23)",
         }));
 
         let animationFrameId: number;
@@ -79,7 +79,7 @@ const UnregisterConfirmDialog = lazy(() => import("@/components/events/Unregiste
 const LoadingFallback = () => (
     <div className="flex items-center justify-center p-8">
         <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-[#F0771A] border-t-transparent rounded-full animate-spin" />
             <p className="text-muted-foreground text-sm font-semibold">Loading...</p>
         </div>
     </div>
@@ -277,7 +277,7 @@ function EventsPage() {
                         </div>
 
                         {/* Illustration (decorative — desktop only) */}
-                        <div className="hidden md:block shrink-0 w-[320px] lg:w-[420px] xl:w-[460px]" aria-hidden="true">
+                        <div className="hidden md:block shrink-0 w-[320px] lg:w-105 xl:w-115" aria-hidden="true">
                             <Image
                                 src="https://res.cloudinary.com/dypbafujn/image/upload/e_trim/v1785217115/event_ofhwzw.png"
                                 alt=""
@@ -315,8 +315,8 @@ function EventsPage() {
                                     className={cn(
                                         "px-5 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer border",
                                         activeCategory === chip.id
-                                            ? "bg-[#226CE0]/10 border-[#226CE0]/40 text-[#226CE0] dark:text-[#226CE0]"
-                                            : "bg-[#FFFFFF] dark:bg-card border-border text-[#7582B3] dark:text-gray-400 hover:border-[#226CE0]/30 hover:text-[#226CE0]"
+                                            ? "bg-[#F0771A]/10 border-[#F0771A]/40 text-[#F0771A] dark:text-[#F0771A]"
+                                            : "bg-[#FFFFFF] dark:bg-card border-border text-[#8A8780] dark:text-gray-400 hover:border-[#F0771A]/30 hover:text-[#F0771A]"
                                     )}
                                 >
                                     {chip.label}
@@ -340,7 +340,7 @@ function EventsPage() {
                                         "px-5 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer border",
                                         currentStatus === chip.id
                                             ? "bg-[#F0771A]/10 border-[#F0771A]/40 text-[#F0771A] dark:text-[#F0771A]"
-                                            : "bg-[#FFFFFF] dark:bg-card border-border text-[#7582B3] dark:text-gray-400 hover:border-[#F0771A]/30 hover:text-[#F0771A]"
+                                            : "bg-[#FFFFFF] dark:bg-card border-border text-[#8A8780] dark:text-gray-400 hover:border-[#F0771A]/30 hover:text-[#F0771A]"
                                     )}
                                 >
                                     {chip.label}
@@ -351,21 +351,21 @@ function EventsPage() {
                         {/* Search Bar & Admin Add Event Button */}
                         <div className="flex items-center gap-3 max-w-md w-full">
                             <div className="relative flex-1">
-                                <div className="flex items-center gap-2 bg-[#FFFFFF] dark:bg-card border border-border rounded-full px-4 py-2.5 focus-within:border-[#226CE0]/50 focus-within:ring-4 focus-within:ring-[#226CE0]/10 transition-all">
-                                    <Search className="w-4 h-4 text-[#7582B3]" aria-hidden="true" />
+                                <div className="flex items-center gap-2 bg-[#FFFFFF] dark:bg-card border border-border rounded-full px-4 py-2.5 focus-within:border-[#F0771A]/50 focus-within:ring-4 focus-within:ring-[#F0771A]/10 transition-all">
+                                    <Search className="w-4 h-4 text-[#8A8780]" aria-hidden="true" />
                                     <input
                                         ref={searchInputRef}
                                         type="search"
                                         placeholder="Search events, workshops, panels..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="flex-1 bg-transparent border-none outline-none text-[#1A234A] dark:text-white placeholder:text-[#7582B3] dark:placeholder:text-gray-500 text-sm"
+                                        className="flex-1 bg-transparent border-none outline-none text-[#16140F] dark:text-white placeholder:text-[#8A8780] dark:placeholder:text-gray-500 text-sm"
                                         aria-label="Search events"
                                     />
                                     {searchQuery && (
                                         <button
                                             onClick={() => setSearchQuery('')}
-                                            className="text-[#7582B3] hover:text-[#1A234A] dark:hover:text-white transition-colors cursor-pointer"
+                                            className="text-[#8A8780] hover:text-[#16140F] dark:hover:text-white transition-colors cursor-pointer"
                                             aria-label="Clear search"
                                         >
                                             <X className="w-4 h-4" />
@@ -421,9 +421,9 @@ function EventsPage() {
                                 }}
                                 isRegistered={isUserRegistered}
                                 emptyState={
-                                    <div className="text-center py-12 md:py-20 text-[#7582B3] dark:text-gray-400" role="status">
-                                        <Calendar className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 opacity-50 text-[#226CE0]" aria-hidden="true" />
-                                        <p className="text-lg md:text-xl font-bold text-[#1A234A] dark:text-white">
+                                    <div className="text-center py-12 md:py-20 text-[#8A8780] dark:text-gray-400" role="status">
+                                        <Calendar className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 opacity-50 text-[#F0771A]" aria-hidden="true" />
+                                        <p className="text-lg md:text-xl font-bold text-[#16140F] dark:text-white">
                                             {searchQuery ? `No events matching "${searchQuery}"` : `No ${currentStatus} events found`}
                                         </p>
                                         <p className="text-sm mt-2">
@@ -470,11 +470,11 @@ function EventsPage() {
             <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
                 <DialogContent className="max-w-md w-[calc(100%-2rem)] mx-auto card-glass-redesign border border-border rounded-2xl text-foreground">
                     <DialogHeader className="text-center">
-                        <div className="w-16 h-16 rounded-full bg-[#226CE0]/10 flex items-center justify-center mx-auto mb-4">
-                            <LogIn className="w-8 h-8 text-[#226CE0]" />
+                        <div className="w-16 h-16 rounded-full bg-[#F0771A]/10 flex items-center justify-center mx-auto mb-4">
+                            <LogIn className="w-8 h-8 text-[#F0771A]" />
                         </div>
-                        <DialogTitle className="text-2xl font-bold tracking-tight text-[#1A234A] dark:text-white text-center">Sign In Required</DialogTitle>
-                        <DialogDescription className="text-[#7582B3] dark:text-gray-400 mt-2">
+                        <DialogTitle className="text-2xl font-bold tracking-tight text-[#16140F] dark:text-white text-center">Sign In Required</DialogTitle>
+                        <DialogDescription className="text-[#8A8780] dark:text-gray-400 mt-2">
                             You need to be logged in to register for events. Please sign in or create an account to continue.
                         </DialogDescription>
                     </DialogHeader>
@@ -488,7 +488,7 @@ function EventsPage() {
                         <Button
                             onClick={() => router.push('/auth/signup')}
                             variant="outline"
-                            className="w-full h-12 border-2 border-border hover:border-[#226CE0] hover:text-[#226CE0] text-[#1A234A] dark:text-white font-bold rounded-xl cursor-pointer"
+                            className="w-full h-12 border-2 border-border hover:border-[#F0771A] hover:text-[#F0771A] text-[#16140F] dark:text-white font-bold rounded-xl cursor-pointer"
                         >
                             Create Account
                         </Button>

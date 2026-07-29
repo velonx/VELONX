@@ -163,13 +163,13 @@ export default function EventCard({
           <span className={cn(
             "badge event-tag shadow-sm",
             event.status === 'ONGOING' ? "badge-green badge-live" :
-            event.status === 'UPCOMING' ? "badge-cyan" :
+            event.status === 'UPCOMING' ? "bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400" :
             "bg-gray-400/10 border border-gray-400/20 text-gray-400"
           )}>
             {event.status === 'ONGOING' ? 'LIVE' : event.status}
           </span>
           {isNew && (
-            <span className="badge bg-blue-500 text-white font-semibold px-2 py-0.5 rounded text-xs border-none">
+            <span className="badge bg-[#16140F] dark:bg-[#EDECE6] dark:text-[#16140F] text-white font-semibold px-2 py-0.5 rounded text-xs border-none">
               New
             </span>
           )}
@@ -234,7 +234,7 @@ export default function EventCard({
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
             <div
-              className="bg-blue-600 h-1.5 rounded-full"
+              className="bg-[#F0771A] h-1.5 rounded-full"
               style={{ width: `${Math.min(100, attendeePercentage)}%` }}
             />
           </div>
@@ -256,7 +256,7 @@ export default function EventCard({
         <Link
           href={`/events/${event.slug || event.id}`}
           target="_blank"
-          className="text-xs text-blue-600 hover:text-blue-800 font-semibold underline"
+          className="text-xs text-[#F0771A] hover:text-[#e0650d] font-semibold underline"
           aria-label={`View details for ${event.title}`}
           onClick={(e) => { e.stopPropagation(); }}
         >

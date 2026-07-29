@@ -171,10 +171,10 @@ export default function RegistrationConfirmDialog({
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Event Title */}
           <div className="text-center">
-            <h3 className="text-xl font-bold text-[#1A234A] dark:text-white mb-2">
+            <h3 className="text-xl font-bold text-[#16140F] dark:text-white mb-2">
               {event.title}
             </h3>
-            <p className="text-[#7582B3] dark:text-gray-400 text-sm line-clamp-2">
+            <p className="text-[#8A8780] dark:text-gray-400 text-sm line-clamp-2">
               {event.description}
             </p>
           </div>
@@ -185,14 +185,14 @@ export default function RegistrationConfirmDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Date */}
             <div className="flex items-start gap-3 p-3 bg-card/45 rounded-xl border border-border">
-              <div className="p-2 bg-[#226CE0]/10 rounded-lg shrink-0">
-                <Calendar className="w-4 h-4 text-[#226CE0]" />
+              <div className="p-2 bg-[#F0771A]/10 rounded-lg shrink-0">
+                <Calendar className="w-4 h-4 text-[#F0771A]" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-[#7582B3] dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">
+                <p className="text-xs text-[#8A8780] dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">
                   Date
                 </p>
-                <p className="text-[#1A234A] dark:text-white text-sm font-medium truncate">
+                <p className="text-[#16140F] dark:text-white text-sm font-medium truncate">
                   {dateString}
                 </p>
               </div>
@@ -200,16 +200,16 @@ export default function RegistrationConfirmDialog({
 
             {/* Time */}
             <div className="flex items-start gap-3 p-3 bg-card/45 rounded-xl border border-border">
-              <div className="p-2 bg-[#226CE0]/10 rounded-lg shrink-0">
-                <Clock className="w-4 h-4 text-[#226CE0]" />
+              <div className="p-2 bg-[#F0771A]/10 rounded-lg shrink-0">
+                <Clock className="w-4 h-4 text-[#F0771A]" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-[#7582B3] dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">
+                <p className="text-xs text-[#8A8780] dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">
                   Time
                 </p>
-                <p className="text-[#1A234A] dark:text-white text-sm font-medium">
+                <p className="text-[#16140F] dark:text-white text-sm font-medium">
                   {timeString}
-                  {duration && <span className="text-[#7582B3] dark:text-gray-400 ml-1">({duration}h)</span>}
+                  {duration && <span className="text-[#8A8780] dark:text-gray-400 ml-1">({duration}h)</span>}
                 </p>
               </div>
             </div>
@@ -224,10 +224,10 @@ export default function RegistrationConfirmDialog({
                   <platformInfo.icon className={cn("w-4 h-4", platformInfo.color)} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs text-[#7582B3] dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">
+                  <p className="text-xs text-[#8A8780] dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">
                     Platform
                   </p>
-                  <p className="text-[#1A234A] dark:text-white text-sm font-medium truncate">
+                  <p className="text-[#16140F] dark:text-white text-sm font-medium truncate">
                     {platformInfo.name}
                   </p>
                 </div>
@@ -242,10 +242,10 @@ export default function RegistrationConfirmDialog({
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-[#F0771A] shrink-0 mt-0.5" />
               <div className="space-y-2">
-                <h4 className="text-[#1A234A] dark:text-white font-semibold text-sm">
+                <h4 className="text-[#16140F] dark:text-white font-semibold text-sm">
                   Please Confirm Your Commitment
                 </h4>
-                <p className="text-[#7582B3] dark:text-gray-300 text-sm leading-relaxed">
+                <p className="text-[#8A8780] dark:text-gray-300 text-sm leading-relaxed">
                   By registering, you're committing to attend this event. 
                   {spotsLeft !== null && spotsLeft <= 5 && spotsLeft > 0 && (
                     <span className="text-[#F0771A] font-semibold">
@@ -265,7 +265,7 @@ export default function RegistrationConfirmDialog({
             onClick={onClose}
             disabled={isLoading}
             variant="outline"
-            className="flex-1 h-11 border-2 border-border hover:border-[#226CE0] text-[#1A234A] dark:text-white hover:text-[#226CE0] dark:hover:text-[#226CE0] font-semibold rounded-xl transition-all bg-transparent cursor-pointer"
+            className="flex-1 h-11 border-2 border-border hover:border-[#F0771A] text-[#16140F] dark:text-white hover:text-[#F0771A] dark:hover:text-[#F0771A] font-semibold rounded-xl transition-all bg-transparent cursor-pointer"
           >
             Cancel
           </Button>
@@ -275,7 +275,7 @@ export default function RegistrationConfirmDialog({
             className={cn(
               "flex-1 h-11 font-bold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer",
               isLoading
-                ? "bg-[#226CE0]/70 cursor-wait text-white"
+                ? "bg-[#F0771A]/70 cursor-wait text-white"
                 : "bg-[#F0771A] hover:bg-[#e0650d] text-white hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-[#F0771A]/20"
             )}
           >

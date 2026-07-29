@@ -280,8 +280,8 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
         const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
         
         const logoColors = [
-            '#A78BFA', // Violet
-            '#22D3EE', // Cyan
+            '#F0771A', // Violet
+            '#F59E0B', // Cyan
             '#34D399', // Green
             '#FCD34D', // Yellow
             '#F9A8D4', // Pink
@@ -291,7 +291,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
 
         const score = options?.score;
         const verdict = options?.verdict;
-        const scoreColor = score !== undefined ? (score >= 80 ? '#4ade80' : score >= 60 ? '#22d3ee' : score >= 40 ? '#facc15' : '#f87171') : null;
+        const scoreColor = score !== undefined ? (score >= 80 ? '#4ade80' : score >= 60 ? '#a3e635' : score >= 40 ? '#facc15' : '#f87171') : null;
         const scoreBg = score !== undefined ? (score >= 80 ? 'rgba(74,222,128,0.1)' : score >= 60 ? 'rgba(34,211,238,0.1)' : score >= 40 ? 'rgba(250,204,21,0.1)' : 'rgba(248,113,113,0.1)') : null;
 
         const isOpen = item.status === 'ACTIVE' && (!item.deadline || new Date(item.deadline) >= new Date());
@@ -389,7 +389,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                     {item.requirements && item.requirements.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-2">
                             {item.requirements.slice(0, 3).map((req: string, idx: number) => (
-                                <span key={idx} title={req} className="text-[11px] py-1 px-3 rounded-full font-semibold bg-[#7C3AED]/8 text-[#7C3AED] dark:text-[#A78BFA] border border-[#7C3AED]/20 truncate max-w-65">
+                                <span key={idx} title={req} className="text-[11px] py-1 px-3 rounded-full font-semibold bg-foreground/5 text-muted-foreground border border-border truncate max-w-65">
                                     {req}
                                 </span>
                             ))}
@@ -509,7 +509,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                         className="relative w-full max-w-md bg-card border border-border rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="h-1.5 w-full bg-linear-to-r from-violet-500 to-cyan-500" />
+                        <div className="h-1.5 w-full bg-linear-to-r from-[#F0771A] to-[#FFA800]" />
 
                         <button
                             onClick={() => setShowProfileModal(false)}
@@ -520,8 +520,8 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                         </button>
 
                         <div className="px-8 py-10 text-center">
-                            <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mx-auto mb-5">
-                                <Sparkles className="w-8 h-8 text-violet-400" />
+                            <div className="w-16 h-16 rounded-2xl bg-[#F0771A]/10 border border-[#F0771A]/20 flex items-center justify-center mx-auto mb-5">
+                                <Sparkles className="w-8 h-8 text-[#F0771A]" />
                             </div>
 
                             <h2 className="text-2xl font-bold text-foreground mb-2">Complete Your Profile</h2>
@@ -535,7 +535,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                         setShowProfileModal(false);
                                         router.push("/settings");
                                     }}
-                                    className="w-full h-12 bg-linear-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white font-bold rounded-xl text-base shadow-lg transition-all flex items-center justify-center gap-2"
+                                    className="w-full h-12 bg-linear-to-r from-[#F0771A] to-[#FFA800] hover:from-[#e0650d] hover:to-[#e89500] text-white font-bold rounded-xl text-base shadow-lg transition-all flex items-center justify-center gap-2"
                                 >
                                     Go to Profile Settings
                                 </button>
@@ -568,7 +568,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                             {/* Trust markers */}
                             <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 mt-8">
                                 {[
-                                    { icon: ShieldCheck, label: "Verified Opportunities", tint: "bg-[#7C3AED]/10 text-[#7C3AED]" },
+                                    { icon: ShieldCheck, label: "Verified Opportunities", tint: "bg-[#F0771A]/10 text-[#F0771A]" },
                                     { icon: GraduationCap, label: "Freshers", tint: "bg-[#F0771A]/10 text-[#F0771A]" },
                                     { icon: Sparkles, label: "AI Match", tint: "bg-[#F0771A]/10 text-[#F0771A]" },
                                 ].map(({ icon: TrustIcon, label, tint }) => (
@@ -662,9 +662,9 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                 className={`p-filter-chip ${activeTab === "ai" ? "active active-accent" : ""} relative`}
                             >
                                 <span className="inline-flex items-center gap-1.5">
-                                    <Sparkles className="w-4 h-4 text-violet-400" /> AI Match
+                                    <Sparkles className="w-4 h-4 text-[#F0771A]" /> AI Match
                                 </span>
-                                <span className="absolute -top-1.5 -right-1.5 bg-linear-to-r from-violet-500 to-cyan-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none">NEW</span>
+                                <span className="absolute -top-1.5 -right-1.5 bg-linear-to-r from-[#F0771A] to-[#FFA800] text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none">NEW</span>
                             </button>
                             <button
                                 onClick={() => setActiveTab("mock")}
@@ -690,7 +690,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                         )}
                         {activeTab === "ai" && (
                             <div className="p-search-bar" style={{ borderColor: 'rgba(139,92,246,0.3)', background: 'rgba(139,92,246,0.03)' }}>
-                                <Sparkles className="w-5 h-5 text-violet-400 shrink-0" />
+                                <Sparkles className="w-5 h-5 text-[#F0771A] shrink-0" />
                                 <input
                                     type="text"
                                     value={aiSearchQuery}
@@ -698,7 +698,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                     placeholder="Search with AI — e.g. React internship, backend dev..."
                                     aria-label="AI job search"
                                 />
-                                {aiSearchLoading && <Loader2 className="w-4 h-4 animate-spin text-violet-400 shrink-0" />}
+                                {aiSearchLoading && <Loader2 className="w-4 h-4 animate-spin text-[#F0771A] shrink-0" />}
                             </div>
                         )}
                     </div>
@@ -829,10 +829,10 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                     {/* Dashboard Options */}
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         {/* Smart Recommendations */}
-                                        <div className="bg-card border border-border hover:border-violet-500/40 p-6 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-violet-500/5 group flex flex-col justify-between">
+                                        <div className="bg-card border border-border hover:border-[#F0771A]/40 p-6 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-xl group flex flex-col justify-between">
                                             <div>
-                                                <div className="w-12 h-12 rounded-2xl bg-violet-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                                                    <Sparkles className="w-6 h-6 text-violet-400" />
+                                                <div className="w-12 h-12 rounded-2xl bg-[#F0771A]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                                    <Sparkles className="w-6 h-6 text-[#F0771A]" />
                                                 </div>
                                                 <h3 className="text-xl font-extrabold text-foreground mb-2">Smart Job Feed</h3>
                                                 <p className="text-muted-foreground text-sm leading-relaxed mb-6">
@@ -844,17 +844,17 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                                     setAiView("recommendations");
                                                     fetchAiRecommendations();
                                                 }}
-                                                className="w-full py-3 bg-linear-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2"
+                                                className="w-full py-3 bg-linear-to-r from-[#F0771A] to-[#FFA800] hover:from-[#e0650d] hover:to-[#e89500] text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2"
                                             >
                                                 Get Recommendations <ArrowRight className="w-4 h-4" />
                                             </button>
                                         </div>
 
                                         {/* Target Role Analysis */}
-                                        <div className="bg-card border border-border hover:border-cyan-500/40 p-6 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-cyan-500/5 group flex flex-col justify-between">
+                                        <div className="bg-card border border-border hover:border-[#FFA800]/40 p-6 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-[#FFA800]/5 group flex flex-col justify-between">
                                             <div>
-                                                <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                                                    <Zap className="w-6 h-6 text-cyan-400" />
+                                                <div className="w-12 h-12 rounded-2xl bg-[#FFA800]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                                    <Zap className="w-6 h-6 text-[#F0771A]" />
                                                 </div>
                                                 <h3 className="text-xl font-extrabold text-foreground mb-2">Target Specific Job</h3>
                                                 <p className="text-muted-foreground text-sm leading-relaxed mb-6">
@@ -866,7 +866,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                                     setAiView("target");
                                                     fetchAllOpportunities();
                                                 }}
-                                                className="w-full py-3 bg-linear-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2"
+                                                className="w-full py-3 bg-linear-to-r from-[#FFA800] to-emerald-500 hover:from-[#e89500] hover:to-emerald-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2"
                                             >
                                                 Target Role Analysis <ArrowRight className="w-4 h-4" />
                                             </button>
@@ -887,7 +887,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                                 onClick={() => {
                                                     setAiView("search");
                                                 }}
-                                                className="w-full py-3 bg-linear-to-r from-emerald-500 to-violet-500 hover:from-emerald-600 hover:to-violet-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2"
+                                                className="w-full py-3 bg-linear-to-r from-emerald-500 to-[#F0771A] hover:from-emerald-600 hover:to-[#e0650d] text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2"
                                             >
                                                 Start AI Search <ArrowRight className="w-4 h-4" />
                                             </button>
@@ -899,9 +899,9 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                             {/* 2. SMART RECOMMENDATIONS VIEW */}
                             {aiView === "recommendations" && (
                                 <div>
-                                    <div className="mb-8 p-6 rounded-2xl border border-violet-500/20 bg-linear-to-br from-violet-500/5 to-cyan-500/5">
+                                    <div className="mb-8 p-6 rounded-2xl border border-[#F0771A]/20 bg-linear-to-br from-[#F0771A]/5 to-[#FFA800]/5">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-[#F0771A] to-[#FFA800] flex items-center justify-center shadow-lg">
                                                 <Sparkles className="w-5 h-5 text-white animate-pulse" />
                                             </div>
                                             <div>
@@ -911,7 +911,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                             <button
                                                 onClick={fetchAiRecommendations}
                                                 disabled={aiLoading}
-                                                className="ml-auto flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl border border-violet-500/30 text-violet-400 hover:bg-violet-500/10 transition-colors disabled:opacity-50"
+                                                className="ml-auto flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl border border-[#F0771A]/30 text-[#F0771A] hover:bg-[#F0771A]/10 transition-colors disabled:opacity-50"
                                             >
                                                 {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
                                                 Refresh
@@ -954,7 +954,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                 <div>
                                     <div className="mb-8 p-6 rounded-2xl border border-border bg-card">
                                         <h2 className="text-xl font-bold mb-4 text-foreground flex items-center gap-2">
-                                            <Zap className="w-5 h-5 text-cyan-400 animate-pulse" />
+                                            <Zap className="w-5 h-5 text-[#F0771A] animate-pulse" />
                                             Target A Specific Opportunity
                                         </h2>
                                         <div className="flex flex-col md:flex-row gap-4 items-end">
@@ -977,7 +977,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                             <button
                                                 onClick={() => analyzeTargetJob(selectedJobId)}
                                                 disabled={targetLoading || !selectedJobId}
-                                                className="py-3 px-6 h-11 w-full md:w-auto bg-linear-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                                                className="py-3 px-6 h-11 w-full md:w-auto bg-linear-to-r from-[#FFA800] to-emerald-500 hover:from-[#e89500] hover:to-emerald-600 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
                                             >
                                                 {targetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Analyze Match"}
                                             </button>
@@ -1003,14 +1003,14 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                                     <div 
                                                         className="w-32 h-32 rounded-full flex flex-col items-center justify-center border-4 font-black text-4xl mb-4"
                                                         style={{
-                                                            borderColor: targetAnalysis.score >= 80 ? '#4ade80' : targetAnalysis.score >= 60 ? '#22d3ee' : targetAnalysis.score >= 40 ? '#facc15' : '#f87171',
-                                                            color: targetAnalysis.score >= 80 ? '#4ade80' : targetAnalysis.score >= 60 ? '#22d3ee' : targetAnalysis.score >= 40 ? '#facc15' : '#f87171',
+                                                            borderColor: targetAnalysis.score >= 80 ? '#4ade80' : targetAnalysis.score >= 60 ? '#a3e635' : targetAnalysis.score >= 40 ? '#facc15' : '#f87171',
+                                                            color: targetAnalysis.score >= 80 ? '#4ade80' : targetAnalysis.score >= 60 ? '#a3e635' : targetAnalysis.score >= 40 ? '#facc15' : '#f87171',
                                                             boxShadow: `0 0 20px ${targetAnalysis.score >= 80 ? 'rgba(74,222,128,0.1)' : targetAnalysis.score >= 60 ? 'rgba(34,211,238,0.1)' : targetAnalysis.score >= 40 ? 'rgba(250,204,21,0.1)' : 'rgba(248,113,113,0.1)'}`
                                                         }}
                                                     >
                                                         {targetAnalysis.score}%
                                                     </div>
-                                                    <span className="text-lg font-black" style={{ color: targetAnalysis.score >= 80 ? '#4ade80' : targetAnalysis.score >= 60 ? '#22d3ee' : targetAnalysis.score >= 40 ? '#facc15' : '#f87171' }}>
+                                                    <span className="text-lg font-black" style={{ color: targetAnalysis.score >= 80 ? '#4ade80' : targetAnalysis.score >= 60 ? '#a3e635' : targetAnalysis.score >= 40 ? '#facc15' : '#f87171' }}>
                                                         {targetAnalysis.verdict}
                                                     </span>
                                                 </div>
@@ -1053,9 +1053,9 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                                 </div>
 
                                                 {/* Recommended Tip Card */}
-                                                <div className="bg-linear-to-br from-violet-500/5 to-cyan-500/5 border border-violet-500/20 p-6 rounded-3xl md:col-span-3 flex gap-4 items-start shadow-md text-left">
-                                                    <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0 border border-violet-500/20">
-                                                        <Lightbulb className="w-5 h-5 text-violet-400" />
+                                                <div className="bg-linear-to-br from-[#F0771A]/5 to-[#FFA800]/5 border border-[#F0771A]/20 p-6 rounded-3xl md:col-span-3 flex gap-4 items-start shadow-md text-left">
+                                                    <div className="w-10 h-10 rounded-xl bg-[#F0771A]/10 flex items-center justify-center shrink-0 border border-[#F0771A]/20">
+                                                        <Lightbulb className="w-5 h-5 text-[#F0771A]" />
                                                     </div>
                                                     <div>
                                                         <h4 className="text-sm font-black text-foreground mb-1">AI Recommendation Tip</h4>
