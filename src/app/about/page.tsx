@@ -41,7 +41,7 @@ export default function AboutPage() {
             <section className="py-20 bg-background overflow-hidden relative">
                 <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
 
-                <div className="container mx-auto px-4 relative z-10 text-center">
+                <div className="container mx-auto relative z-10 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -72,7 +72,7 @@ export default function AboutPage() {
 
             {/* Stats Section */}
             <section className="py-12 -mt-10 relative z-20">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {stats.map((stat, index) => (
                             <motion.div
@@ -97,7 +97,7 @@ export default function AboutPage() {
 
             {/* Mission Section */}
             <section className="py-24">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     <div className="grid md:grid-cols-2 gap-16 items-center">
                         <div className="relative">
                             <div className="aspect-square bg-muted rounded-[64px] overflow-hidden shadow-2xl">
@@ -155,7 +155,7 @@ export default function AboutPage() {
 
             {/* Core Values */}
             <section className="py-24 bg-muted/20 border-y border-border">
-                <div className="container mx-auto px-4 text-center">
+                <div className="container mx-auto text-center">
                     <h2 className="text-4xl mb-4 text-foreground font-bold">
                         The Core Values that <span className="text-primary">Drive Us</span>
                     </h2>
@@ -168,7 +168,7 @@ export default function AboutPage() {
 
             {/* CTA Section */}
             <section className="py-24">
-                <div className="container mx-auto px-4 max-w-5xl">
+                <div className="container mx-auto max-w-5xl">
                     <div className="bg-card border border-border rounded-[64px] p-12 md:p-20 text-center relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full -mr-48 -mt-48 group-hover:scale-110 transition-transform duration-1000" />
                         <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full -ml-48 -mb-48 group-hover:scale-110 transition-transform duration-1000" />

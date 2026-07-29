@@ -16,7 +16,7 @@ export default function CommunityGuidelinesPage() {
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
             <section className="relative py-16 bg-background overflow-hidden">
-                <div className="container mx-auto px-4 relative z-10 text-center">
+                <div className="container mx-auto relative z-10 text-center">
                     <div className="max-w-4xl mx-auto">
                         <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-2 text-sm font-medium text-primary mb-6 mx-auto">
                             <Shield className="w-4 h-4" />
@@ -36,7 +36,7 @@ export default function CommunityGuidelinesPage() {
 
             {/* Core Values */}
             <section className="py-16 bg-background">
-                <div className="container mx-auto px-4 max-w-6xl">
+                <div className="container mx-auto max-w-6xl">
                     <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Our Core Values</h2>
                     <div className="grid md:grid-cols-3 gap-8 mb-16">
                         <div className="text-center p-6 bg-primary/5 border border-primary/10 rounded-3xl">
@@ -173,7 +173,7 @@ export default function CommunityGuidelinesPage() {
 
             {/* Contact Section */}
             <section className="py-16 bg-muted/20 border-t border-border">
-                <div className="container mx-auto px-4 max-w-4xl text-center">
+                <div className="container mx-auto max-w-4xl text-center">
                     <h2 className="text-3xl font-bold text-foreground mb-4">Questions or Concerns?</h2>
                     <p className="text-muted-foreground mb-8 text-lg">
                         If you have questions about these guidelines or need to report a violation, please contact our moderation team.
@@ -189,7 +189,7 @@ export default function CommunityGuidelinesPage() {
 
             {/* Last Updated */}
             <section className="py-8 bg-background border-t border-border">
-                <div className="container mx-auto px-4 text-center">
+                <div className="container mx-auto text-center">
                     <p className="text-muted-foreground text-sm">
                         Last Updated: January 2026 | These guidelines are subject to change
                     </p>

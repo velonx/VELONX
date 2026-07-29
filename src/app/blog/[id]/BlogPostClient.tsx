@@ -157,7 +157,7 @@ export default function BlogPostClient({ id, initialPost, relatedPosts = [] }: P
 
             {/* Top Navigation */}
             <div className="relative z-40 w-full border-b border-border/10 mb-8 mt-4">
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-6xl">
+                <div className="container mx-auto h-16 flex items-center justify-between max-w-6xl">
                     <Link
                         href="/blog"
                         className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors font-bold uppercase tracking-widest text-[10px]"
@@ -176,7 +176,7 @@ export default function BlogPostClient({ id, initialPost, relatedPosts = [] }: P
             </div>
 
             {/* 2-Column Detail Container */}
-            <div className="container mx-auto px-4 max-w-6xl p-detail-container">
+            <div className="container mx-auto max-w-6xl p-detail-container">
                 
                 {/* Left Column: Article Body */}
                 <motion.main 

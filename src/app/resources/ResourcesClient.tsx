@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Suspense } from 'react';
+import Image from 'next/image';
 import { Search, X, Compass, FileText } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
@@ -279,21 +280,47 @@ function ResourcesPage() {
       <ScreenReaderAnnouncer message={announcement} politeness="polite" />
 
       {/* Page Hero */}
-      <header className="relative pt-16 pb-10 bg-background overflow-hidden text-center" aria-labelledby="page-title">
-        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
-          <span className="p-section-label">STUDENT ECOSYSTEM</span>
-          <h1 id="page-title" className="p-display-1">
-            Tech <span className="gradient-text font-black">Academy & Guides</span>
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mt-4 text-sm sm:text-base leading-relaxed">
-            Accelerate your engineering journey. Follow structured <strong className="text-[#226CE0] dark:text-blue-400">Learning Paths</strong> to earn certified credentials, or access developer <strong className="text-[#8B5CF6] dark:text-purple-400">Quick References</strong>.
-          </p>
+      <header className="relative pt-10 pb-10 md:pt-12 md:pb-14 bg-background overflow-hidden" aria-labelledby="page-title">
+        <div className="container mx-auto relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10 lg:gap-12">
+            {/* Copy */}
+            <div className="flex-1 min-w-0 max-w-2xl">
+              <span className="p-section-label">STUDENT ECOSYSTEM</span>
+              <h1 id="page-title" className="p-display-1">
+                Tech <span className="gradient-text font-black">Guides</span>
+              </h1>
+              <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
+                Accelerate your engineering journey. Follow structured <strong className="text-[#226CE0] dark:text-blue-400">Learning Paths</strong> to earn certified credentials, or access developer <strong className="text-[#8B5CF6] dark:text-purple-400">Quick References</strong>.
+              </p>
+            </div>
+
+            {/* Illustration */}
+            <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[380px] xl:w-[440px] 2xl:w-[480px]">
+              <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+                <div className="absolute -top-6 right-0 w-28 h-28 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+                <span className="absolute top-4 -left-4 w-3 h-3 rotate-45 rounded-[2px] bg-[#226CE0]/50" />
+                <span className="absolute bottom-8 -left-8 w-2.5 h-2.5 rotate-45 rounded-[2px] bg-[#7C3AED]/45" />
+              </div>
+
+              <Image
+                src="https://res.cloudinary.com/dypbafujn/image/upload/e_trim/v1785275382/aca_odidni.png"
+                alt=""
+                width={1263}
+                height={688}
+                quality={85}
+                priority
+                sizes="(min-width: 1536px) 480px, (min-width: 1280px) 440px, 380px"
+                className="w-full h-auto select-none pointer-events-none"
+                aria-hidden="true"
+              />
+            </div>
+          </div>
         </div>
       </header>
 
       {/* Tab Switcher Navigation */}
       <nav className="bg-background border-b border-border/40 pb-6 mb-8" aria-label="Resource view tabs">
-        <div className="container mx-auto px-4 flex justify-center">
+        <div className="container mx-auto flex justify-start">
           <div className="bg-muted/40 p-1.5 rounded-2xl border border-border/60 flex gap-2" role="tablist" aria-label="Resource sections">
             <button
               role="tab"
@@ -341,7 +368,7 @@ function ResourcesPage() {
 
       {/* Interactive Main Body Content */}
       <main className="pb-20 bg-background">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           
           {activeTab === 'references' ? (
             <div role="tabpanel" id="tabpanel-references" aria-labelledby="tab-references">

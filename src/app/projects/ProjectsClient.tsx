@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Image from "next/image";
 import { PlusCircle, CheckCircle, Clock, Search, X, Rocket } from "lucide-react";
 import toast from "react-hot-toast";
 import { useProjects } from "@/lib/api/hooks";
@@ -378,21 +379,47 @@ function ProjectsPageContent() {
     return (
         <div className="min-h-screen pt-24 bg-background">
             {/* Page Hero */}
-            <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center" aria-labelledby="page-title">
-                <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
-                    <span className="p-section-label">PORTFOLIO ENGINE</span>
-                    <h1 id="page-title" className="p-display-1">
-                        Student <span className="gradient-text font-black">Projects</span>
-                    </h1>
-                    <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
-                        Ditch the dry resumes. Build high-quality tech products, showcase your source code, and get discovered by top recruitment leads.
-                    </p>
+            <header className="relative pt-10 pb-10 md:pt-12 md:pb-14 bg-background overflow-hidden" aria-labelledby="page-title">
+                <div className="container mx-auto relative z-10">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10 lg:gap-12">
+                        {/* Copy */}
+                        <div className="flex-1 min-w-0 max-w-2xl">
+                            <span className="p-section-label">PORTFOLIO ENGINE</span>
+                            <h1 id="page-title" className="p-display-1">
+                                Student <span className="gradient-text font-black">Projects</span>
+                            </h1>
+                            <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
+                                Ditch the dry resumes. Build high-quality tech products, showcase your source code, and get discovered by top recruitment leads.
+                            </p>
+                        </div>
+
+                        {/* Illustration */}
+                        <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[360px] xl:w-[420px] 2xl:w-[460px]">
+                            <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+                                <div className="absolute -top-6 -right-6 w-28 h-28 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+                                <span className="absolute top-4 -left-6 w-3 h-3 rotate-45 rounded-[2px] bg-[#226CE0]/50" />
+                                <span className="absolute bottom-10 -left-9 w-2.5 h-2.5 rotate-45 rounded-[2px] bg-[#7C3AED]/45" />
+                            </div>
+
+                            <Image
+                                src="https://res.cloudinary.com/dypbafujn/image/upload/e_trim/v1785303592/project_s8xa8h.png"
+                                alt=""
+                                width={1135}
+                                height={740}
+                                quality={85}
+                                priority
+                                sizes="(min-width: 1536px) 460px, (min-width: 1280px) 420px, 360px"
+                                className="w-full h-auto select-none pointer-events-none"
+                                aria-hidden="true"
+                            />
+                        </div>
+                    </div>
                 </div>
             </header>
 
             {/* Submit Project Banner */}
             <section className="pb-8">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     <div className="p-submit-project-banner">
                         <div className="text-left">
                             <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">Showcase Your Creative Creation</h2>
@@ -415,7 +442,7 @@ function ProjectsPageContent() {
 
             {/* Filters & Search Section */}
             <section className="py-8 bg-background">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                         {/* Search control on the left */}
                         <div className="relative w-full lg:w-64">
@@ -458,7 +485,7 @@ function ProjectsPageContent() {
 
             {/* Projects Section */}
             <section className="py-16 animate-on-scroll">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
 
                     {/* Tabs */}
                     <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'running' | 'completed')} className="w-full">

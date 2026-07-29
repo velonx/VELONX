@@ -8,7 +8,7 @@ export default function TermsPage() {
         <div className="min-h-screen pt-24 bg-background">
             {/* Header Section */}
             <section className="py-20 bg-muted/20 border-b border-border text-center">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -36,7 +36,7 @@ export default function TermsPage() {
 
             {/* Terms List Section */}
             <section className="py-20">
-                <div className="container mx-auto px-4 max-w-5xl">
+                <div className="container mx-auto max-w-5xl">
                     <div className="grid gap-12">
                         {[
                             {

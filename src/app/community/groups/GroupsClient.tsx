@@ -65,7 +65,7 @@ export default function GroupsClient({ initialGroups }: GroupsClientProps) {
   return (
     <div className="min-h-screen pt-24 bg-background">
       {/* Breadcrumbs */}
-      <nav className="container mx-auto px-4 py-4" aria-label="Breadcrumb">
+      <nav className="container mx-auto py-4" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
           <li>
             <Link href="/" className="hover:text-foreground transition-colors">
@@ -85,7 +85,7 @@ export default function GroupsClient({ initialGroups }: GroupsClientProps) {
 
       {/* Hero Section */}
       <section className="relative py-16 bg-background overflow-hidden">
-        <div className="container mx-auto px-4 relative z-10 text-center">
+        <div className="container mx-auto relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <h1
               className="text-4xl md:text-6xl text-foreground font-bold tracking-tight"
@@ -132,7 +132,7 @@ export default function GroupsClient({ initialGroups }: GroupsClientProps) {
 
       {/* Filters and Actions */}
       <section className="py-8 bg-background">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Filter */}
             <div className="flex items-center gap-3">
@@ -173,7 +173,7 @@ export default function GroupsClient({ initialGroups }: GroupsClientProps) {
 
       {/* Groups List */}
       <section className="py-12 bg-background">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           <GroupList
             groups={filteredGroups}
             isLoading={isLoading}

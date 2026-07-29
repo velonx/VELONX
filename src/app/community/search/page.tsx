@@ -57,7 +57,7 @@ function SearchPageContent() {
   return (
     <div className="min-h-screen pt-24 bg-background">
       {/* Breadcrumbs */}
-      <nav className="container mx-auto px-4 py-4" aria-label="Breadcrumb">
+      <nav className="container mx-auto py-4" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
           <li>
             <Link href="/" className="hover:text-foreground transition-colors">
@@ -77,7 +77,7 @@ function SearchPageContent() {
 
       {/* Hero Section with Search */}
       <section className="relative py-16 bg-background overflow-hidden">
-        <div className="container mx-auto px-4 relative z-10 text-center">
+        <div className="container mx-auto relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <h1
               className="text-4xl md:text-6xl text-foreground font-bold tracking-tight"
@@ -134,7 +134,7 @@ function SearchPageContent() {
 
       {/* Search Results */}
       <section className="py-12 bg-background">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           {debouncedQuery ? (
             <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-full">
               <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto mb-8">

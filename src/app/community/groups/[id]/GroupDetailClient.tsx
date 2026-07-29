@@ -256,7 +256,7 @@ export default function GroupDetailClient({
       />
 
       {/* Breadcrumbs */}
-      <nav className="container mx-auto px-4 py-4" aria-label="Breadcrumb">
+      <nav className="container mx-auto py-4" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
           <li>
             <a href="/" className="hover:text-foreground transition-colors">Home</a>
@@ -276,7 +276,7 @@ export default function GroupDetailClient({
 
       {/* Group Header */}
       <section className="py-8 bg-background border-b">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
@@ -327,7 +327,7 @@ export default function GroupDetailClient({
 
       {/* Main Content */}
       <section className="py-8 bg-background">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           {canViewFeed ? (
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className={cn(
@@ -429,7 +429,7 @@ export default function GroupDetailClient({
       {/* Sticky Bottom Composer — only for members on the feed tab */}
       {isMember && activeTab === "feed" && (
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-xl border-t border-border/50 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-          <div className="container mx-auto px-4 py-3 max-w-3xl">
+          <div className="container mx-auto py-3 max-w-3xl">
             {showComposer ? (
               <div className="space-y-3">
                 <textarea

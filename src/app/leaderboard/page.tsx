@@ -377,7 +377,7 @@ export default function LeaderboardPage() {
 
             {/* MAIN LEADERBOARD TABLE */}
             <section className="py-12 relative">
-                <div className="container mx-auto px-4 max-w-5xl">
+                <div className="container mx-auto max-w-5xl">
                     {/* Toolbar */}
                     <div className="lb-toolbar">
                         <div className="lb-search-wrap">
@@ -584,7 +584,7 @@ export default function LeaderboardPage() {
 
             {/* HOW TO CLIMB SECTION */}
             <section className="earn-section">
-                <div className="container mx-auto px-4 max-w-5xl">
+                <div className="container mx-auto max-w-5xl">
                     <div className="text-center mb-10">
                         <div className="section-label-redesign justify-center inline-flex mb-4">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="mr-1.5 inline-block">

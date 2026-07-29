@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Search, ArrowRight, LogIn } from 'lucide-react';
@@ -60,21 +61,47 @@ export default function MentorsPage() {
     return (
         <div className="min-h-screen pt-24 bg-background">
             {/* Hero Section */}
-            <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center" aria-labelledby="page-title">
-                <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
-                    <span className="p-section-label">1:1 MENTORSHIP ENGINE</span>
-                    <h1 id="page-title" className="p-display-1">
-                        Elite Tech <span className="gradient-text font-black">Mentors</span>
-                    </h1>
-                    <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
-                        Get direct access to seasoned engineers, designers, and hiring guides from the world's most successful tech companies.
-                    </p>
+            <header className="relative pt-10 pb-10 md:pt-12 md:pb-14 bg-background overflow-hidden" aria-labelledby="page-title">
+                <div className="container mx-auto relative z-10">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10 lg:gap-12">
+                        {/* Copy */}
+                        <div className="flex-1 min-w-0 max-w-2xl">
+                            <span className="p-section-label">1:1 MENTORSHIP ENGINE</span>
+                            <h1 id="page-title" className="p-display-1">
+                                Elite Tech <span className="gradient-text font-black">Mentors</span>
+                            </h1>
+                            <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
+                                Get direct access to seasoned engineers, designers, and hiring guides from the world's most successful tech companies.
+                            </p>
+                        </div>
+
+                        {/* Illustration */}
+                        <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[360px] xl:w-[420px] 2xl:w-[460px]">
+                            <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+                                <div className="absolute -top-6 -right-6 w-28 h-28 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+                                <span className="absolute top-4 -left-6 w-3 h-3 rotate-45 rounded-[2px] bg-[#226CE0]/50" />
+                                <span className="absolute bottom-10 -left-9 w-2.5 h-2.5 rotate-45 rounded-[2px] bg-[#7C3AED]/45" />
+                            </div>
+
+                            <Image
+                                src="https://res.cloudinary.com/dypbafujn/image/upload/e_trim/v1785304563/mentor_dqgm2n.png"
+                                alt=""
+                                width={1245}
+                                height={824}
+                                quality={85}
+                                priority
+                                sizes="(min-width: 1536px) 460px, (min-width: 1280px) 420px, 360px"
+                                className="w-full h-auto select-none pointer-events-none"
+                                aria-hidden="true"
+                            />
+                        </div>
+                    </div>
                 </div>
             </header>
 
             {/* Filters and Search toolbar */}
             <section className="pb-8 bg-background" aria-labelledby="filters-heading">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     <h2 id="filters-heading" className="sr-only">Mentor Filters</h2>
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-border pb-8">
                         <div className="p-filter-chips justify-center md:justify-start">
@@ -107,7 +134,7 @@ export default function MentorsPage() {
 
             {/* Mentors Grid */}
             <section className="py-12 bg-muted/10">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     {loading ? (
                         <BoneyardLoader skeleton={MentorCardSkeleton} count={8} columns={4} label="Loading mentors" gridClassName="p-mentor-grid" />
                     ) : filteredMentors.length > 0 ? (
@@ -132,7 +159,7 @@ export default function MentorsPage() {
 
             {/* CTA Section */}
             <section className="py-20 bg-background">
-                <div className="container mx-auto px-4 max-w-4xl">
+                <div className="container mx-auto max-w-4xl">
                     <div className="p-mentor-card p-10 text-center relative overflow-hidden border border-border">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full -mr-20 -mt-20" />
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 blur-3xl rounded-full -ml-20 -mb-20" />

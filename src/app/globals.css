@@ -3,6 +3,20 @@
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
+/* Site-wide content column.
+   Overrides Tailwind's default `container`, whose max-width otherwise steps up to
+   1536px at 2xl and lets content run near the edges on wide screens.
+   Matches the community page: 1280px box with 2rem gutters from sm up. */
+@utility container {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 80rem;
+  padding-inline: 1rem;
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
+  }
+}
+
 @layer utilities {
   .rich-text-content {
     @apply prose prose-lg max-w-none transition-colors duration-300;
@@ -4240,12 +4254,17 @@ body {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--violet-light, #A78BFA);
+  /* Deep violet on the light cream background; the lighter tint is dark-mode only */
+  color: var(--violet, #7C3AED);
   margin-bottom: 1rem;
   padding: 6px 14px;
   background: var(--violet-dim, rgba(124, 58, 237, 0.15));
   border: 1px solid rgba(124, 58, 237, 0.25);
   border-radius: 9999px;
+}
+
+.dark .p-section-label {
+  color: var(--violet-light, #A78BFA);
 }
 
 .p-display-1 {
@@ -4748,6 +4767,14 @@ body {
   background: var(--violet-dim, rgba(124, 58, 237, 0.15));
   border-color: rgba(34, 108, 224, 0.4);
   color: var(--violet-light, #A78BFA);
+}
+
+/* Careers toolbar: the selected tab carries the brand accent instead of violet */
+.p-filter-chip.active-accent {
+  background: rgba(240, 119, 26, 0.1);
+  border-color: rgba(240, 119, 26, 0.4);
+  color: #F0771A;
+  font-weight: 600;
 }
 
 .p-search-bar {

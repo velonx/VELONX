@@ -41,7 +41,7 @@ export default function PrivacyPage() {
         <div className="min-h-screen pt-24 bg-background">
             {/* Header Section */}
             <section className="py-20 bg-muted/20 border-b border-border text-center">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
 
             {/* Content Section */}
             <section className="py-20">
-                <div className="container mx-auto px-4 max-w-4xl">
+                <div className="container mx-auto max-w-4xl">
                     <div className="space-y-16">
                         {sections.map((section, idx) => (
                             <motion.div

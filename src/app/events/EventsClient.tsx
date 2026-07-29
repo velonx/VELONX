@@ -5,7 +5,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Calendar, LogIn, Search, X, Plus, LayoutGrid, BarChart3, Clock, RotateCcw } from 'lucide-react';
+import Image from "next/image";
+import { Calendar, CalendarCheck, LogIn, Search, X, Plus, LayoutGrid, BarChart3, Clock, RotateCcw } from 'lucide-react';
 import AddEventForm from "@/components/events/AddEventForm";
 import EventsGrid from "@/components/events/EventsGrid";
 import { EventsPagination } from "@/components/events/EventsPagination";
@@ -253,25 +254,48 @@ function EventsPage() {
     }) : [];
 
     return (
-        <div className="relative min-h-screen pt-16 md:pt-24 bg-background overflow-hidden">
+        <div className="relative min-h-screen pt-20 md:pt-24 bg-background overflow-hidden">
             {/* Background Canvas Particles */}
             <CanvasParticles />
 
-            {/* Hero Section - Redesigned Page Hero */}
-            <section className="relative pt-12 pb-8 md:pt-16 md:pb-12 text-center z-10 animate-fade-in" role="banner">
-                <div className="container mx-auto px-4 max-w-4xl relative">
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-[#29292B] dark:text-[#FFFBDB] leading-none">
-                        Upcoming Events
-                    </h1>
-                    <p className="text-[#7582B3] dark:text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mt-4 leading-relaxed">
-                        Compete, learn, build, and showcase your skills alongside tech talent from across India. Accelerate your career growth path.
-                    </p>
+            {/* Hero Section - Banner band: copy on the left, illustration on the right */}
+            <section className="relative z-10 border-b border-border animate-fade-in" role="banner">
+                <div className="container mx-auto">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-10 py-10 lg:py-12">
+                        {/* Copy */}
+                        <div className="flex-1 min-w-0 max-w-2xl">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-[#F0771A]/30 bg-[#F0771A]/5 px-4 py-2 text-xs font-bold tracking-wide text-[#F0771A]">
+                                <CalendarCheck className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                                Stay updated. Never miss an opportunity.
+                            </span>
+                            <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.05]">
+                                Upcoming Events
+                            </h1>
+                            <p className="mt-4 max-w-xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+                                Compete, learn, build, and showcase your skills alongside tech talent from across India. Accelerate your career growth path.
+                            </p>
+                        </div>
+
+                        {/* Illustration (decorative — desktop only) */}
+                        <div className="hidden md:block shrink-0 w-[320px] lg:w-[420px] xl:w-[460px]" aria-hidden="true">
+                            <Image
+                                src="https://res.cloudinary.com/dypbafujn/image/upload/e_trim/v1785217115/event_ofhwzw.png"
+                                alt=""
+                                width={1298}
+                                height={656}
+                                quality={85}
+                                priority
+                                sizes="(min-width: 1280px) 460px, (min-width: 1024px) 420px, 320px"
+                                className="w-full h-auto select-none pointer-events-none"
+                            />
+                        </div>
+                    </div>
                 </div>
             </section>
 
             {/* Search and Filters Bar - Redesigned matching events.html and mockup */}
-            <section className="relative pb-6 z-10" role="region" aria-label="Search and filter options">
-                <div className="container mx-auto px-4 sm:px-6">
+            <section className="relative py-5 md:py-6 z-10" role="region" aria-label="Search and filter options">
+                <div className="container mx-auto">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         {/* Filter Chips (Categories + Statuses in a single clean row) */}
                         <div className="flex flex-wrap items-center gap-2" id="filter-chips">
@@ -362,18 +386,18 @@ function EventsPage() {
                 </div>
             </section>
 
-             <div className="h-px bg-border z-10 relative" role="separator" aria-hidden="true" />
+            <div className="h-px bg-border z-10 relative" role="separator" aria-hidden="true" />
 
             {/* Main Content */}
             <section
-                className="py-8 md:py-12 lg:py-16 animate-on-scroll relative z-10"
+                className="pt-8 md:pt-10 pb-12 md:pb-16 animate-on-scroll relative z-10"
                 id="main-content"
                 ref={mainContentRef}
                 tabIndex={-1}
                 role="main"
                 aria-label="Events content"
             >
-                <div className="container mx-auto px-4 sm:px-6">
+                <div className="container mx-auto">
                     {/* Keyboard shortcut hint */}
                     <div className="sr-only" role="status" aria-live="polite">
                         Press forward slash (/) to focus search. Press Escape to close modals.

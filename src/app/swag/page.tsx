@@ -125,23 +125,49 @@ export default function SwagPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Page Hero */}
-      <header className="relative pt-28 pb-12 overflow-hidden border-b border-border/30">
-        <div className="container mx-auto px-4 max-w-5xl text-center relative z-10">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-semibold text-primary mb-4">
-            <Sparkles className="w-3.5 h-3.5" /> GAMIFIED REWARDS
-          </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-4 tracking-tight leading-tight">
-            Velonx <span className="text-primary">Swag Store</span>
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            Participate in learning events, showcase projects, assist community members, earn XP, and redeem premium swag.
-          </p>
+      <header className="relative pt-28 pb-10 md:pb-12 overflow-hidden border-b border-border/30">
+        <div className="container mx-auto max-w-5xl relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-12">
+            {/* Copy */}
+            <div className="flex-1 min-w-0 max-w-xl">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-semibold text-primary mb-4">
+                <Sparkles className="w-3.5 h-3.5" /> GAMIFIED REWARDS
+              </span>
+              <h1 className="text-4xl sm:text-5xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-4 tracking-tight leading-tight">
+                Velonx <span className="text-primary">Swag Store</span>
+              </h1>
+              <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                Participate in learning events, showcase projects, assist community members, earn XP, and redeem premium swag.
+              </p>
+            </div>
+
+            {/* Illustration */}
+            <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[260px] xl:w-[300px]">
+              <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+                <div className="absolute -top-4 -right-6 w-24 h-24 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+                <span className="absolute top-2 -left-6 w-2.5 h-2.5 rotate-45 rounded-[2px] bg-[#226CE0]/50" />
+                <span className="absolute bottom-6 -left-8 w-3 h-3 rotate-45 rounded-[2px] bg-[#7C3AED]/45" />
+              </div>
+
+              <Image
+                src="https://res.cloudinary.com/dypbafujn/image/upload/e_trim/v1785253641/sw_dbqxmv.png"
+                alt=""
+                width={820}
+                height={592}
+                quality={85}
+                priority
+                sizes="(min-width: 1280px) 300px, 260px"
+                className="w-full h-auto select-none pointer-events-none"
+                aria-hidden="true"
+              />
+            </div>
+          </div>
         </div>
       </header>
 
       {/* XP Wallet Banner */}
       <section className="py-8">
-        <div className="container mx-auto px-4 max-w-5xl">
+        <div className="container mx-auto max-w-5xl">
           <div className="card-redesign card-glass-redesign flex flex-col md:flex-row justify-between items-center gap-6 p-6 sm:p-8">
             <div className="text-center md:text-left space-y-2">
               <h2 className="text-xl font-bold text-foreground">Your Wallet &amp; XP Ledger</h2>

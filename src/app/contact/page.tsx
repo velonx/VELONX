@@ -164,7 +164,7 @@ export default function ContactPage() {
           className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-150 h-150 rounded-full bg-[#226CE0]/10 blur-[120px]"
         />
 
-        <div className="relative container mx-auto px-4 text-center">
+        <div className="relative container mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -208,7 +208,7 @@ export default function ContactPage() {
 
       {/* ── Main Grid ── */}
       <section className="pb-32 -mt-4">
-        <div className="container mx-auto px-4 max-w-6xl">
+        <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-5 gap-12 items-start">
             {/* ── Contact Form (3/5) ── */}
             <motion.div

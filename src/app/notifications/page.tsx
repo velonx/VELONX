@@ -133,7 +133,7 @@ export default function NotificationsPage() {
 
     return (
         <div className="min-h-screen pt-24 bg-background">
-            <div className="container mx-auto px-4 max-w-3xl pb-20">
+            <div className="container mx-auto max-w-3xl pb-20">
                 <div className="flex items-center justify-between mb-12">
                     <div className="flex items-center gap-4">
                         <Link href="/" className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center hover:bg-muted transition-all text-muted-foreground">

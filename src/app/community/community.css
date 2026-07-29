@@ -52,7 +52,7 @@
 
 /* ============ TYPOGRAPHY & HEADER ============ */
 .community-page .display-1 {
-  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1.05;
@@ -79,11 +79,7 @@
   color: #f97316;
 }
 
-.community-page .container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 var(--space-xl);
-}
+/* Width/gutters come from the shared `container` utility in globals.css */
 
 .community-page .section-label {
   display: inline-flex;
@@ -103,9 +99,9 @@
 
 /* ============ PAGE HEADER / HERO ============ */
 .community-page .page-hero {
-  padding-top: calc(var(--nav-height) + var(--space-4xl));
-  padding-bottom: var(--space-4xl);
-  text-align: center;
+  /* The .community-page wrapper's pt-24 already clears the fixed nav */
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-xl);
   position: relative;
 }
 
@@ -216,6 +212,11 @@
   gap: var(--space-xl);
   align-items: start;
   margin-bottom: var(--space-4xl);
+}
+
+/* Let the columns shrink below their content width instead of overflowing the page */
+.community-layout > * {
+  min-width: 0;
 }
 
 @media (max-width: 768px) {

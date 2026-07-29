@@ -31,7 +31,7 @@ import {
 export function HeroSkeleton({ className }: { className?: string }) {
   return (
     <section className={cn("py-20 relative z-10 text-center space-y-8 flex flex-col items-center", className)}>
-      <div className="container mx-auto px-4 flex flex-col items-center">
+      <div className="container mx-auto flex flex-col items-center">
         <Skeleton className="h-6 w-32 rounded-full mb-4 opacity-70" />
         <Skeleton className="h-16 md:h-20 w-4/5 max-w-2xl rounded-3xl" />
         <Skeleton className="h-6 w-2/3 max-w-md rounded-lg mt-6 opacity-60" />
@@ -237,7 +237,7 @@ export function CareerCardSkeleton({ className }: { className?: string }) {
 export function BlogHeroSkeleton({ className }: { className?: string }) {
   return (
     <header className={cn("relative pt-16 pb-12 bg-background overflow-hidden text-center", className)}>
-      <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
+      <div className="container mx-auto relative z-10 flex flex-col items-center">
         <Skeleton className="h-6 w-44 rounded-full mb-4" />
         <Skeleton className="h-14 w-80 rounded-xl" />
         <Skeleton className="h-5 w-96 rounded-lg mt-4" />
@@ -269,13 +269,13 @@ export function BlogPostSkeleton({ className }: { className?: string }) {
     <div className={cn("min-h-screen pt-24 bg-background pb-20", className)}>
       {/* Sticky toolbar */}
       <div className="sticky top-24 z-40 w-full bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="container mx-auto h-16 flex items-center justify-between">
           <Skeleton className="h-5 w-32 rounded-full" />
           <Skeleton className="h-9 w-24 rounded-full" />
         </div>
       </div>
       {/* Article */}
-      <article className="container mx-auto px-4 max-w-3xl pt-20 space-y-10">
+      <article className="container mx-auto max-w-3xl pt-20 space-y-10">
         <div className="text-center space-y-6">
           <div className="flex justify-center gap-2">
             <Skeleton className="h-7 w-20 rounded-xl" />

@@ -113,7 +113,7 @@ export function EventsToolbarMobileExample() {
   const { sortBy, setSortBy } = useEventSort();
   
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto">
       {/* Toolbar automatically adapts to mobile */}
       <EventsToolbar
         searchQuery={searchQuery}

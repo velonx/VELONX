@@ -347,28 +347,41 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
         disabled={isCreating || imageUrls.length >= MAX_IMAGES}
       />
 
-      {/* Breadcrumbs */}
-      <nav className="container mx-auto px-4 py-4" aria-label="Breadcrumb">
-        <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <li>
-            <Link href="/" className="hover:text-foreground transition-colors">
-              Home
-            </Link>
-          </li>
-          <li>/</li>
-          <li className="text-foreground font-medium">Community</li>
-        </ol>
-      </nav>
-
       {/* Page Hero */}
       <header className="page-hero">
         <div className="page-hero-bg"></div>
-        <div className="container text-center">
-          <span className="section-label">COMMUNITY ENGINE</span>
-          <h1 className="display-1">Connect &amp; <span className="gradient-text">Co-Build</span></h1>
-          <p className="text-secondary" style={{ maxWidth: "600px", margin: "var(--space-md) auto 0 auto" }}>
-            Ask questions, join custom study groups, find hackathon teammates, and learn out loud alongside 15,000+ tech students.
-          </p>
+        <div className="container">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-12">
+            {/* Copy */}
+            <div className="flex-1 min-w-0 max-w-2xl">
+              <span className="section-label">COMMUNITY ENGINE</span>
+              <h1 className="display-1">Connect &amp; <span className="gradient-text">Co-Build</span></h1>
+              <p className="text-secondary" style={{ maxWidth: "600px", marginTop: "var(--space-md)" }}>
+                Ask questions, join custom study groups, find hackathon teammates, and learn out loud alongside 15,000+ tech students.
+              </p>
+            </div>
+
+            {/* Illustration */}
+            <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[340px] xl:w-[400px]">
+              <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+                <div className="absolute -top-6 -right-6 w-28 h-28 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+                <span className="absolute top-6 -left-6 w-3 h-3 rotate-45 rounded-[2px] bg-[#226CE0]/50" />
+                <span className="absolute bottom-10 -left-9 w-2.5 h-2.5 rotate-45 rounded-[2px] bg-[#7C3AED]/45" />
+              </div>
+
+              <Image
+                src="https://res.cloudinary.com/dypbafujn/image/upload/e_trim/v1785299616/community_sgnfdl.png"
+                alt=""
+                width={1328}
+                height={871}
+                quality={85}
+                priority
+                sizes="(min-width: 1280px) 400px, 340px"
+                className="w-full h-auto select-none pointer-events-none"
+                aria-hidden="true"
+              />
+            </div>
+          </div>
         </div>
       </header>
 

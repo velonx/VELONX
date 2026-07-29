@@ -125,7 +125,7 @@ export default function BlogClient({ initialPosts = [], initialPagination = null
             <div className="min-h-screen pt-24 bg-background">
                 <BlogHeroSkeleton />
                 <section className="py-12 bg-muted/10">
-                    <div className="container mx-auto px-4 max-w-6xl">
+                    <div className="container mx-auto max-w-6xl">
                         <BoneyardLoader
                             skeleton={BlogCardSkeleton}
                             count={6}
@@ -146,7 +146,7 @@ export default function BlogClient({ initialPosts = [], initialPagination = null
         <div className="min-h-screen pt-24 bg-background">
             {/* Page Hero */}
             <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center" aria-labelledby="page-title">
-                <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
+                <div className="container mx-auto relative z-10 flex flex-col items-center">
                     <span className="p-section-label">COMMUNITY KNOWLEDGE</span>
                     <h1 id="page-title" className="p-display-1">
                         Velonx <span className="gradient-text font-black">Blog</span>
@@ -159,7 +159,7 @@ export default function BlogClient({ initialPosts = [], initialPagination = null
 
             {/* Filter & Search Toolbar */}
             <section className="pb-8 bg-background" aria-labelledby="filters-heading">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     <h2 id="filters-heading" className="sr-only">Blog Filters</h2>
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-border pb-8">
                         {categories.length > 1 && (
@@ -194,7 +194,7 @@ export default function BlogClient({ initialPosts = [], initialPagination = null
 
             {/* Main Content Area */}
             <section className="py-12 bg-muted/10">
-                <div className="container mx-auto px-4 max-w-6xl">
+                <div className="container mx-auto max-w-6xl">
                     
                     {/* Featured Article — Page 1 only */}
                     {featuredPost && (

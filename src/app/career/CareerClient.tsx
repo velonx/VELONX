@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, IndianRupee, Share2, Check, LogIn, X, Lock, CalendarClock, Sparkles, Zap, ArrowLeft, ArrowRight, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
+import { Search, Video, Clock, Briefcase, GraduationCap, Loader2, ExternalLink, MapPin, IndianRupee, Share2, Check, LogIn, X, Lock, CalendarClock, Sparkles, Zap, ArrowLeft, ArrowRight, CheckCircle2, AlertTriangle, Lightbulb, ShieldCheck } from 'lucide-react';
 import { BoneyardLoader, CareerCardSkeleton } from "@/components/boneyard";
 import toast from "react-hot-toast";
 import Image from "next/image";
@@ -273,8 +273,8 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
         : serverClosedJobs.filter(matchesSearch);
 
     const renderOpportunityCard = (
-        item: any, 
-        type: 'internship' | 'job', 
+        item: any,
+        type: 'internship' | 'job',
         options?: { score?: number; verdict?: string }
     ) => {
         const initials = item.company ? item.company.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'CO';
@@ -387,10 +387,10 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                     )}
 
                     {item.requirements && item.requirements.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-1">
+                        <div className="flex flex-wrap gap-2 mt-2">
                             {item.requirements.slice(0, 3).map((req: string, idx: number) => (
-                                <span key={idx} className="tag text-[10px] py-0.5 px-2 rounded-md font-medium bg-muted/60 text-muted-foreground border border-border/40 truncate max-w-65">
-                                    • {req}
+                                <span key={idx} title={req} className="text-[11px] py-1 px-3 rounded-full font-semibold bg-[#7C3AED]/8 text-[#7C3AED] dark:text-[#A78BFA] border border-[#7C3AED]/20 truncate max-w-65">
+                                    {req}
                                 </span>
                             ))}
                         </div>
@@ -552,27 +552,71 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
             )}
 
             {/* Page Hero */}
-            <header className="relative pt-16 pb-12 bg-background overflow-hidden text-center" aria-labelledby="page-title">
-                <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
-                    <span className="p-section-label">DEMOCRATIZING PLACEMENTS</span>
-                    <h1 id="page-title" className="p-display-1">
-                        Opportunities <span className="gradient-text font-black">Hub</span>
-                    </h1>
-                    <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
-                        Vetted internships and entry-level developer roles with verified stipends and fair, skill-first selection rounds.
-                    </p>
+            <header className="relative pt-10 pb-10 md:pt-12 md:pb-14 bg-background overflow-hidden" aria-labelledby="page-title">
+                <div className="container mx-auto relative z-10">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10 lg:gap-12">
+                        {/* Copy */}
+                        <div className="flex-1 min-w-0 max-w-2xl">
+                            <span className="p-section-label">DEMOCRATIZING PLACEMENTS</span>
+                            <h1 id="page-title" className="p-display-1">
+                                Opportunities <span className="gradient-text font-black">Hub</span>
+                            </h1>
+                            <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
+                                Vetted internships and entry-level developer roles with verified stipends and fair, skill-first selection rounds.
+                            </p>
+
+                            {/* Trust markers */}
+                            <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 mt-8">
+                                {[
+                                    { icon: ShieldCheck, label: "Verified Opportunities", tint: "bg-[#7C3AED]/10 text-[#7C3AED]" },
+                                    { icon: GraduationCap, label: "Freshers", tint: "bg-[#F0771A]/10 text-[#F0771A]" },
+                                    { icon: Sparkles, label: "AI Match", tint: "bg-[#F0771A]/10 text-[#F0771A]" },
+                                ].map(({ icon: TrustIcon, label, tint }) => (
+                                    <li key={label} className="flex items-center gap-2.5">
+                                        <span className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${tint}`}>
+                                            <TrustIcon className="w-4 h-4" aria-hidden="true" />
+                                        </span>
+                                        <span className="text-sm font-semibold text-muted-foreground">{label}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Illustration */}
+                        <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[400px] xl:w-[480px] 2xl:w-[520px]">
+                            <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+                                <div className="absolute -top-6 right-0 w-28 h-28 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+                                <Sparkles className="absolute -top-4 left-8 w-4 h-4 text-[#F0771A]/60" />
+                                <Sparkles className="absolute top-10 -left-6 w-3.5 h-3.5 text-[#F0771A]/45" />
+                                <Sparkles className="absolute top-2 right-16 w-5 h-5 text-[#F0771A]/50" />
+                            </div>
+
+                            <Image
+                                src="https://res.cloudinary.com/dypbafujn/image/upload/e_trim/v1785253384/car_e2ype7.png"
+                                alt=""
+                                width={1311}
+                                height={836}
+                                quality={85}
+                                priority
+                                sizes="(min-width: 1536px) 520px, (min-width: 1280px) 480px, 400px"
+                                className="w-full h-auto select-none pointer-events-none"
+                                aria-hidden="true"
+                            />
+
+                        </div>
+                    </div>
                 </div>
             </header>
 
             {/* Filter Chips & Search Toolbar */}
-            <section className="pb-8 bg-background" aria-labelledby="filters-heading">
-                <div className="container mx-auto px-4">
+            <section className="pb-6 bg-background" aria-labelledby="filters-heading">
+                <div className="container mx-auto">
                     <h2 id="filters-heading" className="sr-only">Opportunity Filters</h2>
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-border pb-8">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 rounded-3xl border border-border bg-card backdrop-blur-sm px-4 py-4 md:px-6 md:py-5 shadow-xs">
                         <div className="p-filter-chips justify-center md:justify-start">
                             <button
                                 onClick={() => setActiveTab("internships")}
-                                className={`p-filter-chip ${activeTab === "internships" ? "active" : ""}`}
+                                className={`p-filter-chip ${activeTab === "internships" ? "active active-accent" : ""}`}
                             >
                                 <span className="inline-flex items-center gap-1.5">
                                     <GraduationCap className="w-4 h-4" /> Internships
@@ -580,7 +624,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                             </button>
                             <button
                                 onClick={() => setActiveTab("jobs")}
-                                className={`p-filter-chip ${activeTab === "jobs" ? "active" : ""}`}
+                                className={`p-filter-chip ${activeTab === "jobs" ? "active active-accent" : ""}`}
                             >
                                 <span className="inline-flex items-center gap-1.5">
                                     <Briefcase className="w-4 h-4" /> Jobs
@@ -615,7 +659,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                                     }
                                     setActiveTab("ai");
                                 }}
-                                className={`p-filter-chip ${activeTab === "ai" ? "active" : ""} relative`}
+                                className={`p-filter-chip ${activeTab === "ai" ? "active active-accent" : ""} relative`}
                             >
                                 <span className="inline-flex items-center gap-1.5">
                                     <Sparkles className="w-4 h-4 text-violet-400" /> AI Match
@@ -624,7 +668,7 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                             </button>
                             <button
                                 onClick={() => setActiveTab("mock")}
-                                className={`p-filter-chip ${activeTab === "mock" ? "active" : ""}`}
+                                className={`p-filter-chip ${activeTab === "mock" ? "active active-accent" : ""}`}
                             >
                                 <span className="inline-flex items-center gap-1.5">
                                     <Video className="w-4 h-4" /> Mock Interview
@@ -662,8 +706,8 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
             </section>
 
             {/* Main Content Area */}
-            <section className="py-12 bg-muted/10">
-                <div className="container mx-auto px-4">
+            <section className="pt-6 pb-12 bg-muted/10">
+                <div className="container mx-auto">
                     {activeTab === "mock" && (
                         <div className="max-w-2xl mx-auto py-8">
                             <div className="p-mentor-card p-8 border border-border relative overflow-hidden">

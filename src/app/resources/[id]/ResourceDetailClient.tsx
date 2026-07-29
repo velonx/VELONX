@@ -157,7 +157,7 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
 
   return (
     <div className="min-h-screen pt-24 pb-20 bg-background">
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto max-w-5xl">
         
         {/* Breadcrumb & Navigation Header */}
         <nav aria-label="Breadcrumb" className="mb-8 flex items-center justify-between">

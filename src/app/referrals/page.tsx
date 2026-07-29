@@ -51,7 +51,7 @@ export default async function ReferralDashboardPage() {
     console.error("Failed to fetch user data:", error);
     return (
       <div className="min-h-screen bg-background pt-20">
-        <div className="container mx-auto px-4 py-12 max-w-7xl">
+        <div className="container mx-auto py-12 max-w-7xl">
           <div className="bg-card border border-border rounded-3xl shadow-lg p-12 text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Unable to Load Referral Dashboard</h1>
             <p className="text-muted-foreground mb-6">
@@ -78,7 +78,7 @@ export default async function ReferralDashboardPage() {
   if (!user.referralCode) {
     return (
       <div className="min-h-screen bg-background pt-20">
-        <div className="container mx-auto px-4 py-12 max-w-7xl">
+        <div className="container mx-auto py-12 max-w-7xl">
           <div className="bg-card border border-border rounded-3xl shadow-lg p-12 text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Referral Code Not Available</h1>
             <p className="text-muted-foreground mb-6">
@@ -101,7 +101,7 @@ export default async function ReferralDashboardPage() {
 
   return (
     <div className="min-h-screen bg-background pt-20">
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="container mx-auto py-12 max-w-7xl">
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">

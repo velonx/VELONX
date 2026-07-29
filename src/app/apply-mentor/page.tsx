@@ -207,7 +207,7 @@ export default function ApplyMentorPage() {
   if (submitted) {
     return (
       <div className="min-h-screen pt-24 bg-background">
-        <div className="container mx-auto px-4 max-w-2xl py-20">
+        <div className="container mx-auto max-w-2xl py-20">
           <div className="text-center">
             <div className="w-24 h-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-8">
               <CheckCircle2 className="w-12 h-12 text-green-500" />
@@ -260,7 +260,7 @@ export default function ApplyMentorPage() {
     <div className="min-h-screen pt-24 bg-background">
       {/* Header */}
       <section className="py-12 bg-muted/20 border-b border-border">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto max-w-4xl">
           <Button
             onClick={() => router.back()}
             variant="ghost"
@@ -284,7 +284,7 @@ export default function ApplyMentorPage() {
 
       {/* Form */}
       <section className="py-12">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto max-w-4xl">
           <Card className="bg-card border border-border shadow-lg rounded-4xl overflow-hidden">
             <CardHeader className="p-10 border-b border-border">
               <CardTitle className="text-2xl font-black text-foreground">
