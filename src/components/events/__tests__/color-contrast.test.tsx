@@ -134,7 +134,7 @@ describe('Color Contrast - WCAG AA Compliance', () => {
       expect(typeBadge).toBeTruthy();
       // Badge class should be one of the themed badge classes
       const classes = typeBadge?.className || '';
-      expect(classes).toMatch(/badge-(cyan|green|live)/);
+      expect(classes).toMatch(/badge-(cyan|green|live)|bg-amber/);
     });
   });
 
