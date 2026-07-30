@@ -270,6 +270,39 @@
    for page headings — those are the pre-editorial style being retired. */
 
 
+/* ==========================================================
+   APP SHELL — hero normalization
+   ==========================================================
+   Content pages (career, projects, mentors, resources, events, community,
+   network, leaderboard, …) bake in top padding + display sizes tuned for the
+   PUBLIC floating navbar (`fixed top-6`). Inside the authenticated app shell
+   that navbar is replaced by the inline 64px `AppTopBar`, so those pages'
+   heroes sat too far down and their title sizes differed page-to-page.
+
+   Normalize here, scoped to `.app-shell-scroll` (the shell's <main>), so the
+   SAME pages rendered in the public / logged-out layout — and the landing
+   page — are left completely untouched. */
+
+/* One consistent ~48px gap below the top bar for every page root, overriding
+   each page's pt-20 / pt-24 / pt-28 fixed-navbar clearance. */
+.app-shell-scroll > .min-h-screen {
+    padding-top: 3rem;
+}
+/* Titled hero headers (career / projects / mentors / resources) and the
+   community hero self-provide top spacing — drop it so it doesn't stack. */
+.app-shell-scroll header[aria-labelledby="page-title"],
+.app-shell-scroll .community-page .page-hero {
+    padding-top: 0;
+}
+/* Standardize the oversized editorial hero titles (40→72px) down to the
+   36→60px scale (heading-display text-4xl→6xl) used by the other heroes. */
+.app-shell-scroll .p-display-1,
+.app-shell-scroll .leaderboard-hero-title,
+.app-shell-scroll .community-page .display-1 {
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+}
+
+
 /* Premium Mesh Gradient Background */
 .mesh-gradient-bg {
     background: var(--background);

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react";
@@ -115,7 +116,7 @@ function ProjectsPageContent() {
 
     // Prefetch CSRF token when page mounts to prevent cookie race conditions
     useEffect(() => {
-        fetchCSRFToken().catch(() => {});
+        fetchCSRFToken().catch(() => { });
     }, []);
 
     // Convert API projects to ExtendedProject type

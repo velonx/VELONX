@@ -123,7 +123,7 @@ function Row({
   return (
     <section className="mb-10">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-black text-foreground tracking-tight">{title}</h2>
+        <h2 className="heading-section text-2xl">{title}</h2>
         <Link href={viewAllHref} className="text-xs font-bold text-primary hover:underline">
           View all
         </Link>
@@ -242,15 +242,15 @@ export default function HomePage() {
 
   // 847 = 815px content column + 16px gutter each side (border-box)
   return (
-    <div className="max-w-[847px] mx-auto px-4 pt-8 pb-16">
+    <div className="max-w-[847px] mx-auto px-4 pt-12 pb-16">
       <div className="mb-8">
-        <h1 className="text-[30px] md:text-[36px] xl:text-[46px] font-extrabold leading-[1.2] text-foreground">
+        <h1 className="heading-display text-4xl sm:text-5xl lg:text-6xl">
           Welcome back,{" "}
-          <strong className="font-extrabold text-accent">
+          <span className="text-accent">
             {session?.user?.name?.split(" ")[0] || "Builder"}
-          </strong>
+          </span>
         </h1>
-        <p className="text-base font-normal leading-[1.4] text-muted-foreground mt-2">
+        <p className="text-lead text-base mt-3">
           Jump into projects, mentorship, events, and more.
         </p>
       </div>
