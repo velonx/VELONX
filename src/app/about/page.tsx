@@ -1,19 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Rocket, Target, Users, Shield, Zap, Sparkles, Heart, Lightbulb } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Rocket, Target, Users, Shield, Sparkles, Heart, Lightbulb } from "lucide-react";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import Image from "next/image";
 
 export default function AboutPage() {
-    const stats = [
-        { label: "Active Members", value: "5000+", icon: Users },
-        { label: "Projects Built", value: "1200+", icon: Rocket },
-        { label: "Partner Companies", value: "45+", icon: Target },
-        { label: "Success Rate", value: "98%", icon: Zap },
-    ];
-
     const coreValues = [
         {
             title: "Integrity",
@@ -67,31 +59,6 @@ export default function AboutPage() {
                     >
                         Velonx is more than a platform; it&apos;s a movement. We&apos;re building a community where students can learn, build, and grow together in the ever-evolving world of technology.
                     </motion.p>
-                </div>
-            </section>
-
-            {/* Stats Section */}
-            <section className="py-12 -mt-10 relative z-20">
-                <div className="container mx-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {stats.map((stat, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                            >
-                                <Card className="border border-border shadow-xl shadow-black/5 rounded-4xl bg-card text-center p-8 hover:scale-[1.02] transition-transform">
-                                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-primary">
-                                        <stat.icon className="w-6 h-6" />
-                                    </div>
-                                    <div className="text-3xl font-black text-foreground mb-1">{stat.value}</div>
-                                    <div className="text-muted-foreground text-sm font-bold uppercase tracking-wider">{stat.label}</div>
-                                </Card>
-                            </motion.div>
-                        ))}
-                    </div>
                 </div>
             </section>
 

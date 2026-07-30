@@ -387,11 +387,20 @@ function ProjectsPageContent() {
                         <div className="flex-1 min-w-0 max-w-2xl">
                             <span className="p-section-label">PORTFOLIO ENGINE</span>
                             <h1 id="page-title" className="p-display-1">
-                                Student <span className="gradient-text font-black">Projects</span>
+                                Build Projects <span className="gradient-text font-black">That Matter.</span>
                             </h1>
                             <p className="text-muted-foreground max-w-150 mt-4 text-base md:text-lg leading-relaxed">
-                                Ditch the dry resumes. Build high-quality tech products, showcase your source code, and get discovered by top recruitment leads.
+                                Stop building endless clones. Join passionate students, solve real challenges, and create technology that makes a difference in people&apos;s lives or society.
                             </p>
+                            <div className="mt-6">
+                                <button
+                                    onClick={handleSubmitClick}
+                                    className="btn-redesign btn-redesign-primary relative z-1 inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-full shrink-0 cursor-pointer"
+                                >
+                                    Submit Project
+                                    <Rocket className="w-4 h-4" aria-hidden="true" />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Illustration */}
@@ -417,34 +426,6 @@ function ProjectsPageContent() {
                     </div>
                 </div>
             </header>
-
-            {/* Submit Project Banner */}
-            <section className="pb-8">
-                <div className="container mx-auto">
-                    <div className="p-submit-project-banner">
-                        <div className="p-submit-banner-content">
-                            <div className="p-submit-banner-icon" aria-hidden="true">
-                                <Rocket className="w-6 h-6" />
-                            </div>
-                            <div className="p-submit-banner-text">
-                                <span className="p-submit-banner-eyebrow">Submit &amp; Earn</span>
-                                <h2 className="text-xl md:text-2xl font-bold text-foreground mt-1.5 mb-2">Showcase Your Creative Creation</h2>
-                                <p className="text-muted-foreground max-w-145 text-sm md:text-base leading-relaxed">
-                                    Have you built an application, open-source script, or machine learning model recently? Submit it today, gain stars, collect feedback, and earn{" "}
-                                    <span className="p-submit-banner-reward">+150 Velonx Coins</span>.
-                                </p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={handleSubmitClick}
-                            className="btn-redesign btn-redesign-primary relative z-1 inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-full shrink-0 cursor-pointer"
-                        >
-                            Submit Project
-                            <Rocket className="w-4 h-4" aria-hidden="true" />
-                        </button>
-                    </div>
-                </div>
-            </section>
 
             <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
 

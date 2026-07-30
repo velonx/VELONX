@@ -356,8 +356,9 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
             <div className="flex-1 min-w-0 max-w-2xl">
               <span className="section-label">COMMUNITY ENGINE</span>
               <h1 className="display-1">Connect &amp; <span className="gradient-text">Co-Build</span></h1>
-              <p className="text-secondary" style={{ maxWidth: "600px", marginTop: "var(--space-md)" }}>
-                Ask questions, join custom study groups, find hackathon teammates, and learn out loud alongside 15,000+ tech students.
+              <p className="text-lead text-base md:text-lg max-w-xl mt-4">
+                The public square for builders across India.
+                Ask questions, join custom study groups, and learn out loud alongside 15,000+ tech students.
               </p>
             </div>
 

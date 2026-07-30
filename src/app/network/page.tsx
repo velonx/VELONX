@@ -481,17 +481,18 @@ function NetworkPageContent() {
         <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-12">
           <div className="flex-1 min-w-0 max-w-2xl">
             <h1 className="heading-display text-4xl sm:text-5xl lg:text-6xl">
-              Build Connection
+              Build Connection <br />
+              <span className="text-accent">Create Impact Together</span>
             </h1>
             <p className="text-muted-foreground mt-4 text-base md:text-lg leading-relaxed">
-              Discover people, grow your connections, and collaborate on projects.
+              Discover students, grow your connections, and find the right collaborators.
             </p>
           </div>
 
           {/* Illustration */}
-          <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[280px] xl:w-[320px]">
+          <div className="relative shrink-0 hidden lg:block lg:ml-auto w-70 xl:w-[320px]">
             <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
-              <div className="absolute -top-4 -right-6 w-24 h-24 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+              <div className="absolute -top-4 -right-6 w-24 h-24 opacity-25 bg-[radial-gradient(#F0771A_1.5px,transparent_1.5px)] bg-size-[14px_14px]" />
               <span className="absolute top-6 -left-6 w-3 h-3 rotate-45 rounded-[2px] bg-[#226CE0]/50" />
               <span className="absolute bottom-8 -left-8 w-2.5 h-2.5 rotate-45 rounded-[2px] bg-[#7C3AED]/45" />
             </div>

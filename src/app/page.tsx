@@ -428,27 +428,6 @@ export default function Home() {
                             </motion.div>
                         ))}
                     </div>
-
-                    {/* Proof of Work Banner */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
-                        className="flex flex-col md:flex-row items-center gap-6 p-4 md:py-3.5 md:px-6 rounded-2xl bg-[#fef7f2] dark:bg-amber-950/10 border border-[#f0771a]/10 shadow-sm mt-16 max-w-4xl mx-auto"
-                    >
-                        <div className="flex items-center gap-3 shrink-0">
-                            <svg className="w-6 h-6 text-[#f0771a] shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                            </svg>
-                            <span className="font-medium tracking-wider text-xs text-foreground dark:text-amber-500 uppercase">Proof of Work</span>
-                        </div>
-                        <div className="hidden md:block w-px h-5 bg-[#f0771a]/15 dark:bg-amber-900/30" />
-                        <p className="text-xs md:text-sm text-gray-600 dark:text-slate-300 font-medium text-center md:text-left leading-relaxed">
-                            Every project. Every contribution. Every step forward — visible, verifiable, valuable.
-                        </p>
-                    </motion.div>
                 </div>
             </SectionReveal>
 
@@ -458,7 +437,7 @@ export default function Home() {
                     <SectionHeader
                         label="Proof of Work"
                         title="Develop Projects That Matter"
-                        subtitle="Ditch dry resumes. Build high-quality tech products, collaborate with other students, and gain industry feedback."
+                        subtitle="Stop building endless clones. Join passionate students, solve real challenges, and create technology that makes a difference in people's lives or society."
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
