@@ -23,7 +23,7 @@ export default function DashboardHero({ firstName }: DashboardHeroProps) {
           <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-extrabold uppercase tracking-wider mb-4">
             Welcome back, Builder
           </span>
-          <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight mb-3">
+          <h1 className="heading-section text-3xl md:text-4xl mb-3">
             Keep Building,<br />
             <span className="text-primary">{firstName}.</span>
           </h1>

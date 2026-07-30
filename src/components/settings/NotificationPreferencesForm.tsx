@@ -32,14 +32,14 @@ const FREQUENCY_OPTIONS: Array<{
         label: 'Instant',
         sublabel: 'Send immediately',
         icon: <Zap className="w-4 h-4" />,
-        activeClass: 'bg-[#226CE0] text-white border-[#226CE0]',
+        activeClass: 'bg-[#F0771A] text-white border-[#F0771A]',
     },
     {
         value: 'DAILY',
         label: 'Daily',
         sublabel: 'Once per day',
         icon: <Clock className="w-4 h-4" />,
-        activeClass: 'bg-violet-600 text-white border-violet-600',
+        activeClass: 'bg-amber-600 text-white border-amber-600',
     },
     {
         value: 'WEEKLY',

@@ -48,7 +48,7 @@ export default function MentorApplications({
         <div className="flex items-center gap-3">
           <Users className="w-8 h-8 text-[#226CE0]" />
           <div>
-            <CardTitle className="text-3xl font-bold text-foreground mb-1">
+            <CardTitle className="heading-card text-3xl mb-1">
               Mentor Applications
             </CardTitle>
             <p className="text-muted-foreground">

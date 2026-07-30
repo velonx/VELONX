@@ -234,7 +234,7 @@ export default function AdminBookingApprovalPanel({
   return (
     <Card className="bg-background border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
       <CardHeader className="p-12 border-b border-gray-50">
-        <CardTitle className="text-3xl font-black text-[#1A234A] mb-2">
+        <CardTitle className="heading-card text-3xl mb-2">
           Booking Approvals
         </CardTitle>
         <CardDescription className="text-muted-foreground">

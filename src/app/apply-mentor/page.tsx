@@ -212,7 +212,7 @@ export default function ApplyMentorPage() {
             <div className="w-24 h-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-8">
               <CheckCircle2 className="w-12 h-12 text-green-500" />
             </div>
-            <h1 className="text-4xl font-black text-foreground mb-4">
+            <h1 className="heading-section text-4xl mb-4">
               Application Submitted!
             </h1>
             <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
@@ -273,7 +273,7 @@ export default function ApplyMentorPage() {
             <Sparkles className="w-4 h-4" />
             Become a Mentor
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-4">
+          <h1 className="heading-display text-4xl md:text-5xl mb-4">
             Share Your Knowledge
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
@@ -287,7 +287,7 @@ export default function ApplyMentorPage() {
         <div className="container mx-auto max-w-4xl">
           <Card className="bg-card border border-border shadow-lg rounded-4xl overflow-hidden">
             <CardHeader className="p-10 border-b border-border">
-              <CardTitle className="text-2xl font-black text-foreground">
+              <CardTitle className="heading-card text-2xl">
                 Mentor Application
               </CardTitle>
               <p className="text-muted-foreground mt-2">

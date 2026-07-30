@@ -295,7 +295,7 @@ export default function CareerManagement() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">Career Management</h2>
+                <h2 className="heading-card text-2xl">Career Management</h2>
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>

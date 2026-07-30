@@ -77,7 +77,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
         {!submitted ? (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-black text-[#1A234A]">
+              <DialogTitle className="heading-card text-2xl">
                 Rate Your Session
               </DialogTitle>
               <DialogDescription className="sr-only">Provide feedback for your mentor session</DialogDescription>
@@ -85,7 +85,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
 
             {/* Session Info */}
             <div className="bg-gray-50 rounded-2xl p-4 mb-4">
-              <h4 className="font-bold text-[#1A234A] mb-1">{session.title}</h4>
+              <h4 className="heading-card mb-1">{session.title}</h4>
               <p className="text-sm text-gray-500">
                 with {session.mentor.name} • {session.mentor.company}
               </p>
@@ -168,7 +168,7 @@ export default function ReviewDialog({ open, onOpenChange, session, onSuccess }:
             <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="w-10 h-10 text-green-600" />
             </div>
-            <h3 className="text-2xl font-black text-[#1A234A] mb-2">
+            <h3 className="heading-card text-2xl mb-2">
               Thank You!
             </h3>
             <p className="text-gray-500 mb-6">

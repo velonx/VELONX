@@ -280,7 +280,7 @@ export default function GroupDetailClient({
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-foreground">{group.name}</h1>
+                <h1 className="heading-section text-3xl">{group.name}</h1>
                 <Badge variant={group.isPrivate ? "secondary" : "default"} className="gap-1">
                   {group.isPrivate ? <><Lock className="w-3 h-3" /> Private</> : <><Globe className="w-3 h-3" /> Public</>}
                 </Badge>

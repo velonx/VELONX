@@ -23,7 +23,7 @@ export default function WelcomeSection({ userName, searchQuery, onSearchChange }
   return (
     <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
       <div>
-        <h1 className="text-2xl md:text-3xl font-black text-foreground mb-1 tracking-tight flex items-center gap-2">
+        <h1 className="heading-section text-2xl md:text-3xl mb-1 flex items-center gap-2">
           Hello, {userName}! <span className="inline-block animate-bounce">👋</span>
         </h1>
         <p className="text-muted-foreground font-medium text-xs md:text-sm">

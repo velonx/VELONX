@@ -137,7 +137,7 @@ export function ReportsAdmin() {
             <Flag className="w-6 h-6 text-red-500" />
           </div>
           <div>
-            <h2 className="text-2xl font-black text-foreground">Reports</h2>
+            <h2 className="heading-card text-2xl">Reports</h2>
             <p className="text-muted-foreground text-sm">
               {reports.length} total report{reports.length !== 1 ? "s" : ""}
             </p>

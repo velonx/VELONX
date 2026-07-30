@@ -19,7 +19,7 @@ export default function TermsPage() {
                     <motion.h1
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-4xl md:text-5xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-6"
+                        className="heading-display text-4xl md:text-5xl mb-6"
                     >
                         Terms of <span className="text-primary">Service</span>
                     </motion.h1>
@@ -72,7 +72,7 @@ export default function TermsPage() {
                                     <term.icon className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black text-foreground mb-4">{term.title}</h2>
+                                    <h2 className="heading-section text-2xl mb-4">{term.title}</h2>
                                     <p className="text-muted-foreground text-lg leading-relaxed">{term.content}</p>
                                 </div>
                             </motion.div>
@@ -81,7 +81,7 @@ export default function TermsPage() {
 
                     {/* Disclaimer */}
                     <div className="mt-20 p-10 bg-muted/30 rounded-[40px] border border-dashed border-border">
-                        <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                        <h3 className="heading-card text-xl mb-4 flex items-center gap-2">
                             <AlertCircle className="w-5 h-5 text-muted-foreground" />
                             Disclaimer
                         </h3>

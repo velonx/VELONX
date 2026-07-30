@@ -77,7 +77,7 @@ export default function EventsSidebar({
             <div>
                 <div className="flex items-center gap-2 mb-2">
                     <LayoutGrid className="w-5 h-5 text-[#226CE0]" />
-                    <h3 className="text-[#1A234A] dark:text-white font-bold text-lg">Events Navigation</h3>
+                    <h3 className="heading-card text-lg">Events Navigation</h3>
                 </div>
                 <p className="text-[#7582B3] dark:text-gray-400 text-xs leading-relaxed">Filter events by type and choose your preferred view options.</p>
             </div>
@@ -109,7 +109,7 @@ export default function EventsSidebar({
             <div className="space-y-3">
                 <div className="flex items-center gap-2 mb-1 px-1">
                     <BarChart3 className="w-4 h-4 text-[#7582B3]" />
-                    <h4 className="text-[#1A234A] dark:text-white text-xs font-bold uppercase tracking-wider">Status</h4>
+                    <h4 className="text-foreground text-xs font-bold uppercase tracking-wider">Status</h4>
                 </div>
                 {statusItems.map((item) => (
                     <button
@@ -169,7 +169,7 @@ export default function EventsSidebar({
                     </SheetTrigger>
                     <SheetContent side="left" className="card-glass-redesign border-border p-6 text-foreground">
                         <SheetHeader>
-                            <SheetTitle className="text-[#1A234A] dark:text-white text-left font-bold">Events Navigation</SheetTitle>
+                            <SheetTitle className="heading-card text-left">Events Navigation</SheetTitle>
                         </SheetHeader>
                         <div className="mt-8">
                             <SidebarContent />

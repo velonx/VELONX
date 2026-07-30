@@ -257,7 +257,7 @@ export default function AdminDashboard() {
             <main className="flex-1 ml-80 p-12">
                 <header className="flex items-center justify-between mb-12">
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground mb-2">Command Center</h1>
+                        <h1 className="heading-section text-3xl mb-2">Command Center</h1>
                         <p className="text-muted-foreground font-medium tracking-tight">Managing the Velonx Ecosystem</p>
                     </div>
                     <div className="flex items-center gap-4">
@@ -316,12 +316,12 @@ export default function AdminDashboard() {
 
                     <TabsContent value="swag" className="space-y-10">
                         <div>
-                            <h2 className="text-2xl font-bold text-foreground mb-1">Swag Store</h2>
+                            <h2 className="heading-card text-2xl mb-1">Swag Store</h2>
                             <p className="text-muted-foreground text-sm mb-8">Manage merchandise catalog and fulfill student orders</p>
                             <div className="space-y-10">
                                 <SwagItemManager />
                                 <div className="border-t border-border pt-10">
-                                    <h3 className="text-xl font-bold text-foreground mb-6">Order Management</h3>
+                                    <h3 className="heading-card text-xl mb-6">Order Management</h3>
                                     <SwagOrderTable />
                                 </div>
                             </div>
@@ -355,7 +355,7 @@ export default function AdminDashboard() {
                     <TabsContent value="platform">
                         <Card className="bg-background border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
                             <CardHeader className="p-12 border-b border-gray-50">
-                                <h3 className="text-3xl font-bold text-foreground mb-2">Platform Information</h3>
+                                <h3 className="heading-section text-3xl mb-2">Platform Information</h3>
                                 <p className="text-muted-foreground">System status and configuration</p>
                             </CardHeader>
                             <CardContent className="p-12">
@@ -404,7 +404,7 @@ export default function AdminDashboard() {
                                         {platformStats?.unverifiedStats?.users && (
                                             <div className="mt-8 border border-border rounded-3xl overflow-hidden bg-background">
                                                 <div className="px-6 py-4 bg-muted/20 border-b border-border">
-                                                    <h5 className="font-bold text-[#1A234A] dark:text-white flex items-center gap-2">
+                                                    <h5 className="font-bold text-foreground flex items-center gap-2">
                                                         <Mail className="w-4 h-4 text-[#226CE0]" /> Unverified Credentials Users List
                                                     </h5>
                                                     <p className="text-xs text-muted-foreground mt-0.5">Contact or resend verification link to users registered via email</p>
@@ -414,7 +414,7 @@ export default function AdminDashboard() {
                                                         {platformStats.unverifiedStats.users.map((user) => (
                                                             <div key={user.id} className="p-5 flex items-center justify-between hover:bg-muted/10 transition-colors">
                                                                 <div className="flex flex-col gap-1">
-                                                                    <p className="font-bold text-[#1A234A] dark:text-white">{user.name || "Anonymous"}</p>
+                                                                    <p className="font-bold text-foreground">{user.name || "Anonymous"}</p>
                                                                     <p className="text-sm text-muted-foreground font-medium">{user.email}</p>
                                                                     <p className="text-[10px] text-gray-400">Registered on: {new Date(user.createdAt).toLocaleDateString()}</p>
                                                                 </div>

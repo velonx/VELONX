@@ -166,7 +166,7 @@ export default function UnregisterConfirmDialog({
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Event Title */}
           <div className="text-center">
-            <h3 className="text-xl font-bold text-[#1A234A] dark:text-white mb-2">
+            <h3 className="heading-card text-xl mb-2">
               {event.title}
             </h3>
             <p className="text-[#7582B3] dark:text-gray-400 text-sm line-clamp-2">

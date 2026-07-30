@@ -131,7 +131,7 @@ export default function SwagItemManager() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-2xl font-bold text-foreground">Swag Catalog</h3>
+          <h3 className="heading-card text-2xl">Swag Catalog</h3>
           <p className="text-muted-foreground text-sm">{items.length} items · {items.filter(i => i.isActive).length} active</p>
         </div>
         <Button onClick={openCreate} className="bg-linear-to-r from-[#226CE0] to-violet-600 text-white font-bold rounded-xl h-10 px-5 flex items-center gap-2 hover:opacity-90">

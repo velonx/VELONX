@@ -57,7 +57,7 @@ export default function ApiDocsPage() {
     <div className="min-h-screen bg-background">
       <div className="border-b border-border bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-foreground">VELONX API Documentation</h1>
+          <h1 className="heading-section text-3xl">VELONX API Documentation</h1>
           <p className="mt-2 text-muted-foreground">
             Comprehensive API documentation for the VELONX educational platform
           </p>

@@ -466,7 +466,7 @@ export default function ResourceManagement() {
             <CardHeader className="p-12 border-b border-gray-50">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-3xl font-black text-[#1A234A] mb-2">Manage References</h3>
+                  <h3 className="heading-card text-3xl mb-2">Manage References</h3>
                   <p className="text-gray-400">View, edit, and delete cheat sheets & PDF resources</p>
                 </div>
                 <Button
@@ -544,7 +544,7 @@ export default function ResourceManagement() {
 
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-3">
-                          <h4 className="text-lg font-bold text-[#1A234A] line-clamp-2 flex-1">
+                          <h4 className="heading-card text-lg line-clamp-2 flex-1">
                             {resource.title}
                           </h4>
                         </div>
@@ -606,7 +606,7 @@ export default function ResourceManagement() {
           <div ref={resourceFormRef}>
             <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
               <CardHeader className="p-12 border-b border-gray-50">
-                <h3 className="text-3xl font-black text-[#1A234A] mb-2">
+                <h3 className="heading-card text-3xl mb-2">
                   {editingResource ? 'Edit Reference' : 'Add New Reference'}
                 </h3>
                 <p className="text-gray-400">
@@ -923,7 +923,7 @@ export default function ResourceManagement() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-3xl font-black text-[#1A234A] mb-1">
+                    <h3 className="heading-card text-3xl mb-1">
                       Modules: <span className="text-[#226CE0]">{activePathForModules.title}</span>
                     </h3>
                     <p className="text-gray-400">Add, edit, and arrange steps for this learning path.</p>
@@ -959,7 +959,7 @@ export default function ResourceManagement() {
                               {index + 1}
                             </div>
                             <div>
-                              <h4 className="text-base font-bold text-[#1A234A]">{mod.title}</h4>
+                              <h4 className="heading-card text-base">{mod.title}</h4>
                               <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">{mod.description}</p>
                               <div className="flex items-center gap-3 mt-1.5">
                                 <span className="text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
@@ -1004,7 +1004,7 @@ export default function ResourceManagement() {
 
                 {/* Add/Edit Module Form */}
                 <div ref={moduleFormRef} className="border-t border-gray-100 pt-8">
-                  <h4 className="text-xl font-black text-[#1A234A] mb-6">
+                  <h4 className="heading-card text-xl mb-6">
                     {editingModule ? "Edit Module Checkpoint" : "Add Module Checkpoint"}
                   </h4>
                   <form
@@ -1131,7 +1131,7 @@ export default function ResourceManagement() {
                 <CardHeader className="p-12 border-b border-gray-50">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h3 className="text-3xl font-black text-[#1A234A] mb-2">Learning Paths</h3>
+                      <h3 className="heading-card text-3xl mb-2">Learning Paths</h3>
                       <p className="text-gray-400">Define interactive student roadmaps, badges, and certificates</p>
                     </div>
                     <Button
@@ -1188,7 +1188,7 @@ export default function ResourceManagement() {
                             </div>
 
                             <div>
-                              <h4 className="text-lg font-black text-[#1A234A]">{path.title}</h4>
+                              <h4 className="heading-card text-lg">{path.title}</h4>
                               <p className="text-xs text-gray-500 line-clamp-3 mt-1.5 leading-relaxed">{path.description}</p>
                             </div>
 
@@ -1208,7 +1208,7 @@ export default function ResourceManagement() {
                               )}
                               <div>
                                 <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Completing Badge</span>
-                                <h5 className="text-xs font-bold text-[#1A234A] line-clamp-1">{path.badgeName || "None"}</h5>
+                                <h5 className="heading-card text-xs line-clamp-1">{path.badgeName || "None"}</h5>
                               </div>
                             </div>
                           </div>
@@ -1255,7 +1255,7 @@ export default function ResourceManagement() {
               {/* Certificate Test Requests Queue */}
               <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden mt-12">
                 <CardHeader className="p-12 border-b border-gray-50">
-                  <h3 className="text-3xl font-black text-[#1A234A] mb-2">Certificate Exam Requests</h3>
+                  <h3 className="heading-card text-3xl mb-2">Certificate Exam Requests</h3>
                   <p className="text-gray-400">Review, schedule, and grade student final exams for certified roadmaps</p>
                 </CardHeader>
                 <CardContent className="p-12">
@@ -1430,7 +1430,7 @@ export default function ResourceManagement() {
               <div ref={pathFormRef}>
                 <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
                   <CardHeader className="p-12 border-b border-gray-50">
-                    <h3 className="text-3xl font-black text-[#1A234A] mb-2">
+                    <h3 className="heading-card text-3xl mb-2">
                       {editingPath ? "Edit Learning Path" : "Create Learning Path"}
                     </h3>
                     <p className="text-gray-400">

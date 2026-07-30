@@ -164,7 +164,7 @@ export default function MentorsPage() {
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full -mr-20 -mt-20" />
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 blur-3xl rounded-full -ml-20 -mb-20" />
 
-                        <h2 className="text-3xl font-bold mb-4 relative z-10 text-foreground">Want to become a Mentor?</h2>
+                        <h2 className="heading-section text-3xl mb-4 relative z-10">Want to become a Mentor?</h2>
                         <p className="text-muted-foreground mb-8 max-w-xl mx-auto relative z-10 text-lg">
                             Share your knowledge and help the next generation of tech leaders. Join our elite pool of mentors today.
                         </p>
@@ -198,7 +198,7 @@ export default function MentorsPage() {
                         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                             <LogIn className="w-8 h-8 text-primary" />
                         </div>
-                        <DialogTitle className="text-2xl font-black text-foreground">
+                        <DialogTitle className="heading-card text-2xl">
                             Login Required
                         </DialogTitle>
                         <DialogDescription className="text-muted-foreground mt-2">

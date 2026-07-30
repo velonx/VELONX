@@ -480,7 +480,7 @@ function NetworkPageContent() {
         {/* Header */}
         <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-12">
           <div className="flex-1 min-w-0 max-w-2xl">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-[1.05]">
+            <h1 className="heading-display text-4xl sm:text-5xl lg:text-6xl">
               Network
             </h1>
             <p className="text-muted-foreground mt-4 text-base md:text-lg leading-relaxed">

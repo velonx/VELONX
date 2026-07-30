@@ -239,7 +239,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0 pb-1">
-                <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+                <h1 className="heading-section text-2xl sm:text-3xl">
                   {profile.name || "User"}
                 </h1>
                 {profile.headline && (

@@ -43,16 +43,16 @@ export default async function NotificationPreferencesPage() {
                         <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">
                             Settings
                         </p>
-                        <h1 className="text-2xl font-black text-foreground leading-none">
+                        <h1 className="heading-section text-2xl leading-none">
                             Email Notifications
                         </h1>
                     </div>
                 </div>
 
                 {/* Description card */}
-                <div className="bg-[#226CE0]/5 border border-[#226CE0]/20 rounded-2xl p-5 flex gap-4 mb-8">
-                    <div className="w-10 h-10 rounded-xl bg-[#226CE0]/10 flex items-center justify-center shrink-0">
-                        <Bell className="w-5 h-5 text-[#226CE0]" />
+                <div className="bg-[#F0771A]/5 border border-[#F0771A]/20 rounded-2xl p-5 flex gap-4 mb-8">
+                    <div className="w-10 h-10 rounded-xl bg-[#F0771A]/10 flex items-center justify-center shrink-0">
+                        <Bell className="w-5 h-5 text-[#F0771A]" />
                     </div>
                     <div>
                         <p className="font-bold text-foreground mb-1">Choose what you hear about</p>
@@ -78,7 +78,7 @@ export default async function NotificationPreferencesPage() {
                 {/* Global unsubscribe note */}
                 <p className="text-xs text-muted-foreground text-center mt-6">
                     To stop all VELONX emails at once, go to{' '}
-                    <Link href="/settings" className="text-[#226CE0] underline hover:no-underline">
+                    <Link href="/settings" className="text-[#F0771A] underline hover:no-underline">
                         Profile
                     </Link>{' '}
                     and disable "Email Notifications".

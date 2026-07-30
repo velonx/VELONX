@@ -240,6 +240,35 @@
     color: var(--foreground);
 }
 
+/* Card / minor titles — sans (Outfit), bold. The rung below section headings:
+   card headers, list-item titles, small panel titles. */
+.heading-card {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    color: var(--foreground);
+}
+
+/* Lead paragraph — the subtitle that sits under a display/section heading.
+   Muted, light-weight, roomy line-height. Plain body text stays on
+   `text-muted-foreground` + `leading-relaxed`. */
+.text-lead {
+    color: var(--muted-foreground);
+    font-weight: 300;
+    line-height: 1.7;
+}
+
+/* Usage — the canonical ladder (size utilities stay per-page):
+     Hero    <h1 class="heading-display text-5xl sm:text-7xl md:text-[88px] lg:text-[110px]">
+     Section <h2 class="heading-section text-3xl md:text-4xl lg:text-5xl">
+     Eyebrow <span class="section-label-redesign">
+     Card    <h3 class="heading-card text-xl">
+     Lead    <p  class="text-lead text-lg">
+     Body    <p  class="text-muted-foreground leading-relaxed">
+   Do NOT reintroduce `font-black` + hardcoded navy hexes (#1A234A / #29292B)
+   for page headings — those are the pre-editorial style being retired. */
+
 
 /* Premium Mesh Gradient Background */
 .mesh-gradient-bg {
@@ -4293,16 +4322,17 @@ body {
   color: var(--violet-light, #A78BFA);
 }
 
+/* Page hero — aligned to the editorial system (.heading-display). Serif italic,
+   theme-aware foreground. Keeps its own responsive clamp size. */
 .p-display-1 {
+  font-family: var(--font-serif);
   font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
-  color: #29292B;
-}
-
-.dark .p-display-1 {
-  color: #FFFBDB;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  font-optical-sizing: auto;
+  color: var(--foreground);
 }
 
 .p-submit-project-banner {
@@ -5228,8 +5258,10 @@ body {
 }
 
 .p-article-title {
+  font-family: var(--font-serif);
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 900;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   line-height: 1.2;
   margin-top: 0.5rem;
   margin-bottom: 1.25rem;
@@ -5487,17 +5519,18 @@ body {
       margin-bottom: 1.25rem;
     }
 
+    /* Hero — aligned to the editorial system (.heading-display): serif italic,
+       theme-aware foreground. */
     .leaderboard-hero-title {
+      font-family: var(--font-serif);
       font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 900;
-      line-height: 1.05;
+      font-weight: 500;
+      font-style: italic;
+      line-height: 0.95;
       letter-spacing: -0.03em;
+      font-optical-sizing: auto;
       margin-bottom: 1rem;
-      color: #29292B;
-    }
-
-    .dark .leaderboard-hero-title {
-      color: #FFFBDB;
+      color: var(--foreground);
     }
 
     .leaderboard-hero-title .title-accent {

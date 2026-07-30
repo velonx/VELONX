@@ -99,7 +99,7 @@ export class ProjectsErrorBoundary extends Component<
 
             {/* Error Message */}
             <div className="space-y-3">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="heading-card text-2xl">
                 Unable to Load Projects
               </h2>
               <p className="text-base text-gray-600 max-w-lg mx-auto">

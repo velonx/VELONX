@@ -22,7 +22,7 @@ export default function CommunityGuidelinesPage() {
                             <Shield className="w-4 h-4" />
                             Community Standards
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black mb-6 text-[#29292B] dark:text-[#FFFBDB]">
+                        <h1 className="heading-display text-4xl md:text-6xl mb-6">
                             Community <span className="text-primary">Guidelines</span>
                         </h1>
                         <p className="text-muted-foreground text-xl mb-8 max-w-2xl mx-auto">
@@ -37,27 +37,27 @@ export default function CommunityGuidelinesPage() {
             {/* Core Values */}
             <section className="py-16 bg-background">
                 <div className="container mx-auto max-w-6xl">
-                    <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Our Core Values</h2>
+                    <h2 className="heading-section text-3xl mb-8 text-center">Our Core Values</h2>
                     <div className="grid md:grid-cols-3 gap-8 mb-16">
                         <div className="text-center p-6 bg-primary/5 border border-primary/10 rounded-3xl">
                             <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
                                 <Heart className="w-8 h-8 text-primary-foreground" />
                             </div>
-                            <h3 className="text-xl font-bold text-foreground mb-2">Respect</h3>
+                            <h3 className="heading-card text-xl mb-2">Respect</h3>
                             <p className="text-muted-foreground">Treat everyone with kindness and consideration</p>
                         </div>
                         <div className="text-center p-6 bg-secondary/10 border border-secondary/10 rounded-3xl">
                             <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
                                 <Users className="w-8 h-8 text-primary-foreground" />
                             </div>
-                            <h3 className="text-xl font-bold text-foreground mb-2">Inclusivity</h3>
+                            <h3 className="heading-card text-xl mb-2">Inclusivity</h3>
                             <p className="text-muted-foreground">Welcome and support members from all backgrounds</p>
                         </div>
                         <div className="text-center p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-3xl">
                             <div className="w-16 h-16 rounded-full bg-emerald-600 flex items-center justify-center mx-auto mb-4">
                                 <BookOpen className="w-8 h-8 text-white" />
                             </div>
-                            <h3 className="text-xl font-bold text-foreground mb-2">Learning</h3>
+                            <h3 className="heading-card text-xl mb-2">Learning</h3>
                             <p className="text-muted-foreground">Foster growth and knowledge sharing</p>
                         </div>
                     </div>
@@ -68,7 +68,7 @@ export default function CommunityGuidelinesPage() {
                         <div className="bg-emerald-500/5 rounded-3xl p-8 border-2 border-emerald-500/20">
                             <div className="flex items-center gap-3 mb-6">
                                 <CheckCircle className="w-8 h-8 text-emerald-500" />
-                                <h3 className="text-2xl font-bold text-foreground">Do&apos;s - What We Encourage</h3>
+                                <h3 className="heading-card text-2xl">Do&apos;s - What We Encourage</h3>
                             </div>
                             <ul className="space-y-4">
                                 {[
@@ -95,7 +95,7 @@ export default function CommunityGuidelinesPage() {
                         <div className="bg-destructive/5 rounded-3xl p-8 border-2 border-destructive/20">
                             <div className="flex items-center gap-3 mb-6">
                                 <XCircle className="w-8 h-8 text-destructive" />
-                                <h3 className="text-2xl font-bold text-foreground">Don&apos;ts - What&apos;s Not Allowed</h3>
+                                <h3 className="heading-card text-2xl">Don&apos;ts - What&apos;s Not Allowed</h3>
                             </div>
                             <ul className="space-y-4">
                                 {[
@@ -122,7 +122,7 @@ export default function CommunityGuidelinesPage() {
                         <div className="bg-primary/5 rounded-3xl p-8 border-2 border-primary/15">
                             <div className="flex items-center gap-3 mb-6">
                                 <MessageCircle className="w-8 h-8 text-primary" />
-                                <h3 className="text-2xl font-bold text-foreground">Communication Best Practices</h3>
+                                <h3 className="heading-card text-2xl">Communication Best Practices</h3>
                             </div>
                             <ul className="space-y-4">
                                 {[
@@ -148,7 +148,7 @@ export default function CommunityGuidelinesPage() {
                         <div className="bg-amber-500/5 rounded-3xl p-8 border-2 border-amber-500/20">
                             <div className="flex items-center gap-3 mb-6">
                                 <AlertTriangle className="w-8 h-8 text-amber-500" />
-                                <h3 className="text-2xl font-bold text-foreground">Consequences of Violations</h3>
+                                <h3 className="heading-card text-2xl">Consequences of Violations</h3>
                             </div>
                             <p className="text-muted-foreground mb-4">Violations of these guidelines may result in:</p>
                             <ul className="space-y-3 text-foreground">
@@ -174,7 +174,7 @@ export default function CommunityGuidelinesPage() {
             {/* Contact Section */}
             <section className="py-16 bg-muted/20 border-t border-border">
                 <div className="container mx-auto max-w-4xl text-center">
-                    <h2 className="text-3xl font-bold text-foreground mb-4">Questions or Concerns?</h2>
+                    <h2 className="heading-section text-3xl mb-4">Questions or Concerns?</h2>
                     <p className="text-muted-foreground mb-8 text-lg">
                         If you have questions about these guidelines or need to report a violation, please contact our moderation team.
                     </p>

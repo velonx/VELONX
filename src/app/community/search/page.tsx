@@ -80,7 +80,7 @@ function SearchPageContent() {
         <div className="container mx-auto relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <h1
-              className="text-4xl md:text-6xl text-foreground font-bold tracking-tight"
+              className="heading-display text-4xl md:text-6xl"
             >
               Search Community
             </h1>

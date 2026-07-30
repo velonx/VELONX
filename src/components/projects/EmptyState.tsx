@@ -118,7 +118,7 @@ export function EmptyState({
       {/* Heading */}
       <h2
         className={cn(
-          'text-2xl font-bold mb-3',
+          'heading-card text-2xl mb-3',
           'text-foreground'
         )}
       >

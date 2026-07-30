@@ -592,7 +592,7 @@ export default function LeaderboardPage() {
                             </svg>
                             Climb Ranks
                         </div>
-                        <h2 className="text-3xl font-black text-foreground mb-4">How do you climb the ranks?</h2>
+                        <h2 className="heading-section text-3xl mb-4">How do you climb the ranks?</h2>
                         <p className="text-muted-foreground max-w-2xl mx-auto">Every action you take in the Velonx ecosystem contributes to your profile and XP.</p>
                     </div>
 

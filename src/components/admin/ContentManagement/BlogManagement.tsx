@@ -123,7 +123,7 @@ export default function BlogManagement() {
         <CardHeader className="p-12 border-b border-gray-50">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-3xl font-black text-[#1A234A] mb-2">Manage Blog Posts</h3>
+              <h3 className="heading-card text-3xl mb-2">Manage Blog Posts</h3>
               <p className="text-gray-400">View, edit, and delete existing blog posts</p>
             </div>
             <Button
@@ -167,7 +167,7 @@ export default function BlogManagement() {
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <h4 className="text-lg font-bold text-[#1A234A] mb-1">{blog.title}</h4>
+                          <h4 className="heading-card text-lg mb-1">{blog.title}</h4>
                           <p className="text-sm text-gray-500">
                             {getSafeExcerpt(blog, 100)}
                           </p>
@@ -217,7 +217,7 @@ export default function BlogManagement() {
       <div ref={formRef}>
         <Card className="bg-white border-0 shadow-2xl shadow-black/3 rounded-[48px] overflow-hidden">
           <CardHeader className="p-12 border-b border-gray-50">
-            <h3 className="text-3xl font-black text-[#1A234A] mb-2">
+            <h3 className="heading-card text-3xl mb-2">
               {editingBlog ? 'Edit Article' : 'Publish New Article'}
             </h3>
             <p className="text-gray-400">

@@ -45,10 +45,10 @@ function SubjectChip({
     <button
       type="button"
       onClick={onClick}
-      className={`px-4 py-2 rounded-2xl text-sm font-bold border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#226CE0] focus:ring-offset-2 ${
+      className={`px-4 py-2 rounded-2xl text-sm font-bold border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#F0771A] focus:ring-offset-2 ${
         selected
-          ? "bg-[#226CE0] text-white border-[#226CE0] shadow-lg shadow-[#226CE0]/25"
-          : "bg-card text-muted-foreground border-border hover:border-[#226CE0]/50 hover:text-foreground"
+          ? "bg-[#F0771A] text-white border-[#F0771A] shadow-lg shadow-[#F0771A]/25"
+          : "bg-card text-muted-foreground border-border hover:border-[#F0771A]/50 hover:text-foreground"
       }`}
     >
       {label}
@@ -154,14 +154,14 @@ export default function ContactPage() {
           className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.06]"
           style={{
             backgroundImage:
-              "linear-gradient(#226CE0 1px,transparent 1px),linear-gradient(90deg,#226CE0 1px,transparent 1px)",
+              "linear-gradient(#F0771A 1px,transparent 1px),linear-gradient(90deg,#F0771A 1px,transparent 1px)",
             backgroundSize: "60px 60px",
           }}
         />
         {/* glow blob */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-150 h-150 rounded-full bg-[#226CE0]/10 blur-[120px]"
+          className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-150 h-150 rounded-full bg-[#F0771A]/10 blur-[120px]"
         />
 
         <div className="relative container mx-auto text-center">
@@ -169,7 +169,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#226CE0]/10 border border-[#226CE0]/20 text-[#226CE0] text-sm font-bold mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F0771A]/10 border border-[#F0771A]/20 text-[#F0771A] text-sm font-bold mb-8"
           >
             <MessageSquare className="w-4 h-4" />
             We respond within 24 hours
@@ -179,17 +179,17 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="text-5xl md:text-7xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-6 leading-tight tracking-tight"
+            className="heading-display text-5xl md:text-7xl mb-6"
           >
             Get in{" "}
             <span className="relative">
-              <span className="text-[#226CE0]">Touch</span>
+              <span className="text-[#F0771A]">Touch</span>
               <svg
                 aria-hidden
                 viewBox="0 0 200 12"
-                className="absolute -bottom-2 left-0 w-full fill-[#226CE0]/30"
+                className="absolute -bottom-2 left-0 w-full fill-[#F0771A]/30"
               >
-                <path d="M0,8 Q100,0 200,8" stroke="#226CE0" strokeWidth="3" fill="none" strokeLinecap="round" />
+                <path d="M0,8 Q100,0 200,8" stroke="#F0771A" strokeWidth="3" fill="none" strokeLinecap="round" />
               </svg>
             </span>
           </motion.h1>
@@ -231,7 +231,7 @@ export default function ContactPage() {
                       <div className="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-8">
                         <CheckCircle2 className="w-12 h-12 text-green-500" />
                       </div>
-                      <h2 className="text-3xl font-black text-foreground mb-3">
+                      <h2 className="heading-section text-3xl mb-3">
                         Message Sent!
                       </h2>
                       <p className="text-muted-foreground text-lg mb-2">
@@ -239,7 +239,7 @@ export default function ContactPage() {
                       </p>
                       <p className="text-muted-foreground max-w-sm">
                         We've received your message and sent a confirmation to{" "}
-                        <span className="text-[#226CE0] font-semibold">{email}</span>.
+                        <span className="text-[#F0771A] font-semibold">{email}</span>.
                         Expect a reply within 1–2 business days.
                       </p>
                       <button
@@ -250,7 +250,7 @@ export default function ContactPage() {
                           setSubject("General Inquiry");
                           setMessage("");
                         }}
-                        className="mt-8 text-sm font-bold text-[#226CE0] hover:underline"
+                        className="mt-8 text-sm font-bold text-[#F0771A] hover:underline"
                       >
                         Send another message
                       </button>
@@ -267,7 +267,7 @@ export default function ContactPage() {
                       noValidate
                     >
                       <div>
-                        <h2 className="text-2xl font-black text-foreground mb-1">
+                        <h2 className="heading-card text-2xl mb-1">
                           Send us a message
                         </h2>
                         <p className="text-muted-foreground text-sm">
@@ -292,7 +292,7 @@ export default function ContactPage() {
                             placeholder="John Doe"
                             maxLength={100}
                             required
-                            className="w-full h-14 bg-muted border border-border rounded-2xl px-5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0] focus:border-transparent transition-all"
+                            className="w-full h-14 bg-muted border border-border rounded-2xl px-5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#F0771A] focus:border-transparent transition-all"
                           />
                         </div>
                         <div className="space-y-2">
@@ -309,7 +309,7 @@ export default function ContactPage() {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="john@example.com"
                             required
-                            className="w-full h-14 bg-muted border border-border rounded-2xl px-5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0] focus:border-transparent transition-all"
+                            className="w-full h-14 bg-muted border border-border rounded-2xl px-5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#F0771A] focus:border-transparent transition-all"
                           />
                         </div>
                       </div>
@@ -352,7 +352,7 @@ export default function ContactPage() {
                           rows={5}
                           maxLength={5000}
                           required
-                          className="w-full bg-muted border border-border rounded-[20px] px-5 py-4 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#226CE0] focus:border-transparent transition-all resize-none"
+                          className="w-full bg-muted border border-border rounded-[20px] px-5 py-4 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#F0771A] focus:border-transparent transition-all resize-none"
                         />
                       </div>
 
@@ -373,7 +373,7 @@ export default function ContactPage() {
                         id="contact-submit-btn"
                         type="submit"
                         disabled={!isValid || loading}
-                        className="w-full h-14 flex items-center justify-center gap-2 bg-[#1A234A] hover:bg-[#054a6d] disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-2xl text-base shadow-xl shadow-[#1A234A]/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        className="w-full h-14 flex items-center justify-center gap-2 bg-[#16140F] hover:bg-[#054a6d] disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-2xl text-base shadow-xl shadow-[#16140F]/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
                       >
                         {loading ? (
                           <>
@@ -405,8 +405,8 @@ export default function ContactPage() {
                 variants={fadeUp}
                 className="bg-card border border-border rounded-[28px] p-6 flex items-start gap-4"
               >
-                <div className="w-12 h-12 bg-[#226CE0]/10 rounded-2xl flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5 text-[#226CE0]" />
+                <div className="w-12 h-12 bg-[#F0771A]/10 rounded-2xl flex items-center justify-center shrink-0">
+                  <Mail className="w-5 h-5 text-[#F0771A]" />
                 </div>
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">
@@ -414,7 +414,7 @@ export default function ContactPage() {
                   </p>
                   <a
                     href="mailto:info@velonx.in"
-                    className="text-foreground font-black hover:text-[#226CE0] transition-colors"
+                    className="text-foreground font-black hover:text-[#F0771A] transition-colors"
                   >
                     info@velonx.in
                   </a>
@@ -429,8 +429,8 @@ export default function ContactPage() {
                 variants={fadeUp}
                 className="bg-card border border-border rounded-[28px] p-6 flex items-start gap-4"
               >
-                <div className="w-12 h-12 bg-[#1A234A]/10 dark:bg-[#226CE0]/10 rounded-2xl flex items-center justify-center shrink-0">
-                  <MapPin className="w-5 h-5 text-[#1A234A] dark:text-[#226CE0]" />
+                <div className="w-12 h-12 bg-[#16140F]/10 dark:bg-[#F0771A]/10 rounded-2xl flex items-center justify-center shrink-0">
+                  <MapPin className="w-5 h-5 text-[#16140F] dark:text-[#F0771A]" />
                 </div>
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">
@@ -446,7 +446,7 @@ export default function ContactPage() {
               {/* Response time badge */}
               <motion.div
                 variants={fadeUp}
-                className="bg-linear-to-br from-[#226CE0] to-[#1A234A] rounded-[28px] p-6 text-white"
+                className="bg-linear-to-br from-[#F0771A] to-[#16140F] rounded-[28px] p-6 text-white"
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div className="relative flex h-3 w-3">
@@ -481,7 +481,7 @@ export default function ContactPage() {
                       className="flex items-center justify-between p-3.5 rounded-2xl text-sm font-bold text-foreground hover:bg-muted group transition-all"
                     >
                       <span>{link.label}</span>
-                      <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-[#226CE0] group-hover:translate-x-1 transition-all" />
+                      <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-[#F0771A] group-hover:translate-x-1 transition-all" />
                     </Link>
                   ))}
                 </div>

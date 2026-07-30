@@ -54,7 +54,7 @@ export default function AboutPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl md:text-7xl text-[#29292B] dark:text-[#FFFBDB] mb-8 leading-tight font-bold tracking-tight"
+                        className="heading-display text-5xl md:text-7xl mb-8"
                     >
                         Empowering the <br />
                         <span className="text-primary">Next Generation</span>
@@ -112,14 +112,14 @@ export default function AboutPage() {
                             <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-secondary/20 rounded-[48px] -z-10" />
                         </div>
                         <div>
-                            <h2 className="text-4xl mb-8 text-foreground font-bold">Our Mission &amp; <span className="text-primary">Vision</span></h2>
+                            <h2 className="heading-section text-4xl mb-8">Our Mission &amp; <span className="text-primary">Vision</span></h2>
                             <div className="space-y-12">
                                 <div className="flex gap-6">
                                     <div className="w-16 h-16 bg-primary rounded-3xl shrink-0 flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/30">
                                         <Target className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-foreground mb-2">Accessibility in Education</h3>
+                                        <h3 className="heading-card text-xl mb-2">Accessibility in Education</h3>
                                         <p className="text-muted-foreground leading-relaxed">
                                             We believe high-quality tech education should be accessible to everyone, regardless of their background or location.
                                         </p>
@@ -130,7 +130,7 @@ export default function AboutPage() {
                                         <Rocket className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-foreground mb-2">Incorporate Innovation</h3>
+                                        <h3 className="heading-card text-xl mb-2">Incorporate Innovation</h3>
                                         <p className="text-muted-foreground leading-relaxed">
                                             Our platform encourages hands-on learning through real-world projects, fostering a culture of innovation and creativity.
                                         </p>
@@ -141,7 +141,7 @@ export default function AboutPage() {
                                         <Users className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-foreground mb-2">Community First</h3>
+                                        <h3 className="heading-card text-xl mb-2">Community First</h3>
                                         <p className="text-muted-foreground leading-relaxed">
                                             Velonx is built on the foundation of community. We support each other, learn together, and grow as a collective.
                                         </p>
@@ -156,7 +156,7 @@ export default function AboutPage() {
             {/* Core Values */}
             <section className="py-24 bg-muted/20 border-y border-border">
                 <div className="container mx-auto text-center">
-                    <h2 className="text-4xl mb-4 text-foreground font-bold">
+                    <h2 className="heading-section text-4xl mb-4">
                         The Core Values that <span className="text-primary">Drive Us</span>
                     </h2>
                     <p className="text-muted-foreground text-lg mb-12 max-w-2xl mx-auto">
@@ -173,7 +173,7 @@ export default function AboutPage() {
                         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full -mr-48 -mt-48 group-hover:scale-110 transition-transform duration-1000" />
                         <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full -ml-48 -mb-48 group-hover:scale-110 transition-transform duration-1000" />
 
-                        <h2 className="text-4xl md:text-5xl font-black text-foreground mb-8 relative z-10">Ready to start your journey?</h2>
+                        <h2 className="heading-section text-4xl md:text-5xl mb-8 relative z-10">Ready to start your journey?</h2>
                         <p className="text-muted-foreground text-xl mb-12 max-w-2xl mx-auto relative z-10 leading-relaxed">
                             Join thousands of students who are already building the future on Velonx.
                         </p>

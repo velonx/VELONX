@@ -570,7 +570,7 @@ function ResourcesPage() {
                       return (
                         <div className="text-center py-20 max-w-sm mx-auto space-y-3">
                           <Compass className="w-16 h-16 text-zinc-300 mx-auto animate-pulse" />
-                          <h3 className="text-lg font-bold text-[#1A234A] dark:text-white">No roadmaps found</h3>
+                          <h3 className="heading-card text-lg">No roadmaps found</h3>
                           <p className="text-xs text-muted-foreground">
                             {pathFilter === 'custom'
                               ? "You haven't created any custom roadmaps yet."
@@ -603,7 +603,7 @@ function ResourcesPage() {
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
               <div className="bg-card w-full max-w-lg rounded-3xl border border-border shadow-2xl p-8 space-y-6">
                 <div>
-                  <h3 className="text-xl font-black text-[#1A234A] dark:text-white">Create Custom Roadmap</h3>
+                  <h3 className="heading-card text-xl">Create Custom Roadmap</h3>
                   <p className="text-xs text-muted-foreground mt-1">Design your own learning path. This path will be private and only visible to you.</p>
                 </div>
                 

@@ -51,23 +51,25 @@
 }
 
 /* ============ TYPOGRAPHY & HEADER ============ */
+/* Hero — aligned to the editorial system (.heading-display): serif italic,
+   theme-aware foreground. */
 .community-page .display-1 {
+  font-family: var(--font-serif);
   font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
-  color: #29292B;
-}
-
-.community-page.dark .display-1,
-.dark .community-page .display-1 {
-  color: #FFFBDB;
-}
-
-.community-page .display-2 {
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 800;
+  font-weight: 500;
+  font-style: italic;
   letter-spacing: -0.03em;
+  line-height: 0.95;
+  font-optical-sizing: auto;
+  color: var(--foreground);
+}
+
+/* Large section heading — aligned to .heading-section: serif regular. */
+.community-page .display-2 {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
 }
 
 .community-page .heading-1 {

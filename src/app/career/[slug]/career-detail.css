@@ -324,8 +324,10 @@
 }
 
 .job-hero-info h1 {
+  font-family: var(--font-serif);
   font-size: clamp(1.75rem, 4.5vw, 2.5rem);
-  font-weight: 900;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--text-primary);
   margin: 4px 0;

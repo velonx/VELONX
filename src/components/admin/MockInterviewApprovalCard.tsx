@@ -104,7 +104,7 @@ export default function MockInterviewApprovalCard({
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <CardTitle className="text-lg font-bold text-[#1A234A] mb-2">
+              <CardTitle className="heading-card text-lg mb-2">
                 Mock Interview Request
               </CardTitle>
               <div className="flex flex-wrap gap-2">

@@ -52,7 +52,7 @@ export default function PrivacyPage() {
                     <motion.h1
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-4xl md:text-5xl font-black text-[#29292B] dark:text-[#FFFBDB] mb-6"
+                        className="heading-display text-4xl md:text-5xl mb-6"
                     >
                         Privacy <span className="text-primary">Policy</span>
                     </motion.h1>
@@ -85,7 +85,7 @@ export default function PrivacyPage() {
                                     </div>
                                 </div>
                                 <div className="md:col-span-11 bg-muted/30 p-8 md:p-12 rounded-[40px] border border-border">
-                                    <h2 className="text-2xl font-black text-foreground mb-4">{section.title}</h2>
+                                    <h2 className="heading-section text-2xl mb-4">{section.title}</h2>
                                     <p className="text-muted-foreground mb-8 leading-relaxed text-lg">{section.content}</p>
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         {section.list.map((item, i) => (
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
                                 <FileText className="w-12 h-12 text-primary" />
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-foreground mb-3">Questions &amp; Contact</h3>
+                                <h3 className="heading-section text-2xl mb-3">Questions &amp; Contact</h3>
                                 <p className="text-muted-foreground mb-6">
                                     If you have any questions about this Privacy Policy or our treatment of your personal data, please contact us at privacy@velonx.in.
                                 </p>

@@ -116,7 +116,7 @@ export default function ProjectSubmissions() {
     return (
       <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
         <CardHeader className="p-12 border-b border-gray-50">
-          <h3 className="text-3xl font-black text-[#1A234A] mb-2 flex items-center gap-2">
+          <h3 className="heading-card text-3xl mb-2 flex items-center gap-2">
             <Lightbulb className="w-8 h-8 text-orange-500" />
             Project Submissions
           </h3>
@@ -135,7 +135,7 @@ export default function ProjectSubmissions() {
   return (
     <Card className="bg-white border-0 shadow-2xl shadow-black/[0.03] rounded-[48px] overflow-hidden">
       <CardHeader className="p-12 border-b border-gray-50">
-        <h3 className="text-3xl font-black text-[#1A234A] mb-2 flex items-center gap-2">
+        <h3 className="heading-card text-3xl mb-2 flex items-center gap-2">
           <Lightbulb className="w-8 h-8 text-orange-500" />
           Project Submissions
         </h3>
@@ -167,7 +167,7 @@ export default function ProjectSubmissions() {
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <h4 className="text-2xl font-black text-[#1A234A] mb-2">{projectData.title}</h4>
+                          <h4 className="heading-card text-2xl mb-2">{projectData.title}</h4>
                           <div className="flex items-center gap-3 text-sm text-gray-500">
                             <span className="flex items-center gap-1">
                               <Users className="w-4 h-4" />

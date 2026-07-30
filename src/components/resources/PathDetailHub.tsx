@@ -254,7 +254,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                   </Badge>
                 )}
               </div>
-              <h2 className="text-2xl font-black text-[#1A234A] dark:text-white leading-tight">
+              <h2 className="heading-card text-2xl leading-tight">
                 {path.title}
               </h2>
               <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
@@ -267,7 +267,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
             {/* Checkpoints Checklist */}
             <div className="space-y-6">
               <div className="flex items-center justify-between gap-4">
-                <h3 className="text-base font-black text-[#1A234A] dark:text-white flex items-center gap-2">
+                <h3 className="heading-card text-base flex items-center gap-2">
                   <Compass className="w-5 h-5 text-[#226CE0]" />
                   Roadmap Checkpoints Timeline
                 </h3>
@@ -299,7 +299,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                     <div className="bg-muted/30 hover:bg-muted/50 rounded-2xl p-5 border border-border/40 hover:border-[#226CE0]/20 transition-all">
                       <div className="flex justify-between items-start gap-4">
                         <div className="space-y-1">
-                          <h4 className="text-sm font-bold text-[#1A234A] dark:text-white flex items-center gap-2">
+                          <h4 className="heading-card text-sm flex items-center gap-2">
                             <span>{index + 1}. {mod.title}</span>
                             {mod.completed && (
                               <span className="text-[10px] text-green-600 font-extrabold uppercase bg-green-50 dark:bg-green-950/20 px-2 py-0.5 rounded-full shrink-0">
@@ -373,7 +373,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
           
           {/* Progress Overview Card */}
           <div className="bg-card border border-border rounded-3xl p-6 shadow-md relative overflow-hidden">
-            <h3 className="text-sm font-bold text-[#1A234A] dark:text-white mb-4">Roadmap Progress</h3>
+            <h3 className="heading-card text-sm mb-4">Roadmap Progress</h3>
             
             <div className="space-y-4">
               <div className="flex justify-between items-end">
@@ -397,7 +397,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
           {path.badgeName && (
             <div className="bg-card border border-border rounded-3xl p-6 shadow-md text-center space-y-4 relative overflow-hidden">
               <div className="absolute -top-12 -right-12 w-24 h-24 bg-orange-500/5 rounded-full blur-2xl" />
-              <h3 className="text-sm font-bold text-[#1A234A] dark:text-white">Completion Skill Badge</h3>
+              <h3 className="heading-card text-sm">Completion Skill Badge</h3>
               
               <div className="flex flex-col items-center py-4 space-y-3">
                 <div className="relative w-24 h-24 bg-linear-to-br from-[#226CE0]/5 to-[#8B5CF6]/5 rounded-3xl flex items-center justify-center border border-border shadow-inner group">
@@ -416,7 +416,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                   )}
                 </div>
                 <div>
-                  <h4 className="text-base font-black text-[#1A234A] dark:text-white">{path.badgeName}</h4>
+                  <h4 className="heading-card text-base">{path.badgeName}</h4>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {path.hasCertificate 
                       ? "Awarded after passing the certification test"
@@ -437,7 +437,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
           {/* Certification / Exam Panel */}
           {path.hasCertificate ? (
             <div className="bg-card border border-border rounded-3xl p-6 shadow-md space-y-4">
-              <h3 className="text-sm font-bold text-[#1A234A] dark:text-white flex items-center gap-2">
+              <h3 className="heading-card text-sm flex items-center gap-2">
                 <Award className="w-4 h-4 text-[#226CE0]" />
                 Certificate Verification Console
               </h3>
@@ -462,7 +462,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                     <Calendar className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-black text-[#1A234A]">Exam Scheduled & Pending Review</h4>
+                    <h4 className="heading-card text-sm">Exam Scheduled & Pending Review</h4>
                     <p className="text-xs text-muted-foreground mt-1">
                       Your test is scheduled for: <span className="font-bold text-[#226CE0]">{new Date(path.testStatus.testDate).toLocaleDateString()}</span>
                     </p>
@@ -506,7 +506,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
                 <div className="bg-amber-50/50 dark:bg-amber-950/10 border border-amber-200/50 rounded-2xl p-5 space-y-4">
                   <div className="text-center space-y-2">
                     <span className="text-2xl">⚡</span>
-                    <h4 className="text-sm font-black text-[#1A234A]">Schedule Certification Test</h4>
+                    <h4 className="heading-card text-sm">Schedule Certification Test</h4>
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       All checkpoints completed. Select a date/time to request your final certificate test.
                     </p>
@@ -592,7 +592,7 @@ export const PathDetailHub: React.FC<PathDetailHubProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-card w-full max-w-lg rounded-3xl border border-border shadow-2xl p-8 space-y-6">
             <div>
-              <h3 className="text-xl font-black text-[#1A234A] dark:text-white">
+              <h3 className="heading-card text-xl">
                 {editingModule ? "Edit Checkpoint" : "Add Checkpoint"}
               </h3>
               <p className="text-xs text-muted-foreground mt-1">Specify checkpoint details and links to your learning materials.</p>

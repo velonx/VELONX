@@ -25,7 +25,7 @@ export default function UserManagement({ userRequests, onRefetch }: UserManageme
 
   return (
     <section>
-      <h3 className="text-xl font-black text-[#1A234A] mb-6 flex items-center gap-2">
+      <h3 className="heading-card text-xl mb-6 flex items-center gap-2">
         <Users className="w-5 h-5 text-[#226CE0]" /> Pending Approvals
       </h3>
       <UserList

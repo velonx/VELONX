@@ -44,7 +44,7 @@ export default async function SettingsPage() {
       <div className="min-h-screen bg-background pt-20">
         <div className="container mx-auto py-12 max-w-4xl">
           <div className="bg-card border border-border rounded-3xl shadow-2xl p-12 text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Unable to Load Profile</h1>
+            <h1 className="heading-section text-2xl mb-4">Unable to Load Profile</h1>
             <p className="text-muted-foreground mb-6">
               We encountered an error while loading your profile settings. Please try again later.
             </p>
@@ -73,7 +73,7 @@ export default async function SettingsPage() {
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
               <Settings className="w-6 h-6 text-primary" />
             </div>
-            <h1 className="text-4xl font-black text-foreground">Profile</h1>
+            <h1 className="heading-display text-4xl">Profile</h1>
           </div>
           <p className="text-muted-foreground text-lg">
             Manage your profile information and preferences

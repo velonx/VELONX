@@ -446,13 +446,13 @@ function StudentDashboardContent() {
                                 </div>
                             </div>
                             <div className="bg-white dark:bg-card border border-border/60 rounded-3xl p-5 shadow-xs flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-500/10 text-purple-500 flex items-center justify-center text-xl font-bold shrink-0">
+                                <div className="w-12 h-12 rounded-2xl bg-[#F0771A]/10 dark:bg-[#F0771A]/10 text-[#F0771A] flex items-center justify-center text-xl font-bold shrink-0">
                                     📁
                                 </div>
                                 <div>
                                     <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block">MY PROJECTS</span>
                                     <span className="text-xl font-black text-foreground block tracking-tight">{projectCounts.all} Total</span>
-                                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{projectCounts.inProgress} In Progress</span>
+                                    <span className="text-xs font-bold text-[#F0771A] dark:text-[#F0771A]">{projectCounts.inProgress} In Progress</span>
                                 </div>
                             </div>
                             <div className="bg-white dark:bg-card border border-border/60 rounded-3xl p-5 shadow-xs flex items-center gap-4">
@@ -462,7 +462,7 @@ function StudentDashboardContent() {
                                 <div>
                                     <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block">BUILDER LEVEL</span>
                                     <span className="text-xl font-black text-foreground block tracking-tight">Lvl {activeLevel}</span>
-                                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{getLevelLabel(activeLevel)}</span>
+                                    <span className="text-xs font-bold text-[#F0771A] dark:text-[#F0771A]">{getLevelLabel(activeLevel)}</span>
                                 </div>
                             </div>
                         </section>
@@ -474,7 +474,7 @@ function StudentDashboardContent() {
                             {/* Projects Section */}
                             <div>
                                 <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-2xl font-black text-foreground tracking-tight">My Projects</h2>
+                                    <h2 className="heading-section text-2xl">My Projects</h2>
                                 </div>
 
                                 {/* Status Tabs */}
@@ -582,7 +582,7 @@ function StudentDashboardContent() {
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-sm font-bold text-foreground">Badges</h3>
                                     {!loadingBadges && (
-                                        <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                        <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-[#F0771A]/10 text-[#F0771A] dark:bg-[#F0771A]/40 dark:text-[#F0771A]">
                                             {badges.filter(b => b.earned).length} / {badges.length || 44} Earned
                                         </span>
                                     )}
@@ -706,7 +706,7 @@ function StudentDashboardContent() {
 
                 {/* ====== Panel: Community ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'community' ? 'active' : ''}`}>
-                    <h1 className="text-3xl font-black mb-2 text-foreground">
+                    <h1 className="heading-section text-3xl mb-2">
                         My Community Profile
                     </h1>
                     <p className="text-muted-foreground mb-8 text-sm max-w-xl">
@@ -717,8 +717,8 @@ function StudentDashboardContent() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
                         <Card className="bg-card border rounded-2xl p-6 shadow-sm">
                             <div className="flex items-center justify-between mb-4">
-                                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                                    <Target className="w-5 h-5 text-blue-600" />
+                                <div className="w-10 h-10 bg-[#F0771A]/10 dark:bg-[#F0771A]/30 rounded-xl flex items-center justify-center">
+                                    <Target className="w-5 h-5 text-[#F0771A]" />
                                 </div>
                             </div>
                             <p className="text-3xl font-bold text-foreground mb-1">{posts?.length || 0}</p>
@@ -747,7 +747,7 @@ function StudentDashboardContent() {
                     {/* Posts Section */}
                     <section className="mb-12">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-foreground">My Posts</h3>
+                            <h3 className="heading-card text-xl">My Posts</h3>
                             <Button
                                 onClick={() => router.push('/community')}
                                 variant="outline"
@@ -795,13 +795,13 @@ function StudentDashboardContent() {
                         ) : (
                             <Card className="bg-card border rounded-3xl p-12 text-center shadow-sm">
                                 <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="text-xl font-bold text-foreground mb-2">No Posts Yet</h3>
+                                <h3 className="heading-card text-xl mb-2">No Posts Yet</h3>
                                 <p className="text-muted-foreground mb-6">
                                     Share your first post with the community
                                 </p>
                                 <Button
                                     onClick={() => router.push('/community')}
-                                    className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
+                                    className="bg-[#F0771A] hover:bg-[#e0650d] text-white font-bold rounded-xl"
                                 >
                                     Create Post
                                 </Button>
@@ -812,7 +812,7 @@ function StudentDashboardContent() {
                     {/* Groups Section */}
                     <section className="mb-12">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-foreground">My Groups</h3>
+                            <h3 className="heading-card text-xl">My Groups</h3>
                             <Button
                                 onClick={() => router.push('/community/groups')}
                                 variant="outline"
@@ -832,13 +832,13 @@ function StudentDashboardContent() {
                         ) : (
                             <Card className="bg-card border rounded-3xl p-12 text-center shadow-sm">
                                 <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="text-xl font-bold text-foreground mb-2">No Groups Yet</h3>
+                                <h3 className="heading-card text-xl mb-2">No Groups Yet</h3>
                                 <p className="text-muted-foreground mb-6">
                                     Join or create a group to connect with others
                                 </p>
                                 <Button
                                     onClick={() => router.push('/community/groups')}
-                                    className="bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl"
+                                    className="bg-[#F0771A] hover:bg-[#e0650d] text-white font-bold rounded-xl"
                                 >
                                     Explore Groups
                                 </Button>
@@ -849,7 +849,7 @@ function StudentDashboardContent() {
 
                 {/* ====== Panel: Tracking ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'tracking' ? 'active' : ''}`}>
-                    <h1 className="text-3xl font-black mb-2 text-foreground">
+                    <h1 className="heading-section text-3xl mb-2">
                         Activity Tracking
                     </h1>
                     <p className="text-muted-foreground mb-8 text-sm max-w-xl">
@@ -857,7 +857,7 @@ function StudentDashboardContent() {
                     </p>
 
                     {/* XP & Level Card */}
-                    <Card className="bg-linear-to-br from-[#226CE0] to-[#1A234A] text-white border-0 rounded-3xl p-8 shadow-xl max-w-2xl mb-10">
+                    <Card className="bg-linear-to-br from-[#F0771A] to-[#16140F] text-white border-0 rounded-3xl p-8 shadow-xl max-w-2xl mb-10">
                         <div className="flex items-start justify-between mb-6">
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
@@ -952,11 +952,11 @@ function StudentDashboardContent() {
 
                     {/* XP Breakdown */}
                     <section className="mb-12">
-                        <h3 className="text-xl font-bold text-foreground mb-6">XP Rewards</h3>
+                        <h3 className="heading-card text-xl mb-6">XP Rewards</h3>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                             <Card className="bg-card border rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <Calendar className="w-6 h-6 text-purple-600" />
+                                <div className="w-12 h-12 bg-[#F0771A]/10 dark:bg-[#F0771A]/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Calendar className="w-6 h-6 text-[#F0771A]" />
                                 </div>
                                 <p className="text-2xl font-bold text-foreground mb-1">{(userStats?.stats?.eventsAttending || 0) * 50}</p>
                                 <p className="text-xs text-muted-foreground font-bold">Event Attendance</p>
@@ -969,8 +969,8 @@ function StudentDashboardContent() {
                                 <p className="text-xs text-muted-foreground font-bold">Project Completion</p>
                             </Card>
                             <Card className="bg-card border rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <Users className="w-5 h-5 text-blue-600" />
+                                <div className="w-12 h-12 bg-[#F0771A]/10 dark:bg-[#F0771A]/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Users className="w-5 h-5 text-[#F0771A]" />
                                 </div>
                                 <p className="text-2xl font-black text-foreground mb-1">{mentorSessions.filter(s => s.status === 'COMPLETED').length * 25}</p>
                                 <p className="text-xs text-muted-foreground font-bold">Mentor Sessions</p>
@@ -994,12 +994,12 @@ function StudentDashboardContent() {
 
                     {/* Activity Summary */}
                     <section>
-                        <h3 className="text-xl font-bold text-foreground mb-6">Activity Summary</h3>
+                        <h3 className="heading-card text-xl mb-6">Activity Summary</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                             <Card className="bg-card border rounded-2xl p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                                        <Target className="w-5 h-5 text-purple-600" />
+                                    <div className="w-10 h-10 bg-[#F0771A]/10 dark:bg-[#F0771A]/30 rounded-xl flex items-center justify-center">
+                                        <Target className="w-5 h-5 text-[#F0771A]" />
                                     </div>
                                     <TrendingUp className="w-5 h-5 text-green-500" />
                                 </div>
@@ -1008,8 +1008,8 @@ function StudentDashboardContent() {
                             </Card>
                             <Card className="bg-card border rounded-2xl p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                                        <Users className="w-5 h-5 text-blue-600" />
+                                    <div className="w-10 h-10 bg-[#F0771A]/10 dark:bg-[#F0771A]/30 rounded-xl flex items-center justify-center">
+                                        <Users className="w-5 h-5 text-[#F0771A]" />
                                     </div>
                                     <TrendingUp className="w-5 h-5 text-green-500" />
                                 </div>
@@ -1042,7 +1042,7 @@ function StudentDashboardContent() {
 
                 {/* ====== Panel: Swag ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'swag' ? 'active' : ''}`}>
-                    <h1 className="text-3xl font-black mb-2 text-foreground">
+                    <h1 className="heading-section text-3xl mb-2">
                         My Redemptions
                     </h1>
                     <p className="text-muted-foreground mb-8 text-sm max-w-xl">
@@ -1053,7 +1053,7 @@ function StudentDashboardContent() {
 
                 {/* ====== Panel: Report ====== */}
                 <div className={`dashboard-content-panel ${activeTab === 'report' ? 'active' : ''}`}>
-                    <h1 className="text-3xl font-black mb-2 text-foreground">
+                    <h1 className="heading-section text-3xl mb-2">
                         Reports
                     </h1>
                     <p className="text-muted-foreground mb-8 text-sm max-w-xl">
@@ -1075,10 +1075,10 @@ function StudentDashboardContent() {
                     {/* My Reports */}
                     <section>
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-foreground">My Reports</h2>
+                            <h2 className="heading-card text-xl">My Reports</h2>
                             <button
                                 onClick={fetchMyReports}
-                                className="text-sm text-[#226CE0] hover:underline font-medium"
+                                className="text-sm text-[#F0771A] hover:underline font-medium"
                             >
                                 Refresh
                             </button>
@@ -1093,7 +1093,7 @@ function StudentDashboardContent() {
                         ) : myReports.length === 0 ? (
                             <div className="bg-muted/40 border border-border rounded-2xl p-12 text-center">
                                 <Flag className="w-14 h-14 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="text-xl font-bold text-foreground mb-2">No reports yet</h3>
+                                <h3 className="heading-card text-xl mb-2">No reports yet</h3>
                                 <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
                                     Use the button above to report bugs, violations, or any platform issue.
                                     Attach photos and videos as evidence.
@@ -1103,7 +1103,7 @@ function StudentDashboardContent() {
                             <div className="space-y-4">
                                 {myReports.map((report) => {
                                     const STATUS_STYLE = {
-                                        OPEN: { label: 'Open', icon: AlertCircle, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+                                        OPEN: { label: 'Open', icon: AlertCircle, color: 'text-[#F0771A]', bg: 'bg-[#F0771A]/10 dark:bg-[#F0771A]/30' },
                                         IN_REVIEW: { label: 'In Review', icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/30' },
                                         RESOLVED: { label: 'Resolved', icon: CheckCircle2, color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30' },
                                         DISMISSED: { label: 'Dismissed', icon: XCircle, color: 'text-gray-500', bg: 'bg-gray-100 dark:bg-gray-800' },

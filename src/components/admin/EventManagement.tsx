@@ -351,7 +351,7 @@ export default function EventManagement() {
         <CardHeader className="p-12 border-b border-gray-50">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-3xl font-black text-[#1A234A] mb-2">Manage Events</h3>
+              <h3 className="heading-card text-3xl mb-2">Manage Events</h3>
               <p className="text-muted-foreground">Create, edit, and manage platform events</p>
             </div>
             <Button
@@ -926,7 +926,7 @@ export default function EventManagement() {
           <DialogHeader className="p-8 border-b border-border bg-muted/30">
             <div className="flex items-center justify-between">
               <div>
-                <DialogTitle className="text-2xl font-black text-[#1A234A]">Attendance Management</DialogTitle>
+                <DialogTitle className="heading-card text-2xl">Attendance Management</DialogTitle>
                 <DialogDescription className="mt-1">
                   {viewingAttendeesEvent?.title} · {attendees.length} registered
                   {attendees.length > 0 && (

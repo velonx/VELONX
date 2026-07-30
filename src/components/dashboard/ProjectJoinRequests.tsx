@@ -148,7 +148,7 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
     return (
       <Card className="bg-white border-0 shadow-lg rounded-3xl overflow-hidden">
         <CardHeader className="p-8 border-b border-gray-100">
-          <h3 className="text-2xl font-black text-[#1A234A] flex items-center gap-2">
+          <h3 className="heading-card text-2xl flex items-center gap-2">
             <FolderKanban className="w-6 h-6 text-[#226CE0]" />
             My Projects - Join Requests
           </h3>
@@ -176,7 +176,7 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
     return (
       <Card className="bg-white border-0 shadow-lg rounded-3xl overflow-hidden">
         <CardHeader className="p-8 border-b border-gray-100">
-          <h3 className="text-2xl font-black text-[#1A234A] flex items-center gap-2">
+          <h3 className="heading-card text-2xl flex items-center gap-2">
             <FolderKanban className="w-6 h-6 text-[#226CE0]" />
             My Projects - Join Requests
           </h3>
@@ -196,7 +196,7 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
   return (
     <Card className="bg-white border-0 shadow-lg rounded-3xl overflow-hidden">
       <CardHeader className="p-8 border-b border-gray-100">
-        <h3 className="text-2xl font-black text-[#1A234A] flex items-center gap-2">
+        <h3 className="heading-card text-2xl flex items-center gap-2">
           <FolderKanban className="w-6 h-6 text-[#226CE0]" />
           My Projects - Join Requests
         </h3>
@@ -208,7 +208,7 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
             <div key={project.id} className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
               {/* Project Header */}
               <div className="mb-4 pb-4 border-b border-gray-200">
-                <h4 className="text-lg font-bold text-[#1A234A] mb-2">{project.title}</h4>
+                <h4 className="heading-card text-lg mb-2">{project.title}</h4>
                 <p className="text-sm text-gray-600 mb-3">{project.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {project.techStack.slice(0, 5).map((tech, idx) => (
@@ -239,7 +239,7 @@ export default function ProjectJoinRequests({ userId }: { userId: string }) {
                       {/* User Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h5 className="font-bold text-[#1A234A]">{request.user?.name}</h5>
+                          <h5 className="heading-card">{request.user?.name}</h5>
                           <Badge className="bg-purple-50 text-purple-700 border-0 text-xs">
                             <Award className="w-3 h-3 mr-1" />
                             Level {request.user?.level}

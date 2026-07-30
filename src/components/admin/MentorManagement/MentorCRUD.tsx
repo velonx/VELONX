@@ -335,7 +335,7 @@ export default function MentorCRUD() {
       <CardHeader className="p-12 border-b border-border">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
+            <CardTitle className="heading-card text-3xl mb-2 flex items-center gap-3">
               <Users className="w-8 h-8 text-[#226CE0]" />
               Mentor Management
             </CardTitle>
@@ -493,7 +493,7 @@ export default function MentorCRUD() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">
+            <DialogTitle className="heading-card text-2xl">
               {editingMentor ? "Edit Mentor" : "Add New Mentor"}
             </DialogTitle>
             <DialogDescription>

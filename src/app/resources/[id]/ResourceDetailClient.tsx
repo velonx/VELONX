@@ -234,7 +234,7 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
                   </button>
                 </div>
 
-                <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-snug mb-4">
+                <h1 className="heading-section text-2xl sm:text-3xl leading-snug mb-4">
                   {resource.title}
                 </h1>
 

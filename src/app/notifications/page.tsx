@@ -109,10 +109,10 @@ export default function NotificationsPage() {
     const getTypeIcon = (type: string) => {
         switch (type) {
             case "AWARD": return <Award className="w-5 h-5 text-amber-500" />;
-            case "EVENT": return <Calendar className="w-5 h-5 text-[#226CE0]" />;
+            case "EVENT": return <Calendar className="w-5 h-5 text-[#F0771A]" />;
             case "SUCCESS": return <Star className="w-5 h-5 text-green-500" />;
             case "WARNING": return <Bell className="w-5 h-5 text-orange-500" />;
-            default: return <Bell className="w-5 h-5 text-blue-500" />;
+            default: return <Bell className="w-5 h-5 text-[#F0771A]" />;
         }
     };
 
@@ -139,13 +139,13 @@ export default function NotificationsPage() {
                         <Link href="/" className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center hover:bg-muted transition-all text-muted-foreground">
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
-                        <h1 className="text-3xl font-black text-foreground tracking-tight">Notifications</h1>
+                        <h1 className="heading-section text-3xl">Notifications</h1>
                     </div>
                     <div className="flex gap-2">
                         <Button
                             variant="ghost"
                             onClick={markAllRead}
-                            className="text-sm font-bold text-[#226CE0] hover:bg-accent rounded-xl"
+                            className="text-sm font-bold text-[#F0771A] hover:bg-accent rounded-xl"
                             disabled={loading || unreadCount === 0}
                         >
                             Mark all as read
@@ -166,7 +166,7 @@ export default function NotificationsPage() {
                         <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 text-muted-foreground animate-pulse">
                             <Bell className="w-10 h-10" />
                         </div>
-                        <h2 className="text-xl font-bold text-foreground mb-2">Loading notifications...</h2>
+                        <h2 className="heading-card text-xl mb-2">Loading notifications...</h2>
                         <p className="text-muted-foreground">Please wait while we fetch your notifications.</p>
                     </div>
                 ) : error ? (
@@ -174,11 +174,11 @@ export default function NotificationsPage() {
                         <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6 text-destructive/60">
                             <Bell className="w-10 h-10" />
                         </div>
-                        <h2 className="text-xl font-bold text-foreground mb-2">Failed to load notifications</h2>
+                        <h2 className="heading-card text-xl mb-2">Failed to load notifications</h2>
                         <p className="text-muted-foreground mb-4">{error}</p>
                         <Button
                             onClick={fetchNotifications}
-                            className="bg-[#226CE0] hover:bg-[#334DAF] text-white rounded-xl"
+                            className="bg-[#F0771A] hover:bg-[#e0650d] text-white rounded-xl"
                         >
                             Try Again
                         </Button>
@@ -196,7 +196,7 @@ export default function NotificationsPage() {
                                     className={`p-6 rounded-[32px] border transition-all flex gap-5 ${notif.actionUrl ? 'cursor-pointer hover:shadow-lg' : ''
                                         } ${notif.read
                                             ? "bg-card border-border"
-                                            : "bg-[#226CE0]/5 border-[#226CE0]/20 shadow-lg shadow-[#226CE0]/5"
+                                            : "bg-[#F0771A]/5 border-[#F0771A]/20 shadow-lg shadow-[#F0771A]/5"
                                         }`}
                                 >
                                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${notif.read ? "bg-muted text-muted-foreground" : "bg-card shadow-md"
@@ -211,7 +211,7 @@ export default function NotificationsPage() {
                                         <p className="text-muted-foreground text-sm leading-relaxed">{notif.description}</p>
                                     </div>
                                     {!notif.read && (
-                                        <div className="w-2.5 h-2.5 rounded-full bg-[#226CE0] mt-2 shadow-lg shadow-[#226CE0]/40" />
+                                        <div className="w-2.5 h-2.5 rounded-full bg-[#F0771A] mt-2 shadow-lg shadow-[#F0771A]/40" />
                                     )}
                                 </motion.div>
                             ))
@@ -220,7 +220,7 @@ export default function NotificationsPage() {
                                 <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 text-muted-foreground">
                                     <Bell className="w-10 h-10" />
                                 </div>
-                                <h2 className="text-xl font-bold text-foreground mb-2">No notifications yet</h2>
+                                <h2 className="heading-card text-xl mb-2">No notifications yet</h2>
                                 <p className="text-muted-foreground">We'll notify you when something important happens.</p>
                             </div>
                         )}

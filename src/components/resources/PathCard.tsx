@@ -74,7 +74,7 @@ export const PathCard: React.FC<PathCardProps> = ({ path, onSelect }) => {
 
         {/* Title & Description */}
         <div className="space-y-1">
-          <h3 className="text-lg font-black text-[#1A234A] dark:text-white group-hover:text-[#226CE0] transition-colors leading-snug">
+          <h3 className="heading-card text-lg group-hover:text-[#226CE0] transition-colors leading-snug">
             {path.title}
           </h3>
           <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
@@ -102,7 +102,7 @@ export const PathCard: React.FC<PathCardProps> = ({ path, onSelect }) => {
             <span className="block text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
               Earn Badge
             </span>
-            <h4 className="text-xs font-bold text-[#1A234A] dark:text-white truncate">
+            <h4 className="heading-card text-xs truncate">
               {path.badgeName}
             </h4>
           </div>

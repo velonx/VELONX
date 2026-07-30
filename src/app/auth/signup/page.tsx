@@ -137,7 +137,7 @@ function SignupPage() {
                             <span className="text-2xl font-black tracking-tight bg-linear-to-r from-[#F0771A] via-[#FFA800] to-[#E9C46A] bg-clip-text text-transparent">
                                 Velonx
                             </span>
-                            <h1 className="mt-1 text-2xl font-bold text-slate-800 dark:text-white leading-tight">
+                            <h1 className="mt-1 heading-section text-2xl leading-tight">
                                 Create account
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -150,7 +150,7 @@ function SignupPage() {
                                 <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Mail className="w-8 h-8" />
                                 </div>
-                                <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Check your email</h2>
+                                <h2 className="heading-card text-xl mb-2">Check your email</h2>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
                                     We've sent a verification link to <span className="font-semibold text-slate-700 dark:text-slate-300">{email}</span>. Please click the link to verify your account.
                                 </p>

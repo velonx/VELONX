@@ -103,7 +103,7 @@ export default function BookingDialog({ open, onOpenChange, mentor, onSuccess }:
         {step === 'form' ? (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-black text-foreground">
+              <DialogTitle className="heading-card text-2xl">
                 Book a Session
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
@@ -232,7 +232,7 @@ export default function BookingDialog({ open, onOpenChange, mentor, onSuccess }:
             <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="w-10 h-10 text-green-600" />
             </div>
-            <h3 className="text-2xl font-black text-foreground mb-2">
+            <h3 className="heading-card text-2xl mb-2">
               Session Booked Successfully!
             </h3>
             <p className="text-muted-foreground mb-6">

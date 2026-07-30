@@ -103,7 +103,7 @@ export function EmptyState({
       </div>
 
       {/* Heading */}
-      <h2 className="text-2xl font-bold mb-3 text-foreground">
+      <h2 className="heading-card text-2xl mb-3">
         {config.heading}
       </h2>
 

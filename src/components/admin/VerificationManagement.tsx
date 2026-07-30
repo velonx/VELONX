@@ -151,7 +151,7 @@ export default function VerificationManagement() {
         <CardHeader className="p-12 border-b border-gray-50">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-3xl font-black text-[#1A234A] mb-2 text-wrap">Verification System</h3>
+              <h3 className="heading-card text-3xl mb-2 text-wrap">Verification System</h3>
               <p className="text-muted-foreground">Issue and manage verifiable credentials for members</p>
             </div>
             <Button
@@ -386,7 +386,7 @@ export default function VerificationManagement() {
       <Dialog open={!!viewingQR} onOpenChange={(open) => !open && setViewingQR(null)}>
         <DialogContent className="sm:max-w-md rounded-[32px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-black text-[#1A234A] text-center">Verification QR Code</DialogTitle>
+            <DialogTitle className="heading-card text-2xl text-center">Verification QR Code</DialogTitle>
             <DialogDescription className="text-center">
               Scan this QR code to verify the {viewingQR?.type.toLowerCase().replace("_", " ")} for {viewingQR?.user.name}
             </DialogDescription>

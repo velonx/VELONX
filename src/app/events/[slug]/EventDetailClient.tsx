@@ -136,7 +136,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground gap-5">
                 <AlertCircle className="w-14 h-14 text-red-500" />
-                <h2 className="text-3xl font-bold">Event not found</h2>
+                <h2 className="heading-section text-3xl">Event not found</h2>
                 <p className="text-muted-foreground">The event could not be retrieved.</p>
                 <Link href="/events" className="inline-flex items-center gap-2 px-7 py-3 bg-[#F0771A] text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
                     <ArrowLeft className="w-4 h-4" /> Back to Events
@@ -313,7 +313,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                             {event.status === 'ONGOING' ? `LIVE` : event.status}
                         </span>
                     </div>
-                    <h1 className="text-3xl sm:text-4xl font-black text-[#29292B] dark:text-[#FFFBDB] leading-tight tracking-tight">
+                    <h1 className="heading-section text-3xl sm:text-4xl leading-tight">
                         {event.title}
                     </h1>
                 </div>

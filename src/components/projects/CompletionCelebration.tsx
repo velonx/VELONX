@@ -151,7 +151,7 @@ export function CompletionCelebration({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <DialogTitle className="text-2xl text-center font-bold">
+            <DialogTitle className="heading-card text-2xl text-center">
               🎉 Project Completed! 🎉
             </DialogTitle>
           </motion.div>

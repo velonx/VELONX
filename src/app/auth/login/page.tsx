@@ -98,7 +98,7 @@ export default function LoginPage() {
                             <span className="text-2xl font-black tracking-tight bg-linear-to-r from-[#F0771A] via-[#FFA800] to-[#E9C46A] bg-clip-text text-transparent">
                                 Velonx
                             </span>
-                            <h1 className="mt-1 text-2xl font-bold text-slate-800 dark:text-white leading-tight">
+                            <h1 className="mt-1 heading-section text-2xl leading-tight">
                                 Welcome back
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">

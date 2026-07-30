@@ -42,11 +42,11 @@ function VerifyContent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 font-outfit">
-      <div className="bg-white dark:bg-[#131c2e] p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-[#1e2d45]">
+      <div className="bg-white dark:bg-[#1A1916] p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-[#211F1B]">
         {status === "loading" && (
           <div className="flex flex-col items-center">
-            <Loader2 className="w-12 h-12 text-[#226CE0] animate-spin mb-4" />
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white">Verifying...</h2>
+            <Loader2 className="w-12 h-12 text-[#F0771A] animate-spin mb-4" />
+            <h2 className="heading-card text-xl">Verifying...</h2>
             <p className="text-slate-500 dark:text-slate-400 mt-2">Please wait while we verify your email address.</p>
           </div>
         )}
@@ -54,13 +54,13 @@ function VerifyContent() {
         {status === "success" && (
           <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
             <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-4 bg-emerald-100 dark:bg-emerald-900/30 rounded-full" />
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Email Verified!</h2>
+            <h2 className="heading-section text-2xl">Email Verified!</h2>
             <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">
               Your email has been successfully verified. You will be redirected to the login page shortly.
             </p>
             <Link
               href="/auth/login"
-              className="inline-flex items-center justify-center bg-[#226CE0] hover:bg-[#334DAF] text-white font-bold rounded-xl py-3 px-6 transition-all w-full shadow-md shadow-[#226CE0]/20"
+              className="inline-flex items-center justify-center bg-[#F0771A] hover:bg-[#e0650d] text-white font-bold rounded-xl py-3 px-6 transition-all w-full shadow-md shadow-[#F0771A]/20"
             >
               Go to Login
             </Link>
@@ -70,13 +70,13 @@ function VerifyContent() {
         {status === "error" && (
           <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
             <XCircle className="w-16 h-16 text-rose-500 mb-4 bg-rose-100 dark:bg-rose-900/30 rounded-full" />
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Verification Failed</h2>
+            <h2 className="heading-section text-2xl">Verification Failed</h2>
             <p className="text-rose-600 dark:text-rose-400 mt-2 mb-6">
               {errorMessage}
             </p>
             <Link
               href="/auth/login"
-              className="inline-flex items-center justify-center border border-slate-200 dark:border-[#2a3e5c] hover:bg-slate-50 dark:hover:bg-[#1e2d45] text-slate-700 dark:text-slate-300 font-bold rounded-xl py-3 px-6 transition-all w-full"
+              className="inline-flex items-center justify-center border border-slate-200 dark:border-[#3A3833] hover:bg-slate-50 dark:hover:bg-[#211F1B] text-slate-700 dark:text-slate-300 font-bold rounded-xl py-3 px-6 transition-all w-full"
             >
               Return to Login
             </Link>
@@ -89,7 +89,7 @@ function VerifyContent() {
 
 export default function VerifyPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-12 h-12 animate-spin text-[#226CE0]" /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-12 h-12 animate-spin text-[#F0771A]" /></div>}>
       <VerifyContent />
     </Suspense>
   );

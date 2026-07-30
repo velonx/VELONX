@@ -53,7 +53,7 @@ export default async function ReferralDashboardPage() {
       <div className="min-h-screen bg-background pt-20">
         <div className="container mx-auto py-12 max-w-7xl">
           <div className="bg-card border border-border rounded-3xl shadow-lg p-12 text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Unable to Load Referral Dashboard</h1>
+            <h1 className="heading-section text-2xl mb-4">Unable to Load Referral Dashboard</h1>
             <p className="text-muted-foreground mb-6">
               We encountered an error while loading your referral information. Please try again later.
             </p>
@@ -80,7 +80,7 @@ export default async function ReferralDashboardPage() {
       <div className="min-h-screen bg-background pt-20">
         <div className="container mx-auto py-12 max-w-7xl">
           <div className="bg-card border border-border rounded-3xl shadow-lg p-12 text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Referral Code Not Available</h1>
+            <h1 className="heading-section text-2xl mb-4">Referral Code Not Available</h1>
             <p className="text-muted-foreground mb-6">
               Your referral code is being generated. Please refresh the page in a moment.
             </p>
@@ -108,7 +108,7 @@ export default async function ReferralDashboardPage() {
             <div className="w-12 h-12 rounded-xl bg-card/50 border border-border flex items-center justify-center">
               <Share2 className="w-6 h-6 text-foreground" />
             </div>
-            <h1 className="text-4xl font-black text-foreground">Referral Dashboard</h1>
+            <h1 className="heading-display text-4xl">Referral Dashboard</h1>
           </div>
           <p className="text-muted-foreground text-lg">
             Invite friends to join VELONX and earn XP rewards when they complete milestones

@@ -32,29 +32,29 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 font-outfit">
-      <div className="w-full max-w-md bg-white dark:bg-[#131c2e] p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-[#1e2d45]">
+      <div className="w-full max-w-md bg-white dark:bg-[#1A1916] p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-[#211F1B]">
         
         <div className="mb-6">
-          <Link href="/auth/login" className="inline-flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-[#226CE0] transition-colors">
+          <Link href="/auth/login" className="inline-flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-[#F0771A] transition-colors">
             <ArrowLeft className="w-4 h-4 mr-1.5" />
             Back to login
           </Link>
         </div>
 
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Reset Password</h1>
+        <h1 className="heading-section text-2xl mb-2">Reset Password</h1>
         
         {status === "success" ? (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center py-6">
             <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
               <Mail className="w-8 h-8" />
             </div>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Check your email</h2>
+            <h2 className="heading-card text-xl mb-2">Check your email</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
               If an account exists for <span className="font-semibold text-slate-700 dark:text-slate-300">{email}</span>, a password reset link has been sent.
             </p>
             <Link
               href="/auth/login"
-              className="inline-flex items-center justify-center w-full bg-slate-100 dark:bg-[#1e2d45] hover:bg-slate-200 dark:hover:bg-[#2a3e5c] text-slate-700 dark:text-white font-bold rounded-xl py-3 transition-colors"
+              className="inline-flex items-center justify-center w-full bg-slate-100 dark:bg-[#211F1B] hover:bg-slate-200 dark:hover:bg-[#3A3833] text-slate-700 dark:text-white font-bold rounded-xl py-3 transition-colors"
             >
               Return to Login
             </Link>
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="name@example.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2a3e5c] bg-slate-50 dark:bg-[#1e2d45] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#226CE0]/40 focus:border-[#226CE0] transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#3A3833] bg-slate-50 dark:bg-[#211F1B] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#F0771A]/40 focus:border-[#F0771A] transition-all"
                   />
                 </div>
               </div>
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading || !email}
-                className="w-full flex items-center justify-center bg-[#226CE0] hover:bg-[#334DAF] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold rounded-xl py-3 transition-all shadow-md shadow-[#226CE0]/20 mt-2"
+                className="w-full flex items-center justify-center bg-[#F0771A] hover:bg-[#e0650d] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold rounded-xl py-3 transition-all shadow-md shadow-[#F0771A]/20 mt-2"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">

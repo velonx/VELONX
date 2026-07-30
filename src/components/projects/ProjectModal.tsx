@@ -166,7 +166,7 @@ export function ProjectModal({
                 />
               </div>
             ) : null}
-            <DialogTitle id={titleId} className="text-2xl font-bold">
+            <DialogTitle id={titleId} className="heading-card text-2xl">
               {project.title}
             </DialogTitle>
           </div>

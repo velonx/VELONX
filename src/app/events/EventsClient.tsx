@@ -268,7 +268,7 @@ function EventsPage() {
                                 <CalendarCheck className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                                 Stay updated. Never miss an opportunity.
                             </span>
-                            <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.05]">
+                            <h1 className="mt-5 heading-display text-4xl sm:text-5xl lg:text-6xl">
                                 Upcoming Events
                             </h1>
                             <p className="mt-4 max-w-xl text-base sm:text-lg text-muted-foreground leading-relaxed">
