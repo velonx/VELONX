@@ -386,9 +386,14 @@ export class ProjectService {
     // Check if project exists
     await this.getProjectById(id);
 
-    await prisma.project.delete({
-      where: { id },
-    });
+    // Delete the project and its dependent rows in a single transaction.
+    // ProjectMember has a required relation to Project with no cascade, so
+    // Prisma's default Restrict behavior would block deleting any project
+    // that has members. Remove members first, then the project itself.
+    await prisma.$transaction([
+      prisma.projectMember.deleteMany({ where: { projectId: id } }),
+      prisma.project.delete({ where: { id } }),
+    ]);
 
     return { success: true };
   }

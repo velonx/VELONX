@@ -17,6 +17,9 @@ import Image from "next/image";
 const ProjectSubmissions = dynamic(() => import("@/components/admin/ProjectSubmissions"), {
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
+const ProjectManagement = dynamic(() => import("@/components/admin/ProjectManagement"), {
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
+});
 const CareerManagement = dynamic(() => import("@/components/admin/CareerManagement"), {
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
@@ -295,6 +298,9 @@ export default function AdminDashboard() {
 
                         {/* Project Submissions */}
                         <ProjectSubmissions />
+
+                        {/* Project Management (delete any project) */}
+                        <ProjectManagement />
                     </TabsContent>
 
                     <TabsContent value="mentors" className="space-y-12">
