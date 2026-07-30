@@ -23,7 +23,7 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
   const isActive = (href: string, matchPrefix?: string) => {
     const prefix = matchPrefix ?? href;
     if (!pathname.startsWith(prefix)) return false;
-    // Both "Explore Opportunities" and "Internships" point at /career;
+    // Both "Jobs" and "Internships" point at /career;
     // disambiguate using the ?tab= query param.
     if (prefix === "/career") {
       const wantsInternships = href.includes("tab=internships");
