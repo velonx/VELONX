@@ -30,6 +30,32 @@ export function OrganizationSchema() {
     );
 }
 
+// WebSite schema for homepage (enables Google sitelinks searchbox)
+export function WebSiteSchema() {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in';
+    const schema = {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'VELONX',
+        url: baseUrl,
+        potentialAction: {
+            '@type': 'SearchAction',
+            target: {
+                '@type': 'EntryPoint',
+                urlTemplate: `${baseUrl}/community/search?q={search_term_string}`,
+            },
+            'query-input': 'required name=search_term_string',
+        },
+    };
+
+    return (
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
+        />
+    );
+}
+
 // Event schema for event pages
 interface EventSchemaProps {
     event: {

@@ -3,35 +3,11 @@ import { generatePageMetadata } from "@/lib/seo.config";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { maskSensitiveData, normalizeStylizedText, slugifyPost } from "@/lib/utils";
+import { getThreadIndexability } from "@/lib/seo/thread-indexability";
 import ThreadClient from "./ThreadClient";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
-
-// Helper to determine if a thread meets the SEO indexing quality bar
-function getThreadIndexability(
-  content: string,
-  authorId: string,
-  comments: { authorId: string; content: string }[]
-): boolean {
-  const normalized = normalizeStylizedText(content);
-  const postWordCount = normalized.trim().split(/\s+/).filter(Boolean).length;
-  
-  const externalReplies = comments.filter(c => c.authorId !== authorId);
-  const externalReplyCount = externalReplies.length;
-  
-  const totalExternalCommentsWordCount = externalReplies.reduce((acc, c) => {
-    return acc + c.content.trim().split(/\s+/).filter(Boolean).length;
-  }, 0);
-  
-  const totalWordCount = postWordCount + totalExternalCommentsWordCount;
-  
-  // Index if:
-  // 1. Post is substantial on its own (>= 40 words)
-  // 2. OR post has a real reply from a different user and total thread substance is at least 35 words
-  // 3. OR post has multiple real replies (>= 2) from different users
-  return postWordCount >= 40 || (externalReplyCount > 0 && totalWordCount >= 35) || externalReplyCount >= 2;
-}
 
 // Dynamic metadata generation with SEO Quality Gates & canonicals
 export async function generateMetadata({

@@ -56,6 +56,11 @@ export const defaultMetadata: Metadata = {
     },
     description: siteConfig.description,
     keywords: siteConfig.keywords,
+    // Default self-referential canonical for the homepage. Every indexable
+    // sub-route overrides this via generatePageMetadata() / its own metadata.
+    alternates: {
+        canonical: '/',
+    },
     authors: siteConfig.authors,
     creator: siteConfig.creator,
     publisher: siteConfig.publisher,

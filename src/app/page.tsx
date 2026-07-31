@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useMentors } from "@/lib/api/hooks";
 import { MentorCard } from "@/components/mentors/MentorCard";
 import { BoneyardLoader, MentorCardSkeleton } from "@/components/boneyard";
+import { OrganizationSchema, WebSiteSchema } from "@/components/structured-data";
 
 
 
@@ -180,6 +181,10 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-background font-sans overflow-x-hidden relative text-foreground transition-colors duration-300">
+            {/* Structured data for search engines (Organization + sitelinks searchbox) */}
+            <OrganizationSchema />
+            <WebSiteSchema />
+
             {/* Persistent background particles */}
             <CanvasParticles />
 
