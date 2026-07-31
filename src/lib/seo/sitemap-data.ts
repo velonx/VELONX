@@ -28,6 +28,16 @@ async function buildAllSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getSitemapBaseUrl();
   const currentDate = new Date();
 
+  // At build time (e.g. CI) DATABASE_URL is often unset, so the Prisma stub
+  // points at a local MongoDB that isn't running. Each query would then hang
+  // for the full server-selection timeout before throwing, and across every
+  // sitemap chunk + robots.txt that easily exceeds the build worker's 60s
+  // limit, failing the build. When there's no DB configured, emit only the
+  // static routes and skip the dynamic DB-backed entries entirely. At runtime
+  // (production) DATABASE_URL is set, so the full sitemap is generated as
+  // usual and refreshed via revalidation.
+  const hasDatabase = Boolean(process.env.DATABASE_URL);
+
   // Static public routes
   const publicRoutes = [
     "",
@@ -56,6 +66,10 @@ async function buildAllSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: route === "" ? ("daily" as const) : ("weekly" as const),
     priority: route === "" ? 1.0 : 0.8,
   }));
+
+  if (!hasDatabase) {
+    return staticEntries;
+  }
 
   // Published blog posts
   let blogEntries: MetadataRoute.Sitemap = [];
