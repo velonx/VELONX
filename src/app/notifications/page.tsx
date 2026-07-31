@@ -136,7 +136,7 @@ export default function NotificationsPage() {
             <div className="container mx-auto max-w-3xl pb-20">
                 <div className="flex items-center justify-between mb-12">
                     <div className="flex items-center gap-4">
-                        <Link href="/" className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center hover:bg-muted transition-all text-muted-foreground">
+                        <Link href="/home" className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center hover:bg-muted transition-all text-muted-foreground">
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
                         <h1 className="heading-section text-3xl">Notifications</h1>
