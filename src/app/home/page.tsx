@@ -276,9 +276,9 @@ export default function HomePage() {
                     <Image
                       src={imageUrl}
                       alt={tile.label}
-                      width={72}
-                      height={72}
-                      className="max-w-full max-h-full w-auto h-auto object-contain"
+                      width={96}
+                      height={96}
+                      className="max-w-full max-h-full w-auto h-auto object-contain scale-125"
                     />
                   ) : (
                     <Icon className="w-8 h-8 text-primary" />
