@@ -182,26 +182,6 @@
   font-size: 0.8125rem;
 }
 
-.breadcrumbs {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  margin-bottom: var(--space-md);
-  padding-top: calc(var(--nav-height) + var(--space-xl));
-}
-.breadcrumbs a {
-  transition: color var(--transition-fast);
-}
-.breadcrumbs a:hover {
-  color: var(--violet);
-}
-.breadcrumbs svg {
-  opacity: 0.6;
-  stroke: var(--text-muted);
-}
-
 .career-detail-layout {
   display: grid;
   grid-template-columns: 2.2fr 1fr;

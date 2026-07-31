@@ -11,7 +11,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { 
   ArrowLeft, Clock, MapPin, IndianRupee, ExternalLink, 
   Share2, Check, LogIn, X, Lock, Loader2, Upload, 
-  Bookmark, ChevronRight, ShieldCheck, HelpCircle, Briefcase, GraduationCap, CalendarClock
+  Bookmark, ShieldCheck, HelpCircle, Briefcase, GraduationCap, CalendarClock
 } from 'lucide-react';
 import { CareerDetailSkeleton } from "@/components/boneyard";
 import "./career-detail.css";
@@ -653,17 +653,6 @@ export default function CareerDetailClient({ id, initialOpportunity }: Props) {
       {/* Main Container */}
       <div className="container px-4 md:px-8 max-w-7xl mx-auto">
         
-        {/* Breadcrumbs */}
-        <div className="breadcrumbs">
-          <Link href="/">Home</Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <Link href="/career">Careers</Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <span id="breadcrumb-active" className="truncate font-semibold text-foreground">
-            {job.company} — {job.title}
-          </span>
-        </div>
-
         {/* Dynamic Grid Layout */}
         <div className="career-detail-layout">
           

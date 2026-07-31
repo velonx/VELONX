@@ -347,17 +347,6 @@ export default async function CareerDetailPage({ params }: Props) {
       {job ? (
         <div id="ssr-career-content" className="min-h-screen bg-background pt-8 relative overflow-hidden pb-16">
           <div className="container px-4 md:px-8 max-w-7xl mx-auto">
-            {/* SSR Breadcrumbs */}
-            <nav aria-label="Breadcrumb" className="breadcrumbs" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--muted-foreground)', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-              <Link href="/">Home</Link>
-              <span aria-hidden="true" style={{ fontSize: '0.7rem' }}>›</span>
-              <Link href="/career">Careers</Link>
-              <span aria-hidden="true" style={{ fontSize: '0.7rem' }}>›</span>
-              <span style={{ fontWeight: 600, color: 'var(--foreground)' }}>
-                {job.company} — {job.title}
-              </span>
-            </nav>
-
             <article itemScope itemType="https://schema.org/JobPosting">
               {/* Hidden schema.org microdata for crawlers */}
               <meta itemProp="title" content={job.title} />

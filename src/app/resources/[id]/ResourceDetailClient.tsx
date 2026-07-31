@@ -159,22 +159,8 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
     <div className="min-h-screen pt-24 pb-20 bg-background">
       <div className="container mx-auto max-w-5xl">
         
-        {/* Breadcrumb & Navigation Header */}
-        <nav aria-label="Breadcrumb" className="mb-8 flex items-center justify-between">
-          <ol className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
-            <li>
-              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-            </li>
-            <li>/</li>
-            <li>
-              <Link href="/resources?tab=references" className="hover:text-foreground transition-colors">Resources</Link>
-            </li>
-            <li>/</li>
-            <li className="text-foreground font-bold truncate max-w-50 sm:max-w-xs" aria-current="page">
-              {resource.title}
-            </li>
-          </ol>
-
+        {/* Navigation Header */}
+        <div className="mb-8 flex items-center justify-end">
           <Link
             href="/resources?tab=references"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full bg-card border border-border/60 shadow-xs"
@@ -182,7 +168,7 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>All Guides</span>
           </Link>
-        </nav>
+        </div>
 
         {/* Main Resource Article Hub */}
         <article className="bg-card border border-border/60 rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden mb-12">

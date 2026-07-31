@@ -255,25 +255,6 @@ export default function GroupDetailClient({
         disabled={isCreating || imageUrls.length >= MAX_IMAGES}
       />
 
-      {/* Breadcrumbs */}
-      <nav className="container mx-auto py-4" aria-label="Breadcrumb">
-        <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <li>
-            <a href="/" className="hover:text-foreground transition-colors">Home</a>
-          </li>
-          <li>/</li>
-          <li>
-            <a href="/community" className="hover:text-foreground transition-colors">Community</a>
-          </li>
-          <li>/</li>
-          <li>
-            <a href="/community/groups" className="hover:text-foreground transition-colors">Groups</a>
-          </li>
-          <li>/</li>
-          <li className="text-foreground font-medium truncate max-w-50">{group.name}</li>
-        </ol>
-      </nav>
-
       {/* Group Header */}
       <section className="py-8 bg-background border-b">
         <div className="container mx-auto">

@@ -11,7 +11,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { ChevronRight, ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
+import { ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
 import {
   BoneText,
   BoneAvatar,
@@ -735,15 +735,6 @@ export function CareerDetailSkeleton({ className }: { className?: string }) {
       </div>
 
       <div className="container px-4 md:px-8 max-w-7xl mx-auto animate-pulse">
-        {/* Breadcrumbs Skeleton */}
-        <div className="flex items-center gap-2 mb-6 text-sm">
-          <BoneBlock className="h-4 w-12 bg-muted/20" />
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30" />
-          <BoneBlock className="h-4 w-16 bg-muted/20" />
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30" />
-          <BoneBlock className="h-4 w-32 bg-muted/30" />
-        </div>
-
         {/* Dynamic Grid Layout */}
         <div className="career-detail-layout">
           {/* Top Hero Card Skeleton */}

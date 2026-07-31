@@ -3,7 +3,6 @@
 import { Suspense } from "react";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -56,25 +55,6 @@ function SearchPageContent() {
 
   return (
     <div className="min-h-screen pt-24 bg-background">
-      {/* Breadcrumbs */}
-      <nav className="container mx-auto py-4" aria-label="Breadcrumb">
-        <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <li>
-            <Link href="/" className="hover:text-foreground transition-colors">
-              Home
-            </Link>
-          </li>
-          <li>/</li>
-          <li>
-            <Link href="/community" className="hover:text-foreground transition-colors">
-              Community
-            </Link>
-          </li>
-          <li>/</li>
-          <li className="text-foreground font-medium">Search</li>
-        </ol>
-      </nav>
-
       {/* Hero Section with Search */}
       <section className="relative py-16 bg-background overflow-hidden">
         <div className="container mx-auto relative z-10 text-center">
