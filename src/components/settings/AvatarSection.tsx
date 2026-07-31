@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import AvatarSelector from "@/components/avatar-selector";
 import { Upload, Loader2, User } from "lucide-react";
 import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
+import { cloudinaryThumb } from "@/lib/cloudinary-url";
 interface AvatarSectionProps {
   currentAvatar: string | null;
   onAvatarChange: (avatar: string) => void;
@@ -125,7 +126,12 @@ export default function AvatarSection({
       >
         <div className="relative">
           <Avatar className="w-24 h-24 border-2 border-border">
-            <AvatarImage src={currentAvatar || undefined} alt="Profile avatar" />
+            <AvatarImage
+              src={cloudinaryThumb(currentAvatar, 96)}
+              alt="Profile avatar"
+              loading="eager"
+              fetchPriority="high"
+            />
             <AvatarFallback className="bg-muted text-muted-foreground">
               <User className="w-12 h-12" />
             </AvatarFallback>
@@ -198,7 +204,7 @@ export default function AvatarSection({
         <div className="p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
           <div className="flex items-center gap-2">
             <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
-            <p className="text-sm text-cyan-400">Uploading your image...</p>
+            <p className="text-sm text-primary">Uploading your image...</p>
           </div>
         </div>
       )}

@@ -491,7 +491,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
                     </a>
                   </div>
                   {resumeTextExtracted ? (
-                    <div className="flex items-center gap-1.5 text-xs text-cyan-400 font-semibold">
+                    <div className="flex items-center gap-1.5 text-xs text-primary font-semibold">
                       <span>✨</span>
                       AI can read your resume — matching accuracy is high
                     </div>
@@ -561,7 +561,7 @@ export default function ProfileSettingsForm({ initialData }: ProfileSettingsForm
         <Button
           type="submit"
           disabled={formState.isLoading || !hasChanges}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold rounded-xl"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl"
         >
           {formState.isLoading ? (
             <>

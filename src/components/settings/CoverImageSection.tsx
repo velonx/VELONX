@@ -115,7 +115,7 @@ export default function CoverImageSection({
           <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-20 transition-opacity">
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
-              <p className="text-xs text-cyan-400 font-medium">Uploading banner...</p>
+              <p className="text-xs text-primary font-medium">Uploading banner...</p>
             </div>
           </div>
         )}
