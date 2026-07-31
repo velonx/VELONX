@@ -4225,6 +4225,19 @@ body {
   margin-top: 0.75rem;
 }
 
+/* Touch devices / small screens can't hover — always reveal step details
+   so the instructions aren't trapped behind a hover interaction. */
+@media (hover: none), (max-width: 1024px) {
+  .ed-step-content {
+    max-height: none;
+    opacity: 1;
+    margin-top: 0.75rem;
+  }
+  .ed-step-card {
+    cursor: default;
+  }
+}
+
 .ed-step-content p {
   font-size: 0.875rem;
   color: var(--muted-foreground);

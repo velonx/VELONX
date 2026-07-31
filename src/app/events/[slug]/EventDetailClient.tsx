@@ -241,7 +241,7 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
             </div>
 
             {/* ── Main layout container ── */}
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-20 pb-24">
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-20 pb-24 max-lg:pb-32">
 
                 {/* ══════════════ HERO BANNER ══════════════ */}
                 <div className="relative w-full mb-8 max-lg:mb-6">
@@ -698,6 +698,28 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
                             </div>
                         </div>
                     </aside>
+                </div>
+            </div>
+
+            {/* ── Mobile sticky action bar (mobile only — desktop uses the sidebar CTA) ── */}
+            <div
+                className="lg:hidden fixed bottom-0 inset-x-0 z-40 flex items-center gap-4 px-4 py-3 border-t border-border"
+                style={{
+                    background: "color-mix(in srgb, var(--background) 92%, transparent)",
+                    backdropFilter: "blur(16px)",
+                    WebkitBackdropFilter: "blur(16px)",
+                    paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))",
+                }}
+            >
+                <div className="flex flex-col leading-tight shrink-0">
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Entry Fee</span>
+                    <span className="text-base font-black text-[#10B981]">FREE</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                    <RegisterBtn full />
+                    {!registrationStatus.isOpen && (
+                        <p className="text-center text-[11px] text-red-400 mt-1 truncate">{registrationStatus.message}</p>
+                    )}
                 </div>
             </div>
 

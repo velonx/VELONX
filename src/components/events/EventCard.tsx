@@ -134,8 +134,8 @@ export default function EventCard({
               quality={90}
               loading="lazy"
             />
-            {/* Subtle bottom overlay */}
-            <div className="absolute inset-0 bg-black/30" />
+            {/* Subtle bottom gradient for badge legibility, keeps image clear */}
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent" />
           </>
         ) : (
           <div className="event-banner-label">
