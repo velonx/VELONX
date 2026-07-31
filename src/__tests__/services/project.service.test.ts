@@ -6,6 +6,15 @@ import { NotFoundError } from '@/lib/utils/errors';
 // Mock Prisma
 vi.mock('@/lib/prisma', () => ({
   prisma: {
+    $transaction: vi.fn(async (arg: any) => {
+      if (Array.isArray(arg)) {
+        return Promise.all(arg);
+      }
+      if (typeof arg === 'function') {
+        return arg(prisma);
+      }
+      return arg;
+    }),
     project: {
       findMany: vi.fn(),
       count: vi.fn(),
@@ -18,6 +27,7 @@ vi.mock('@/lib/prisma', () => ({
       findUnique: vi.fn(),
       create: vi.fn(),
       delete: vi.fn(),
+      deleteMany: vi.fn(),
     },
   },
 }));
@@ -160,11 +170,13 @@ describe('ProjectService', () => {
     it('should delete an existing project', async () => {
       const mockProject = { id: '1', title: 'Test' };
       vi.spyOn(service, 'getProjectById').mockResolvedValue(mockProject as any);
+      vi.mocked(prisma.projectMember.deleteMany).mockResolvedValue({ count: 1 } as any);
       vi.mocked(prisma.project.delete).mockResolvedValue(mockProject as any);
 
       const result = await service.deleteProject('1');
 
       expect(result).toEqual({ success: true });
+      expect(prisma.projectMember.deleteMany).toHaveBeenCalledWith({ where: { projectId: '1' } });
       expect(prisma.project.delete).toHaveBeenCalledWith({ where: { id: '1' } });
     });
   });
