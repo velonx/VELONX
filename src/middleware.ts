@@ -209,7 +209,7 @@ export async function middleware(request: NextRequest) {
         })
 
         if (token) {
-          const dashboardPath = token.role === 'ADMIN' ? '/dashboard/admin' : '/dashboard/student'
+          const dashboardPath = token.role === 'ADMIN' ? '/dashboard/admin' : '/home'
           return addSecurityHeaders(NextResponse.redirect(new URL(dashboardPath, request.url)))
         }
       }

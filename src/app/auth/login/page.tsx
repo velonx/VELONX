@@ -35,7 +35,7 @@ export default function LoginPage() {
         if (status === "authenticated" && session?.user && !isRedirecting) {
             const dashboardPath = session.user.role === "ADMIN"
                 ? "/dashboard/admin"
-                : "/dashboard/student";
+                : "/home";
             router.push(dashboardPath);
         }
     }, [status, session, router, isRedirecting]);
@@ -52,7 +52,7 @@ export default function LoginPage() {
             });
             if (result?.ok) {
                 await new Promise(resolve => setTimeout(resolve, 800));
-                const callbackUrl = role === "admin" ? "/dashboard/admin" : "/dashboard/student";
+                const callbackUrl = role === "admin" ? "/dashboard/admin" : "/home";
                 router.push(callbackUrl);
             } else {
                 setIsRedirecting(false);
@@ -67,7 +67,7 @@ export default function LoginPage() {
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
-            await signIn("google", { callbackUrl: "/dashboard/student" });
+            await signIn("google", { callbackUrl: "/home" });
         } catch {
             setLoading(false);
         }
@@ -76,21 +76,21 @@ export default function LoginPage() {
     const handleGitHubLogin = async () => {
         setLoading(true);
         try {
-            await signIn("github", { callbackUrl: "/dashboard/student" });
+            await signIn("github", { callbackUrl: "/home" });
         } catch {
             setLoading(false);
         }
     };
 
     return (
-        /* Full viewport, never scroll — clears the fixed floating navbar (top-6 + ~50px height ≈ 80px) */
-        <div className="h-screen overflow-hidden flex items-center justify-center bg-background font-outfit transition-colors duration-300 pt-20 pb-4 px-4">
+        /* Full viewport split — image is edge-to-edge, form side clears the floating navbar via pt-20 */
+        <div className="h-screen overflow-hidden flex bg-background font-outfit transition-colors duration-300">
 
-            {/* Card */}
-            <div className="w-full max-w-5xl h-full max-h-[calc(100vh-6rem)] flex rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-[#211F1B]">
+            {/* Split */}
+            <div className="w-full h-full flex">
 
                 {/* ───── LEFT — Form ───── */}
-                <div className="flex-1 flex flex-col justify-center px-8 py-6 bg-white dark:bg-[#1A1916] transition-colors duration-300 overflow-y-auto">
+                <div className="flex-1 flex flex-col justify-center px-8 py-6 pt-20 bg-white dark:bg-[#1A1916] transition-colors duration-300 overflow-y-auto">
                     <div className="w-full max-w-xs mx-auto">
 
                         {/* Brand */}
@@ -98,11 +98,11 @@ export default function LoginPage() {
                             <span className="text-2xl font-black tracking-tight bg-linear-to-r from-[#F0771A] via-[#FFA800] to-[#E9C46A] bg-clip-text text-transparent">
                                 Velonx
                             </span>
-                            <h1 className="mt-1 heading-section text-2xl leading-tight">
-                                Welcome back
+                            <h1 className="mt-3 heading-section text-2xl leading-tight">
+                                Welcome back <span className="align-middle">👋</span>
                             </h1>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Sign in to continue your learning journey
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                Sign in to continue your learning journey and access amazing opportunities.
                             </p>
                         </div>
 
@@ -278,34 +278,16 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                {/* ───── RIGHT — Illustration ───── */}
-                <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-linear-to-br from-[#faf3ea] via-[#f5e9d8] to-[#f0e0cc] dark:from-[#1A1916] dark:via-[#211F1B] dark:to-[#2A2824] transition-colors duration-300 p-6 relative overflow-hidden">
-
-                    {/* Decorative circles */}
-                    <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-[#F0771A]/10 dark:bg-[#F0771A]/5 -translate-y-16 translate-x-16" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-[#F0771A]/10 dark:bg-[#F0771A]/5 translate-y-12 -translate-x-12" />
-
-                    {/* Illustration */}
-                    <div className="relative z-10 w-full max-w-sm">
-                        <Image
-                            src="/secure-login.svg"
-                            alt="Secure Login Illustration"
-                            width={500}
-                            height={500}
-                            className="w-full h-auto object-contain drop-shadow-xl"
-                            style={{ maxHeight: "calc(100vh - 14rem)" }}
-                        />
-                    </div>
-
-                    {/* Caption */}
-                    <div className="relative z-10 text-center mt-2">
-                        <p className="text-sm font-bold text-[#F0771A] dark:text-[#FFA800]">
-                            Secure & Encrypted
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Your data is always protected
-                        </p>
-                    </div>
+                {/* ───── RIGHT — Full-bleed Illustration ───── */}
+                <div className="hidden md:block relative flex-1 h-full bg-linear-to-br from-[#faf3ea] via-[#f5e9d8] to-[#f0e0cc] dark:from-[#1A1916] dark:via-[#211F1B] dark:to-[#2A2824] transition-colors duration-300 overflow-hidden">
+                    <Image
+                        src="https://res.cloudinary.com/dypbafujn/image/upload/v1785460335/login_u5w9l6.png"
+                        alt="Students building projects together on Velonx"
+                        fill
+                        priority
+                        sizes="(min-width: 768px) 50vw, 0px"
+                        className="object-cover object-center"
+                    />
                 </div>
 
             </div>
