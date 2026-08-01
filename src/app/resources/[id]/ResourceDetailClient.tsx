@@ -3,6 +3,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
 import { 
   ArrowLeft, 
   FileText, 
@@ -67,6 +70,8 @@ function formatFileSize(bytes: number): string {
 }
 
 export function ResourceDetailClient({ resource, relatedResources }: ResourceDetailClientProps) {
+  const router = useRouter();
+  const { status } = useSession();
   const [isVisiting, setIsVisiting] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
@@ -78,6 +83,16 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
   const formattedFileSize = resource.pdfFileSize ? formatFileSize(resource.pdfFileSize) : null;
   const formattedAccessCount = formatAccessCount(resource.accessCount);
   const resourceSlug = slugifyResource(resource.id, resource.title);
+
+  // PDF access requires authentication. If the user isn't signed in, send them
+  // to login with a callback back to this resource so they can retry afterwards.
+  const requireAuthForPDF = (): boolean => {
+    if (status === 'authenticated') return true;
+    toast('Please log in to download this quick reference.', { icon: '🔒' });
+    const callbackUrl = `/resources/${resourceSlug}`;
+    router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    return false;
+  };
 
   const handleShare = async () => {
     const url = `${window.location.origin}/resources/${resourceSlug}`;
@@ -112,10 +127,15 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
 
   const handlePDFView = async () => {
     if (isVisiting || !resource.pdfPublicId) return;
+    if (!requireAuthForPDF()) return;
     setIsVisiting(true);
     try {
       await trackResourceVisit(resource.id);
       const response = await fetch(`/api/resources/pdf/${encodeURIComponent(resource.pdfPublicId)}`);
+      if (response.status === 401) {
+        requireAuthForPDF();
+        return;
+      }
       if (!response.ok) throw new Error('Failed to access PDF');
       const data = await response.json();
       if (data.success && data.data?.url) {
@@ -125,7 +145,7 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
       }
     } catch (error) {
       console.error('Failed to access PDF:', error);
-      alert('Failed to access PDF. Please try again.');
+      toast.error('Failed to open PDF. Please try again.');
     } finally {
       setIsVisiting(false);
     }
@@ -133,9 +153,14 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
 
   const handlePDFDownload = async () => {
     if (!resource.pdfPublicId || !resource.pdfFileName) return;
+    if (!requireAuthForPDF()) return;
     try {
       await trackResourceVisit(resource.id);
       const response = await fetch(`/api/resources/pdf/${encodeURIComponent(resource.pdfPublicId)}`);
+      if (response.status === 401) {
+        requireAuthForPDF();
+        return;
+      }
       if (!response.ok) throw new Error('Failed to access PDF');
       const data = await response.json();
       if (data.success && data.data?.url) {
@@ -151,7 +176,7 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
       }
     } catch (error) {
       console.error('Failed to download PDF:', error);
-      alert('Failed to download PDF. Please try again.');
+      toast.error('Failed to download PDF. Please try again.');
     }
   };
 

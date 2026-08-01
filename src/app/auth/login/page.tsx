@@ -17,10 +17,16 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [isRedirecting, setIsRedirecting] = useState(false);
     const [authError, setAuthError] = useState<string | null>(null);
+    const [callbackUrl, setCallbackUrl] = useState<string | null>(null);
 
     useEffect(() => {
-        // Read URL errors on mount (such as NextAuth provider errors)
+        // Read URL errors and post-login redirect target on mount
         const searchParams = new URLSearchParams(window.location.search);
+        const requestedCallback = searchParams.get("callbackUrl");
+        // Only honour same-origin relative paths to avoid open-redirects
+        if (requestedCallback && requestedCallback.startsWith("/") && !requestedCallback.startsWith("//")) {
+            setCallbackUrl(requestedCallback);
+        }
         const error = searchParams.get("error");
         if (error === "OAuthAccountNotLinked") {
             queueMicrotask(() => setAuthError("An account with this email already exists. Please log in with the method you originally used to sign up."));
@@ -35,10 +41,10 @@ export default function LoginPage() {
         if (status === "authenticated" && session?.user && !isRedirecting) {
             const dashboardPath = session.user.role === "ADMIN"
                 ? "/dashboard/admin"
-                : "/home";
+                : (callbackUrl ?? "/home");
             router.push(dashboardPath);
         }
-    }, [status, session, router, isRedirecting]);
+    }, [status, session, router, isRedirecting, callbackUrl]);
 
     const handleLogin = async (role: "student" | "admin") => {
         setLoading(true);
@@ -52,8 +58,8 @@ export default function LoginPage() {
             });
             if (result?.ok) {
                 await new Promise(resolve => setTimeout(resolve, 800));
-                const callbackUrl = role === "admin" ? "/dashboard/admin" : "/home";
-                router.push(callbackUrl);
+                const destination = role === "admin" ? "/dashboard/admin" : (callbackUrl ?? "/home");
+                router.push(destination);
             } else {
                 setIsRedirecting(false);
                 setLoading(false);
@@ -67,7 +73,7 @@ export default function LoginPage() {
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
-            await signIn("google", { callbackUrl: "/home" });
+            await signIn("google", { callbackUrl: callbackUrl ?? "/home" });
         } catch {
             setLoading(false);
         }
@@ -76,7 +82,7 @@ export default function LoginPage() {
     const handleGitHubLogin = async () => {
         setLoading(true);
         try {
-            await signIn("github", { callbackUrl: "/home" });
+            await signIn("github", { callbackUrl: callbackUrl ?? "/home" });
         } catch {
             setLoading(false);
         }
