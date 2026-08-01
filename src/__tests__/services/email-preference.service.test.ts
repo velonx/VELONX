@@ -96,8 +96,8 @@ describe('EmailPreferenceService', () => {
   });
 
   describe('getAllPreferences', () => {
-    it('should return all 7 categories with custom or default frequencies', async () => {
-      // Mock existing rows in DB (only 2 out of 7 categories configured)
+    it('should return all 8 categories with custom or default frequencies', async () => {
+      // Mock existing rows in DB (only 2 out of 8 categories configured)
       const mockRows = [
         {
           category: EmailNotificationCategory.JOB_POSTED,
@@ -112,7 +112,7 @@ describe('EmailPreferenceService', () => {
 
       const preferences = await EmailPreferenceService.getAllPreferences('user-123');
 
-      expect(preferences).toHaveLength(7);
+      expect(preferences).toHaveLength(8);
       
       // JOB_POSTED was set to DAILY
       const jobPref = preferences.find((p) => p.category === EmailNotificationCategory.JOB_POSTED);
