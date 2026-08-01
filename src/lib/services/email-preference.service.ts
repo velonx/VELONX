@@ -18,6 +18,7 @@ export const CATEGORY_DEFAULTS: Record<
   PROJECT_UPDATED: EmailNotificationFrequency.DAILY,
   RESOURCE_ADDED: EmailNotificationFrequency.WEEKLY,
   BLOG_POST_PUBLISHED: EmailNotificationFrequency.WEEKLY,
+  PROJECT_JOIN_REQUEST: EmailNotificationFrequency.INSTANT,
 };
 
 // Human-readable labels for the settings UI
@@ -29,6 +30,7 @@ export const CATEGORY_LABELS: Record<EmailNotificationCategory, string> = {
   PROJECT_UPDATED: 'Project Updated',
   RESOURCE_ADDED: 'New Resource Added',
   BLOG_POST_PUBLISHED: 'New Blog Post Published',
+  PROJECT_JOIN_REQUEST: 'Join Request on Your Project',
 };
 
 export const CATEGORY_DESCRIPTIONS: Record<EmailNotificationCategory, string> = {
@@ -44,6 +46,8 @@ export const CATEGORY_DESCRIPTIONS: Record<EmailNotificationCategory, string> = 
     'Get notified when new learning resources are added to the library.',
   BLOG_POST_PUBLISHED:
     'Get notified when new blog posts are published by the VELONX team.',
+  PROJECT_JOIN_REQUEST:
+    "Get notified immediately when someone requests to join a project you own so you can approve or reject it.",
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -336,6 +336,42 @@ export class EmailService {
     }
 
     /**
+     * Send instant alert to a project owner when someone requests to join
+     */
+    static async sendJoinRequestAlert(
+        owner: { id: string; email: string; name: string | null },
+        requestData: {
+            requesterName: string;
+            projectTitle: string;
+            message?: string;
+            projectId: string;
+        }
+    ) {
+        const canSend = await this.canSendEmail(owner.id, 'project');
+        if (!canSend) return { success: true, skipped: true };
+
+        const { render } = await import('@react-email/components');
+        const { JoinRequestAlertEmail } = await import('@/emails/join-request-alert');
+        const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in';
+
+        const html = await render(
+            JoinRequestAlertEmail({
+                ownerName: owner.name || 'there',
+                requesterName: requestData.requesterName,
+                projectTitle: requestData.projectTitle,
+                message: requestData.message,
+                reviewUrl: `${SITE_URL}/dashboard/student?tab=overview#join-requests`,
+            })
+        );
+
+        return this.sendWithRetry(
+            owner.email,
+            `${requestData.requesterName} requested to join ${requestData.projectTitle}`,
+            html
+        );
+    }
+
+    /**
      * Send weekly digest
      */
     static async sendWeeklyDigest(

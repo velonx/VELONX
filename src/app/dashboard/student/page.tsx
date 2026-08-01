@@ -147,6 +147,27 @@ function StudentDashboardContent() {
         }
     }, [searchParams]);
 
+    // Honor the ?tab= query param so notification links (e.g. join requests)
+    // open the correct dashboard tab instead of always landing on Overview.
+    useEffect(() => {
+        const tabParam = searchParams.get('tab');
+        const validTabs = ['overview', 'community', 'tracking', 'swag', 'report'];
+        if (tabParam && validTabs.includes(tabParam)) {
+            setActiveTab(tabParam);
+        }
+    }, [searchParams]);
+
+    // When linked with a hash (e.g. #join-requests), scroll the target section
+    // into view once the page has rendered.
+    useEffect(() => {
+        if (typeof window === 'undefined' || !window.location.hash) return;
+        const id = window.location.hash.slice(1);
+        const timer = setTimeout(() => {
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [activeTab]);
+
     // Fetch projects based on status filter
     const projectFilters = projectStatusFilter === 'ALL'
         ? { pageSize: 100, memberId: session?.user?.id }

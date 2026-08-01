@@ -17,6 +17,7 @@ export const EmailNotificationCategory = {
     PROJECT_UPDATED: 'PROJECT_UPDATED',
     RESOURCE_ADDED: 'RESOURCE_ADDED',
     BLOG_POST_PUBLISHED: 'BLOG_POST_PUBLISHED',
+    PROJECT_JOIN_REQUEST: 'PROJECT_JOIN_REQUEST',
 } as const;
 export type EmailNotificationCategory =
     (typeof EmailNotificationCategory)[keyof typeof EmailNotificationCategory];

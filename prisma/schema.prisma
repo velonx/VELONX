@@ -1571,6 +1571,7 @@ enum EmailNotificationCategory {
   PROJECT_UPDATED     // A project you belong to was updated
   RESOURCE_ADDED      // A new resource was added to the library
   BLOG_POST_PUBLISHED // A new blog post was published
+  PROJECT_JOIN_REQUEST // Someone requested to join a project you own
 }
 
 // Frequency options per category

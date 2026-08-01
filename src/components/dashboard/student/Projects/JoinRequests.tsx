@@ -8,7 +8,7 @@ interface JoinRequestsProps {
 
 export default function JoinRequests({ userId }: JoinRequestsProps) {
   return (
-    <section className="mb-12">
+    <section id="join-requests" className="mb-12 scroll-mt-24">
       <ProjectJoinRequests userId={userId} />
     </section>
   );

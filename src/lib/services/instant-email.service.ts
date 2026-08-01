@@ -55,11 +55,20 @@ export interface PostCommentPayload {
   commentExcerpt: string;
 }
 
+export interface ProjectJoinRequestPayload {
+  ownerId: string; // the project owner who should receive the email
+  projectId: string;
+  projectTitle: string;
+  requesterName: string;
+  message?: string;
+}
+
 export type CategoryPayload =
   | { category: 'JOB_POSTED'; payload: JobPostedPayload }
   | { category: 'EVENT_POSTED'; payload: EventPostedPayload }
   | { category: 'SWAG_ANNOUNCED'; payload: SwagAnnouncedPayload }
-  | { category: 'POST_COMMENT'; payload: PostCommentPayload };
+  | { category: 'POST_COMMENT'; payload: PostCommentPayload }
+  | { category: 'PROJECT_JOIN_REQUEST'; payload: ProjectJoinRequestPayload };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Service
@@ -89,6 +98,9 @@ export class InstantEmailService {
           break;
         case 'POST_COMMENT':
           await this._dispatchPostComment(event.payload);
+          break;
+        case 'PROJECT_JOIN_REQUEST':
+          await this._dispatchProjectJoinRequest(event.payload);
           break;
         default:
           console.warn('[InstantEmail] Unknown category received');
@@ -179,6 +191,32 @@ export class InstantEmailService {
 
     await EmailService.sendPostCommentAlert(user, payload).catch((e) =>
       console.error('[InstantEmail] POST_COMMENT send failed:', e)
+    );
+  }
+
+  private static async _dispatchProjectJoinRequest(
+    payload: ProjectJoinRequestPayload
+  ) {
+    // Personal category — only notify the project owner
+    const recipientIds = await EmailPreferenceService.getInstantRecipients(
+      EmailNotificationCategory.PROJECT_JOIN_REQUEST,
+      [payload.ownerId]
+    );
+    if (!recipientIds.length) return;
+
+    const owner = await prisma.user.findUnique({
+      where: { id: payload.ownerId },
+      select: { id: true, email: true, name: true },
+    });
+    if (!owner) return;
+
+    await EmailService.sendJoinRequestAlert(owner, {
+      requesterName: payload.requesterName,
+      projectTitle: payload.projectTitle,
+      message: payload.message,
+      projectId: payload.projectId,
+    }).catch((e) =>
+      console.error('[InstantEmail] PROJECT_JOIN_REQUEST send failed:', e)
     );
   }
 }

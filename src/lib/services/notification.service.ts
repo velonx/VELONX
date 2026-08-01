@@ -575,19 +575,42 @@ export class NotificationService {
     projectTitle: string;
     ownerId: string;
     requesterName: string;
+    requesterMessage?: string;
   }) {
-    return this.createNotification({
+    // Create the in-app notification pointing the owner at the approval UI
+    // (the "My Projects – Join Requests" card lives in the Overview tab).
+    const notification = await this.createNotification({
       userId: requestData.ownerId,
       title: 'New Join Request',
       description: `${requestData.requesterName} has requested to join your project "${requestData.projectTitle}"`,
       type: NotificationType.INFO,
-      actionUrl: `/dashboard/student?tab=projects`,
+      actionUrl: `/dashboard/student?tab=overview#join-requests`,
       metadata: {
         requestId: requestData.requestId,
         projectId: requestData.projectId,
         eventType: 'join_request_received',
       },
     });
+
+    // Fire an instant email to the owner if they've opted in (non-blocking)
+    import('@/lib/services/instant-email.service')
+      .then(({ InstantEmailService }) =>
+        InstantEmailService.dispatch({
+          category: 'PROJECT_JOIN_REQUEST',
+          payload: {
+            ownerId: requestData.ownerId,
+            projectId: requestData.projectId,
+            projectTitle: requestData.projectTitle,
+            requesterName: requestData.requesterName,
+            message: requestData.requesterMessage,
+          },
+        })
+      )
+      .catch((err) =>
+        console.error('[NotificationService] PROJECT_JOIN_REQUEST email dispatch failed:', err)
+      );
+
+    return notification;
   }
 
   /**

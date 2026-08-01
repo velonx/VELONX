@@ -223,6 +223,7 @@ export async function POST(
         projectTitle: project.title,
         ownerId: project.ownerId,
         requesterName: joinRequest.user.name || 'A user',
+        requesterMessage: validatedData.message,
       });
     } catch (error) {
       console.error('Failed to create project join request notification:', error);
