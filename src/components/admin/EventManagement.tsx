@@ -494,13 +494,50 @@ export default function EventManagement() {
                   <Label htmlFor="howItWorks" className="text-sm font-bold text-foreground">
                     How It Works
                   </Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Write <strong>one step per line</strong>. Each line becomes a numbered step card.
+                    Use <code className="px-1 rounded bg-muted">Title: description</code> to show a bold
+                    title with details (the <code className="px-1 rounded bg-muted">:</code> or a spaced
+                    <code className="px-1 rounded bg-muted"> - </code> splits them). Lines without a
+                    separator show as the title only.
+                  </p>
                   <textarea
                     id="howItWorks"
                     value={formData.howItWorks}
                     onChange={(e) => setFormData({ ...formData, howItWorks: e.target.value })}
-                    className="w-full h-24 bg-background border border-border rounded-xl p-4 mt-2 outline-none focus:ring-2 focus:ring-primary resize-none"
-                    placeholder="Step by step process..."
+                    className="w-full h-40 bg-background border border-border rounded-xl p-4 mt-2 outline-none focus:ring-2 focus:ring-primary resize-y font-mono text-sm leading-relaxed"
+                    placeholder={"Register: Sign up before the deadline to reserve your spot.\nForm your team: Group up with 1-4 members.\nBuild: Work on your project during the event window.\nSubmit: Upload your project before the timer ends."}
                   />
+                  {formData.howItWorks.trim() && (
+                    <div className="mt-3 rounded-xl border border-border bg-muted/40 p-4">
+                      <p className="text-xs font-bold text-muted-foreground mb-3">Preview — how it will appear on the event page:</p>
+                      <div className="flex flex-col gap-2">
+                        {formData.howItWorks
+                          .split('\n')
+                          .filter((l) => l.trim().length > 0)
+                          .map((raw, i) => {
+                            const line = raw.replace(/^\s*(?:\d+[.)]|[-•*])\s+/, '').trim();
+                            const ci = line.indexOf(':');
+                            const di = line.indexOf(' - ');
+                            let title = line;
+                            let desc = '';
+                            if (ci !== -1 && ci < 60) {
+                              title = line.substring(0, ci).trim();
+                              desc = line.substring(ci + 1).trim();
+                            } else if (di !== -1 && di < 60) {
+                              title = line.substring(0, di).trim();
+                              desc = line.substring(di + 3).trim();
+                            }
+                            return (
+                              <div key={i} className="rounded-lg bg-background border border-border px-3 py-2">
+                                <span className="text-sm font-bold text-foreground">Step {i + 1}: {title}</span>
+                                {desc && <p className="text-sm text-muted-foreground mt-0.5">{desc}</p>}
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="col-span-2">

@@ -155,11 +155,15 @@ export default function EventDetailClient({ slug, initialEvent }: EventDetailCli
         ? event.howItWorks.split('\n').filter((l: string) => l.trim().length > 0)
         : [];
 
-    const parseLine = (line: string) => {
+    const parseLine = (raw: string) => {
+        // Strip common list prefixes the author may type (e.g. "1.", "2)", "-", "•")
+        const line = raw.replace(/^\s*(?:\d+[.)]|[-•*])\s+/, '').trim();
         const ci = line.indexOf(':');
-        const di = line.indexOf('-');
-        const idx = ci !== -1 && ci < 50 ? ci : di !== -1 && di < 50 ? di : -1;
-        if (idx !== -1) return { title: line.substring(0, idx).trim(), desc: line.substring(idx + 1).trim() };
+        // Only treat a spaced " - " as a title/description separator so hyphens
+        // inside words (e.g. "Sign-up") don't split the title.
+        const di = line.indexOf(' - ');
+        if (ci !== -1 && ci < 60) return { title: line.substring(0, ci).trim(), desc: line.substring(ci + 1).trim() };
+        if (di !== -1 && di < 60) return { title: line.substring(0, di).trim(), desc: line.substring(di + 3).trim() };
         return { title: line, desc: "" };
     };
 
