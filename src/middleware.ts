@@ -29,6 +29,32 @@ const redis = new Redis({
 
 
 /**
+ * Read the Auth.js session token from the request.
+ *
+ * Auth.js v5 (@auth/core) `getToken` does NOT auto-detect secure cookies from
+ * the environment: `secureCookie` defaults to `false`, so it looks for the
+ * `authjs.session-token` cookie. In production the browser actually holds
+ * `__Secure-authjs.session-token`, so the default call silently returns null —
+ * making every logged-in user look anonymous (no `/` -> `/home` redirect, wrong
+ * rate-limit tier). We detect the secure cookie from the request and fall back
+ * to the other name so it works behind a TLS-terminating proxy and in local dev.
+ */
+async function readAuthToken(request: NextRequest): Promise<any> {
+  const secret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
+
+  const isSecure =
+    request.nextUrl.protocol === 'https:' ||
+    request.headers.get('x-forwarded-proto') === 'https' ||
+    process.env.NODE_ENV === 'production'
+
+  // Try the name that matches this request first, then fall back to the other
+  // so a proxy protocol quirk never causes a false "logged out".
+  const token = await getToken({ req: request, secret, secureCookie: isSecure })
+  if (token) return token
+  return getToken({ req: request, secret, secureCookie: !isSecure })
+}
+
+/**
  * Extract IP address from request
  * Handles various proxy headers
  */
@@ -162,10 +188,7 @@ export async function middleware(request: NextRequest) {
       // API routes: Apply CSRF protection and rate limiting
       
       // Get authentication token first (needed for logging)
-      token = await getToken({ 
-        req: request,
-        secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
-      })
+      token = await readAuthToken(request)
       
       // 1. CSRF Protection (for state-changing requests)
       const csrfResponse = await csrfProtection(request)
@@ -203,10 +226,7 @@ export async function middleware(request: NextRequest) {
     } else {
       // Non-API routes: send logged-in users straight to their dashboard home
       if (pathname === '/') {
-        token = await getToken({
-          req: request,
-          secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
-        })
+        token = await readAuthToken(request)
 
         if (token) {
           const dashboardPath = token.role === 'ADMIN' ? '/dashboard/admin' : '/home'
