@@ -447,7 +447,7 @@ model EventAttendee {
   xpAwarded Boolean        @default(false)
   createdAt DateTime       @default(now())
 
-  event Event @relation(fields: [eventId], references: [id])
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id])
 
   @@unique([eventId, userId])

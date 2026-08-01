@@ -597,9 +597,14 @@ export class EventService {
       throw new NotFoundError("Event");
     }
 
-    await prisma.event.delete({
-      where: { id },
-    });
+    // MongoDB (relationMode = "prisma") emulates referential actions in the
+    // client. EventReward/EventFAQ relations cascade, but EventAttendee has no
+    // onDelete rule and defaults to Restrict — so deleting an event that has any
+    // registered attendee would throw. Remove the attendees first, then the event.
+    await prisma.$transaction([
+      prisma.eventAttendee.deleteMany({ where: { eventId: id } }),
+      prisma.event.delete({ where: { id } }),
+    ]);
 
     return { success: true };
   }
