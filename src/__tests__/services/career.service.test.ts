@@ -43,8 +43,8 @@ describe('MockInterviewService', () => {
       email: 'student@example.com',
       preferredDate: '2024-12-01',
       preferredTime: '10:00',
-      interviewType: 'TECHNICAL',
-      experienceLevel: 'INTERMEDIATE',
+      interviewType: 'TECHNICAL_FRONTEND' as const,
+      experienceLevel: 'JUNIOR' as const,
     }
 
     it('should create mock interview successfully', async () => {
@@ -188,7 +188,7 @@ describe('MockInterviewService', () => {
   describe('update', () => {
     it('should update mock interview', async () => {
       const updateData = {
-        status: 'SCHEDULED',
+        status: 'SCHEDULED' as const,
         scheduledDate: '2024-12-01T10:00:00Z',
         meetingLink: 'https://meet.example.com',
       }
@@ -215,7 +215,7 @@ describe('MockInterviewService', () => {
     })
 
     it('should add reviewer information when reviewedBy is provided', async () => {
-      const updateData = { status: 'SCHEDULED' }
+      const updateData = { status: 'SCHEDULED' as const }
       const updatedInterview = {
         id: 'i1',
         status: 'SCHEDULED',

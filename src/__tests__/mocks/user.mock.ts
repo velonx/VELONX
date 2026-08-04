@@ -28,9 +28,11 @@ export function createMockUser(options: MockUserOptions = {}): User {
   return {
     id,
     name: options.name || 'Test User',
+    slug: null,
     email: options.email || `test-${id}@example.com`,
     emailVerified: timestamp,
     image: options.image || '/avatars/1.jpg',
+    coverImage: null,
     password: '$2a$10$mockhashedpassword', // Mock bcrypt hash
     role: (options.role || 'STUDENT') as any,
     bio: options.bio || 'Test user bio',
@@ -38,9 +40,47 @@ export function createMockUser(options: MockUserOptions = {}): User {
     level: options.level || 1,
     currentStreak: options.streak || 0,
     longestStreak: options.streak || 0,
-    lastStreakUpdate: timestamp,
+    lastLoginDate: null,
+    lastActiveAt: null,
     createdAt: timestamp,
     updatedAt: timestamp,
+
+    // Professional/Academic Profile
+    headline: null,
+    college: null,
+    graduationYear: null,
+    skills: [],
+    location: null,
+    linkedinUrl: null,
+    githubUrl: null,
+    twitterUrl: null,
+    portfolioUrl: null,
+    resumeUrl: null,
+    resumeText: null,
+    lookingFor: null,
+    profileComplete: false,
+
+    // Email notification preferences
+    emailNotifications: true,
+    eventReminders: true,
+    mentorNotifications: true,
+    projectNotifications: true,
+    weeklyDigest: true,
+    unsubscribeToken: null,
+
+    // Community notification preferences
+    communityComments: true,
+    communityReactions: true,
+    communityMentions: true,
+    communityGroupUpdates: true,
+    communityModeration: true,
+
+    // Gamification fields
+    xpMultiplier: 1.0,
+    referralCode: null,
+    referredBy: null,
+    referralCount: 0,
+    lastStreakUpdate: timestamp,
   }
 }
 
