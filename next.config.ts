@@ -57,6 +57,21 @@ const nextConfig: NextConfig = {
   turbopack: {
     // Empty config to acknowledge Turbopack usage
   },
+
+  // Serve the sitemap index at the conventional /sitemap.xml path. Next's
+  // generateSitemaps() only exposes chunks at /sitemap/[id].xml and reserves
+  // the /sitemap.xml slug (so no route file can live there), so we generate the
+  // <sitemapindex> at /sitemap-index.xml and rewrite the classic path onto it.
+  // beforeFiles runs ahead of the metadata route that otherwise 404s.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/sitemap.xml", destination: "/sitemap-index.xml" },
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);
