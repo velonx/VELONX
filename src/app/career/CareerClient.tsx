@@ -583,9 +583,9 @@ export default function CareerClient({ initialInternships = [], initialJobs = []
                         </div>
 
                         {/* Illustration */}
-                        <div className="relative shrink-0 hidden lg:block lg:ml-auto w-[400px] xl:w-[480px] 2xl:w-[520px]">
+                        <div className="relative shrink-0 hidden lg:block lg:ml-auto w-100 xl:w-120 2xl:w-130">
                             <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
-                                <div className="absolute -top-6 right-0 w-28 h-28 opacity-25 [background-image:radial-gradient(#F0771A_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
+                                <div className="absolute -top-6 right-0 w-28 h-28 opacity-25 bg-[radial-gradient(#F0771A_1.5px,transparent_1.5px)] bg-size-[14px_14px]" />
                                 <Sparkles className="absolute -top-4 left-8 w-4 h-4 text-[#F0771A]/60" />
                                 <Sparkles className="absolute top-10 -left-6 w-3.5 h-3.5 text-[#F0771A]/45" />
                                 <Sparkles className="absolute top-2 right-16 w-5 h-5 text-[#F0771A]/50" />

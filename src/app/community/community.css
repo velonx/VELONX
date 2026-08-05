@@ -295,6 +295,7 @@
 }
 
 .create-post-card {
+  position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border-accent);
   border-radius: var(--radius-xl);
@@ -334,21 +335,30 @@
   gap: var(--space-sm);
 }
 
-.tag-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-size: 0.8125rem;
-  font-family: var(--font-mono);
-  color: var(--text-secondary);
-  outline: none;
-  width: 180px;
+/* ===== IMAGE DRAG & DROP ===== */
+.create-post-card.is-dragging {
+  border-color: #226CE0;
+  box-shadow: 0 0 0 3px rgba(34, 108, 224, 0.15);
 }
 
-.tag-input:focus {
-  border-color: var(--violet);
-  background: rgba(255, 255, 255, 0.1);
+.create-post-card .drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-xl);
+  background: rgba(34, 108, 224, 0.08);
+  border: 2px dashed #226CE0;
+  color: #226CE0;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  pointer-events: none;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 /* ===== POST CARD ===== */
@@ -434,6 +444,12 @@
   gap: 6px;
   flex-wrap: wrap;
   margin-bottom: var(--space-lg);
+}
+
+/* Inline hashtags inside post content render in brand blue */
+.post-hashtag {
+  color: #226CE0;
+  font-weight: 600;
 }
 
 .post-actions {

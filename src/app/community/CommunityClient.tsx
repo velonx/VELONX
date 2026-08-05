@@ -52,16 +52,13 @@ function CommunityPostCard({
   const authorInitials = getInitials(post.authorName);
   const avatarStyle = getAvatarStyle(post.authorName);
 
-  // Extract hashtags from content
-  const extractHashtags = (content: string) => {
-    const matches = content.match(/#\w+/g) || [];
-    return matches.map(tag => tag.toUpperCase());
-  };
-
-  const hashtags = extractHashtags(post.content);
-
-  // Clean trailing hashtags from the text body to prevent duplicate rendering
-  const displayContent = post.content.replace(/(?:\s*#\w+)+\s*$/, "");
+  // Render post content with inline hashtags highlighted in blue.
+  const renderContent = (content: string) =>
+    content.split(/(#\w+)/g).map((part, i) =>
+      /^#\w+$/.test(part)
+        ? <span key={i} className="post-hashtag">{part}</span>
+        : <span key={i}>{part}</span>
+    );
 
   const handleVote = async () => {
     if (!currentUserId) {
@@ -139,8 +136,8 @@ function CommunityPostCard({
       
       {/* Clickable link to the thread page for SEO discovery */}
       <Link href={`/community/t/${post.slug}`} className="block group">
-        <div className="post-body group-hover:text-primary transition-colors cursor-pointer">
-          {displayContent}
+        <div className="post-body group-hover:text-primary transition-colors cursor-pointer whitespace-pre-wrap">
+          {renderContent(post.content)}
         </div>
       </Link>
 
@@ -167,14 +164,6 @@ function CommunityPostCard({
         </div>
       )}
       
-      {hashtags.length > 0 && (
-        <div className="post-tags">
-          {hashtags.map((tag, i) => (
-            <span key={i} className="badge badge-violet">{tag}</span>
-          ))}
-        </div>
-      )}
-
       <div className="post-actions">
         <button className={`post-action-btn ${isUpvoted ? 'active' : ''}`} onClick={handleVote}>
           <span>{isUpvoted ? "▲ Upvoted" : "▲ Upvote"}</span>
@@ -219,29 +208,32 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
 
   const [activeGroupId, setActiveGroupId] = useState<string>("all");
   const [newPostContent, setNewPostContent] = useState("");
-  const [newPostTags, setNewPostTags] = useState("");
 
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [linkUrls, setLinkUrls] = useState<string[]>([]);
   const [linkInput, setLinkInput] = useState("");
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const MAX_IMAGES = 5;
   const MAX_LINKS = 3;
 
-  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  // Shared upload routine used by both the file picker and drag-and-drop.
+  const uploadImageFiles = useCallback(async (fileList: FileList | File[]) => {
+    const files = Array.from(fileList).filter(file => file.type.startsWith('image/'));
+    if (files.length === 0) {
+      toast.error('Please drop image files only');
+      return;
+    }
     if (imageUrls.length + files.length > MAX_IMAGES) {
       toast.error(`You can only upload up to ${MAX_IMAGES} images`);
       return;
     }
     setIsUploadingImage(true);
     try {
-      const uploadPromises = Array.from(files).map(async (file) => {
-        if (!file.type.startsWith('image/')) throw new Error(`${file.name} is not an image`);
+      const uploadPromises = files.map(async (file) => {
         if (file.size > 5 * 1024 * 1024) throw new Error(`${file.name} is too large (max 5MB)`);
         return new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
@@ -261,7 +253,10 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
         });
         if (!response.ok) throw new Error('Failed to upload image');
         const data = await response.json();
-        return data.url;
+        // Upload endpoint returns { success, data: { url } } — read the nested url.
+        const url = data?.data?.url ?? data?.url;
+        if (typeof url !== 'string' || !url) throw new Error('Upload did not return an image URL');
+        return url;
       });
 
       const uploadedUrls = await Promise.all(uploadRequests);
@@ -275,6 +270,33 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   }, [imageUrls.length]);
+
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    void uploadImageFiles(files);
+  }, [uploadImageFiles]);
+
+  const handleImageDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingImage(false);
+    if (isCreating || isUploadingImage || imageUrls.length >= MAX_IMAGES) return;
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) void uploadImageFiles(files);
+  }, [uploadImageFiles, imageUrls.length]);
+
+  const handleImageDragOver = useCallback((e: React.DragEvent) => {
+    // Only react to file drags so text/link drags aren't hijacked.
+    if (e.dataTransfer?.types?.includes('Files')) {
+      e.preventDefault();
+      setIsDraggingImage(true);
+    }
+  }, []);
+
+  const handleImageDragLeave = useCallback((e: React.DragEvent) => {
+    // Ignore leaves that bubble from child elements.
+    if (e.currentTarget === e.target) setIsDraggingImage(false);
+  }, []);
 
   const addLink = useCallback(() => {
     const trimmed = linkInput.trim();
@@ -307,13 +329,10 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
 
   const handleCreatePost = async () => {
     if (!newPostContent.trim()) return;
-    const contentWithTags = newPostTags.trim()
-      ? `${newPostContent.trim()}\n\n${newPostTags.trim()}`
-      : newPostContent.trim();
 
     try {
       const created = await createPost({
-        content: contentWithTags,
+        content: newPostContent.trim(),
         visibility: activeGroupId !== "all" ? "GROUP" : "PUBLIC",
         groupId: activeGroupId !== "all" ? activeGroupId : undefined,
         imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
@@ -322,7 +341,6 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
 
       if (created) {
         setNewPostContent("");
-        setNewPostTags("");
         setImageUrls([]);
         setLinkUrls([]);
         setLinkInput("");
@@ -447,17 +465,28 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
               
               {/* Create Post Card */}
               {session ? (
-                <div className="create-post-card">
+                <div
+                  className={`create-post-card${isDraggingImage ? " is-dragging" : ""}`}
+                  onDragOver={handleImageDragOver}
+                  onDragLeave={handleImageDragLeave}
+                  onDrop={handleImageDrop}
+                >
                   <h2 style={{ fontSize: "1.125rem", fontWeight: 700, marginBottom: "var(--space-md)", color: "var(--text-primary)" }}>
                     Share with the Community
                   </h2>
-                  <textarea 
+                  <textarea
                     value={newPostContent}
                     onChange={(e) => setNewPostContent(e.target.value)}
                     className="create-post-textarea"
-                    placeholder="Share a recent win, drop a project Github link, or ask a question..."
+                    placeholder="Share a recent win, drop a project Github link, or ask a question... Use #hashtags to tag your post."
                     disabled={isCreating}
                   />
+                  {isDraggingImage && (
+                    <div className="drop-overlay">
+                      <ImageIcon className="size-6" />
+                      <span>Drop images to upload</span>
+                    </div>
+                  )}
 
                   {/* Image Previews */}
                   {imageUrls.length > 0 && (
@@ -534,15 +563,7 @@ export default function CommunityClient({ initialPosts, initialGroups, totalPost
                       </button>
                     </div>
                     <div className="create-post-actions flex flex-1 sm:flex-none justify-end gap-2">
-                      <input 
-                        type="text"
-                        value={newPostTags}
-                        onChange={(e) => setNewPostTags(e.target.value)}
-                        className="tag-input"
-                        placeholder="Tags (e.g. #Web3 #React)"
-                        disabled={isCreating}
-                      />
-                      <button 
+                      <button
                         onClick={handleCreatePost}
                         className="btn btn-primary btn-sm"
                         disabled={isCreating || isUploadingImage || !newPostContent.trim()}
