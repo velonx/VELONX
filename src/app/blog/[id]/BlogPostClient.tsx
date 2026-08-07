@@ -70,10 +70,10 @@ export default function BlogPostClient({ id, initialPost, relatedPosts = [] }: P
                             duration: 5000,
                             position: "bottom-right",
                             style: {
-                                background: "#1A234A",
-                                color: "#fff",
+                                background: "var(--card)",
+                                color: "var(--foreground)",
                                 borderRadius: "20px",
-                                border: "1px solid rgba(34, 108, 224, 0.3)",
+                                border: "1px solid var(--border)",
                                 fontSize: "12px",
                                 fontWeight: "bold",
                             }
