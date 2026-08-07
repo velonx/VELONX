@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,8 +23,18 @@ interface CareerClientProps {
 export default function CareerClient({ initialInternships = [], initialJobs = [], initialClosedInternships = [], initialClosedJobs = [] }: CareerClientProps) {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const tabParam = searchParams.get("tab");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [activeTab, setActiveTab] = useState("internships");
+    const [activeTab, setActiveTab] = useState(() => {
+        return tabParam && ["jobs", "internships", "ai", "mock"].includes(tabParam) ? tabParam : "internships";
+    });
+
+    useEffect(() => {
+        if (tabParam && ["jobs", "internships", "ai", "mock"].includes(tabParam)) {
+            setActiveTab(tabParam);
+        }
+    }, [tabParam]);
     const [internships, setInternships] = useState<any[]>(initialInternships);
     const [jobs, setJobs] = useState<any[]>(initialJobs);
     const [serverClosedInternships] = useState<any[]>(initialClosedInternships);

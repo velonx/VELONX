@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import CareerClient from "./CareerClient";
 import { OpportunityService } from "@/lib/services/career.service";
 
@@ -54,12 +55,14 @@ export default async function CareerPage() {
   }
 
   return (
-    <CareerClient
-      initialInternships={initialInternships}
-      initialJobs={initialJobs}
-      initialClosedInternships={closedInternships}
-      initialClosedJobs={closedJobs}
-    />
+    <Suspense fallback={null}>
+      <CareerClient
+        initialInternships={initialInternships}
+        initialJobs={initialJobs}
+        initialClosedInternships={closedInternships}
+        initialClosedJobs={closedJobs}
+      />
+    </Suspense>
   );
 }
 

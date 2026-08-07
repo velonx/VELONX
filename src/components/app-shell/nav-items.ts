@@ -26,12 +26,12 @@ export interface AppNavItem {
 
 export const APP_NAV_ITEMS: AppNavItem[] = [
   { label: "Home", href: "/home", icon: Home },
-  { label: "Mentorship", href: "/mentors", icon: GraduationCap },
   { label: "Internships", href: "/career?tab=internships", matchPrefix: "/career", icon: Briefcase },
-  { label: "Jobs", href: "/career", matchPrefix: "/career", icon: Building2 },
+  { label: "Jobs", href: "/career?tab=jobs", matchPrefix: "/career", icon: Building2 },
   { label: "Projects", href: "/projects", icon: Code2 },
   { label: "Hackathons", href: "/events", icon: Trophy },
   { label: "Resources", href: "/resources", icon: BookOpen },
+  { label: "Mentorship", href: "/mentors", icon: GraduationCap },
   { label: "Blog", href: "/blog", matchPrefix: "/blog", icon: Newspaper },
   { label: "Community", href: "/community", icon: UsersRound },
   { label: "Network", href: "/network", icon: Share2 },

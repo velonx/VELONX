@@ -27,7 +27,14 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
     // disambiguate using the ?tab= query param.
     if (prefix === "/career") {
       const wantsInternships = href.includes("tab=internships");
-      return wantsInternships ? activeTab === "internships" : activeTab !== "internships";
+      const wantsJobs = href.includes("tab=jobs");
+      if (wantsInternships) {
+        return activeTab === "internships" || !activeTab;
+      }
+      if (wantsJobs) {
+        return activeTab === "jobs";
+      }
+      return true;
     }
     return true;
   };
