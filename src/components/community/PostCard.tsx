@@ -22,7 +22,8 @@ import type { CommunityPostData } from '@/lib/types/community.types';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import { CommentSection } from './CommentSection';
-import { AvatarImage, CardImage } from '@/components/responsive-image';
+import { AvatarImage } from '@/components/responsive-image';
+import { PostImageGallery } from './PostImageGallery';
 
 /**
  * Post Card Props Interface
@@ -304,13 +305,7 @@ export function PostCard({
 
             {/* Images */}
             {post.imageUrls.length > 0 && (
-              <div className={`grid gap-2 mt-3 ${post.imageUrls.length === 1 ? 'grid-cols-1' : post.imageUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
-                {post.imageUrls.map((url, i) => (
-                  <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="cursor-pointer rounded-lg overflow-hidden block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`View post image ${i + 1} in new tab`}>
-                    <CardImage src={url} alt={`Post image ${i + 1}`} aspectRatio="16/9" className="hover:scale-105 transition-transform block" />
-                  </a>
-                ))}
-              </div>
+              <PostImageGallery images={post.imageUrls} />
             )}
 
             {/* Links */}

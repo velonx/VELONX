@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCommunityGroups } from "@/lib/hooks/useCommunityGroups";
 import { useCommunityPosts } from "@/lib/hooks/useCommunityPosts";
 import { CommentSection } from "@/components/community/CommentSection";
+import { PostImageGallery } from "@/components/community/PostImageGallery";
 import { CommunityGroupItemSkeleton } from "@/components/boneyard";
 import type { CommunityPostData, CommunityGroupData } from "@/lib/types/community.types";
 import { AvatarImage } from "@/components/responsive-image";
@@ -143,12 +144,8 @@ function CommunityPostCard({
 
       {/* Images */}
       {post.imageUrls && post.imageUrls.length > 0 && (
-        <div className={`grid gap-2 mt-3 mb-4 ${post.imageUrls.length === 1 ? 'grid-cols-1' : post.imageUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
-          {post.imageUrls.map((url, i) => (
-            <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="cursor-pointer rounded-lg overflow-hidden block border bg-muted aspect-video">
-              <img src={url} alt={`Post image ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform" />
-            </a>
-          ))}
+        <div className="mb-4">
+          <PostImageGallery images={post.imageUrls} />
         </div>
       )}
 

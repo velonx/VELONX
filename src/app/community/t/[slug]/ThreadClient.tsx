@@ -9,6 +9,7 @@ import { AvatarImage } from "@/components/responsive-image";
 import { ArrowLeft, MessageSquare, Share2, Check, Lock, ChevronUp, Link as LinkIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { CommentSection } from "@/components/community/CommentSection";
+import { PostImageGallery } from "@/components/community/PostImageGallery";
 
 // Stable colors for initials avatars
 const getAvatarStyle = (name: string) => {
@@ -164,12 +165,8 @@ export default function ThreadClient({
 
               {/* Images */}
               {post.imageUrls && post.imageUrls.length > 0 && (
-                <div className={`grid gap-2 mt-3 mb-6 ${post.imageUrls.length === 1 ? 'grid-cols-1' : post.imageUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
-                  {post.imageUrls.map((url: string, i: number) => (
-                    <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="cursor-pointer rounded-lg overflow-hidden block border bg-muted aspect-video">
-                      <img src={url} alt={`Post image ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform" />
-                    </a>
-                  ))}
+                <div className="mb-6">
+                  <PostImageGallery images={post.imageUrls} />
                 </div>
               )}
 
