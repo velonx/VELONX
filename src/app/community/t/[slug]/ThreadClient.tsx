@@ -55,16 +55,13 @@ export default function ThreadClient({
   const authorInitials = getInitials(post.authorName);
   const avatarStyle = getAvatarStyle(post.authorName);
 
-  // Clean trailing hashtags from the text body to prevent duplicate rendering
-  const displayContent = post.content.replace(/(?:\s*#\w+)+\s*$/, "");
-
-  // Extract hashtags from content
-  const extractHashtags = (content: string) => {
-    const matches = content.match(/#\w+/g) || [];
-    return matches.map(tag => tag.toUpperCase());
-  };
-
-  const hashtags = extractHashtags(post.content);
+  // Render post content with inline hashtags highlighted in blue.
+  const renderContent = (content: string) =>
+    content.split(/(#\w+)/g).map((part, i) =>
+      /^#\w+$/.test(part)
+        ? <span key={i} className="post-hashtag">{part}</span>
+        : <span key={i}>{part}</span>
+    );
 
   const handleVote = async () => {
     if (!sessionUser) {
@@ -160,7 +157,7 @@ export default function ThreadClient({
               )}
 
               <div className="post-body text-base md:text-lg text-foreground/90 leading-relaxed mb-6 whitespace-pre-wrap">
-                {displayContent}
+                {renderContent(post.content)}
               </div>
 
               {/* Images */}
@@ -178,14 +175,6 @@ export default function ThreadClient({
                       <LinkIcon className="size-4 text-muted-foreground shrink-0" />
                       <span className="flex-1 truncate text-primary font-medium">{url}</span>
                     </a>
-                  ))}
-                </div>
-              )}
-
-              {hashtags.length > 0 && (
-                <div className="post-tags mb-6">
-                  {hashtags.map((tag, i) => (
-                    <span key={i} className="badge badge-violet">{tag}</span>
                   ))}
                 </div>
               )}

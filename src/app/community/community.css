@@ -7,9 +7,9 @@
   --nav-height: 72px;
   --bg-primary: var(--background);
   --accent: #F0771A;
-  --violet: #7C3AED;
-  --violet-light: #A78BFA;
-  --violet-dim: rgba(124, 58, 237, 0.15);
+  --violet: #F0771A;
+  --violet-light: #F0771A;
+  --violet-dim: rgba(240, 119, 26, 0.12);
   --cyan: #06B6D4;
   --cyan-light: #67E8F9;
   --cyan-dim: rgba(6, 182, 212, 0.15);
@@ -182,7 +182,7 @@
   font-family: var(--font-heading);
 }
 
-.community-page .badge-violet { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(51, 77, 175, 0.2); }
+.community-page .badge-violet { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(240, 119, 26, 0.25); }
 .community-page .badge-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(34, 108, 224, 0.2); }
 .community-page .badge-green { background: rgba(13, 148, 136, 0.08); color: #0F766E; border: 1px solid rgba(13, 148, 136, 0.2); }
 .community-page .badge-amber { background: rgba(240, 119, 26, 0.08); color: #C2410C; border: 1px solid rgba(240, 119, 26, 0.2); }
