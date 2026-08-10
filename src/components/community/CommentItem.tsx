@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { formatDistanceToNow } from '@/lib/utils/date-helpers';
+import { getProfileUrl } from '@/lib/utils/profile-url';
 import type { PostComment } from '@/lib/hooks/usePostComments';
 import { AvatarImage } from '@/components/responsive-image';
 import { Button } from '@/components/ui/button';
@@ -53,6 +55,8 @@ export function CommentItem({ comment, onReply, depth = 0 }: CommentItemProps) {
   };
 
   const authorInitial = (comment.author.name || comment.author.email || 'U').charAt(0).toUpperCase();
+  const authorDisplayName = comment.author.name || comment.author.email || 'Anonymous';
+  const authorProfileUrl = getProfileUrl(comment.authorId, comment.author.slug);
 
   return (
     <div
@@ -66,7 +70,11 @@ export function CommentItem({ comment, onReply, depth = 0 }: CommentItemProps) {
 
       <div className="flex gap-3 relative z-10 py-2">
         {/* Author Avatar */}
-        <div className="size-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden mt-0.5">
+        <Link
+          href={authorProfileUrl}
+          aria-label={`View ${authorDisplayName}'s profile`}
+          className="size-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden mt-0.5 hover:ring-2 hover:ring-primary/40 transition-shadow"
+        >
           {comment.author.image ? (
             <AvatarImage
               src={comment.author.image}
@@ -78,15 +86,18 @@ export function CommentItem({ comment, onReply, depth = 0 }: CommentItemProps) {
               {authorInitial}
             </span>
           )}
-        </div>
+        </Link>
 
         {/* Comment Body */}
         <div className="flex-1 min-w-0">
           {/* Meta line */}
           <div className="flex items-center gap-1.5 text-xs mb-1">
-            <span className="font-semibold text-foreground">
-              {comment.author.name || comment.author.email || 'Anonymous'}
-            </span>
+            <Link
+              href={authorProfileUrl}
+              className="font-semibold text-foreground hover:underline"
+            >
+              {authorDisplayName}
+            </Link>
             <span className="text-muted-foreground">•</span>
             <time
               dateTime={new Date(comment.createdAt).toISOString()}

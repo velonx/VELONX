@@ -59,6 +59,7 @@ export const POST = withErrorHandler(async (
         select: {
           id: true,
           name: true,
+          slug: true,
           image: true,
         },
       },
@@ -219,12 +220,12 @@ export const GET = withErrorHandler(async (
     take: limit + 1,
     include: {
       author: {
-        select: { id: true, name: true, image: true, college: true },
+        select: { id: true, name: true, slug: true, image: true, college: true },
       },
       replies: {
         include: {
           author: {
-            select: { id: true, name: true, image: true, college: true },
+            select: { id: true, name: true, slug: true, image: true, college: true },
           },
         },
         orderBy: { createdAt: "asc" },

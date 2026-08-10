@@ -74,6 +74,8 @@ export interface CommunityPostData {
   content: string
   authorId: string
   authorName: string
+  /** Readable profile slug; falls back to authorId when the user has none yet. */
+  authorSlug?: string | null
   authorImage?: string
   authorCollege?: string
   groupId?: string
@@ -125,6 +127,8 @@ export interface PostCommentData {
   postId: string
   authorId: string
   authorName: string
+  /** Readable profile slug; falls back to authorId when the user has none yet. */
+  authorSlug?: string | null
   authorImage?: string
   content: string
   parentId?: string | null

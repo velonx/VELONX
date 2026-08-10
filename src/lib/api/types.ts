@@ -220,6 +220,7 @@ export interface BlogPost {
 export interface LeaderboardEntry {
   id: string;
   name: string | null;
+  slug?: string | null;
   image: string | null;
   xp: number;
   level: number;

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from '@/lib/utils/date-helpers';
 import type { CommunityPostData } from '@/lib/types/community.types';
+import { getProfileUrl } from '@/lib/utils/profile-url';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import { CommentSection } from './CommentSection';
@@ -63,6 +64,7 @@ export function PostCard({
   const loggedInUserId = session?.user?.id;
 
   const isAuthor = currentUserId === post.authorId;
+  const authorProfileUrl = getProfileUrl(post.authorId, post.authorSlug);
   const canEdit = isAuthor && onEdit;
   const canDelete = (isAuthor || isModerator) && onDelete;
   const canPin = isModerator && (onPin || onUnpin);
@@ -180,7 +182,11 @@ export function PostCard({
           <div className="flex items-start justify-between gap-3 px-5 pt-5 pb-2">
             <div className="flex items-center gap-3 min-w-0">
               {/* Avatar */}
-              <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-background">
+              <Link
+                href={authorProfileUrl}
+                aria-label={`View ${post.authorName}'s profile`}
+                className="size-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-background hover:ring-primary/40 transition-shadow"
+              >
                 {post.authorImage ? (
                   <AvatarImage src={post.authorImage} alt={post.authorName} size={40} />
                 ) : (
@@ -188,12 +194,17 @@ export function PostCard({
                     {post.authorName.charAt(0).toUpperCase()}
                   </span>
                 )}
-              </div>
+              </Link>
 
               {/* Author name + meta */}
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-semibold text-sm text-foreground">{post.authorName}</span>
+                  <Link
+                    href={authorProfileUrl}
+                    className="font-semibold text-sm text-foreground hover:underline"
+                  >
+                    {post.authorName}
+                  </Link>
                   {isAuthor && (
                     <Badge variant="default" className="text-[10px] h-4 px-1.5 rounded bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 shadow-none border-blue-500/20 uppercase tracking-wider font-bold">
                       OP

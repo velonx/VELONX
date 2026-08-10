@@ -34,6 +34,7 @@ export interface CommunityPostData {
   slug?: string;
   authorId: string;
   authorName: string;
+  authorSlug?: string | null;
   authorImage?: string | null;
   authorCollege?: string | null;
   groupId?: string | null;
@@ -154,6 +155,7 @@ export class PostService {
           select: {
             id: true,
             name: true,
+            slug: true,
             image: true,
           },
         },
@@ -223,6 +225,7 @@ export class PostService {
           select: {
             id: true,
             name: true,
+            slug: true,
             image: true,
           },
         },
@@ -436,6 +439,7 @@ export class PostService {
           select: {
             id: true,
             name: true,
+            slug: true,
             image: true,
           },
         },
@@ -633,6 +637,7 @@ export class PostService {
       slug: slugifyPost(post.id, post.content),
       authorId: post.authorId,
       authorName: post.author.name || "Unknown",
+      authorSlug: post.author.slug,
       authorImage: post.author.image,
       groupId: post.groupId,
       visibility: post.visibility,

@@ -20,7 +20,7 @@ export class LeaderboardService {
       rank: number;
       id: string;
       name: string | null;
-      email: string;
+      slug: string | null;
       image: string | null;
       xp: number;
       level: number;
@@ -48,7 +48,7 @@ export class LeaderboardService {
       rank: number;
       id: string;
       name: string | null;
-      email: string;
+      slug: string | null;
       image: string | null;
       xp: number;
       level: number;
@@ -65,7 +65,7 @@ export class LeaderboardService {
       select: {
         id: true,
         name: true,
-        email: true,
+        slug: true,
         image: true,
         xp: true,
         level: true,
@@ -86,7 +86,7 @@ export class LeaderboardService {
       rank: skip + index + 1,
       id: user.id,
       name: user.name,
-      email: user.email,
+      slug: user.slug,
       image: user.image,
       xp: user.xp,
       level: user.level,
@@ -134,7 +134,7 @@ export class LeaderboardService {
       select: {
         id: true,
         name: true,
-        email: true,
+        slug: true,
         image: true,
         xp: true,
         level: true,
@@ -154,7 +154,7 @@ export class LeaderboardService {
       return {
         id: user.id,
         name: user.name,
-        email: user.email,
+        slug: user.slug,
         image: user.image,
         xp: periodXP, // Period XP
         allTimeXP: user.xp, // for secondary sorting

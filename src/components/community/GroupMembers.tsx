@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BoneAvatar, BoneText } from "@/components/boneyard";
 import { Users, Crown, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { getProfileUrl } from "@/lib/utils/profile-url";
 
 interface GroupMembersProps {
   members: GroupMember[];
@@ -143,8 +145,9 @@ export default function GroupMembers({
             });
 
             return (
-              <div
+              <Link
                 key={member.id}
+                href={getProfileUrl(member.userId, member.user?.slug)}
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
               >
                 <Avatar className="w-10 h-10">
@@ -165,7 +168,7 @@ export default function GroupMembers({
                     Joined {joinDate}
                   </p>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

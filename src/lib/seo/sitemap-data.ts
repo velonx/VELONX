@@ -3,6 +3,10 @@ import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { slugifyPost, slugifyResource } from "@/lib/utils";
 import { getThreadIndexability } from "@/lib/seo/thread-indexability";
+import {
+  getProfileIndexability,
+  PROFILE_INDEXABILITY_SELECT,
+} from "@/lib/seo/profile-indexability";
 
 // Google caps a single sitemap at 50,000 URLs / 50MB. We chunk below that with
 // a safety buffer, so the sitemap scales without hitting the hard limit.
@@ -57,6 +61,7 @@ async function buildAllSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     "/community",
     "/community/groups",
     "/leaderboard",
+    "/network",
     "/submit-project",
   ];
 
@@ -186,6 +191,27 @@ async function buildAllSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     console.error("[Sitemap] Failed to fetch resources:", err);
   }
 
+  // Member profiles that clear the quality bar. Advertising every account would
+  // bury the index in near-empty pages, so this uses the same gate the profile
+  // page's robots metadata applies.
+  let profileEntries: MetadataRoute.Sitemap = [];
+  try {
+    const users = await prisma.user.findMany({
+      where: { slug: { not: null } },
+      select: { ...PROFILE_INDEXABILITY_SELECT, updatedAt: true },
+    });
+    profileEntries = users
+      .filter((user) => getProfileIndexability(user))
+      .map((user) => ({
+        url: `${baseUrl}/network/${user.slug}`,
+        lastModified: user.updatedAt || currentDate,
+        changeFrequency: "weekly" as const,
+        priority: 0.5,
+      }));
+  } catch (err) {
+    console.error("[Sitemap] Failed to fetch member profiles:", err);
+  }
+
   return [
     ...staticEntries,
     ...blogEntries,
@@ -194,6 +220,7 @@ async function buildAllSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     ...groupEntries,
     ...threadEntries,
     ...resourceEntries,
+    ...profileEntries,
   ];
 }
 

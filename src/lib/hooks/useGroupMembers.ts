@@ -15,6 +15,7 @@ export interface GroupMember {
   user: {
     id: string;
     name: string | null;
+    slug?: string | null;
     email: string;
     image: string | null;
   };

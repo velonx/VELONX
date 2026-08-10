@@ -226,6 +226,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
           select: {
             id: true,
             name: true,
+            slug: true,
             image: true,
           },
         },
@@ -251,6 +252,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     slug: slugifyPost(post.id, post.content), // Server-computed slug
     authorId: post.authorId,
     authorName: post.author.name || "Unknown",
+    authorSlug: post.author.slug,
     authorImage: post.author.image,
     groupId: post.groupId,
     visibility: post.visibility,

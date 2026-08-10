@@ -22,6 +22,7 @@ export interface FeedItemData {
     slug?: string;
     authorId: string;
     authorName: string;
+    authorSlug?: string | null;
     authorImage?: string | null;
     groupId?: string | null;
     groupName?: string | null;
@@ -167,7 +168,7 @@ export class FeedService {
         downvotes: true,
         createdAt: true,
         updatedAt: true,
-        author: { select: { id: true, name: true, image: true } },
+        author: { select: { id: true, name: true, slug: true, image: true } },
         group: { select: { id: true, name: true } },
         _count: { select: { reactions: true, comments: true } },
       },
@@ -293,6 +294,7 @@ export class FeedService {
           select: {
             id: true,
             name: true,
+            slug: true,
             image: true,
           },
         },
@@ -357,6 +359,7 @@ export class FeedService {
           select: {
             id: true,
             name: true,
+            slug: true,
             image: true,
           },
         },
@@ -461,6 +464,7 @@ export class FeedService {
           select: {
             id: true,
             name: true,
+            slug: true,
             image: true,
           },
         },
@@ -549,6 +553,7 @@ export class FeedService {
           slug: slugifyPost(post.id, post.content),
           authorId: post.authorId,
           authorName: post.author.name || "Unknown",
+          authorSlug: post.author.slug,
           authorImage: post.author.image,
           groupId: post.groupId,
           visibility: post.visibility,
@@ -596,6 +601,7 @@ export class FeedService {
         slug: slugifyPost(post.id, post.content),
         authorId: post.authorId,
         authorName: post.author.name || "Unknown",
+        authorSlug: post.author.slug,
         authorImage: post.author.image,
         groupId: post.groupId,
         groupName: post.group?.name,

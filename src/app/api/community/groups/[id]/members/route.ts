@@ -80,6 +80,7 @@ export const GET = withErrorHandler(
             select: {
               id: true,
               name: true,
+              slug: true,
               email: true,
               image: true,
             },

@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useLeaderboard } from "@/lib/api/hooks";
 import Image from "next/image";
 import Link from "next/link";
+import { getProfileUrl } from "@/lib/utils/profile-url";
 import { BoneyardLoader, LeaderboardPodiumSkeleton, LeaderboardRowSkeleton } from "@/components/boneyard";
 import { motion } from "framer-motion";
 import { getTier, getTierLabel } from "@/lib/utils/tiers";
@@ -251,7 +252,13 @@ export default function LeaderboardPage() {
                                             </>
                                         )}
                                     </svg>
-                                    <div className="podium-name truncate">{second?.name || "Anonymous"}</div>
+                                    {second ? (
+                                        <Link href={getProfileUrl(second.id, second.slug)} className="podium-name truncate hover:underline block">
+                                            {second.name || "Anonymous"}
+                                        </Link>
+                                    ) : (
+                                        <div className="podium-name truncate">Anonymous</div>
+                                    )}
                                     <div className="podium-coins">
                                         ⚡ {second ? second.xp.toLocaleString() : "0"}
                                     </div>
@@ -310,7 +317,13 @@ export default function LeaderboardPage() {
                                             </>
                                         )}
                                     </svg>
-                                    <div className="podium-name truncate">{first?.name || "Anonymous"}</div>
+                                    {first ? (
+                                        <Link href={getProfileUrl(first.id, first.slug)} className="podium-name truncate hover:underline block">
+                                            {first.name || "Anonymous"}
+                                        </Link>
+                                    ) : (
+                                        <div className="podium-name truncate">Anonymous</div>
+                                    )}
                                     <div className="podium-coins">
                                         ⚡ {first ? first.xp.toLocaleString() : "0"}
                                     </div>
@@ -351,7 +364,13 @@ export default function LeaderboardPage() {
                                             </>
                                         )}
                                     </svg>
-                                    <div className="podium-name truncate">{third?.name || "Anonymous"}</div>
+                                    {third ? (
+                                        <Link href={getProfileUrl(third.id, third.slug)} className="podium-name truncate hover:underline block">
+                                            {third.name || "Anonymous"}
+                                        </Link>
+                                    ) : (
+                                        <div className="podium-name truncate">Anonymous</div>
+                                    )}
                                     <div className="podium-coins">
                                         ⚡ {third ? third.xp.toLocaleString() : "0"}
                                     </div>
@@ -459,13 +478,17 @@ export default function LeaderboardPage() {
                                                 <span className="lb-rank-num">#{user.rank}</span>
                                                 {getChangeIcon(user.change)}
                                             </div>
-                                            <div className="lb-user-cell">
+                                            <Link
+                                                href={getProfileUrl(user.id, user.slug)}
+                                                className="lb-user-cell group"
+                                                aria-label={`View ${user.name || "Anonymous"}'s profile`}
+                                            >
                                                 {getAvatarHtml(user, index)}
                                                 <div>
-                                                    <div className="lb-user-name truncate max-w-37.5 sm:max-w-60">{user.name || "Anonymous"}</div>
+                                                    <div className="lb-user-name truncate max-w-37.5 sm:max-w-60 group-hover:underline">{user.name || "Anonymous"}</div>
                                                     <div className="text-xs text-muted-foreground">Level {user.level}</div>
                                                 </div>
-                                            </div>
+                                            </Link>
                                             <div className="col-tier">
                                                 <span className={`lb-tier-badge ${tier}`}>{getTierLabel(tier)}</span>
                                             </div>

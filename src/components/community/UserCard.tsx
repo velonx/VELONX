@@ -6,6 +6,7 @@ import { FollowButton } from './FollowButton';
 import { UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { AvatarImage } from '@/components/responsive-image';
+import { getProfileUrl } from '@/lib/utils/profile-url';
 
 /**
  * User Interface
@@ -13,6 +14,7 @@ import { AvatarImage } from '@/components/responsive-image';
 export interface User {
   id: string;
   name: string | null;
+  slug?: string | null;
   email: string;
   image: string | null;
   role?: string;
@@ -84,7 +86,7 @@ export function UserCard({
         <div className="flex items-start gap-4">
           {/* Avatar */}
           <Link
-            href={`/profile/${user.id}`}
+            href={getProfileUrl(user.id, user.slug)}
             className="shrink-0 focus:outline-none focus:ring-2 focus:ring-ring rounded-full"
           >
             <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
@@ -105,7 +107,7 @@ export function UserCard({
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <Link
-                  href={`/profile/${user.id}`}
+                  href={getProfileUrl(user.id, user.slug)}
                   className="font-semibold text-sm hover:underline focus:outline-none focus:underline truncate block"
                   onClick={handleClick}
                 >

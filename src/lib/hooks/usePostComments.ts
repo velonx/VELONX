@@ -22,6 +22,7 @@ export interface PostComment {
   author: {
     id: string;
     name: string | null;
+    slug?: string | null;
     email?: string;
     image: string | null;
   };

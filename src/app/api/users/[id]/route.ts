@@ -176,8 +176,14 @@ export async function GET(
       ? (Date.now() - new Date(user.lastActiveAt).getTime() < 3 * 60 * 1000)
       : false;
 
+    // This route allows anonymous callers, so the email must never ride along in
+    // the spread below — only the owner and admins get to see it.
+    const { email, ...publicUser } = user;
+    const canSeeEmail = isOwnProfile || session?.user?.role === "ADMIN";
+
     const responseData = {
-      ...user,
+      ...publicUser,
+      ...(canSeeEmail ? { email } : {}),
       isOwnProfile,
       connectionStatus: connectionStatusData,
       mutualConnections: mutualConnectionsData,
