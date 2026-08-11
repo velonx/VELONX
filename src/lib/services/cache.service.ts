@@ -343,7 +343,6 @@ export const CacheKeys = {
     group: (groupId: string, cursor: string, limit: number) =>
       `feed:group:${groupId}:${cursor}:${limit}`,
     groupAll: (groupId: string) => `feed:group:${groupId}:*`,
-    trending: (limit: number) => `feed:trending:${limit}`,
     allGroups: () => `feed:group:*`,
   },
 }
@@ -369,7 +368,6 @@ export const CacheTTL = {
   PROJECT_LIST: 300,
   PROJECT_COMPLETED: 300,     // 5 minutes for completed projects cache
   FEED: 300,              // 5 minutes for feed cache
-  FEED_TRENDING: 300,     // 5 minutes for trending feed
 }
 
 // Export singleton instance

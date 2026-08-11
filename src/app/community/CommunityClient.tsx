@@ -10,6 +10,7 @@ import { PostImageGallery } from "@/components/community/PostImageGallery";
 import { CommunityGroupItemSkeleton } from "@/components/boneyard";
 import type { CommunityPostData, CommunityGroupData } from "@/lib/types/community.types";
 import { AvatarImage } from "@/components/responsive-image";
+import { getProfileUrl } from "@/lib/utils/profile-url";
 import { Loader2Icon, MessageSquare, ChevronUpIcon, ChevronDownIcon, Share2, Check, ImageIcon, Link as LinkIcon, X } from "lucide-react";
 import toast from "react-hot-toast";
 import Image from "next/image";
@@ -52,6 +53,7 @@ function CommunityPostCard({
 
   const authorInitials = getInitials(post.authorName);
   const avatarStyle = getAvatarStyle(post.authorName);
+  const authorProfileUrl = getProfileUrl(post.authorId, post.authorSlug);
 
   // Render post content with inline hashtags highlighted in blue.
   const renderContent = (content: string) =>
@@ -113,20 +115,30 @@ function CommunityPostCard({
     <div className="post-card">
       <div className="post-header">
         <div className="post-author">
-          {post.authorImage ? (
-            <AvatarImage
-              src={post.authorImage}
-              alt={post.authorName}
-              size={44}
-              className="author-avatar object-cover shrink-0"
-            />
-          ) : (
-            <div className="author-avatar" style={{ backgroundColor: avatarStyle.bg, color: avatarStyle.text }}>
-              {authorInitials}
-            </div>
-          )}
+          <Link
+            href={authorProfileUrl}
+            aria-label={`View ${post.authorName}'s profile`}
+            className="shrink-0 rounded-full transition-opacity hover:opacity-80"
+          >
+            {post.authorImage ? (
+              <AvatarImage
+                src={post.authorImage}
+                alt={post.authorName}
+                size={44}
+                className="author-avatar object-cover shrink-0"
+              />
+            ) : (
+              <div className="author-avatar" style={{ backgroundColor: avatarStyle.bg, color: avatarStyle.text }}>
+                {authorInitials}
+              </div>
+            )}
+          </Link>
           <div className="author-info">
-            <h3>{post.authorName}</h3>
+            <h3>
+              <Link href={authorProfileUrl} className="hover:underline">
+                {post.authorName}
+              </Link>
+            </h3>
             <p>Student Builder {post.authorCollege ? `from ${post.authorCollege}` : ''}</p>
           </div>
         </div>

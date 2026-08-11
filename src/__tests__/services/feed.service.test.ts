@@ -240,13 +240,4 @@ describe('FeedService', () => {
     });
   });
 
-  describe('getTrendingPosts', () => {
-    it('should return trending posts', async () => {
-      const { prisma } = await import('@/lib/prisma');
-      vi.mocked(prisma.communityPost.findMany).mockResolvedValue([]);
-      const trending = await feedService.getTrendingPosts();
-      expect(trending).toBeDefined();
-      expect(Array.isArray(trending)).toBe(true);
-    });
-  });
 });

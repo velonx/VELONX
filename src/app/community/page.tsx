@@ -68,6 +68,7 @@ export default async function CommunityPage() {
           name: true,
           image: true,
           college: true,
+          slug: true,
         },
       },
       _count: {
@@ -95,6 +96,7 @@ export default async function CommunityPage() {
       authorName: post.author.name || "Unknown",
       authorImage: post.author.image || undefined,
       authorCollege: post.author.college || undefined,
+      authorSlug: post.author.slug || undefined,
       groupId: post.groupId || undefined,
       visibility: post.visibility,
       imageUrls: post.imageUrls,

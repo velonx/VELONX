@@ -94,6 +94,7 @@ export default async function ThreadPage({
           name: true,
           image: true,
           college: true,
+          slug: true,
         },
       },
       group: {
@@ -187,6 +188,7 @@ export default async function ThreadPage({
           name: true,
           image: true,
           college: true,
+          slug: true,
         },
       },
     },
@@ -209,6 +211,7 @@ export default async function ThreadPage({
       name: comment.author.name || "Unknown",
       image: comment.author.image || undefined,
       college: comment.author.college || undefined,
+      slug: comment.author.slug || undefined,
     },
   }));
 
@@ -252,6 +255,7 @@ export default async function ThreadPage({
     authorName: post.author.name || "Unknown",
     authorImage: post.author.image || undefined,
     authorCollege: post.author.college || undefined,
+    authorSlug: post.author.slug || undefined,
     groupId: post.groupId || undefined,
     groupName: post.group?.name || undefined,
     visibility: post.visibility,

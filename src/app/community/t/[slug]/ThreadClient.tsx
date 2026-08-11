@@ -10,6 +10,7 @@ import { ArrowLeft, MessageSquare, Share2, Check, Lock, ChevronUp, Link as LinkI
 import toast from "react-hot-toast";
 import { CommentSection } from "@/components/community/CommentSection";
 import { PostImageGallery } from "@/components/community/PostImageGallery";
+import { getProfileUrl } from "@/lib/utils/profile-url";
 
 // Stable colors for initials avatars
 const getAvatarStyle = (name: string) => {
@@ -54,6 +55,7 @@ export default function ThreadClient({
 
   const authorInitials = getInitials(post.authorName);
   const avatarStyle = getAvatarStyle(post.authorName);
+  const authorProfileUrl = getProfileUrl(post.authorId, post.authorSlug);
 
   // Render post content with inline hashtags highlighted in blue.
   const renderContent = (content: string) =>
@@ -124,20 +126,30 @@ export default function ThreadClient({
             <Card className="post-card p-6 md:p-8">
               <div className="post-header mb-6">
                 <div className="post-author">
-                  {post.authorImage ? (
-                    <AvatarImage
-                      src={post.authorImage}
-                      alt={post.authorName}
-                      size={48}
-                      className="author-avatar object-cover shrink-0"
-                    />
-                  ) : (
-                    <div className="author-avatar size-12 text-lg font-bold" style={{ backgroundColor: avatarStyle.bg, color: avatarStyle.text }}>
-                      {authorInitials}
-                    </div>
-                  )}
+                  <Link
+                    href={authorProfileUrl}
+                    aria-label={`View ${post.authorName}'s profile`}
+                    className="shrink-0 rounded-full transition-opacity hover:opacity-80"
+                  >
+                    {post.authorImage ? (
+                      <AvatarImage
+                        src={post.authorImage}
+                        alt={post.authorName}
+                        size={48}
+                        className="author-avatar object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="author-avatar size-12 text-lg font-bold" style={{ backgroundColor: avatarStyle.bg, color: avatarStyle.text }}>
+                        {authorInitials}
+                      </div>
+                    )}
+                  </Link>
                   <div className="author-info">
-                    <h3 className="text-base font-extrabold text-foreground">{post.authorName}</h3>
+                    <h3 className="text-base font-extrabold text-foreground">
+                      <Link href={authorProfileUrl} className="hover:underline">
+                        {post.authorName}
+                      </Link>
+                    </h3>
                     <p className="text-xs text-muted-foreground font-medium">
                       Student Builder {post.authorCollege ? `from ${post.authorCollege}` : ''}
                     </p>
