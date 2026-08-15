@@ -113,7 +113,7 @@ export class EmailService {
 
         const html = await render(WelcomeEmail({ userName: user.name || 'there' }));
 
-        return this.sendWithRetry(user.email, 'Welcome to VELONX! 🚀', html);
+        return this.sendWithRetry(user.email, 'Welcome to VELONX — start here', html);
     }
 
     /**
@@ -131,7 +131,7 @@ export class EmailService {
 
         return this.sendWithRetry(
             user.email,
-            'Complete your VELONX profile to unlock AI matching & networking! 🚀',
+            'Two minutes to finish your VELONX profile',
             html
         );
     }
@@ -158,7 +158,7 @@ export class EmailService {
 
         return this.sendWithRetry(
             user.email,
-            `Congratulations! You earned the ${badge.name} badge! 🏆`,
+            `You earned the ${badge.name} badge (+${badge.xpAwarded} XP)`,
             html
         );
     }
@@ -180,7 +180,7 @@ export class EmailService {
             })
         );
 
-        return this.sendWithRetry(user.email, 'Verify your VELONX email', html);
+        return this.sendWithRetry(user.email, 'Confirm your email to activate VELONX', html);
     }
 
     /**
@@ -200,7 +200,7 @@ export class EmailService {
             })
         );
 
-        return this.sendWithRetry(user.email, 'Reset your VELONX password', html);
+        return this.sendWithRetry(user.email, 'Reset your VELONX password (expires in 1 hour)', html);
     }
 
     /**
@@ -235,7 +235,7 @@ export class EmailService {
 
         return this.sendWithRetry(
             user.email,
-            `You're registered: ${event.title}`,
+            `Your seat is booked: ${event.title}`,
             html
         );
     }
@@ -270,7 +270,7 @@ export class EmailService {
 
         return this.sendWithRetry(
             user.email,
-            `Reminder: ${event.title} starts tomorrow!`,
+            `Tomorrow: ${event.title}`,
             html
         );
     }
@@ -300,7 +300,7 @@ export class EmailService {
 
         return this.sendWithRetry(
             user.email,
-            `Session confirmed with ${mentor.name || 'your mentor'}`,
+            `You're booked with ${mentor.name || 'your mentor'}`,
             html
         );
     }
@@ -330,7 +330,7 @@ export class EmailService {
 
         return this.sendWithRetry(
             invitee.email,
-            `You've been invited to collaborate on ${project.title}`,
+            `You're invited to build ${project.title}`,
             html
         );
     }
@@ -366,7 +366,7 @@ export class EmailService {
 
         return this.sendWithRetry(
             owner.email,
-            `${requestData.requesterName} requested to join ${requestData.projectTitle}`,
+            `${requestData.requesterName} wants to join ${requestData.projectTitle}`,
             html
         );
     }
@@ -504,7 +504,7 @@ export class EmailService {
 
         return this.sendWithRetry(
             user.email,
-            `${commentData.commenterName} commented on your post`,
+            `${commentData.commenterName} replied to your post`,
             html
         );
     }
@@ -573,7 +573,7 @@ export class EmailService {
         const label = digestData.frequency === 'DAILY' ? 'Daily' : 'Weekly';
         return this.sendWithRetry(
             user.email,
-            `Your VELONX ${label} Digest — ${digestData.periodLabel}`,
+            `Your VELONX ${label.toLowerCase()} digest — ${digestData.periodLabel.toLowerCase()}`,
             html
         );
     }
@@ -585,19 +585,19 @@ export class EmailService {
         receiver: { email: string; name: string | null },
         sender: { name: string | null }
     ) {
-        const subject = `${sender.name || 'Someone'} sent you a connection request on VELONX`;
-        const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/network?tab=requests`;
-        const html = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 12px;">
-                <h2 style="color: #333333; margin-top: 0;">New Connection Request</h2>
-                <p>Hello ${receiver.name || 'there'},</p>
-                <p><strong>${sender.name || 'Someone'}</strong> wants to connect with you on VELONX.</p>
-                <div style="margin: 30px 0;">
-                    <a href="${profileUrl}" style="background-color: #0077b5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">View Connection Request</a>
-                </div>
-                <p style="color: #777777; font-size: 12px;">If you do not want to receive these emails, you can update your notification settings in your profile.</p>
-            </div>
-        `;
+        const senderName = sender.name || 'Someone';
+        const subject = `${senderName} wants to connect with you on VELONX`;
+
+        const { render } = await import('@react-email/components');
+        const { ConnectionRequestEmail } = await import('@/emails/connection-request');
+
+        const html = await render(
+            ConnectionRequestEmail({
+                receiverName: receiver.name || 'there',
+                senderName,
+            })
+        );
+
         return this.sendWithRetry(receiver.email, subject, html);
     }
 
@@ -640,19 +640,21 @@ export class EmailService {
         sender: { name: string | null },
         messageExcerpt?: string
     ) {
-        const subject = `New message from ${sender.name || 'Someone'} on VELONX`;
-        const chatUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/messages`;
-        const html = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 12px;">
-                <h2 style="color: #333333; margin-top: 0;">New Direct Message</h2>
-                <p>Hello ${receiver.name || 'there'},</p>
-                <p>You received a new message from <strong>${sender.name || 'Someone'}</strong> on VELONX.</p>
-                <div style="margin: 30px 0;">
-                    <a href="${chatUrl}" style="background-color: #0077b5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">View Message</a>
-                </div>
-                <p style="color: #777777; font-size: 12px;">If you do not want to receive these emails, you can update your notification settings in your profile.</p>
-            </div>
-        `;
+        const senderName = sender.name || 'Someone';
+        const subject = `${senderName} sent you a message on VELONX`;
+
+        const { render } = await import('@react-email/components');
+        const { DirectMessageEmail } = await import('@/emails/direct-message');
+
+        // The excerpt is intentionally not rendered: the notification says who
+        // wrote, never what they wrote.
+        const html = await render(
+            DirectMessageEmail({
+                receiverName: receiver.name || 'there',
+                senderName,
+            })
+        );
+
         return this.sendWithRetry(receiver.email, subject, html);
     }
 
@@ -684,7 +686,7 @@ export class EmailService {
 
         return this.sendWithRetry(
             user.email,
-            'New Project Collaborations Matched to Your Skills! 🚀',
+            `${matchedProjects.length} VELONX project${matchedProjects.length === 1 ? '' : 's'} matched to your skills`,
             html
         );
     }

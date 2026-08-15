@@ -1,5 +1,17 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph } from './base-layout';
+import { Section, Text } from '@react-email/components';
+import {
+    CTA,
+    Card,
+    Chip,
+    DetailList,
+    EmailLayout,
+    H1,
+    P,
+    SITE_URL,
+    Signoff,
+    cardText,
+    cardTitle,
+} from './base-layout';
 
 interface EventAnnouncedEmailProps {
     userName: string;
@@ -12,8 +24,6 @@ interface EventAnnouncedEmailProps {
     eventId: string;
     unsubscribeUrl?: string;
 }
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in';
 
 export const EventAnnouncedEmail = ({
     userName,
@@ -35,103 +45,52 @@ export const EventAnnouncedEmail = ({
         minute: '2-digit',
     });
 
-    const typeBadgeText =
+    const typeLabel =
         eventType === 'HACKATHON'
             ? '⚡ Hackathon'
             : eventType === 'WORKSHOP'
-            ? '🔧 Workshop'
+            ? '🛠️ Workshop'
             : '🎙️ Webinar';
 
-    const viewUrl = `${SITE_URL}/events/${eventId}`;
-
     return (
-        <EmailLayout preview={`New event: ${eventTitle} — ${formattedDate}`}>
-            <div style={badgeContainer}>
-                <span style={badge}>{typeBadgeText}</span>
-            </div>
+        <EmailLayout
+            preview={`New on VELONX: ${eventTitle} — ${formattedDate}`}
+            eyebrow="New event"
+            unsubscribeUrl={unsubscribeUrl}
+        >
+            <Section style={{ marginBottom: '14px' }}>
+                <Chip>{typeLabel}</Chip>
+            </Section>
 
-            <Heading style={heading}>New Event Just Announced 📅</Heading>
+            <H1>{eventTitle}</H1>
 
-            <Text style={paragraph}>Hi {userName},</Text>
+            <P>
+                Hi {userName}, a new event just went live on VELONX. Registration is open now and
+                seats usually go quickly.
+            </P>
 
-            <Text style={paragraph}>
-                A new event has been published on VELONX. Don't miss out — spots may be limited!
+            <Card accent>
+                <Text style={cardTitle} className="vx-ink">
+                    Event details
+                </Text>
+                <DetailList
+                    items={[
+                        { icon: '🗓️', children: formattedDate },
+                        ...(location ? [{ icon: '📍', children: location }] : []),
+                        ...(meetingLink ? [{ icon: '🔗', children: 'Online event' }] : []),
+                    ]}
+                />
+            </Card>
+
+            <Text style={cardText} className="vx-soft">
+                {eventDescription}
             </Text>
 
-            {/* Event Card */}
-            <div style={card}>
-                <Text style={eventTitle_style}>{eventTitle}</Text>
-                <Text style={meta}>🗓️ {formattedDate}</Text>
-                {location && <Text style={meta}>📍 {location}</Text>}
-                {meetingLink && <Text style={meta}>🔗 Online event</Text>}
-                <Text style={descText}>{eventDescription}</Text>
-            </div>
+            <CTA href={`${SITE_URL}/events/${eventId}`}>Save my spot</CTA>
 
-            <div style={{ textAlign: 'center' as const, margin: '24px 0' }}>
-                <Link href={viewUrl} style={button}>
-                    View Event &amp; Register →
-                </Link>
-            </div>
-
-            <Text style={paragraph}>
-                Don't want event announcements?{' '}
-                <Link
-                    href={unsubscribeUrl || `${SITE_URL}/settings/notifications`}
-                    style={linkStyle}
-                >
-                    Update your email preferences
-                </Link>
-            </Text>
+            <Signoff />
         </EmailLayout>
     );
-};
-
-const badgeContainer = {
-    textAlign: 'center' as const,
-    marginBottom: '16px',
-};
-
-const badge = {
-    backgroundColor: '#EDE9FE',
-    color: '#5B21B6',
-    borderRadius: '20px',
-    padding: '4px 16px',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    display: 'inline-block',
-};
-
-const card = {
-    backgroundColor: '#F5F3FF',
-    border: '1px solid #DDD6FE',
-    borderRadius: '12px',
-    padding: '20px 24px',
-    margin: '20px 0',
-};
-
-const eventTitle_style = {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    color: '#1A234A',
-    margin: '0 0 12px',
-};
-
-const meta = {
-    fontSize: '14px',
-    color: '#4B5563',
-    margin: '4px 0',
-};
-
-const descText = {
-    fontSize: '14px',
-    color: '#6B7280',
-    margin: '16px 0 0',
-    lineHeight: '22px',
-};
-
-const linkStyle = {
-    color: '#226CE0',
-    textDecoration: 'underline',
 };
 
 export default EventAnnouncedEmail;

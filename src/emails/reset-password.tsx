@@ -1,5 +1,14 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph } from './base-layout';
+import {
+    A,
+    Callout,
+    CTA,
+    EmailLayout,
+    H1,
+    P,
+    SITE_URL,
+    Small,
+    Signoff,
+} from './base-layout';
 
 interface ResetPasswordEmailProps {
     userName: string;
@@ -10,83 +19,39 @@ export const ResetPasswordEmail = ({
     userName,
     resetUrl,
 }: ResetPasswordEmailProps) => (
-    <EmailLayout preview="Reset your VELONX password">
-        <Heading style={heading}>Reset Your Password</Heading>
+    <EmailLayout
+        preview="Reset your VELONX password — this link expires in 1 hour"
+        eyebrow="Account security"
+    >
+        <H1>Set a new password</H1>
 
-        <Text style={paragraph}>Hi {userName},</Text>
+        <P>
+            Hi {userName}, someone asked to reset the password for your VELONX account.
+            If that was you, choose a new one here:
+        </P>
 
-        <Text style={paragraph}>
-            We received a request to reset the password associated with your VELONX account. If you made this request, please click the button below to secure a new password:
-        </Text>
+        <CTA href={resetUrl}>Reset my password</CTA>
 
-        <div style={{ margin: '24px 0' }}>
-            <Link href={resetUrl} style={button}>
-                Reset Password
-            </Link>
-        </div>
+        <Callout icon="⏳">
+            For your security, this link expires in 1 hour and can only be used once.
+        </Callout>
 
-        <div style={warningAlert}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <tbody>
-                    <tr>
-                        <td style={{ fontSize: '18px', width: '24px', verticalAlign: 'middle' }}>⏰</td>
-                        <td style={warningAlertText}>
-                            For security reasons, this link will expire in <strong>1 hour</strong>.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <P>
+            If you didn&rsquo;t make this request, no action is needed — your current password
+            still works. Seeing resets you didn&rsquo;t ask for?{' '}
+            <A href={`${SITE_URL}/support`}>Tell our support team</A> and we&rsquo;ll lock things
+            down with you.
+        </P>
 
-        <Text style={paragraph}>
-            If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged and secure. If you believe your account has been compromised, please{' '}
-            <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/support`} style={linkStyle}>
-                contact support
-            </Link>.
-        </Text>
-
-        <Text style={smallText}>
-            Or copy and paste this URL into your browser:{' '}
-            <Link href={resetUrl} style={linkStyle}>
+        <Small>
+            Button not working? Paste this into your browser:{' '}
+            <A href={resetUrl} style={{ wordBreak: 'break-all' }}>
                 {resetUrl}
-            </Link>
-        </Text>
+            </A>
+        </Small>
 
-        <Text style={paragraph}>
-            Warm regards,
-            <br />
-            <strong>The VELONX Team</strong>
-        </Text>
+        <Signoff />
     </EmailLayout>
 );
-
-const warningAlert = {
-    backgroundColor: '#FEF3C7',
-    border: '1px solid #FDE68A',
-    borderRadius: '12px',
-    padding: '16px 20px',
-    margin: '24px 0',
-};
-
-const warningAlertText = {
-    fontSize: '14px',
-    color: '#92400e',
-    margin: '0',
-    verticalAlign: 'middle',
-    lineHeight: '20px',
-};
-
-const smallText = {
-    color: '#6b7280',
-    fontSize: '13px',
-    lineHeight: '18px',
-    margin: '24px 0 0',
-};
-
-const linkStyle = {
-    color: '#226CE0',
-    textDecoration: 'underline',
-    wordBreak: 'break-all' as const,
-};
 
 export default ResetPasswordEmail;

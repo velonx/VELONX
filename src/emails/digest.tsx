@@ -1,5 +1,13 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, paragraph } from './base-layout';
+import { Link, Section, Text } from '@react-email/components';
+import {
+    CTA,
+    EmailLayout,
+    H1,
+    P,
+    SITE_URL,
+    Signoff,
+    theme,
+} from './base-layout';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -53,7 +61,57 @@ export interface DigestEmailProps {
 // Component
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in';
+const DigestSection = ({
+    icon,
+    title,
+    ctaLabel,
+    ctaHref,
+    children,
+}: {
+    icon: string;
+    title: string;
+    ctaLabel: string;
+    ctaHref: string;
+    children: React.ReactNode;
+}) => (
+    <Section style={section} className="vx-card">
+        <Text style={sectionHeading} className="vx-ink">
+            <span style={sectionIcon}>{icon}</span>
+            {title}
+        </Text>
+        {children}
+        <Link href={ctaHref} style={sectionCta}>
+            {ctaLabel} →
+        </Link>
+    </Section>
+);
+
+const DigestItem = ({
+    href,
+    title,
+    meta,
+}: {
+    href?: string;
+    title: string;
+    meta?: string;
+}) => (
+    <Section style={itemRow}>
+        {href ? (
+            <Link href={href} style={itemLink} className="vx-ink">
+                {title}
+            </Link>
+        ) : (
+            <Text style={{ ...itemLink, margin: 0 }} className="vx-ink">
+                {title}
+            </Text>
+        )}
+        {meta ? (
+            <Text style={itemMeta} className="vx-muted">
+                {meta}
+            </Text>
+        ) : null}
+    </Section>
+);
 
 export const DigestEmail = ({
     userName,
@@ -66,6 +124,7 @@ export const DigestEmail = ({
     swagItems = [],
     unsubscribeUrl,
 }: DigestEmailProps) => {
+    const cadence = frequency === 'DAILY' ? 'daily' : 'weekly';
     const hasContent =
         events.length > 0 ||
         projects.length > 0 ||
@@ -75,155 +134,122 @@ export const DigestEmail = ({
 
     return (
         <EmailLayout
-            preview={`Your ${frequency === 'DAILY' ? 'daily' : 'weekly'} VELONX digest — ${periodLabel}`}
+            preview={`Your ${cadence} VELONX digest — ${periodLabel.toLowerCase()}`}
+            eyebrow={`${cadence} digest`}
+            unsubscribeUrl={unsubscribeUrl}
         >
-            <Heading style={mainHeading}>
-                Your {frequency === 'DAILY' ? 'Daily' : 'Weekly'} Digest 📬
-            </Heading>
-
-            <Text style={paragraph}>Hi {userName},</Text>
+            <H1>What happened {periodLabel.toLowerCase()}</H1>
 
             {hasContent ? (
-                <Text style={paragraph}>
-                    Here's what happened on VELONX {periodLabel.toLowerCase()}. We've bundled it all
-                    into one email so your inbox stays clean.
-                </Text>
+                <P>
+                    Hi {userName} — everything new on VELONX, bundled into one email so your inbox
+                    stays quiet.
+                </P>
             ) : (
-                <Text style={paragraph}>
-                    It was a quiet {frequency === 'DAILY' ? 'day' : 'week'} — nothing new to report.
-                    Check back soon!
-                </Text>
+                <P>
+                    Hi {userName} — quiet {frequency === 'DAILY' ? 'day' : 'week'}. Nothing new
+                    worth your attention, so we&rsquo;ll keep this short.
+                </P>
             )}
 
-            {/* Events section */}
             {events.length > 0 && (
-                <div style={section}>
-                    <Text style={sectionHeading}>📅 New Events ({events.length})</Text>
+                <DigestSection
+                    icon="🗓️"
+                    title={`Events (${events.length})`}
+                    ctaLabel="Browse all events"
+                    ctaHref={`${SITE_URL}/events`}
+                >
                     {events.map((event) => (
-                        <div key={event.id} style={itemRow}>
-                            <Link
-                                href={`${SITE_URL}/events/${event.id}`}
-                                style={itemLink}
-                            >
-                                {event.title}
-                            </Link>
-                            <Text style={itemMeta}>
-                                {new Date(event.date).toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                })}
-                                {event.location ? ` • ${event.location}` : ''}
-                            </Text>
-                        </div>
+                        <DigestItem
+                            key={event.id}
+                            href={`${SITE_URL}/events/${event.id}`}
+                            title={event.title}
+                            meta={`${new Date(event.date).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                            })}${event.location ? ` · ${event.location}` : ''}`}
+                        />
                     ))}
-                    <Link href={`${SITE_URL}/events`} style={sectionCta}>
-                        Browse all events →
-                    </Link>
-                </div>
+                </DigestSection>
             )}
 
-            {/* Projects section */}
             {projects.length > 0 && (
-                <div style={section}>
-                    <Text style={sectionHeading}>🚀 Project Updates ({projects.length})</Text>
+                <DigestSection
+                    icon="🚀"
+                    title={`Projects (${projects.length})`}
+                    ctaLabel="View the project board"
+                    ctaHref={`${SITE_URL}/projects`}
+                >
                     {projects.map((project) => (
-                        <div key={project.id} style={itemRow}>
-                            <Link
-                                href={`${SITE_URL}/projects`}
-                                style={itemLink}
-                            >
-                                {project.title}
-                            </Link>
-                            <Text style={itemMeta}>Status: {project.status.replace('_', ' ')}</Text>
-                        </div>
+                        <DigestItem
+                            key={project.id}
+                            href={`${SITE_URL}/projects`}
+                            title={project.title}
+                            meta={project.status.replace('_', ' ').toLowerCase()}
+                        />
                     ))}
-                    <Link href={`${SITE_URL}/projects`} style={sectionCta}>
-                        View projects →
-                    </Link>
-                </div>
+                </DigestSection>
             )}
 
-            {/* Resources section */}
             {resources.length > 0 && (
-                <div style={section}>
-                    <Text style={sectionHeading}>📚 New Resources ({resources.length})</Text>
+                <DigestSection
+                    icon="📚"
+                    title={`Resources (${resources.length})`}
+                    ctaLabel="Explore resources"
+                    ctaHref={`${SITE_URL}/resources`}
+                >
                     {resources.map((resource) => (
-                        <div key={resource.id} style={itemRow}>
-                            <Link
-                                href={`${SITE_URL}/resources`}
-                                style={itemLink}
-                            >
-                                {resource.title}
-                            </Link>
-                            <Text style={itemMeta}>
-                                {resource.category} • {resource.type}
-                            </Text>
-                        </div>
+                        <DigestItem
+                            key={resource.id}
+                            href={`${SITE_URL}/resources`}
+                            title={resource.title}
+                            meta={`${resource.category} · ${resource.type}`}
+                        />
                     ))}
-                    <Link href={`${SITE_URL}/resources`} style={sectionCta}>
-                        Explore resources →
-                    </Link>
-                </div>
+                </DigestSection>
             )}
 
-            {/* Blog posts section */}
             {blogPosts.length > 0 && (
-                <div style={section}>
-                    <Text style={sectionHeading}>✍️ New Blog Posts ({blogPosts.length})</Text>
+                <DigestSection
+                    icon="✍️"
+                    title={`Reading (${blogPosts.length})`}
+                    ctaLabel="Read all posts"
+                    ctaHref={`${SITE_URL}/blog`}
+                >
                     {blogPosts.map((post) => (
-                        <div key={post.id} style={itemRow}>
-                            <Link
-                                href={`${SITE_URL}/blog/${post.slug || post.id}`}
-                                style={itemLink}
-                            >
-                                {post.title}
-                            </Link>
-                            {post.excerpt && (
-                                <Text style={itemMeta}>{post.excerpt}</Text>
-                            )}
-                        </div>
+                        <DigestItem
+                            key={post.id}
+                            href={`${SITE_URL}/blog/${post.slug || post.id}`}
+                            title={post.title}
+                            meta={post.excerpt}
+                        />
                     ))}
-                    <Link href={`${SITE_URL}/blog`} style={sectionCta}>
-                        Read all posts →
-                    </Link>
-                </div>
+                </DigestSection>
             )}
 
-            {/* Swag section */}
             {swagItems.length > 0 && (
-                <div style={section}>
-                    <Text style={sectionHeading}>🎽 Swag Drop ({swagItems.length} new)</Text>
+                <DigestSection
+                    icon="🎽"
+                    title={`Swag drop (${swagItems.length})`}
+                    ctaLabel="See what's available"
+                    ctaHref={`${SITE_URL}/swag`}
+                >
                     {swagItems.map((item) => (
-                        <div key={item.id} style={itemRow}>
-                            <Text style={itemLink}>{item.name}</Text>
-                        </div>
+                        <DigestItem key={item.id} title={item.name} />
                     ))}
-                    <Link href={`${SITE_URL}/swag`} style={sectionCta}>
-                        View swag →
-                    </Link>
-                </div>
+                </DigestSection>
             )}
 
-            {hasContent && (
-                <div style={{ textAlign: 'center' as const, margin: '32px 0' }}>
-                    <Link href={`${SITE_URL}/dashboard/student`} style={button}>
-                        Go to Dashboard
-                    </Link>
-                </div>
+            {hasContent ? (
+                <CTA href={`${SITE_URL}/dashboard/student`}>Open my dashboard</CTA>
+            ) : (
+                <CTA href={`${SITE_URL}/projects`} variant="secondary">
+                    Find something to build
+                </CTA>
             )}
 
-            <div style={footer}>
-                <Text style={footerText}>
-                    Want to change how often you receive these emails?{' '}
-                    <Link
-                        href={unsubscribeUrl || `${SITE_URL}/settings/notifications`}
-                        style={footerLink}
-                    >
-                        Update your notification preferences
-                    </Link>
-                </Text>
-            </div>
+            <Signoff />
         </EmailLayout>
     );
 };
@@ -232,75 +258,56 @@ export const DigestEmail = ({
 // Styles
 // ─────────────────────────────────────────────────────────────────────────────
 
-const mainHeading = {
-    color: '#1A234A',
-    fontSize: '28px',
-    fontWeight: 'bold',
-    margin: '0 0 20px',
-    lineHeight: '36px',
-};
-
 const section = {
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
-    borderRadius: '12px',
-    padding: '20px 24px',
+    backgroundColor: theme.surfaceMuted,
+    border: `1px solid ${theme.border}`,
+    borderRadius: '14px',
     margin: '20px 0',
+    padding: '20px 24px',
 };
 
 const sectionHeading = {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#1A234A',
-    margin: '0 0 16px',
+    color: theme.ink,
+    fontSize: '13px',
+    fontWeight: 700,
+    letterSpacing: '0.6px',
+    margin: '0 0 14px',
+    textTransform: 'uppercase' as const,
+};
+
+const sectionIcon = {
+    paddingRight: '8px',
 };
 
 const itemRow = {
-    borderBottom: '1px solid #F3F4F6',
-    paddingBottom: '12px',
-    marginBottom: '12px',
+    borderTop: `1px solid ${theme.borderSoft}`,
+    padding: '12px 0',
 };
 
 const itemLink = {
-    fontSize: '15px',
-    fontWeight: '600',
-    color: '#226CE0',
-    textDecoration: 'none',
+    color: theme.ink,
     display: 'block',
-    margin: '0 0 4px',
+    fontSize: '15px',
+    fontWeight: 600,
+    lineHeight: '22px',
+    margin: '0 0 3px',
+    textDecoration: 'none',
 };
 
 const itemMeta = {
+    color: theme.muted,
     fontSize: '13px',
-    color: '#6B7280',
+    lineHeight: '20px',
     margin: '0',
 };
 
 const sectionCta = {
+    color: theme.accent,
+    display: 'inline-block',
     fontSize: '13px',
-    fontWeight: 'bold',
-    color: '#226CE0',
+    fontWeight: 700,
+    marginTop: '14px',
     textDecoration: 'none',
-    display: 'block',
-    marginTop: '8px',
-};
-
-const footer = {
-    borderTop: '1px solid #E5E7EB',
-    marginTop: '32px',
-    paddingTop: '24px',
-};
-
-const footerText = {
-    color: '#9CA3AF',
-    fontSize: '12px',
-    textAlign: 'center' as const,
-    margin: '0',
-};
-
-const footerLink = {
-    color: '#226CE0',
-    textDecoration: 'underline',
 };
 
 export default DigestEmail;

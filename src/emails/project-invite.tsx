@@ -1,5 +1,17 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph } from './base-layout';
+import { Text } from '@react-email/components';
+import {
+    CTA,
+    Card,
+    Chip,
+    EmailLayout,
+    H1,
+    P,
+    SITE_URL,
+    Signoff,
+    cardText,
+    cardTitle,
+    theme,
+} from './base-layout';
 
 interface ProjectInviteEmailProps {
     inviteeName: string;
@@ -8,128 +20,72 @@ interface ProjectInviteEmailProps {
     projectDescription: string;
 }
 
+const perks = [
+    'Ship something real you can put at the top of your portfolio',
+    'Work alongside builders who push you a little',
+    'Earn XP and badges that show up on your public profile',
+    'Collect peer feedback you can point recruiters at',
+];
+
 export const ProjectInviteEmail = ({
     inviteeName,
     inviterName,
     projectTitle,
     projectDescription,
 }: ProjectInviteEmailProps) => (
-    <EmailLayout preview={`You've been invited to collaborate on ${projectTitle}`}>
-        <Heading style={heading}>You've Got a Project Invite! 🚀</Heading>
+    <EmailLayout
+        preview={`${inviterName} invited you to build ${projectTitle}`}
+        eyebrow="Project invitation"
+    >
+        <H1>{inviterName} wants you on the team</H1>
 
-        <Text style={paragraph}>Hi {inviteeName},</Text>
+        <P>
+            Hi {inviteeName}, you&rsquo;ve been invited to collaborate on a project on VELONX.
+        </P>
 
-        <Text style={paragraph}>
-            <strong>{inviterName}</strong> has invited you to join their team and collaborate on a project:
-        </Text>
+        <Card accent>
+            <Text style={cardTitle} className="vx-ink">
+                {projectTitle}
+            </Text>
+            <Text style={{ ...cardText, marginBottom: '14px' }} className="vx-soft">
+                {projectDescription}
+            </Text>
+            <Chip tone="neutral">Invited by {inviterName}</Chip>
+        </Card>
 
-        <div style={projectCard}>
-            <Text style={projectCardTitle}>{projectTitle}</Text>
-            <Text style={projectCardDescription}>{projectDescription}</Text>
-            <div style={userTag}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <tbody>
-                        <tr>
-                            <td style={{ width: '28px', fontSize: '16px' }}>👤</td>
-                            <td style={userTagText}>Invited by: <strong>{inviterName}</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <P>What you get out of it:</P>
 
-        <Text style={paragraph}>
-            By joining this team, you'll be able to:
-        </Text>
+        {perks.map((perk) => (
+            <Text key={perk} style={perkLine} className="vx-soft">
+                <span style={perkMark}>→</span>
+                {perk}
+            </Text>
+        ))}
 
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0 24px' }}>
-            <tbody>
-                <tr>
-                    <td style={checkCol}>⚡</td>
-                    <td style={checkTextCol}>Build an impactful project for your portfolio</td>
-                </tr>
-                <tr>
-                    <td style={checkCol}>⚡</td>
-                    <td style={checkTextCol}>Collaborate with talented developers and creators</td>
-                </tr>
-                <tr>
-                    <td style={checkCol}>⚡</td>
-                    <td style={checkTextCol}>Earn platform XP and unlock achievement badges</td>
-                </tr>
-                <tr>
-                    <td style={checkCol}>⚡</td>
-                    <td style={checkTextCol}>Receive feedback and reviews on your collaboration</td>
-                </tr>
-            </tbody>
-        </table>
+        <CTA href={`${SITE_URL}/projects`}>Review the invitation</CTA>
 
-        <div style={{ margin: '24px 0' }}>
-            <Link
-                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/projects`}
-                style={button}
-            >
-                View Project Invitation
-            </Link>
-        </div>
+        <P>
+            Not the right fit? Decline it — the owner will see your answer either way, and a
+            quick no is better than silence.
+        </P>
 
-        <Text style={paragraph}>
-            Happy coding!
-            <br />
-            <strong>The VELONX Team</strong>
-        </Text>
+        <Signoff />
     </EmailLayout>
 );
 
-const projectCard = {
-    backgroundColor: '#F0F7FF',
-    border: '1px solid #D0E5FF',
-    borderLeft: '5px solid #226CE0',
-    padding: '24px',
-    borderRadius: '12px',
-    margin: '24px 0',
-};
-
-const projectCardTitle = {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    color: '#1A234A',
-    margin: '0 0 12px',
-};
-
-const projectCardDescription = {
-    fontSize: '14px',
-    color: '#374151',
-    lineHeight: '20px',
-    margin: '0 0 16px',
-};
-
-const userTag = {
-    backgroundColor: '#ffffff',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px',
-    padding: '10px 14px',
-    display: 'inline-block',
-};
-
-const userTagText = {
-    fontSize: '13px',
-    color: '#4B5563',
+const perkLine = {
+    borderTop: `1px solid ${theme.borderSoft}`,
+    color: theme.warmGray,
+    fontSize: '15px',
+    lineHeight: '24px',
     margin: '0',
+    padding: '12px 0',
 };
 
-const checkCol = {
-    width: '24px',
-    fontSize: '14px',
-    padding: '8px 0',
-    verticalAlign: 'middle',
-};
-
-const checkTextCol = {
-    fontSize: '14px',
-    color: '#374151',
-    fontWeight: '600',
-    padding: '8px 0 8px 8px',
-    verticalAlign: 'middle',
+const perkMark = {
+    color: theme.accent,
+    fontWeight: 700,
+    paddingRight: '10px',
 };
 
 export default ProjectInviteEmail;

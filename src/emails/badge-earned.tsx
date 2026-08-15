@@ -1,5 +1,5 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph } from './base-layout';
+import { Section, Text } from '@react-email/components';
+import { CTA, EmailLayout, H1, P, SITE_URL, Signoff, theme } from './base-layout';
 
 interface BadgeEarnedEmailProps {
     userName: string;
@@ -16,116 +16,91 @@ export const BadgeEarnedEmail = ({
     badgeIcon = '🏆',
     xpAwarded,
 }: BadgeEarnedEmailProps) => (
-    <EmailLayout preview={`Congratulations! You earned the ${badgeName} badge!`}>
-        <Heading style={heading}>Congratulations, {userName}! 🎉</Heading>
+    <EmailLayout
+        preview={`You earned the ${badgeName} badge (+${xpAwarded} XP)`}
+        eyebrow="Achievement unlocked"
+    >
+        <H1>Nice work, {userName}</H1>
 
-        <Text style={paragraph}>
-            Your hard work is paying off! You've unlocked a new achievement milestone and earned a new badge on the VELONX platform.
-        </Text>
+        <P>
+            You just earned a new badge on VELONX. It&rsquo;s now on your public profile, where
+            teammates and recruiters can see it.
+        </P>
 
-        <div style={badgeCard}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center' }}>
-                <tbody>
-                    <tr>
-                        <td>
-                            <div style={iconCircle}>
-                                <span style={iconSpan}>{badgeIcon}</span>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style={{ padding: '16px 0 8px' }}>
-                            <Text style={badgeTitle}>{badgeName}</Text>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style={{ padding: '0 16px 16px' }}>
-                            <Text style={badgeDesc}>"{badgeDescription}"</Text>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style={{ padding: '8px 0' }}>
-                            <span style={xpBadge}>+{xpAwarded} XP Awarded</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <Section style={badgeCard} className="vx-card">
+            <Section style={{ textAlign: 'center' }}>
+                <span style={iconCircle}>{badgeIcon}</span>
+                <Text style={badgeTitle} className="vx-ink">
+                    {badgeName}
+                </Text>
+                <Text style={badgeDesc} className="vx-soft">
+                    {badgeDescription}
+                </Text>
+                <span style={xpPill}>+{xpAwarded} XP</span>
+            </Section>
+        </Section>
 
-        <Text style={paragraph}>
-            Keep building, learning, and collaborating. Every project completed and event attended brings you closer to your goals and higher up the community leaderboard!
-        </Text>
+        <P>
+            Every project shipped, event attended and session completed moves you up the
+            leaderboard. Keep the streak going.
+        </P>
 
-        <div style={{ textAlign: 'center' as const, margin: '24px 0' }}>
-            <Link
-                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/dashboard`}
-                style={button}
-            >
-                View My Profile & Badges
-            </Link>
-        </div>
+        <CTA href={`${SITE_URL}/dashboard`} align="center">
+            View my badges
+        </CTA>
 
-        <Text style={paragraph}>
-            Show off your new badge to the community and keep leveling up!
-            <br />
-            <strong>The VELONX Team</strong>
-        </Text>
+        <Signoff />
     </EmailLayout>
 );
 
 const badgeCard = {
-    background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
-    border: '2px solid #E2E8F0',
+    backgroundColor: theme.surfaceMuted,
+    border: `1px solid ${theme.border}`,
     borderRadius: '16px',
+    margin: '24px 0',
     padding: '32px 24px',
-    margin: '32px auto',
-    maxWidth: '360px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-};
-
-const iconCircle = {
-    width: '80px',
-    height: '80px',
-    borderRadius: '40px',
-    background: 'linear-gradient(135deg, #FF9F43 0%, #FF5252 100%)',
-    margin: '0 auto',
-    boxShadow: '0 4px 10px rgba(255, 82, 82, 0.3)',
     textAlign: 'center' as const,
 };
 
-const iconSpan = {
-    fontSize: '42px',
-    lineHeight: '80px',
+const iconCircle = {
+    backgroundColor: theme.accentSoft,
+    border: `1px solid ${theme.accentBorder}`,
+    borderRadius: '999px',
     display: 'inline-block',
-    verticalAlign: 'middle',
+    fontSize: '34px',
+    height: '72px',
+    lineHeight: '72px',
+    textAlign: 'center' as const,
+    width: '72px',
 };
 
 const badgeTitle = {
-    fontSize: '22px',
-    fontWeight: 'bold',
-    color: '#1A234A',
-    margin: '0',
+    color: theme.ink,
+    fontFamily: '"Source Serif 4",Georgia,"Times New Roman",serif',
+    fontSize: '24px',
+    lineHeight: '32px',
+    margin: '18px 0 6px',
+    textAlign: 'center' as const,
 };
 
 const badgeDesc = {
+    color: theme.warmGray,
     fontSize: '14px',
-    fontStyle: 'italic',
-    color: '#64748B',
-    lineHeight: '20px',
-    margin: '0',
+    lineHeight: '22px',
+    margin: '0 0 18px',
+    textAlign: 'center' as const,
 };
 
-const xpBadge = {
+const xpPill = {
+    backgroundColor: theme.accent,
+    borderRadius: '999px',
+    color: '#FFFFFF',
     display: 'inline-block',
-    backgroundColor: '#DEF7EC',
-    border: '1px solid #BCF0DA',
-    color: '#03543F',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: 700,
+    letterSpacing: '0.8px',
     padding: '6px 16px',
     textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
 };
 
 export default BadgeEarnedEmail;

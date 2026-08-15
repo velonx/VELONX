@@ -1,5 +1,16 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph } from './base-layout';
+import { Section, Text } from '@react-email/components';
+import {
+    CTA,
+    Card,
+    Chip,
+    DetailList,
+    EmailLayout,
+    H1,
+    P,
+    SITE_URL,
+    Signoff,
+    cardTitle,
+} from './base-layout';
 
 interface JobAlertEmailProps {
     userName: string;
@@ -14,110 +25,64 @@ interface JobAlertEmailProps {
     unsubscribeUrl?: string;
 }
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in';
-
 export const JobAlertEmail = ({
     userName,
     title,
     company,
     location,
     type,
-    applyUrl,
     slug,
     opportunityId,
     salary,
     unsubscribeUrl,
-}: JobAlertEmailProps) => (
-    <EmailLayout preview={`New ${type === 'INTERNSHIP' ? 'internship' : 'job'}: ${title} at ${company}`}>
-        <div style={badgeContainer}>
-            <span style={type === 'INTERNSHIP' ? internBadge : jobBadge}>
-                {type === 'INTERNSHIP' ? '🎓 Internship' : '💼 Job'}
-            </span>
-        </div>
+}: JobAlertEmailProps) => {
+    const kind = type === 'INTERNSHIP' ? 'internship' : 'role';
 
-        <Heading style={heading}>New {type === 'INTERNSHIP' ? 'Internship' : 'Job'} Alert 🚀</Heading>
+    return (
+        <EmailLayout
+            preview={`${title} at ${company} — new ${kind} on VELONX`}
+            eyebrow={`New ${kind}`}
+            unsubscribeUrl={unsubscribeUrl}
+        >
+            <Section style={{ marginBottom: '14px' }}>
+                <Chip>{type === 'INTERNSHIP' ? '🎓 Internship' : '💼 Full-time'}</Chip>
+            </Section>
 
-        <Text style={paragraph}>Hi {userName},</Text>
+            <H1>{title}</H1>
 
-        <Text style={paragraph}>
-            A new {type === 'INTERNSHIP' ? 'internship' : 'job'} opportunity just dropped on VELONX — check it out before it's gone!
-        </Text>
+            <P>
+                Hi {userName}, this one matches the skills on your profile. Openings like it
+                usually close within a couple of weeks, so it&rsquo;s worth a look today.
+            </P>
 
-        {/* Opportunity Card */}
-        <div style={card}>
-            <Text style={jobTitle}>{title}</Text>
-            <Text style={meta}>🏢 {company}</Text>
-            <Text style={meta}>📍 {location}</Text>
-            {salary && <Text style={meta}>💰 {salary}</Text>}
-        </div>
+            <Card accent>
+                <Text style={cardTitle} className="vx-ink">
+                    {company}
+                </Text>
+                <DetailList
+                    items={[
+                        { icon: '📍', children: location },
+                        ...(salary ? [{ icon: '💰', children: salary }] : []),
+                        {
+                            icon: '🧭',
+                            children: type === 'INTERNSHIP' ? 'Internship' : 'Full-time role',
+                        },
+                    ]}
+                />
+            </Card>
 
-        <div style={{ textAlign: 'center' as const, margin: '24px 0' }}>
-            <Link href={`${SITE_URL}/career/${slug || opportunityId}`} style={button}>
-                View &amp; Apply →
-            </Link>
-        </div>
+            <CTA href={`${SITE_URL}/career/${slug || opportunityId}`}>
+                See the role &amp; apply
+            </CTA>
 
-        <Text style={paragraph}>
-            Not interested in job alerts?{' '}
-            <Link
-                href={unsubscribeUrl || `${SITE_URL}/settings/notifications`}
-                style={linkStyle}
-            >
-                Update your email preferences
-            </Link>
-        </Text>
-    </EmailLayout>
-);
+            <P>
+                Tip: profiles with projects and a resume attached get shortlisted far more often
+                — worth five minutes before you apply.
+            </P>
 
-const badgeContainer = {
-    textAlign: 'center' as const,
-    marginBottom: '16px',
-};
-
-const jobBadge = {
-    backgroundColor: '#EBF5FB',
-    color: '#226CE0',
-    borderRadius: '20px',
-    padding: '4px 16px',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    display: 'inline-block',
-};
-
-const internBadge = {
-    backgroundColor: '#FEF3C7',
-    color: '#92400E',
-    borderRadius: '20px',
-    padding: '4px 16px',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    display: 'inline-block',
-};
-
-const card = {
-    backgroundColor: '#F8FAFF',
-    border: '1px solid #D0E5FF',
-    borderRadius: '12px',
-    padding: '20px 24px',
-    margin: '20px 0',
-};
-
-const jobTitle = {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    color: '#1A234A',
-    margin: '0 0 12px',
-};
-
-const meta = {
-    fontSize: '14px',
-    color: '#4B5563',
-    margin: '4px 0',
-};
-
-const linkStyle = {
-    color: '#226CE0',
-    textDecoration: 'underline',
+            <Signoff />
+        </EmailLayout>
+    );
 };
 
 export default JobAlertEmail;

@@ -1,5 +1,19 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph } from './base-layout';
+import { Section, Text } from '@react-email/components';
+import {
+    CTA,
+    Card,
+    EmailLayout,
+    H1,
+    P,
+    SITE_URL,
+    SectionLabel,
+    Signoff,
+    cardText,
+    cardTitle,
+    secondaryButton,
+    theme,
+} from './base-layout';
+import { Link } from '@react-email/components';
 
 interface MatchedProject {
     id: string;
@@ -18,154 +32,99 @@ export const ProjectMatchEmail = ({
     userName,
     matchedProjects,
 }: ProjectMatchEmailProps) => (
-    <EmailLayout preview="New project collaboration opportunities matched to your skills!">
-        <Heading style={heading}>New Project Matches Found! 🚀</Heading>
+    <EmailLayout
+        preview={`${matchedProjects.length} project${
+            matchedProjects.length === 1 ? '' : 's'
+        } looking for your skills`}
+        eyebrow="Matched to your skills"
+    >
+        <H1>
+            {matchedProjects.length} project{matchedProjects.length === 1 ? '' : 's'} could use
+            you
+        </H1>
 
-        <Text style={paragraph}>Hi {userName},</Text>
-
-        <Text style={paragraph}>
-            Based on your skills, we found some exciting active projects on VELONX looking for collaborators. Check out these projects where you can make an impact:
-        </Text>
+        <P>
+            Hi {userName}, these teams are actively recruiting and their needs line up with
+            what&rsquo;s on your profile.
+        </P>
 
         {matchedProjects.map((project) => (
-            <div key={project.id} style={projectCard}>
-                <Text style={projectCardTitle}>{project.title}</Text>
-                <Text style={projectCardDescription}>{project.description}</Text>
+            <Card key={project.id}>
+                <Text style={cardTitle} className="vx-ink">
+                    {project.title}
+                </Text>
+                <Text style={{ ...cardText, marginBottom: '16px' }} className="vx-soft">
+                    {project.description}
+                </Text>
 
-                {/* Matched Skills Badge Section */}
-                <div style={tagSection}>
-                    <Text style={tagLabel}>Matched Skills:</Text>
-                    <div style={tagsContainer}>
-                        {project.matchedSkills.map((skill) => (
-                            <span key={skill} style={matchedSkillBadge}>
-                                {skill}
-                            </span>
-                        ))}
-                    </div>
-                </div>
+                {project.matchedSkills.length > 0 && (
+                    <>
+                        <SectionLabel>Your matching skills</SectionLabel>
+                        <Section style={{ marginBottom: '14px' }}>
+                            {project.matchedSkills.map((skill) => (
+                                <span key={skill} style={matchTag}>
+                                    {skill}
+                                </span>
+                            ))}
+                        </Section>
+                    </>
+                )}
 
-                {/* Tech Stack Badge Section */}
-                <div style={tagSection}>
-                    <Text style={tagLabel}>Project Tech Stack:</Text>
-                    <div style={tagsContainer}>
-                        {project.techStack.map((tech) => (
-                            <span key={tech} style={techBadge}>
-                                {tech}
-                            </span>
-                        ))}
-                    </div>
-                </div>
+                {project.techStack.length > 0 && (
+                    <>
+                        <SectionLabel>Stack</SectionLabel>
+                        <Section style={{ marginBottom: '16px' }}>
+                            {project.techStack.map((tech) => (
+                                <span key={tech} style={stackTag} className="vx-chip">
+                                    {tech}
+                                </span>
+                            ))}
+                        </Section>
+                    </>
+                )}
 
-                <div style={{ marginTop: '16px' }}>
-                    <Link
-                        href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/projects`}
-                        style={projectButton}
-                    >
-                        View Project & Contribute
-                    </Link>
-                </div>
-            </div>
+                <Link
+                    href={`${SITE_URL}/projects`}
+                    style={secondaryButton}
+                    className="vx-btn-ghost"
+                >
+                    View project
+                </Link>
+            </Card>
         ))}
 
-        <div style={{ textAlign: 'center', margin: '32px 0 16px' }}>
-            <Link
-                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/projects`}
-                style={button}
-            >
-                Explore More Projects
-            </Link>
-        </div>
+        <CTA href={`${SITE_URL}/projects`}>Browse the full project board</CTA>
 
-        <Text style={paragraph}>
-            Building projects is one of the best ways to sharpen your skills, build your portfolio, and earn platform XP. Reach out to the project owners to start collaborating!
-        </Text>
+        <P>
+            Message the project owner when you apply — a two-line note about why you want in
+            beats a silent request almost every time.
+        </P>
 
-        <Text style={paragraph}>
-            Happy building!
-            <br />
-            <strong>The VELONX Team</strong>
-        </Text>
+        <Signoff />
     </EmailLayout>
 );
 
-const projectCard = {
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
-    borderLeft: '5px solid #FF7A00',
-    padding: '20px',
-    borderRadius: '8px',
-    marginBottom: '20px',
-};
-
-const projectCardTitle = {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#1A234A',
-    margin: '0 0 8px',
-};
-
-const projectCardDescription = {
-    fontSize: '14px',
-    color: '#4B5563',
-    lineHeight: '20px',
-    margin: '0 0 16px',
-};
-
-const tagSection = {
-    margin: '8px 0',
-};
-
-const tagLabel = {
-    fontSize: '12px',
-    fontWeight: 'bold',
-    color: '#374151',
-    margin: '0 0 4px',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
-};
-
-const tagsContainer = {
-    display: 'flex',
-    flexWrap: 'wrap' as const,
-    gap: '6px',
-    margin: '4px 0 8px',
-};
-
-const matchedSkillBadge = {
-    backgroundColor: '#FEF3C7',
-    color: '#D97706',
-    border: '1px solid #FCD34D',
-    borderRadius: '4px',
-    padding: '2px 8px',
-    fontSize: '12px',
-    fontWeight: '600',
-    marginRight: '6px',
+const matchTag = {
+    backgroundColor: theme.accentSoft,
+    border: `1px solid ${theme.accentBorder}`,
+    borderRadius: '999px',
+    color: theme.accentInk,
     display: 'inline-block',
-    marginBottom: '4px',
-};
-
-const techBadge = {
-    backgroundColor: '#E5E7EB',
-    color: '#374151',
-    border: '1px solid #D1D5DB',
-    borderRadius: '4px',
-    padding: '2px 8px',
     fontSize: '12px',
-    marginRight: '6px',
-    display: 'inline-block',
-    marginBottom: '4px',
+    fontWeight: 700,
+    margin: '0 6px 6px 0',
+    padding: '4px 12px',
 };
 
-const projectButton = {
-    backgroundColor: '#226CE0',
-    borderRadius: '6px',
-    color: '#ffffff',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    textDecoration: 'none',
-    textAlign: 'center' as const,
+const stackTag = {
+    backgroundColor: theme.surface,
+    border: `1px solid ${theme.border}`,
+    borderRadius: '999px',
+    color: theme.warmGray,
     display: 'inline-block',
-    padding: '8px 16px',
+    fontSize: '12px',
+    margin: '0 6px 6px 0',
+    padding: '4px 12px',
 };
 
 export default ProjectMatchEmail;

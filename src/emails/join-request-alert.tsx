@@ -1,5 +1,15 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph } from './base-layout';
+import { Text } from '@react-email/components';
+import {
+    CTA,
+    Card,
+    Chip,
+    EmailLayout,
+    H1,
+    P,
+    Signoff,
+    cardText,
+    cardTitle,
+} from './base-layout';
 
 interface JoinRequestAlertEmailProps {
     ownerName: string;
@@ -16,86 +26,35 @@ export const JoinRequestAlertEmail = ({
     message,
     reviewUrl,
 }: JoinRequestAlertEmailProps) => (
-    <EmailLayout preview={`${requesterName} wants to join ${projectTitle}`}>
-        <Heading style={heading}>New Join Request 🙌</Heading>
+    <EmailLayout
+        preview={`${requesterName} asked to join ${projectTitle}`}
+        eyebrow="Join request"
+    >
+        <H1>{requesterName} wants to join your project</H1>
 
-        <Text style={paragraph}>Hi {ownerName},</Text>
+        <P>Hi {ownerName}, someone&rsquo;s asking to help build this one.</P>
 
-        <Text style={paragraph}>
-            <strong>{requesterName}</strong> has requested to join your project:
-        </Text>
-
-        <div style={projectCard}>
-            <Text style={projectCardTitle}>{projectTitle}</Text>
+        <Card accent>
+            <Text style={cardTitle} className="vx-ink">
+                {projectTitle}
+            </Text>
             {message ? (
-                <Text style={projectCardDescription}>“{message}”</Text>
+                <Text style={{ ...cardText, fontStyle: 'italic', marginBottom: '14px' }} className="vx-soft">
+                    &ldquo;{message}&rdquo;
+                </Text>
             ) : null}
-            <div style={userTag}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <tbody>
-                        <tr>
-                            <td style={{ width: '28px', fontSize: '16px' }}>👤</td>
-                            <td style={userTagText}>Requested by: <strong>{requesterName}</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <Chip tone="neutral">Requested by {requesterName}</Chip>
+        </Card>
 
-        <Text style={paragraph}>
-            Review this request from your dashboard to accept the new member or decline it.
-        </Text>
+        <P>
+            Take a look at their profile and past work, then accept or decline. Replying within
+            a day or two keeps momentum on your side.
+        </P>
 
-        <div style={{ margin: '24px 0' }}>
-            <Link href={reviewUrl} style={button}>
-                Review Join Request
-            </Link>
-        </div>
+        <CTA href={reviewUrl}>Review the request</CTA>
 
-        <Text style={paragraph}>
-            Happy building!
-            <br />
-            <strong>The VELONX Team</strong>
-        </Text>
+        <Signoff />
     </EmailLayout>
 );
-
-const projectCard = {
-    backgroundColor: '#F0F7FF',
-    border: '1px solid #D0E5FF',
-    borderLeft: '5px solid #226CE0',
-    padding: '24px',
-    borderRadius: '12px',
-    margin: '24px 0',
-};
-
-const projectCardTitle = {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    color: '#1A234A',
-    margin: '0 0 12px',
-};
-
-const projectCardDescription = {
-    fontSize: '14px',
-    color: '#374151',
-    lineHeight: '20px',
-    margin: '0 0 16px',
-    fontStyle: 'italic',
-};
-
-const userTag = {
-    backgroundColor: '#ffffff',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px',
-    padding: '10px 14px',
-    display: 'inline-block',
-};
-
-const userTagText = {
-    fontSize: '13px',
-    color: '#4B5563',
-    margin: '0',
-};
 
 export default JoinRequestAlertEmail;

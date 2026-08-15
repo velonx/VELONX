@@ -80,13 +80,13 @@ describe('Direct Message Email Notifications', () => {
       const callArgs = sendMock.mock.calls[0][0];
       
       expect(callArgs.to).toBe('receiver@example.com');
-      expect(callArgs.subject).toBe('New message from Alice on VELONX');
-      
+      expect(callArgs.subject).toBe('Alice sent you a message on VELONX');
+
       // Ensure the message excerpt is NOT in the HTML template
       expect(callArgs.html).not.toContain('Hello Bob! This is secret.');
-      
+
       // Ensure typical LinkedIn-style text is present
-      expect(callArgs.html).toContain('You received a new message from <strong>Alice</strong> on VELONX.');
+      expect(callArgs.html).toContain('Alice sent you a message');
       expect(callArgs.html).toContain('View Message');
       expect(callArgs.html).not.toContain('Reply to Message');
     });

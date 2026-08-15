@@ -1,5 +1,4 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph, highlight } from './base-layout';
+import { A, Callout, CTA, EmailLayout, H1, P, Small, Signoff } from './base-layout';
 
 interface VerifyEmailTemplateProps {
     userName: string;
@@ -10,47 +9,35 @@ export const VerifyEmailTemplate = ({
     userName,
     verificationUrl,
 }: VerifyEmailTemplateProps) => (
-    <EmailLayout preview="Verify your VELONX email address">
-        <Heading style={heading}>Verify Your Email, {userName}</Heading>
+    <EmailLayout
+        preview="Confirm your email to finish setting up your VELONX account"
+        eyebrow="Confirm your email"
+    >
+        <H1>One tap and you&rsquo;re in, {userName}</H1>
 
-        <Text style={paragraph}>
-            Thanks for signing up! Please verify your email address to complete your registration and unlock all VELONX features.
-        </Text>
+        <P>
+            Confirming your address activates your account — projects, mentor sessions,
+            events and job alerts all unlock once it&rsquo;s done.
+        </P>
 
-        <Link href={verificationUrl} style={button}>
-            Verify Email Address
-        </Link>
+        <CTA href={verificationUrl}>Confirm email address</CTA>
 
-        <div style={highlight}>
-            <Text style={{ margin: 0, fontSize: '14px', color: '#92400e' }}>
-                ⏰ This link will expire in 24 hours for security reasons.
-            </Text>
-        </div>
+        <Callout icon="⏳">This link works for the next 24 hours, then it expires.</Callout>
 
-        <Text style={paragraph}>
-            If you didn't create an account on VELONX, you can safely ignore this email.
-        </Text>
+        <P>
+            Didn&rsquo;t sign up for VELONX? Ignore this email — nothing is created until the
+            link is used.
+        </P>
 
-        <Text style={smallText}>
-            Or copy and paste this URL into your browser:{' '}
-            <Link href={verificationUrl} style={linkStyle}>
+        <Small>
+            Button not working? Paste this into your browser:{' '}
+            <A href={verificationUrl} style={{ wordBreak: 'break-all' }}>
                 {verificationUrl}
-            </Link>
-        </Text>
+            </A>
+        </Small>
+
+        <Signoff />
     </EmailLayout>
 );
-
-const smallText = {
-    color: '#6b7280',
-    fontSize: '14px',
-    lineHeight: '20px',
-    margin: '16px 0 0',
-};
-
-const linkStyle = {
-    color: '#226CE0',
-    textDecoration: 'underline',
-    wordBreak: 'break-all' as const,
-};
 
 export default VerifyEmailTemplate;

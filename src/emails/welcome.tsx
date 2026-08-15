@@ -1,174 +1,140 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph } from './base-layout';
+import { Section, Text } from '@react-email/components';
+import {
+    A,
+    CTA,
+    Card,
+    EmailLayout,
+    H1,
+    H2,
+    P,
+    SITE_URL,
+    Signoff,
+    theme,
+} from './base-layout';
 
 interface WelcomeEmailProps {
     userName: string;
 }
 
+const steps = [
+    {
+        title: 'Fill in your profile',
+        body: 'Skills, college and links. It takes two minutes and it is what our matching engine reads.',
+    },
+    {
+        title: 'Join a live project',
+        body: 'Real teams shipping real work — the fastest way to turn coursework into a portfolio.',
+    },
+    {
+        title: 'Book a mentor session',
+        body: 'Thirty minutes with someone who has already done the thing you are trying to do.',
+    },
+];
+
 export const WelcomeEmail = ({ userName }: WelcomeEmailProps) => (
-    <EmailLayout preview="Welcome to VELONX - Start Building!">
-        <Heading style={heading}>Welcome to VELONX, {userName}! 🚀</Heading>
+    <EmailLayout
+        preview="Your VELONX account is ready — here are the first three things to do"
+        eyebrow="Welcome aboard"
+    >
+        <H1>Welcome to VELONX, {userName}</H1>
 
-        <Text style={paragraph}>
-            We're thrilled to have you join our community of innovators, builders, and learners!
-        </Text>
+        <P>
+            You&rsquo;re in. VELONX is where students build things that count — shipping projects
+            with teams, learning from mentors, and getting in front of the people who hire.
+        </P>
 
-        <Text style={paragraph}>
-            Here is what you can accomplish on VELONX:
-        </Text>
+        <P>Start with these three, in order:</P>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '24px 0' }}>
-            <tbody>
-                <tr>
-                    <td style={featureIconCol}>🚀</td>
-                    <td style={featureTextCol}>
-                        <strong style={featureTitle}>Build Real Projects</strong>
-                        <span style={featureDesc}>Collaborate on real-world projects, build your portfolio, and gain hands-on experience.</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style={featureIconCol}>🤝</td>
-                    <td style={featureTextCol}>
-                        <strong style={featureTitle}>Connect with Mentors</strong>
-                        <span style={featureDesc}>Get guidance from experienced professionals in the industry to accelerate your career growth.</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style={featureIconCol}>📅</td>
-                    <td style={featureTextCol}>
-                        <strong style={featureTitle}>Join Tech Events</strong>
-                        <span style={featureDesc}>Access exclusive hackathons, masterclasses, and workshops to stay ahead of the curve.</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style={featureIconCol}>🏆</td>
-                    <td style={featureTextCol}>
-                        <strong style={featureTitle}>Earn XP & Badges</strong>
-                        <span style={featureDesc}>Track your progress, earn experience points (XP), collect badges, and climb the leaderboard.</span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        {steps.map((step, index) => (
+            <Card key={step.title}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }} cellPadding={0} cellSpacing={0} role="presentation">
+                    <tbody>
+                        <tr>
+                            <td style={stepNumberCol}>
+                                <span style={stepNumber}>{index + 1}</span>
+                            </td>
+                            <td style={{ verticalAlign: 'top' }}>
+                                <Text style={stepTitle} className="vx-ink">
+                                    {step.title}
+                                </Text>
+                                <Text style={stepBody} className="vx-soft">
+                                    {step.body}
+                                </Text>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </Card>
+        ))}
 
-        <div style={roadmapCard}>
-            <Text style={roadmapHeader}>Your Onboarding Journey 🗺️</Text>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <tbody>
-                    <tr>
-                        <td style={{ width: '30px', padding: '8px 0' }}>
-                            <span style={stepCircle}>1</span>
-                        </td>
-                        <td style={roadmapStepText}>Complete your Profile</td>
-                    </tr>
-                    <tr>
-                        <td style={{ width: '30px', padding: '8px 0' }}>
-                            <span style={stepCircle}>2</span>
-                        </td>
-                        <td style={roadmapStepText}>Browse and Join a Project</td>
-                    </tr>
-                    <tr>
-                        <td style={{ width: '30px', padding: '8px 0' }}>
-                            <span style={stepCircle}>3</span>
-                        </td>
-                        <td style={roadmapStepText}>Book your first Mentor Session</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <CTA href={`${SITE_URL}/dashboard`}>Open my dashboard</CTA>
 
-        <Text style={paragraph}>
-            Ready to dive in?
-        </Text>
+        <H2>What else is waiting for you</H2>
 
-        <Link
-            href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/dashboard`}
-            style={button}
-        >
-            Go to Dashboard
-        </Link>
+        <Section>
+            <Text style={bulletLine} className="vx-soft">
+                <strong style={{ color: theme.ink }} className="vx-ink">Events</strong> — hackathons, workshops and
+                masterclasses you can join from anywhere.
+            </Text>
+            <Text style={bulletLine} className="vx-soft">
+                <strong style={{ color: theme.ink }} className="vx-ink">Opportunities</strong> — internships and
+                roles matched to the skills on your profile.
+            </Text>
+            <Text style={bulletLine} className="vx-soft">
+                <strong style={{ color: theme.ink }} className="vx-ink">XP &amp; badges</strong> — proof of the work
+                you&rsquo;ve done, visible on your public profile.
+            </Text>
+        </Section>
 
-        <Text style={paragraph}>
-            Need help getting started? Check out our{' '}
-            <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in'}/resources`} style={link}>
-                resources page
-            </Link>{' '}
-            or reach out to our community.
-        </Text>
+        <P>
+            Stuck anywhere? The <A href={`${SITE_URL}/resources`}>resources hub</A> covers the
+            basics, and <A href={`${SITE_URL}/support`}>support</A> answers everything else.
+        </P>
 
-        <Text style={paragraph}>
-            Happy building!
-            <br />
-            <strong>The VELONX Team</strong>
-        </Text>
+        <Signoff />
     </EmailLayout>
 );
 
-const featureIconCol = {
-    padding: '12px 16px 12px 0',
-    verticalAlign: 'top',
-    fontSize: '24px',
+const stepNumberCol = {
+    verticalAlign: 'top' as const,
     width: '40px',
 };
 
-const featureTextCol = {
-    padding: '12px 0',
-    verticalAlign: 'top',
-};
-
-const featureTitle = {
-    display: 'block',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#1A234A',
-    margin: '0 0 4px',
-};
-
-const featureDesc = {
-    display: 'block',
-    fontSize: '14px',
-    color: '#6b7280',
-    lineHeight: '20px',
-};
-
-const roadmapCard = {
-    backgroundColor: '#F0F7FF',
-    border: '1px solid #D0E5FF',
-    borderRadius: '12px',
-    padding: '20px 24px',
-    margin: '32px 0',
-};
-
-const roadmapHeader = {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#1A234A',
-    margin: '0 0 16px',
-};
-
-const stepCircle = {
-    display: 'block',
-    width: '24px',
-    height: '24px',
-    borderRadius: '12px',
-    backgroundColor: '#226CE0',
-    color: '#ffffff',
-    fontSize: '12px',
-    fontWeight: 'bold',
+const stepNumber = {
+    backgroundColor: theme.accent,
+    borderRadius: '999px',
+    color: '#FFFFFF',
+    display: 'inline-block',
+    fontSize: '13px',
+    fontWeight: 700,
+    height: '26px',
+    lineHeight: '26px',
     textAlign: 'center' as const,
-    lineHeight: '24px',
+    width: '26px',
 };
 
-const roadmapStepText = {
-    padding: '8px 0 8px 12px',
+const stepTitle = {
+    color: theme.ink,
+    fontSize: '16px',
+    fontWeight: 700,
+    lineHeight: '22px',
+    margin: '2px 0 4px',
+};
+
+const stepBody = {
+    color: theme.warmGray,
     fontSize: '14px',
-    color: '#374151',
-    fontWeight: '600',
-    verticalAlign: 'middle',
+    lineHeight: '22px',
+    margin: '0',
 };
 
-const link = {
-    color: '#226CE0',
-    textDecoration: 'underline',
+const bulletLine = {
+    borderTop: `1px solid ${theme.borderSoft}`,
+    color: theme.warmGray,
+    fontSize: '15px',
+    lineHeight: '24px',
+    margin: '0',
+    padding: '12px 0',
 };
 
 export default WelcomeEmail;

@@ -1,5 +1,13 @@
-import { Heading, Link, Text } from '@react-email/components';
-import { EmailLayout, button, heading, paragraph } from './base-layout';
+import { Section, Text } from '@react-email/components';
+import {
+    CTA,
+    EmailLayout,
+    H1,
+    P,
+    SectionLabel,
+    Signoff,
+    theme,
+} from './base-layout';
 
 interface PostCommentAlertEmailProps {
     userName: string;
@@ -10,8 +18,6 @@ interface PostCommentAlertEmailProps {
     unsubscribeUrl?: string;
 }
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://velonx.in';
-
 export const PostCommentAlertEmail = ({
     userName,
     commenterName,
@@ -20,83 +26,56 @@ export const PostCommentAlertEmail = ({
     postUrl,
     unsubscribeUrl,
 }: PostCommentAlertEmailProps) => (
-    <EmailLayout preview={`${commenterName} commented on your post`}>
-        <Heading style={heading}>Someone Commented on Your Post 💬</Heading>
+    <EmailLayout
+        preview={`${commenterName} replied to your post`}
+        eyebrow="New comment"
+        unsubscribeUrl={unsubscribeUrl}
+    >
+        <H1>{commenterName} replied to your post</H1>
 
-        <Text style={paragraph}>Hi {userName},</Text>
+        <P>Hi {userName}, your post got a response in the community.</P>
 
-        <Text style={paragraph}>
-            <strong>{commenterName}</strong> left a comment on your post. Join the conversation!
-        </Text>
+        <Section style={quoteBlockMuted} className="vx-card">
+            <SectionLabel>Your post</SectionLabel>
+            <Text style={quoteText} className="vx-soft">
+                {postExcerpt}
+            </Text>
+        </Section>
 
-        {/* Post excerpt */}
-        <div style={postCard}>
-            <Text style={sectionLabel}>YOUR POST</Text>
-            <Text style={quoteText}>"{postExcerpt}"</Text>
-        </div>
+        <Section style={quoteBlockAccent} className="vx-card-accent">
+            <SectionLabel>{commenterName} said</SectionLabel>
+            <Text style={quoteText} className="vx-soft">
+                {commentExcerpt}
+            </Text>
+        </Section>
 
-        {/* Comment */}
-        <div style={commentCard}>
-            <Text style={sectionLabel}>💬 {commenterName.toUpperCase()} COMMENTED</Text>
-            <Text style={quoteText}>"{commentExcerpt}"</Text>
-        </div>
+        <CTA href={postUrl}>Read &amp; reply</CTA>
 
-        <div style={{ textAlign: 'center' as const, margin: '24px 0' }}>
-            <Link href={postUrl} style={button}>
-                View &amp; Reply →
-            </Link>
-        </div>
-
-        <Text style={paragraph}>
-            Don't want comment notifications?{' '}
-            <Link
-                href={unsubscribeUrl || `${SITE_URL}/settings/notifications`}
-                style={linkStyle}
-            >
-                Update your email preferences
-            </Link>
-        </Text>
+        <Signoff />
     </EmailLayout>
 );
 
-const postCard = {
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
-    borderLeft: '4px solid #9CA3AF',
-    borderRadius: '8px',
+const quoteBlockMuted = {
+    backgroundColor: theme.surfaceMuted,
+    borderLeft: `3px solid ${theme.border}`,
+    borderRadius: '4px 12px 12px 4px',
+    margin: '18px 0',
     padding: '16px 20px',
-    margin: '16px 0',
 };
 
-const commentCard = {
-    backgroundColor: '#EBF5FB',
-    border: '1px solid #BFDBFE',
-    borderLeft: '4px solid #226CE0',
-    borderRadius: '8px',
+const quoteBlockAccent = {
+    backgroundColor: theme.accentSoft,
+    borderLeft: `3px solid ${theme.accent}`,
+    borderRadius: '4px 12px 12px 4px',
+    margin: '18px 0',
     padding: '16px 20px',
-    margin: '16px 0',
-};
-
-const sectionLabel = {
-    fontSize: '10px',
-    fontWeight: 'bold',
-    color: '#9CA3AF',
-    letterSpacing: '1px',
-    margin: '0 0 8px',
-    textTransform: 'uppercase' as const,
 };
 
 const quoteText = {
+    color: theme.warmGray,
     fontSize: '15px',
-    color: '#374151',
-    fontStyle: 'italic',
-    lineHeight: '22px',
+    lineHeight: '24px',
     margin: '0',
-};
-
-const linkStyle = {
-    color: '#226CE0',
-    textDecoration: 'underline',
 };
 
 export default PostCommentAlertEmail;
