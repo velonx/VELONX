@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import CareerDetailClient from "./CareerDetailClient";
 import { OpportunityService } from "@/lib/services/career.service";
 import { MOCK_JOBS, getTechStack, isJobOpen } from "@/lib/data/careerMockData";
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://velonx.in";
-  const pageUrl = `${siteUrl}/career/${decodedSlug}`;
+  let pageUrl = `${siteUrl}/career/${decodedSlug}`;
 
   try {
     // 1. Check mock metadata first
@@ -69,6 +70,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // 2. Fetch from database
     const opportunity = await OpportunityService.getById(decodedSlug);
     if (opportunity) {
+      const canonicalSlug = opportunity.slug || decodedSlug;
+      pageUrl = `${siteUrl}/career/${canonicalSlug}`;
+
       // Security: if DRAFT, metadata is only visible to ADMIN
       if (opportunity.status === "DRAFT") {
         const session = await auth();
@@ -280,6 +284,11 @@ export default async function CareerDetailPage({ params }: Props) {
     try {
       const dbOpp = await OpportunityService.getById(decodedSlug);
       if (dbOpp) {
+        // If accessed by raw ObjectId, redirect to canonical slug URL
+        if (dbOpp.slug && dbOpp.slug !== decodedSlug && /^[0-9a-fA-F]{24}$/.test(decodedSlug)) {
+          redirect(`/career/${encodeURIComponent(dbOpp.slug)}`);
+        }
+
         // Security check: only admins can view drafts
         if (dbOpp.status === "DRAFT") {
           const session = await auth();
@@ -301,6 +310,10 @@ export default async function CareerDetailPage({ params }: Props) {
         opportunity = JSON.parse(JSON.stringify(dbOpp));
       }
     } catch (err) {
+      // Re-throw redirect errors so Next.js redirect works
+      if ((err as any)?.digest?.startsWith("NEXT_REDIRECT")) {
+        throw err;
+      }
       console.error("Failed server-side fetch of opportunity:", err);
     }
   }

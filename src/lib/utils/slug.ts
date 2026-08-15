@@ -113,48 +113,99 @@ export async function generateUniqueEventSlug(
 }
 
 /**
- * Generate a unique slug for an opportunity, appending a numeric suffix if
- * the base slug already exists (e.g. "my-opp", "my-opp-2", "my-opp-3").
+ * Convert opportunity title + company into a clean, number-free URL slug.
+ * Removes years (2026, 2027), job codes, and numeric suffixes.
+ */
+export function toOpportunitySlug(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    // Remove job IDs like "job-id-r0442325" or "job id: 12345"
+    .replace(/job\s*id[:\s\-]*[a-z0-9]+/gi, "")
+    // Remove all numbers/digits (e.g. 2026, 2027, 1, 2, 3)
+    .replace(/\d+/g, "")
+    // Replace non-word characters (except hyphens and whitespace) with space
+    .replace(/[^\w\s-]/g, "")
+    // Collapse spaces and underscores into hyphens
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-")
+    // Remove leading and trailing hyphens
+    .replace(/^-+|-+$/g, "")
+    .substring(0, 100);
+}
+
+/**
+ * Generate a unique slug for an opportunity, appending company name to ensure
+ * clean, descriptive, and human-friendly URLs (e.g. "software-engineer-google")
+ * completely free of numbers.
  *
- * @param title     The opportunity title to derive the slug from
- * @param excludeId Optional opportunity ID to exclude when checking uniqueness (for updates)
+ * @param title               The opportunity title to derive the slug from
+ * @param companyOrExcludeId  Optional company name or opportunity ID to exclude
+ * @param excludeId           Optional opportunity ID to exclude when checking uniqueness (for updates)
  */
 export async function generateUniqueOpportunitySlug(
   title: string,
+  companyOrExcludeId?: string,
   excludeId?: string
 ): Promise<string> {
-  const base = toSlug(title);
+  let company: string | undefined;
+  let exclude: string | undefined;
+
+  // Support both (title, excludeId) and (title, company, excludeId) signatures
+  if (companyOrExcludeId && excludeId !== undefined) {
+    company = companyOrExcludeId;
+    exclude = excludeId;
+  } else if (companyOrExcludeId) {
+    // If 2nd arg looks like an ObjectId (24 hex chars) or UUID, treat as excludeId
+    if (/^[0-9a-fA-F]{24}$/.test(companyOrExcludeId) || /^[0-9a-f]{8}-[0-9a-f]{4}/.test(companyOrExcludeId)) {
+      exclude = companyOrExcludeId;
+    } else {
+      company = companyOrExcludeId;
+    }
+  }
+
+  // Base text: combine title + company if company is available and not already in title
+  let baseText = title;
+  if (company && company.trim()) {
+    const trimmedCompany = company.trim();
+    const titleLower = title.toLowerCase();
+    const companyLower = trimmedCompany.toLowerCase();
+    if (!titleLower.includes(companyLower)) {
+      baseText = `${title} ${trimmedCompany}`;
+    }
+  }
+
+  const base = toOpportunitySlug(baseText);
 
   // Check if base slug is available
   const existing = await prisma.opportunity.findFirst({
     where: {
       slug: base,
-      ...(excludeId ? { id: { not: excludeId } } : {}),
+      ...(exclude ? { id: { not: exclude } } : {}),
     },
     select: { id: true },
   });
 
   if (!existing) return base;
 
-  // Find all slugs that start with base + "-" + number
-  const siblings = await prisma.opportunity.findMany({
-    where: {
-      slug: { startsWith: `${base}-` },
-      ...(excludeId ? { id: { not: excludeId } } : {}),
-    },
-    select: { slug: true },
-  });
+  // If identical slug exists, disambiguate with clean letter suffixes instead of numbers
+  const letterSuffixes = ["b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
 
-  const suffixPattern = new RegExp(`^${base}-(\\d+)$`);
-  const usedNumbers = siblings
-    .map((o) => {
-      const match = o.slug?.match(suffixPattern);
-      return match ? parseInt(match[1], 10) : 0;
-    })
-    .filter(Boolean);
+  for (const suffix of letterSuffixes) {
+    const candidate = `${base}-${suffix}`;
+    const found = await prisma.opportunity.findFirst({
+      where: {
+        slug: candidate,
+        ...(exclude ? { id: { not: exclude } } : {}),
+      },
+      select: { id: true },
+    });
+    if (!found) {
+      return candidate;
+    }
+  }
 
-  const next = usedNumbers.length > 0 ? Math.max(...usedNumbers) + 1 : 2;
-  return `${base}-${next}`;
+  return `${base}-alt`;
 }
 
 /**

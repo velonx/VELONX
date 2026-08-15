@@ -325,7 +325,7 @@ describe('OpportunityService', () => {
     it('should create opportunity successfully', async () => {
       const mockOpportunity = {
         id: '60b9f15f3f88c80015b6d1a1',
-        slug: 'software-engineer-internship',
+        slug: 'software-engineer-internship-tech-corp',
         ...validOpportunityData,
         postedBy: 'admin1',
         createdAt: new Date(),
@@ -340,7 +340,7 @@ describe('OpportunityService', () => {
       expect(prisma.opportunity.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           ...validOpportunityData,
-          slug: 'software-engineer-internship',
+          slug: 'software-engineer-internship-tech-corp',
           postedBy: 'admin1',
         }),
       })
@@ -358,7 +358,7 @@ describe('OpportunityService', () => {
 
       const mockOpportunity = {
         id: '60b9f15f3f88c80015b6d1a1',
-        slug: 'software-engineer',
+        slug: 'software-engineer-tech-corp',
         ...dataWithoutStatus,
         status: 'ACTIVE',
         postedBy: 'admin1',
@@ -371,7 +371,7 @@ describe('OpportunityService', () => {
 
       expect(prisma.opportunity.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
-          slug: 'software-engineer',
+          slug: 'software-engineer-tech-corp',
           status: 'ACTIVE',
         }),
       })
@@ -485,7 +485,8 @@ describe('OpportunityService', () => {
       const existingOpportunity = {
         id: '60b9f15f3f88c80015b6d1a1',
         title: 'Original Title',
-        slug: 'original-title',
+        company: 'Acme',
+        slug: 'original-title-acme',
       }
 
       const updateData = {
@@ -497,7 +498,7 @@ describe('OpportunityService', () => {
       const updatedOpportunity = {
         id: '60b9f15f3f88c80015b6d1a1',
         ...updateData,
-        slug: 'updated-title',
+        slug: 'updated-title-acme',
       }
 
       vi.mocked(prisma.opportunity.findUnique).mockResolvedValue(existingOpportunity as any)
@@ -511,7 +512,42 @@ describe('OpportunityService', () => {
         where: { id: '60b9f15f3f88c80015b6d1a1' },
         data: {
           ...updateData,
-          slug: 'updated-title',
+          slug: 'updated-title-acme',
+        },
+      })
+    })
+
+    it('should preserve existing slug when title and company are unchanged', async () => {
+      const existingOpportunity = {
+        id: '60b9f15f3f88c80015b6d1a1',
+        title: 'Software Engineer',
+        company: 'Google',
+        slug: 'software-engineer-google',
+      }
+
+      const updateData = {
+        title: 'Software Engineer',
+        company: 'Google',
+        salary: '₹20 LPA',
+        status: 'ACTIVE',
+      }
+
+      const updatedOpportunity = {
+        id: '60b9f15f3f88c80015b6d1a1',
+        ...updateData,
+        slug: 'software-engineer-google',
+      }
+
+      vi.mocked(prisma.opportunity.findUnique).mockResolvedValue(existingOpportunity as any)
+      vi.mocked(prisma.opportunity.update).mockResolvedValue(updatedOpportunity as any)
+
+      const result = await OpportunityService.update('60b9f15f3f88c80015b6d1a1', updateData as any)
+
+      expect(result).toEqual(updatedOpportunity)
+      expect(prisma.opportunity.update).toHaveBeenCalledWith({
+        where: { id: '60b9f15f3f88c80015b6d1a1' },
+        data: {
+          ...updateData,
         },
       })
     })

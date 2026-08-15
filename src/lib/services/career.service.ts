@@ -78,7 +78,7 @@ export class MockInterviewService {
 // Opportunity Services
 export class OpportunityService {
   static async create(data: OpportunityInput, postedBy: string) {
-    const slug = await generateUniqueOpportunitySlug(data.title);
+    const slug = await generateUniqueOpportunitySlug(data.title, data.company);
     const { deadline: deadlineStr, ...rest } = data;
     return prisma.opportunity.create({
       data: {
@@ -149,7 +149,7 @@ export class OpportunityService {
 
     if (opportunity && !opportunity.slug) {
       try {
-        const newSlug = await generateUniqueOpportunitySlug(opportunity.title);
+        const newSlug = await generateUniqueOpportunitySlug(opportunity.title, opportunity.company, opportunity.id);
         opportunity = await prisma.opportunity.update({
           where: { id: opportunity.id },
           data: { slug: newSlug },
@@ -171,28 +171,20 @@ export class OpportunityService {
       updateData.deadline = deadlineStr ? new Date(deadlineStr) : null;
     }
     
-    // Check if title is being updated, if so update the slug
-    if (data.title !== undefined) {
-      // Find existing to check if title changed
-      const existing = await prisma.opportunity.findUnique({
-        where: { id },
-        select: { title: true, slug: true },
-      });
-      if (existing) {
-        if (data.title !== existing.title) {
-          updateData.slug = await generateUniqueOpportunitySlug(data.title, id);
-        } else if (!existing.slug) {
-          updateData.slug = await generateUniqueOpportunitySlug(data.title, id);
-        }
-      }
-    } else {
-      // If title is not being updated, check if it's missing slug and backfill it
-      const existing = await prisma.opportunity.findUnique({
-        where: { id },
-        select: { title: true, slug: true },
-      });
-      if (existing && !existing.slug) {
-        updateData.slug = await generateUniqueOpportunitySlug(existing.title, id);
+    // Find existing to check if title or company changed, or if slug is missing
+    const existing = await prisma.opportunity.findUnique({
+      where: { id },
+      select: { title: true, company: true, slug: true },
+    });
+
+    if (existing) {
+      const newTitle = data.title !== undefined ? data.title : existing.title;
+      const newCompany = data.company !== undefined ? data.company : existing.company;
+      const titleChanged = data.title !== undefined && data.title !== existing.title;
+      const companyChanged = data.company !== undefined && data.company !== existing.company;
+
+      if (titleChanged || companyChanged || !existing.slug) {
+        updateData.slug = await generateUniqueOpportunitySlug(newTitle, newCompany, id);
       }
     }
 
