@@ -242,12 +242,11 @@ describe('Student Dashboard Layout - Preservation Property', () => {
 
       const { container } = render(<StudentDashboard />)
 
-      // Tab pill row should expose the same sections the old sidebar menu did
-      expect(container.textContent).toContain('Overview')
-      expect(container.textContent).toContain('Community')
-      expect(container.textContent).toContain('Activity')
-      expect(container.textContent).toContain('Redemptions')
-      expect(container.textContent).toContain('Reports')
+      // Tab pill row should expose the new streamlined dashboard sections
+      expect(container.textContent).toContain('Home')
+      expect(container.textContent).toContain('My Activity')
+      expect(container.textContent).toContain('Progress')
+      expect(container.textContent).toContain('Report Issue')
 
       const mainContent = container.querySelector('main')
       expect(mainContent).toBeTruthy()
