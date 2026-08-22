@@ -22,7 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { DailyCheckIn } from "@/components/daily-check-in";
 import BadgeIcon from "@/components/badges/BadgeIcon";
-import UpcomingEventsWidget from "@/components/dashboard/student/Overview/UpcomingEventsWidget";
+import UpcomingEventsWidget from "./UpcomingEventsWidget";
 import { calculateLevel } from "@/lib/utils/xp-constants";
 
 interface HomeTabProps {
