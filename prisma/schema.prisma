@@ -194,6 +194,7 @@ model User {
   mentorSessions   MentorSession[]   @relation("StudentSessions")
   mentorReviews    MentorReview[]    @relation("StudentReviews")
   notifications    Notification[]
+  pushSubscriptions PushSubscription[]
   resourceVisits   ResourceVisit[]
   blogPostReads    BlogPostRead[]
 
@@ -884,6 +885,24 @@ model Notification {
   @@index([userId, createdAt])
   @@index([userId, read])
   @@map("notifications")
+}
+
+// Push Subscription Model for Browser Desktop and Mobile Notifications
+model PushSubscription {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
 
 // Mock Interview Enums

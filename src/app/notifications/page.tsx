@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { notificationsApi } from "@/lib/api/client";
 import { useRouter } from "next/navigation";
+import { PushNotificationToggle } from "@/components/notifications/PushNotificationToggle";
 
 type NotificationType = {
     id: string;
@@ -161,6 +162,8 @@ export default function NotificationsPage() {
                     </div>
                 </div>
 
+                <PushNotificationToggle className="mb-8" />
+
                 {loading ? (
                     <div className="text-center py-20 bg-card rounded-[48px] border border-border">
                         <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 text-muted-foreground animate-pulse">
@@ -193,7 +196,7 @@ export default function NotificationsPage() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.05 }}
                                     onClick={() => handleNotificationClick(notif)}
-                                    className={`p-6 rounded-[32px] border transition-all flex gap-5 ${notif.actionUrl ? 'cursor-pointer hover:shadow-lg' : ''
+                                    className={`p-6 rounded-4xl border transition-all flex gap-5 ${notif.actionUrl ? 'cursor-pointer hover:shadow-lg' : ''
                                         } ${notif.read
                                             ? "bg-card border-border"
                                             : "bg-[#F0771A]/5 border-[#F0771A]/20 shadow-lg shadow-[#F0771A]/5"

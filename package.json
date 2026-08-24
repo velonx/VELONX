@@ -102,6 +102,7 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.21.0",
+    "web-push": "^3.6.7",
     "ws": "^8.18.0",
     "zod": "^4.3.5"
   },
@@ -127,6 +128,7 @@
     "@types/react-dom": "^18",
     "@types/supertest": "^6.0.3",
     "@types/swagger-ui-react": "^5.18.0",
+    "@types/web-push": "^3.6.4",
     "@types/ws": "^8.18.1",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.17",

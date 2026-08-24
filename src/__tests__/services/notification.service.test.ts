@@ -25,6 +25,12 @@ vi.mock('@/lib/prisma', () => ({
     user: {
       findUnique: vi.fn(),
     },
+    pushSubscription: {
+      findMany: vi.fn().mockResolvedValue([]),
+      create: vi.fn(),
+      update: vi.fn(),
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+    },
   },
 }))
 
@@ -629,7 +635,7 @@ describe('NotificationService', () => {
       const createCall = vi.mocked(prisma.notification.create).mock.calls[0][0]
       
       // Verify the metadata contains ISO timestamp
-      expect(createCall.data.metadata.completedAt).toBe(completionDate.toISOString())
+      expect((createCall.data.metadata as any)?.completedAt).toBe(completionDate.toISOString())
     })
   })
 })

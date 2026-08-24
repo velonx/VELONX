@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma, NotificationType } from "@prisma/client";
 import { NotFoundError, ValidationError, AuthorizationError } from "@/lib/utils/errors";
+import { pushNotificationService } from "@/lib/services/push-notification.service";
 
 /**
  * Input type for creating a notification
@@ -86,6 +87,20 @@ export class NotificationService {
         metadata: data.metadata,
         read: false, // Default read status
       },
+    });
+
+    // Send Web Push notification asynchronously (non-blocking)
+    pushNotificationService.sendPushToUser(data.userId, {
+      title: data.title,
+      body: data.description,
+      actionUrl: data.actionUrl || '/notifications',
+      data: {
+        notificationId: notification?.id,
+        type: data.type,
+        ...(data.metadata || {}),
+      },
+    }).catch((pushErr) => {
+      console.warn('[NotificationService] Web Push failed:', pushErr?.message || pushErr);
     });
 
     return notification;

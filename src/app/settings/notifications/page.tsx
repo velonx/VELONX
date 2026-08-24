@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { EmailPreferenceService } from '@/lib/services/email-preference.service';
 import NotificationPreferencesForm from '@/components/settings/NotificationPreferencesForm';
+import { PushNotificationToggle } from '@/components/notifications/PushNotificationToggle';
 import Link from 'next/link';
 import { Bell, ArrowLeft, Settings } from 'lucide-react';
 
@@ -44,10 +45,13 @@ export default async function NotificationPreferencesPage() {
                             Settings
                         </p>
                         <h1 className="heading-section text-2xl leading-none">
-                            Email Notifications
+                            Notification Preferences
                         </h1>
                     </div>
                 </div>
+
+                {/* Push Notification Toggle */}
+                <PushNotificationToggle className="mb-8" />
 
                 {/* Description card */}
                 <div className="bg-[#F0771A]/5 border border-[#F0771A]/20 rounded-2xl p-5 flex gap-4 mb-8">
