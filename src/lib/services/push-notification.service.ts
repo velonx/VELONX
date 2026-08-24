@@ -24,9 +24,33 @@ export interface PushNotificationPayload {
   actions?: Array<{ action: string; title: string }>;
 }
 
-const DEFAULT_VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BOHrmv3p1yT0e23nEt85fpW2HBrjxF47hsoq0fHxcuvuzwRELZNmX_ROtUHMbADFE7hUaNBwP3-CuJcXwnXhmIA';
-const DEFAULT_VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || 'vLlBbOcBXap7hXCzuqCf9UKVFaWDC7F04XC0bYbLlQ0';
-const DEFAULT_VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:support@velonx.in';
+// Lazy-load or dynamically generate runtime keys if not provided in environment variables
+let runtimeKeys: { publicKey: string; privateKey: string } | null = null;
+
+function getVapidKeys() {
+  const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const privateKey = process.env.VAPID_PRIVATE_KEY;
+  const subject = process.env.VAPID_SUBJECT || 'mailto:support@velonx.in';
+
+  if (publicKey && privateKey) {
+    return { publicKey, privateKey, subject };
+  }
+
+  // Fallback: generate dynamic in-memory key pair (never hardcoded in source)
+  if (!runtimeKeys) {
+    try {
+      runtimeKeys = webpush.generateVAPIDKeys();
+    } catch {
+      runtimeKeys = { publicKey: '', privateKey: '' };
+    }
+  }
+
+  return {
+    publicKey: runtimeKeys.publicKey,
+    privateKey: runtimeKeys.privateKey,
+    subject,
+  };
+}
 
 export class PushNotificationService {
   private initialized = false;
@@ -38,12 +62,11 @@ export class PushNotificationService {
   private initVapid() {
     if (this.initialized) return;
     try {
-      webpush.setVapidDetails(
-        DEFAULT_VAPID_SUBJECT,
-        DEFAULT_VAPID_PUBLIC,
-        DEFAULT_VAPID_PRIVATE
-      );
-      this.initialized = true;
+      const { publicKey, privateKey, subject } = getVapidKeys();
+      if (publicKey && privateKey) {
+        webpush.setVapidDetails(subject, publicKey, privateKey);
+        this.initialized = true;
+      }
     } catch (error) {
       console.error('[PushNotificationService] Failed to set VAPID details:', error);
     }
@@ -53,7 +76,7 @@ export class PushNotificationService {
    * Returns the public VAPID key needed for client browser push subscription
    */
   getPublicKey(): string {
-    return DEFAULT_VAPID_PUBLIC;
+    return getVapidKeys().publicKey;
   }
 
   /**
