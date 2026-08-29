@@ -59,14 +59,6 @@ export default function AddEventForm({
         // 3. Update database
         // 4. Refresh meeting list
 
-        console.log("New Event Data:", {
-            ...formData,
-            maxAttendees: parseInt(formData.maxAttendees),
-            currentAttendees: 0,
-            status: "upcoming",
-            createdBy: "admin@velonx.in",
-        });
-
         // Reset form
         setFormData({
             title: "",
