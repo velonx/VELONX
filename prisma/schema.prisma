@@ -1683,3 +1683,43 @@ model Conversation {
   @@index([participant2Id, lastMessageAt])
   @@map("conversations")
 }
+
+// Banner Enums
+enum BannerAudience {
+  ALL
+  GUESTS
+  LOGGED_IN
+}
+
+enum BannerFrequency {
+  ONCE // Show once per browser until the banner is edited
+  EVERY_SESSION // Show once per browser session
+  EVERY_VISIT // Show on every full page load
+}
+
+// Banner — admin-managed pop-up banner shown across the site
+model Banner {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  message         String?
+  imageUrl        String?
+  ctaText         String?
+  ctaUrl          String?
+  isActive        Boolean         @default(false)
+  audience        BannerAudience  @default(ALL)
+  frequency       BannerFrequency @default(ONCE)
+  pathPrefixes    String[]        @default([]) // empty = every page
+  delaySeconds    Int             @default(2)
+  closeOnBackdrop Boolean         @default(true) // close via outside click / Esc (X button always shown)
+  priority        Int             @default(0) // higher shows first
+  startsAt        DateTime?
+  endsAt          DateTime?
+  views           Int             @default(0)
+  clicks          Int             @default(0)
+  createdById     String?         @db.ObjectId
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([isActive, priority])
+  @@map("banners")
+}

@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import { AppShellSwitcher } from "@/components/app-shell/AppShellSwitcher";
 import { GoogleAnalytics } from "@/components/analytics";
 import { ThemeProvider } from "@/components/theme-provider";
+import { BannerPopup } from "@/components/banner/BannerPopup";
 
 const geistSans = { variable: "--font-geist-sans" };
 const geistMono = { variable: "--font-geist-mono" };
@@ -67,6 +68,7 @@ export default function RootLayout({
                 {children}
               </ScrollAnimationProvider>
             </AppShellSwitcher>
+            <BannerPopup />
           </ThemeProvider>
         </Providers>
       </body>
