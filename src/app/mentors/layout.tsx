@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { generatePageMetadata } from "@/lib/seo.config";
 
 export function generateMetadata(): Metadata {
@@ -14,5 +15,8 @@ export default function MentorsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  // Mentorship feature disabled for now — remove this redirect (and restore the
+  // line below) to re-enable the page.
+  redirect("/home");
+  // return <>{children}</>;
 }

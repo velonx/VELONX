@@ -24,7 +24,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const primaryNavLinks = [
     { href: "/events", label: "Events" },
     { href: "/projects", label: "Projects" },
-    { href: "/mentors", label: "Mentors" },
+    // { href: "/mentors", label: "Mentors" }, // Mentorship feature disabled for now
     { href: "/resources", label: "Resources" },
     { href: "/career", label: "Career" },
     { href: "/community", label: "Community" },

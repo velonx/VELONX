@@ -200,7 +200,8 @@ export default function AdminDashboard() {
 
     const navItems = [
         { icon: Layout, label: "Management", value: "management" },
-        { icon: Users, label: "Mentors", value: "mentors" },
+        // Mentorship feature disabled for now — re-enable later
+        // { icon: Users, label: "Mentors", value: "mentors" },
         { icon: Calendar, label: "Events", value: "events" },
         { icon: ShoppingBag, label: "Swag Store", value: "swag" },
         { icon: Megaphone, label: "Banners", value: "banners" },
@@ -307,11 +308,12 @@ export default function AdminDashboard() {
                         <ProjectManagement />
                     </TabsContent>
 
+                    {/* Mentorship feature disabled for now — re-enable later
                     <TabsContent value="mentors" className="space-y-12">
-                        {/* Mentor CRUD Management */}
+                        {/ * Mentor CRUD Management * /}
                         <MentorCRUD />
 
-                        {/* Mentor Applications */}
+                        {/ * Mentor Applications * /}
                         <MentorApplications
                             applications={mentorApplications}
                             loading={loadingApplications}
@@ -319,6 +321,7 @@ export default function AdminDashboard() {
                             onReject={handleRejectMentorApplication}
                         />
                     </TabsContent>
+                    */}
 
                     <TabsContent value="events" className="space-y-12">
                         <EventManagement />

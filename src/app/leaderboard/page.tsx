@@ -659,7 +659,8 @@ export default function LeaderboardPage() {
                             <div className="earn-card-points" style={{ color: "#eab308" }}>+25 XP per event</div>
                         </motion.div>
 
-                        {/* Card 3: 1-on-1 Mentorship */}
+                        {/* Mentorship feature disabled for now — re-enable later
+                        {/ * Card 3: 1-on-1 Mentorship * /}
                         <motion.div 
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -677,6 +678,7 @@ export default function LeaderboardPage() {
                             <div className="earn-card-desc">Book guidance sessions with expert mentors for project feedback, code reviews, career path mapping, or mock interviews.</div>
                             <div className="earn-card-points" style={{ color: "#0891b2" }}>+25 XP per session</div>
                         </motion.div>
+                        */}
 
                         {/* Card 4: Daily Login & Streaks */}
                         <motion.div 

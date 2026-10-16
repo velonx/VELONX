@@ -10,7 +10,7 @@ import {
   MapPin,
   Briefcase,
   Code2,
-  GraduationCap,
+  // GraduationCap, // used by the disabled Mentorship tile
   Trophy,
   BookOpen,
   UsersRound,
@@ -40,12 +40,13 @@ const HOME_TILES: { label: string; href: string; icon: LucideIcon; imageUrl: str
     icon: Code2,
     imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168824/pro_gdtdwl.png",
   },
-  {
-    label: "Mentorship",
-    href: "/mentors",
-    icon: GraduationCap,
-    imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168731/men_p71ego.png",
-  },
+  // Mentorship feature disabled for now — re-enable later
+  // {
+  //   label: "Mentorship",
+  //   href: "/mentors",
+  //   icon: GraduationCap,
+  //   imageUrl: "https://res.cloudinary.com/dypbafujn/image/upload/v1785168731/men_p71ego.png",
+  // },
   {
     label: "Hackathons",
     href: "/events",
