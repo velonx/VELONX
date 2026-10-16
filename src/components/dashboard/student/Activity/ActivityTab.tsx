@@ -51,7 +51,8 @@ export default function ActivityTab({
 
   const categories = [
     { id: "projects", label: "My Projects", icon: FolderOpen, count: projects.length },
-    { id: "sessions", label: "Mentor Sessions", icon: Calendar, count: mentorSessions.length },
+    // Mentorship feature disabled for now — re-enable later
+    // { id: "sessions", label: "Mentor Sessions", icon: Calendar, count: mentorSessions.length },
     { id: "events", label: "Events & Hackathons", icon: Trophy },
     { id: "badges", label: "Badges & Credentials", icon: Award, count: badges.filter((b) => b.earned).length },
     { id: "orders", label: "Swag Redemptions", icon: ShoppingBag },
@@ -103,6 +104,7 @@ export default function ActivityTab({
           />
         )}
 
+        {/* Mentorship feature disabled for now — re-enable later
         {activeCategory === "sessions" && (
           <ActivitySessionsList
             userId={userId}
@@ -112,6 +114,7 @@ export default function ActivityTab({
             onCancelSession={onCancelSession}
           />
         )}
+        */}
 
         {activeCategory === "events" && <ActivityEventsList userId={userId} />}
 

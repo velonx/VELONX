@@ -124,7 +124,7 @@ export default function HomeTab({
       </div>
 
       {/* Quick Action Shortcuts (Unstop-style quick access) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">{/* was sm:grid-cols-4 with "Find Mentors" (Mentorship disabled) */}
         <button
           onClick={() => router.push("/submit-project")}
           className="group flex flex-col p-4 rounded-2xl bg-card border border-border/70 hover:border-[#F0771A]/40 hover:shadow-md transition-all text-left"
@@ -138,6 +138,7 @@ export default function HomeTab({
           <p className="text-xs text-muted-foreground mt-0.5">Showcase your build</p>
         </button>
 
+        {/* Mentorship feature disabled for now — re-enable later
         <button
           onClick={() => router.push("/mentors")}
           className="group flex flex-col p-4 rounded-2xl bg-card border border-border/70 hover:border-emerald-500/40 hover:shadow-md transition-all text-left"
@@ -150,6 +151,7 @@ export default function HomeTab({
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">1-on-1 career guidance</p>
         </button>
+        */}
 
         <button
           onClick={() => router.push("/events")}
@@ -182,7 +184,8 @@ export default function HomeTab({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Columns: Scheduled Engagements & Active Projects */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Upcoming Sessions / Next Up Section */}
+          {/* Mentorship feature disabled for now — re-enable later
+          {/ * Upcoming Sessions / Next Up Section * /}
           <div className="bg-card border border-border/70 rounded-3xl p-5 sm:p-6 shadow-xs">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -263,6 +266,7 @@ export default function HomeTab({
               </div>
             )}
           </div>
+          */}
 
           {/* Active Projects Overview */}
           <div className="bg-card border border-border/70 rounded-3xl p-5 sm:p-6 shadow-xs">

@@ -51,7 +51,9 @@ export function Footer() {
                             <li><Link href="/events" className="hover:text-accent transition-colors">Events</Link></li>
                             <li><Link href="/projects" className="hover:text-accent transition-colors">Projects</Link></li>
                             <li><Link href="/resources" className="hover:text-accent transition-colors">Resources</Link></li>
+                            {/* Mentorship feature disabled for now
                             <li><Link href="/mentors" className="hover:text-accent transition-colors">Mentorship</Link></li>
+                            */}
                             <li><Link href="/career" className="hover:text-accent transition-colors">Job Board</Link></li>
                             <li><Link href="/leaderboard" className="hover:text-accent transition-colors">Leaderboard</Link></li>
                         </ul>

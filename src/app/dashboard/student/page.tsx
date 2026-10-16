@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Flag, Home, FolderKanban, TrendingUp, AlertCircle } from "lucide-react";
 import { useProjects, useUserStats } from "@/lib/api/hooks";
 import { ProfileCompletionWizard } from "@/components/dashboard/ProfileCompletionWizard";
-import ReviewDialog from "@/components/dashboard/ReviewDialog";
+// import ReviewDialog from "@/components/dashboard/ReviewDialog"; // Mentorship feature disabled for now
 import BadgeModal from "@/components/badges/BadgeModal";
 import { EditProjectModal } from "@/components/projects/EditProjectModal";
 import { ReportDialog } from "@/components/ReportDialog";
@@ -28,15 +28,16 @@ function StudentDashboardContent() {
 
   // Modal states
   const [editingProject, setEditingProject] = useState<any | null>(null);
-  const [selectedSessionForReview, setSelectedSessionForReview] = useState<any | null>(null);
-  const [showReviewDialog, setShowReviewDialog] = useState(false);
+  // Mentorship feature disabled for now — re-enable later
+  // const [selectedSessionForReview, setSelectedSessionForReview] = useState<any | null>(null);
+  // const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<any | null>(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
 
   // Mentor sessions state
   const [mentorSessions, setMentorSessions] = useState<any[]>([]);
-  const [loadingSessions, setLoadingSessions] = useState(false);
+  const [loadingSessions /* , setLoadingSessions */] = useState(false); // setter only used by the disabled fetchMentorSessions
 
   // Badges state
   const [badges, setBadges] = useState<any[]>([]);
@@ -85,22 +86,23 @@ function StudentDashboardContent() {
   // Fetch user stats
   const { data: userStats, loading: statsLoading } = useUserStats(session?.user?.id || "skip");
 
-  // Fetch mentor sessions
-  const fetchMentorSessions = useCallback(async () => {
-    if (!session?.user?.id) return;
-    setLoadingSessions(true);
-    try {
-      const response = await fetch("/api/mentor-sessions?viewAs=student&pageSize=20");
-      const data = await response.json();
-      if (data.success) {
-        setMentorSessions(data.data || []);
-      }
-    } catch (error) {
-      console.error("Failed to load sessions:", error);
-    } finally {
-      setLoadingSessions(false);
-    }
-  }, [session?.user?.id]);
+  // Mentorship feature disabled for now — re-enable later
+  // // Fetch mentor sessions
+  // const fetchMentorSessions = useCallback(async () => {
+  //   if (!session?.user?.id) return;
+  //   setLoadingSessions(true);
+  //   try {
+  //     const response = await fetch("/api/mentor-sessions?viewAs=student&pageSize=20");
+  //     const data = await response.json();
+  //     if (data.success) {
+  //       setMentorSessions(data.data || []);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to load sessions:", error);
+  //   } finally {
+  //     setLoadingSessions(false);
+  //   }
+  // }, [session?.user?.id]);
 
   // Fetch badges
   const fetchBadges = useCallback(async () => {
@@ -123,10 +125,11 @@ function StudentDashboardContent() {
 
   useEffect(() => {
     if (session?.user?.id) {
-      fetchMentorSessions();
+      // Mentorship feature disabled for now — re-enable to load mentor sessions again
+      // fetchMentorSessions();
       fetchBadges();
     }
-  }, [session?.user?.id, fetchMentorSessions, fetchBadges]);
+  }, [session?.user?.id, fetchBadges]); // add fetchMentorSessions back when re-enabling
 
   const handleNavigateTab = (tab: string, subCategory?: string) => {
     setActiveTab(tab);
@@ -141,13 +144,14 @@ function StudentDashboardContent() {
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  const handleReviewSession = (sessionId: string) => {
-    const s = mentorSessions.find((item) => item.id === sessionId);
-    if (s) {
-      setSelectedSessionForReview(s);
-      setShowReviewDialog(true);
-    }
-  };
+  // Mentorship feature disabled for now — re-enable later
+  // const handleReviewSession = (sessionId: string) => {
+  //   const s = mentorSessions.find((item) => item.id === sessionId);
+  //   if (s) {
+  //     setSelectedSessionForReview(s);
+  //     setShowReviewDialog(true);
+  //   }
+  // };
 
   if (status === "loading" || (projectsLoading && !projects)) {
     return <FullDashboardSkeleton />;
@@ -224,7 +228,7 @@ function StudentDashboardContent() {
             badges={badges}
             loadingBadges={loadingBadges}
             onEditProject={(project) => setEditingProject(project)}
-            onReviewSession={handleReviewSession}
+            onReviewSession={() => {}} // was handleReviewSession (Mentorship feature disabled for now)
             onCancelSession={(sessionId) =>
               setMentorSessions((prev) => prev.filter((s) => s.id !== sessionId))
             }
@@ -246,6 +250,7 @@ function StudentDashboardContent() {
       </main>
 
       {/* Modals & Dialogs */}
+      {/* Mentorship feature disabled for now — re-enable later
       {selectedSessionForReview && (
         <ReviewDialog
           open={showReviewDialog}
@@ -258,6 +263,7 @@ function StudentDashboardContent() {
           }}
         />
       )}
+      */}
 
       <ReportDialog
         open={showReportDialog}

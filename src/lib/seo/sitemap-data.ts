@@ -50,14 +50,14 @@ async function buildAllSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     "/career",
     "/blog",
     "/events",
-    "/mentors",
+    // "/mentors", // Mentorship feature disabled for now
     "/projects",
     "/resources",
     "/privacy",
     "/terms",
     "/community-guidelines",
     "/swag",
-    "/apply-mentor",
+    // "/apply-mentor", // Mentorship feature disabled for now
     "/community",
     "/community/groups",
     "/leaderboard",

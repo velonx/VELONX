@@ -1,7 +1,7 @@
 import {
   Home,
   LayoutDashboard,
-  GraduationCap,
+  // GraduationCap, // used by the disabled Mentorship nav item
   Briefcase,
   Building2,
   Code2,
@@ -31,7 +31,7 @@ export const APP_NAV_ITEMS: AppNavItem[] = [
   { label: "Projects", href: "/projects", icon: Code2 },
   { label: "Hackathons", href: "/events", icon: Trophy },
   { label: "Resources", href: "/resources", icon: BookOpen },
-  { label: "Mentorship", href: "/mentors", icon: GraduationCap },
+  // { label: "Mentorship", href: "/mentors", icon: GraduationCap }, // Mentorship feature disabled for now
   { label: "Blog", href: "/blog", matchPrefix: "/blog", icon: Newspaper },
   { label: "Community", href: "/community", icon: UsersRound },
   { label: "Network", href: "/network", icon: Share2 },

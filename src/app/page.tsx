@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation"; // only used by the disabled Mentors spotlight
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import toast from "react-hot-toast";
-import { useMentors } from "@/lib/api/hooks";
-import { MentorCard } from "@/components/mentors/MentorCard";
-import { BoneyardLoader, MentorCardSkeleton } from "@/components/boneyard";
+// Mentorship feature disabled for now — re-enable these imports with the Mentors spotlight below
+// import { useMentors } from "@/lib/api/hooks";
+// import { MentorCard } from "@/components/mentors/MentorCard";
+// import { BoneyardLoader, MentorCardSkeleton } from "@/components/boneyard";
 import { OrganizationSchema, WebSiteSchema } from "@/components/structured-data";
 
 
@@ -153,18 +154,19 @@ const SectionHeader = ({ label, title, subtitle }: { label?: string; title: Reac
 
 // ─── Main Export ───────────────────────────────────────────────────────────────
 export default function Home() {
-    const router = useRouter();
-    const { data: mentors, loading: mentorsLoading } = useMentors({ pageSize: 4 });
+    // Mentorship feature disabled for now — re-enable with the Mentors spotlight below
+    // const router = useRouter();
+    // const { data: mentors, loading: mentorsLoading } = useMentors({ pageSize: 4 });
 
-    const fallbackMentors = [
-        { id: "mock-1", name: "Aarav Kapoor", email: "aarav@google.com", expertise: ["Systems", "Go / C++", "Cloud"], company: "Google", bio: "Senior Software Engineer", imageUrl: null, rating: 4.8, totalSessions: 45, available: true },
-        { id: "mock-2", name: "Isha Sharma", email: "isha@razorpay.com", expertise: ["Roadmap", "Fintech", "Growth"], company: "Razorpay", bio: "Lead Product Manager", imageUrl: null, rating: 4.9, totalSessions: 62, available: true },
-        { id: "mock-3", name: "Rohan Nanda", email: "rohan@cred.com", expertise: ["Figma", "UX Flow", "Design Ops"], company: "Cred", bio: "Senior Product Designer", imageUrl: null, rating: 4.7, totalSessions: 38, available: true },
-        { id: "mock-4", name: "Pooja Patel", email: "pooja@microsoft.com", expertise: ["Mock", "Java", "DSA"], company: "Microsoft", bio: "Senior SDE", imageUrl: null, rating: 4.8, totalSessions: 45, available: true }
-    ];
+    // const fallbackMentors = [
+    //     { id: "mock-1", name: "Aarav Kapoor", email: "aarav@google.com", expertise: ["Systems", "Go / C++", "Cloud"], company: "Google", bio: "Senior Software Engineer", imageUrl: null, rating: 4.8, totalSessions: 45, available: true },
+    //     { id: "mock-2", name: "Isha Sharma", email: "isha@razorpay.com", expertise: ["Roadmap", "Fintech", "Growth"], company: "Razorpay", bio: "Lead Product Manager", imageUrl: null, rating: 4.9, totalSessions: 62, available: true },
+    //     { id: "mock-3", name: "Rohan Nanda", email: "rohan@cred.com", expertise: ["Figma", "UX Flow", "Design Ops"], company: "Cred", bio: "Senior Product Designer", imageUrl: null, rating: 4.7, totalSessions: 38, available: true },
+    //     { id: "mock-4", name: "Pooja Patel", email: "pooja@microsoft.com", expertise: ["Mock", "Java", "DSA"], company: "Microsoft", bio: "Senior SDE", imageUrl: null, rating: 4.8, totalSessions: 45, available: true }
+    // ];
 
-    const mentorsToShow = mentors && mentors.length > 0 ? mentors.slice(0, 4) : fallbackMentors;
-    const showSkeletons = mentorsLoading && (!mentors || mentors.length === 0);
+    // const mentorsToShow = mentors && mentors.length > 0 ? mentors.slice(0, 4) : fallbackMentors;
+    // const showSkeletons = mentorsLoading && (!mentors || mentors.length === 0);
 
     const [showStickyCTA, setShowStickyCTA] = useState(false);
     const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -339,7 +341,8 @@ export default function Home() {
                         subtitle="From joining the platform to landing your first placement — here is exactly what happens."
                     />
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {/* Mentorship feature disabled for now: was md:grid-cols-4 with the "Get Mentored" step */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
                                 number: "01", title: "Create Profile",
@@ -353,14 +356,15 @@ export default function Home() {
                                 image: "/build.jpeg",
                                 color: { circleBg: "bg-[#fef2e6] dark:bg-amber-950/40", text: "text-[#f0771a] dark:text-amber-400", border: "border-[#f0771a]/20 dark:border-amber-900/40", borderLine: "border-amber-400/50 dark:border-amber-500/30", hover: "hover:shadow-[0_20px_40px_rgba(240,119,26,0.12)] hover:border-[#f0771a]/30" }
                             },
+                            // Mentorship feature disabled for now — re-enable "Get Mentored" step later
+                            // {
+                            //     number: "03", title: "Get Mentored",
+                            //     description: "Book direct 1:1 sessions with industry engineers for mock interviews, resume critiques, and roadmaps.",
+                            //     image: "/mentor.jpeg",
+                            //     color: { circleBg: "bg-[#ecfaf2] dark:bg-emerald-950/40", text: "text-[#10b981] dark:text-emerald-400", border: "border-[#10b981]/20 dark:border-emerald-900/40", borderLine: "border-emerald-400/50 dark:border-emerald-500/30", hover: "hover:shadow-[0_20px_40px_rgba(16,185,129,0.12)] hover:border-[#10b981]/30" }
+                            // },
                             {
-                                number: "03", title: "Get Mentored",
-                                description: "Book direct 1:1 sessions with industry engineers for mock interviews, resume critiques, and roadmaps.",
-                                image: "/mentor.jpeg",
-                                color: { circleBg: "bg-[#ecfaf2] dark:bg-emerald-950/40", text: "text-[#10b981] dark:text-emerald-400", border: "border-[#10b981]/20 dark:border-emerald-900/40", borderLine: "border-emerald-400/50 dark:border-emerald-500/30", hover: "hover:shadow-[0_20px_40px_rgba(16,185,129,0.12)] hover:border-[#10b981]/30" }
-                            },
-                            {
-                                number: "04", title: "Get Placed",
+                                number: "03", title: "Get Placed", // was "04" before the "Get Mentored" step was disabled
                                 description: "Apply through our direct blind-screening pipeline where companies evaluate skills over college tiers.",
                                 image: "/placement.jpeg",
                                 color: { circleBg: "bg-[#f5f0fb] dark:bg-purple-950/40", text: "text-[#a855f7] dark:text-purple-400", border: "border-[#a855f7]/20 dark:border-purple-900/40", borderLine: "", hover: "hover:shadow-[0_20px_40px_rgba(168,85,247,0.12)] hover:border-[#a855f7]/30" }
@@ -379,7 +383,7 @@ export default function Home() {
                                     <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-black z-10 border shadow-sm ${step.color.circleBg} ${step.color.text} ${step.color.border}`}>
                                         {step.number}
                                     </div>
-                                    {idx < 3 && (
+                                    {idx < 2 && ( /* was idx < 3 with 4 steps (Mentorship disabled) */
                                         <div className="absolute left-[50%] right-[-50%] top-1/2 -translate-y-1/2 md:flex items-center hidden pointer-events-none z-0 px-8">
                                             <div className="grow overflow-hidden flex items-center">
                                                 <motion.div
@@ -585,6 +589,7 @@ export default function Home() {
             </SectionReveal> */}
 
             {/* ==================== 7. MENTORS SPOTLIGHT ==================== */}
+            {/* Mentorship feature disabled for now — re-enable later
             <SectionReveal className="py-20 border-t border-border/30 relative z-10">
                 <div className="container mx-auto px-6 max-w-6xl">
                     <SectionHeader
@@ -618,6 +623,7 @@ export default function Home() {
                     </div>
                 </div>
             </SectionReveal>
+            */}
 
             {/* ==================== 8. CURATED RESOURCES ==================== */}
             <SectionReveal className="py-20 border-t border-border/30 relative z-10">
@@ -1060,15 +1066,21 @@ export default function Home() {
                         {[
                             {
                                 q: "Who is Velonx for?",
-                                a: "Velonx is designed specifically for tech and software engineering students studying in Tier-2 and Tier-3 Indian colleges who want to build real-world skills, work on open-source projects, get industry mentorship, and unlock premium off-campus career opportunities."
+                                // Mentorship feature disabled for now — original answer:
+                                // a: "Velonx is designed specifically for tech and software engineering students studying in Tier-2 and Tier-3 Indian colleges who want to build real-world skills, work on open-source projects, get industry mentorship, and unlock premium off-campus career opportunities."
+                                a: "Velonx is designed specifically for tech and software engineering students studying in Tier-2 and Tier-3 Indian colleges who want to build real-world skills, work on open-source projects, and unlock premium off-campus career opportunities."
                             },
                             {
                                 q: "Is Velonx free for students?",
-                                a: "Yes, Velonx is 100% free for students. All core learning resources, community cohorts, events, and job postings are completely free. You can earn Velonx Coins (VX) by being active, which can be redeemed for exclusive swags or mentor sessions."
+                                // Mentorship feature disabled for now — original answer:
+                                // a: "Yes, Velonx is 100% free for students. All core learning resources, community cohorts, events, and job postings are completely free. You can earn Velonx Coins (VX) by being active, which can be redeemed for exclusive swags or mentor sessions."
+                                a: "Yes, Velonx is 100% free for students. All core learning resources, community cohorts, events, and job postings are completely free. You can earn Velonx Coins (VX) by being active, which can be redeemed for exclusive swags."
                             },
                             {
                                 q: "How do Velonx Coins (VX) work?",
-                                a: "VX coins are our proof-of-work rewards. You earn them by contributing to open-source, winning hackathons, completing system design tasks, or climbing the leaderboard. You can redeem VX for 1:1 mentorship sessions, premium resume reviews, or physical swag from our store."
+                                // Mentorship feature disabled for now — original answer:
+                                // a: "VX coins are our proof-of-work rewards. You earn them by contributing to open-source, winning hackathons, completing system design tasks, or climbing the leaderboard. You can redeem VX for 1:1 mentorship sessions, premium resume reviews, or physical swag from our store."
+                                a: "VX coins are our proof-of-work rewards. You earn them by contributing to open-source, winning hackathons, completing system design tasks, or climbing the leaderboard. You can redeem VX for premium resume reviews or physical swag from our store."
                             },
                             {
                                 q: "How does the platform help with off-campus placements?",

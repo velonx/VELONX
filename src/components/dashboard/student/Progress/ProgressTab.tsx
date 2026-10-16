@@ -166,6 +166,7 @@ export default function ProgressTab({
               </p>
             </div>
 
+            {/* Mentorship feature disabled for now — re-enable later
             <div>
               <div className="flex justify-between text-xs font-bold text-foreground mb-1.5">
                 <span>Mentor Sessions Attended</span>
@@ -181,6 +182,7 @@ export default function ProgressTab({
                 {completedSessions} sessions with industry mentors
               </p>
             </div>
+            */}
           </div>
         </div>
 
@@ -196,6 +198,7 @@ export default function ProgressTab({
             </div>
           </Card>
 
+          {/* Mentorship feature disabled for now — re-enable later
           <Card className="bg-card border border-border/70 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-3">
               <Users className="w-5 h-5" />
@@ -205,6 +208,7 @@ export default function ProgressTab({
               <p className="text-xs text-muted-foreground font-bold uppercase mt-0.5">Mentor Sessions</p>
             </div>
           </Card>
+          */}
 
           <Card className="bg-card border border-border/70 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center mb-3">
@@ -232,18 +236,20 @@ export default function ProgressTab({
       <div className="space-y-4">
         <h3 className="text-base font-extrabold text-foreground">XP Rewards Breakdown</h3>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">{/* was sm:grid-cols-4 with Mentor Sessions (Mentorship disabled) */}
           <div className="bg-card border border-border/70 rounded-2xl p-4 text-center">
             <p className="text-xs font-bold text-muted-foreground mb-1">Project Completions</p>
             <p className="text-xl font-black text-[#F0771A]">+{completedProjects * 100} XP</p>
             <p className="text-[10px] text-muted-foreground mt-0.5">100 XP per project</p>
           </div>
 
+          {/* Mentorship feature disabled for now — re-enable later
           <div className="bg-card border border-border/70 rounded-2xl p-4 text-center">
             <p className="text-xs font-bold text-muted-foreground mb-1">Mentor Sessions</p>
             <p className="text-xl font-black text-emerald-500">+{completedSessions * 25} XP</p>
             <p className="text-[10px] text-muted-foreground mt-0.5">25 XP per session</p>
           </div>
+          */}
 
           <div className="bg-card border border-border/70 rounded-2xl p-4 text-center">
             <p className="text-xs font-bold text-muted-foreground mb-1">Event Attendance</p>
