@@ -26,6 +26,11 @@ vi.mock('web-push', () => ({
   default: {
     setVapidDetails: vi.fn(),
     sendNotification: vi.fn(),
+    // Used by the service when VAPID keys are not set in the environment (e.g. CI)
+    generateVAPIDKeys: vi.fn(() => ({
+      publicKey: 'BTestPublicVapidKey0123456789abcdefghijklmnopqrstuvwxyz',
+      privateKey: 'testPrivateVapidKey0123456789abcdef',
+    })),
   },
 }));
 
