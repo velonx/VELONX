@@ -1066,15 +1066,21 @@ export default function Home() {
                         {[
                             {
                                 q: "Who is Velonx for?",
-                                a: "Velonx is designed specifically for tech and software engineering students studying in Tier-2 and Tier-3 Indian colleges who want to build real-world skills, work on open-source projects, get industry mentorship, and unlock premium off-campus career opportunities."
+                                // Mentorship feature disabled for now — original answer:
+                                // a: "Velonx is designed specifically for tech and software engineering students studying in Tier-2 and Tier-3 Indian colleges who want to build real-world skills, work on open-source projects, get industry mentorship, and unlock premium off-campus career opportunities."
+                                a: "Velonx is designed specifically for tech and software engineering students studying in Tier-2 and Tier-3 Indian colleges who want to build real-world skills, work on open-source projects, and unlock premium off-campus career opportunities."
                             },
                             {
                                 q: "Is Velonx free for students?",
-                                a: "Yes, Velonx is 100% free for students. All core learning resources, community cohorts, events, and job postings are completely free. You can earn Velonx Coins (VX) by being active, which can be redeemed for exclusive swags or mentor sessions."
+                                // Mentorship feature disabled for now — original answer:
+                                // a: "Yes, Velonx is 100% free for students. All core learning resources, community cohorts, events, and job postings are completely free. You can earn Velonx Coins (VX) by being active, which can be redeemed for exclusive swags or mentor sessions."
+                                a: "Yes, Velonx is 100% free for students. All core learning resources, community cohorts, events, and job postings are completely free. You can earn Velonx Coins (VX) by being active, which can be redeemed for exclusive swags."
                             },
                             {
                                 q: "How do Velonx Coins (VX) work?",
-                                a: "VX coins are our proof-of-work rewards. You earn them by contributing to open-source, winning hackathons, completing system design tasks, or climbing the leaderboard. You can redeem VX for 1:1 mentorship sessions, premium resume reviews, or physical swag from our store."
+                                // Mentorship feature disabled for now — original answer:
+                                // a: "VX coins are our proof-of-work rewards. You earn them by contributing to open-source, winning hackathons, completing system design tasks, or climbing the leaderboard. You can redeem VX for 1:1 mentorship sessions, premium resume reviews, or physical swag from our store."
+                                a: "VX coins are our proof-of-work rewards. You earn them by contributing to open-source, winning hackathons, completing system design tasks, or climbing the leaderboard. You can redeem VX for premium resume reviews or physical swag from our store."
                             },
                             {
                                 q: "How does the platform help with off-campus placements?",

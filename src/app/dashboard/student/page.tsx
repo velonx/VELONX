@@ -123,10 +123,11 @@ function StudentDashboardContent() {
 
   useEffect(() => {
     if (session?.user?.id) {
-      fetchMentorSessions();
+      // Mentorship feature disabled for now — re-enable to load mentor sessions again
+      // fetchMentorSessions();
       fetchBadges();
     }
-  }, [session?.user?.id, fetchMentorSessions, fetchBadges]);
+  }, [session?.user?.id, fetchBadges]); // add fetchMentorSessions back when re-enabling
 
   const handleNavigateTab = (tab: string, subCategory?: string) => {
     setActiveTab(tab);
