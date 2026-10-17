@@ -20,13 +20,11 @@ export function getClientIp(request: NextRequest | Request): string {
   if ('nextUrl' in request) {
     const forwardedFor = request.headers.get('x-forwarded-for')
     const realIp = request.headers.get('x-real-ip')
-    const cfConnectingIp = request.headers.get('cf-connecting-ip')
     
     if (forwardedFor) {
       return forwardedFor.split(',')[0].trim()
     }
     if (realIp) return realIp
-    if (cfConnectingIp) return cfConnectingIp
     
     return 'unknown'
   }
@@ -34,13 +32,11 @@ export function getClientIp(request: NextRequest | Request): string {
   // Handle standard Request
   const forwardedFor = request.headers.get('x-forwarded-for')
   const realIp = request.headers.get('x-real-ip')
-  const cfConnectingIp = request.headers.get('cf-connecting-ip')
   
   if (forwardedFor) {
     return forwardedFor.split(',')[0].trim()
   }
   if (realIp) return realIp
-  if (cfConnectingIp) return cfConnectingIp
   
   return 'unknown'
 }
