@@ -35,7 +35,6 @@ function getClientIP(request: NextRequest | Request): string {
   if ('headers' in request && typeof request.headers.get === 'function') {
     const forwardedFor = request.headers.get('x-forwarded-for')
     const realIp = request.headers.get('x-real-ip')
-    const cfConnectingIp = request.headers.get('cf-connecting-ip')
     
     if (forwardedFor) {
       return forwardedFor.split(',')[0].trim()
@@ -43,10 +42,6 @@ function getClientIP(request: NextRequest | Request): string {
     
     if (realIp) {
       return realIp
-    }
-    
-    if (cfConnectingIp) {
-      return cfConnectingIp
     }
   }
   
