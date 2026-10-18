@@ -26,6 +26,7 @@ vi.mock('web-push', () => ({
   default: {
     setVapidDetails: vi.fn(),
     sendNotification: vi.fn(),
+    generateVAPIDKeys: vi.fn(() => ({ publicKey: 'test-public-vapid-key', privateKey: 'test-private-vapid-key' })),
   },
 }));
 
