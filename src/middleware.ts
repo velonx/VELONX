@@ -62,7 +62,6 @@ function getClientIdentifier(request: NextRequest): string {
   // Try to get real IP from various headers (in order of preference)
   const forwardedFor = request.headers.get('x-forwarded-for')
   const realIp = request.headers.get('x-real-ip')
-  const cfConnectingIp = request.headers.get('cf-connecting-ip')
   
   if (forwardedFor) {
     // x-forwarded-for can contain multiple IPs, take the first one
@@ -71,10 +70,6 @@ function getClientIdentifier(request: NextRequest): string {
   
   if (realIp) {
     return realIp
-  }
-  
-  if (cfConnectingIp) {
-    return cfConnectingIp
   }
   
   // Fallback to a default identifier

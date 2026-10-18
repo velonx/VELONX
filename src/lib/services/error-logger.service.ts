@@ -223,7 +223,6 @@ export class ErrorLogger {
     if ('headers' in request && typeof request.headers.get === 'function') {
       const forwardedFor = request.headers.get('x-forwarded-for')
       const realIp = request.headers.get('x-real-ip')
-      const cfConnectingIp = request.headers.get('cf-connecting-ip')
 
       if (forwardedFor) {
         return forwardedFor.split(',')[0].trim()
@@ -231,10 +230,6 @@ export class ErrorLogger {
 
       if (realIp) {
         return realIp
-      }
-
-      if (cfConnectingIp) {
-        return cfConnectingIp
       }
     }
 
