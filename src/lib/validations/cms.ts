@@ -38,3 +38,5 @@ export const updateGalleryItemSchema = z.object(galleryFields).partial();
 export type TestimonialAccent = (typeof TESTIMONIAL_ACCENTS)[number];
 export type CreateTestimonialInput = z.infer<typeof createTestimonialSchema>;
 export type CreateGalleryItemInput = z.infer<typeof createGalleryItemSchema>;
+
+export const gallerySettingsSchema = z.object({ enabled: z.boolean() });

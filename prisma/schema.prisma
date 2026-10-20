@@ -1761,3 +1761,13 @@ model GalleryItem {
   @@index([isActive, order])
   @@map("gallery_items")
 }
+
+// Admin-controlled site switches (e.g. "gallery.enabled")
+model SiteSetting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}

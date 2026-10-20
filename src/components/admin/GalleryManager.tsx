@@ -28,6 +28,8 @@ export default function GalleryManager() {
   const [editItem, setEditItem] = useState<GalleryItem | null>(null);
   const [form, setForm] = useState({ title: "", caption: "", category: "", order: 0, isActive: true });
   const [saving, setSaving] = useState(false);
+  const [galleryEnabled, setGalleryEnabled] = useState<boolean | null>(null);
+  const [togglingGallery, setTogglingGallery] = useState(false);
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -41,6 +43,13 @@ export default function GalleryManager() {
   }, []);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
+
+  useEffect(() => {
+    fetch("/api/admin/gallery/settings")
+      .then(res => res.json())
+      .then(json => { if (json.success) setGalleryEnabled(json.data.enabled); })
+      .catch(() => toast.error("Failed to load gallery setting"));
+  }, []);
 
   const sendJson = async (url: string, method: string, body?: unknown) => {
     const csrfToken = await getCSRFToken();
@@ -118,6 +127,17 @@ export default function GalleryManager() {
     finally { setSaving(false); }
   };
 
+  const toggleGallery = async () => {
+    if (galleryEnabled === null) return;
+    setTogglingGallery(true);
+    try {
+      const json = await sendJson("/api/admin/gallery/settings", "PUT", { enabled: !galleryEnabled });
+      if (json.success) { setGalleryEnabled(json.data.enabled); toast.success(json.message); }
+      else toast.error(json.error?.message || "Failed to update");
+    } catch { toast.error("Failed to update"); }
+    finally { setTogglingGallery(false); }
+  };
+
   const handleToggle = async (item: GalleryItem) => {
     try {
       const json = await sendJson(`/api/admin/gallery/${item.id}`, "PUT", { isActive: !item.isActive });
@@ -140,10 +160,34 @@ export default function GalleryManager() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="heading-card text-2xl">Gallery</h3>
+        <h3 className="heading-card text-2xl">Landing Page Gallery</h3>
         <p className="text-muted-foreground text-sm">
-          {items.length} photos · {items.filter(i => i.isActive).length} visible on the homepage and the /gallery page
+          {items.length} photos · {items.filter(i => i.isActive).length} visible
         </p>
+      </div>
+
+      <div className="bg-card border border-border rounded-3xl p-6 flex items-center justify-between gap-6">
+        <div>
+          <p className="font-bold text-foreground">Show gallery on landing page</p>
+          <p className="text-muted-foreground text-sm">
+            {galleryEnabled
+              ? items.some(i => i.isActive)
+                ? "The \"Life at Velonx\" section is live on the landing page."
+                : "Switched on — upload at least one photo below for the section to appear."
+              : "The gallery section is hidden from the landing page."}
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={!!galleryEnabled}
+          aria-label="Show gallery on landing page"
+          disabled={galleryEnabled === null || togglingGallery}
+          onClick={toggleGallery}
+          className={`relative w-14 h-7 rounded-full transition-colors shrink-0 disabled:opacity-50 ${galleryEnabled ? "bg-emerald-500" : "bg-muted"}`}
+        >
+          <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${galleryEnabled ? "left-8" : "left-1"}`} />
+        </button>
       </div>
 
       <div className="bg-card border border-border rounded-3xl p-6 space-y-4">
@@ -170,7 +214,7 @@ export default function GalleryManager() {
       ) : items.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground bg-card border border-border rounded-3xl">
           <Images className="w-10 h-10 mx-auto mb-3 opacity-30" />
-          <p className="font-semibold">No photos yet. The gallery section stays hidden on the site until you add some.</p>
+          <p className="font-semibold">No photos yet. Upload some above to fill the landing-page gallery.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">

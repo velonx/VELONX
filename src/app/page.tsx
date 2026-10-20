@@ -176,6 +176,7 @@ export default function Home() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
     const [testimonials, setTestimonials] = useState<TestimonialData[]>(DEFAULT_TESTIMONIALS);
     const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([]);
+    const [showAllPhotos, setShowAllPhotos] = useState(false);
 
     // Admin-managed content (Admin Console → Testimonials / Gallery)
     useEffect(() => {
@@ -826,7 +827,7 @@ export default function Home() {
                 </div>
             </SectionReveal>
 
-            {/* ==================== 11b. GALLERY (admin-managed, hidden when empty) ==================== */}
+            {/* ==================== 11b. GALLERY (admin-managed: shown only when switched on and photos exist) ==================== */}
             {galleryPhotos.length > 0 && (
                 <SectionReveal className="py-20 border-t border-border/30 relative z-10">
                     <div className="container mx-auto px-6 max-w-6xl">
@@ -835,12 +836,12 @@ export default function Home() {
                             title="Life at Velonx"
                             subtitle="Hackathons, meetups, workshops and everything in between."
                         />
-                        <GalleryGrid photos={galleryPhotos.slice(0, HOME_GALLERY_LIMIT)} />
+                        <GalleryGrid photos={showAllPhotos ? galleryPhotos : galleryPhotos.slice(0, HOME_GALLERY_LIMIT)} />
                         {galleryPhotos.length > HOME_GALLERY_LIMIT && (
                             <div className="text-center mt-10">
-                                <Link href="/gallery" className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
-                                    View all {galleryPhotos.length} photos <ArrowRight className="w-4 h-4" />
-                                </Link>
+                                <button onClick={() => setShowAllPhotos(v => !v)} className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
+                                    {showAllPhotos ? "Show fewer photos" : `View all ${galleryPhotos.length} photos`} <ArrowRight className={`w-4 h-4 transition-transform ${showAllPhotos ? "-rotate-90" : "rotate-90"}`} />
+                                </button>
                             </div>
                         )}
                     </div>
