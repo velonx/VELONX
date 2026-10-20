@@ -12,6 +12,10 @@ import toast from "react-hot-toast";
 // import { MentorCard } from "@/components/mentors/MentorCard";
 // import { BoneyardLoader, MentorCardSkeleton } from "@/components/boneyard";
 import { OrganizationSchema, WebSiteSchema } from "@/components/structured-data";
+import { TestimonialCardContent, DEFAULT_TESTIMONIALS, type TestimonialData } from "@/components/cms/TestimonialCard";
+import { GalleryGrid, type GalleryPhoto } from "@/components/cms/GalleryGrid";
+
+const HOME_GALLERY_LIMIT = 8;
 
 
 
@@ -170,6 +174,21 @@ export default function Home() {
 
     const [showStickyCTA, setShowStickyCTA] = useState(false);
     const [openFaq, setOpenFaq] = useState<number | null>(null);
+    const [testimonials, setTestimonials] = useState<TestimonialData[]>(DEFAULT_TESTIMONIALS);
+    const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([]);
+    const [showAllPhotos, setShowAllPhotos] = useState(false);
+
+    // Admin-managed content (Admin Console → Testimonials / Gallery)
+    useEffect(() => {
+        fetch("/api/testimonials")
+            .then(res => res.json())
+            .then(json => { if (json.success && json.data.length > 0) setTestimonials(json.data); })
+            .catch(() => {});
+        fetch("/api/gallery")
+            .then(res => res.json())
+            .then(json => { if (json.success) setGalleryPhotos(json.data); })
+            .catch(() => {});
+    }, []);
 
     const handleJoinClick = () => toast.success("Opening sign up — let's build your future! 🚀");
 
@@ -791,52 +810,43 @@ export default function Home() {
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[
-                            {
-                                badge: "✔ Full Stack developer and vice president", badgeColor: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600",
-                                quote: "\"I came from a no-name college in Bhopal. Velonx's project was a huge opportunity and it changed my life.\"",
-                                initials: "RL", name: "Ritika Lodhi", sub: "Barkatullah University · Co-founder @ Velonx",
-                                avatarColor: "bg-primary/10 text-primary ring-primary/10"
-                            },
-                            {
-                                badge: "✔ Full Stack Developer and President of Velonx", badgeColor: "bg-amber-500/10 border border-amber-500/20 text-amber-600",
-                                quote: "\"The community on Velonx is unreal. Found my team and now we are building a startup together.\"",
-                                initials: "RP", name: "Rishi Pandey", sub: "Barkatullah University · President @ Velonx",
-                                avatarColor: "bg-accent/10 text-accent ring-accent/10"
-                            },
-                            {
-                                badge: "✔ AI/ML Head and Vice president", badgeColor: "bg-purple-500/10 border border-purple-500/20 text-purple-600",
-                                quote: "\"I came from a no-name college in Bhopal. Velonx's project was a huge opportunity and it changed my life.\"",
-                                initials: "MD", name: "Mahak Dangi", sub: "Barkatullah University · Co-founder @ Velonx",
-                                avatarColor: "bg-emerald-500/10 text-emerald-600 ring-emerald-500/10"
-                            }
-                        ].map((t, idx) => (
+                        {testimonials.map((t, idx) => (
                             <motion.div
-                                key={t.name}
+                                key={t.id ?? t.name}
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: idx * 0.12 }}
+                                transition={{ duration: 0.5, delay: (idx % 3) * 0.12 }}
                                 className="card-redesign bg-card p-8 flex flex-col justify-between h-full shadow-md relative overflow-hidden"
                                 whileHover={{ y: -5, boxShadow: "0 2px 8px rgba(22,20,15,0.06)" }}
                             >
-                                <div className="absolute top-4 right-6 text-7xl font-serif text-muted/10 font-bold select-none">&quot;</div>
-                                <div className={`flex items-center gap-2 text-[10px] font-bold py-1 px-3.5 rounded-full w-fit mb-6 ${t.badgeColor}`}>
-                                    {t.badge}
-                                </div>
-                                <p className="text-muted-foreground text-sm italic leading-relaxed mb-8 relative z-10">{t.quote}</p>
-                                <div className="flex items-center gap-3 mt-auto">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-black ring-2 ${t.avatarColor}`}>{t.initials}</div>
-                                    <div>
-                                        <h4 className="text-sm font-black">{t.name}</h4>
-                                        <p className="text-[10px] text-muted-foreground">{t.sub}</p>
-                                    </div>
-                                </div>
+                                <TestimonialCardContent t={t} />
                             </motion.div>
                         ))}
                     </div>
                 </div>
             </SectionReveal>
+
+            {/* ==================== 11b. GALLERY (admin-managed: shown only when switched on and photos exist) ==================== */}
+            {galleryPhotos.length > 0 && (
+                <SectionReveal className="py-20 border-t border-border/30 relative z-10">
+                    <div className="container mx-auto px-6 max-w-6xl">
+                        <SectionHeader
+                            label="Gallery"
+                            title="Life at Velonx"
+                            subtitle="Hackathons, meetups, workshops and everything in between."
+                        />
+                        <GalleryGrid photos={showAllPhotos ? galleryPhotos : galleryPhotos.slice(0, HOME_GALLERY_LIMIT)} />
+                        {galleryPhotos.length > HOME_GALLERY_LIMIT && (
+                            <div className="text-center mt-10">
+                                <button onClick={() => setShowAllPhotos(v => !v)} className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
+                                    {showAllPhotos ? "Show fewer photos" : `View all ${galleryPhotos.length} photos`} <ArrowRight className={`w-4 h-4 transition-transform ${showAllPhotos ? "-rotate-90" : "rotate-90"}`} />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </SectionReveal>
+            )}
 
             {/* ==================== 12. LEADERBOARD TEASER ==================== */}
             <SectionReveal className="py-20 border-t border-border/30 relative z-10">

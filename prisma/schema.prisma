@@ -1723,3 +1723,51 @@ model Banner {
   @@index([isActive, priority])
   @@map("banners")
 }
+
+// ============================================
+// Site CMS: homepage testimonials & photo gallery
+// ============================================
+
+model Testimonial {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  quote       String
+  badge       String? // e.g. "Full Stack Developer & President"
+  subtitle    String? // e.g. "Barkatullah University · President @ Velonx"
+  avatarUrl   String?
+  accent      String   @default("blue") // card colour theme
+  order       Int      @default(0) // lower shows first
+  isActive    Boolean  @default(true)
+  createdById String?  @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive, order])
+  @@map("testimonials")
+}
+
+model GalleryItem {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  imageUrl    String
+  title       String?
+  caption     String?
+  category    String? // e.g. "Hackathons", "Meetups"
+  order       Int      @default(0) // lower shows first
+  isActive    Boolean  @default(true)
+  createdById String?  @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive, order])
+  @@map("gallery_items")
+}
+
+// Admin-controlled site switches (e.g. "gallery.enabled")
+model SiteSetting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
