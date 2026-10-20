@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { handleError } from "@/lib/utils/errors";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+
+// Short shared cache so admin changes appear within a minute
+const CACHE_HEADERS = { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" };
 
 /**
  * GET /api/testimonials
@@ -17,7 +20,7 @@ export async function GET() {
       take: 30,
     });
 
-    return NextResponse.json({ success: true, data: testimonials }, { status: 200 });
+    return NextResponse.json({ success: true, data: testimonials }, { status: 200, headers: CACHE_HEADERS });
   } catch (error) {
     return handleError(error);
   }
