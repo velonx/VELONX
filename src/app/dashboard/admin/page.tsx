@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Layout, PenTool, Calendar, Eye, Settings, ShieldCheck, Users, Activity, Flag, ShoppingBag, Mail, Download, Megaphone } from 'lucide-react';
+import { Layout, PenTool, Calendar, Eye, Settings, ShieldCheck, Users, Activity, Flag, ShoppingBag, Mail, Download, Megaphone, Images, MessageSquareQuote } from 'lucide-react';
 import toast from "react-hot-toast";
 import { useUserRequests, usePlatformStats } from "@/lib/api/hooks";
 import { adminApi } from "@/lib/api/client";
@@ -57,6 +57,12 @@ const SwagOrderTable = dynamic(() => import("@/components/swag/admin/SwagOrderTa
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const BannerManager = dynamic(() => import("@/components/admin/BannerManager"), {
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
+});
+const GalleryManager = dynamic(() => import("@/components/admin/GalleryManager"), {
+    loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
+});
+const TestimonialManager = dynamic(() => import("@/components/admin/TestimonialManager"), {
     loading: () => <div className="flex items-center justify-center p-8"><div className="w-8 h-8 border-4 border-[#226CE0] border-t-transparent rounded-full animate-spin" /></div>
 });
 const VerificationManagement = dynamic(() => import("@/components/admin/VerificationManagement"), {
@@ -205,6 +211,8 @@ export default function AdminDashboard() {
         { icon: Calendar, label: "Events", value: "events" },
         { icon: ShoppingBag, label: "Swag Store", value: "swag" },
         { icon: Megaphone, label: "Banners", value: "banners" },
+        { icon: Images, label: "Gallery", value: "gallery" },
+        { icon: MessageSquareQuote, label: "Testimonials", value: "testimonials" },
         { icon: Flag, label: "Reports", value: "reports" },
         { icon: PenTool, label: "Blog Authoring", value: "blog" },
         { icon: ShieldCheck, label: "Verifications", value: "verifications" },
@@ -343,6 +351,14 @@ export default function AdminDashboard() {
 
                     <TabsContent value="banners" className="space-y-8">
                         <BannerManager />
+                    </TabsContent>
+
+                    <TabsContent value="gallery" className="space-y-8">
+                        <GalleryManager />
+                    </TabsContent>
+
+                    <TabsContent value="testimonials" className="space-y-8">
+                        <TestimonialManager />
                     </TabsContent>
 
                     <TabsContent value="reports" className="space-y-8">
